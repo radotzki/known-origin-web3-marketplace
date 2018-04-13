@@ -31,27 +31,32 @@
     </div>
 
     <footer id="footer">
-      <current-network style="float: right"></current-network>
-      <p>&copy; 2018 KNOWNORIGIN</p>
-      <p>BE ORIGINAL. BUY ORIGINAL.</p>
-      <p>
-        <a href="mailto:hello@knownorigin.io">hello@knownorigin.io</a> |
-        <a href="https://t.me/knownorigin" target="_blank">Join us on Telegram</a> |
-        <a href="https://twitter.com/knownorigin_io" target="_blank">Follow us on Twitter</a> |
-        <a href="https://medium.com/knownorigin" target="_blank">Medium articles</a>
-      </p>
-
-      <div class="text-center pad-top">
-        <router-link :to="{ name: 'dashboard' }">Home</router-link>
-        |
-        <router-link :to="{ name: 'license' }">License</router-link>
-        |
-        <router-link :to="{ name: 'details' }">Contract</router-link>
-        |
-        <router-link :to="{ name: 'gallery' }">Gallery</router-link>
-        |
-        <router-link :to="{ name: 'assets' }">Assets</router-link>
-      </div>
+      <table width="100%">
+        <tr>
+          <td width="80%">
+            <p>&copy; 2018 KNOWNORIGIN</p>
+            <p>BE ORIGINAL. BUY ORIGINAL.</p>
+          </td>
+          <td width="20%">
+            <router-link :to="{ name: 'gallery' }">Gallery</router-link> <br/> <br/>
+            <router-link :to="{ name: 'account' }">My Account</router-link> <br/> <br/>
+            <router-link :to="{ name: 'details' }">Contract</router-link> <br/> <br/>
+            <router-link :to="{ name: 'license' }">License</router-link> <br/> <br/>
+            <router-link :to="{ name: 'assets' }">Assets</router-link> <br/> <br/>
+          </td>
+        </tr>
+        <tr>
+          <td width="80%">
+            <a href="mailto:hello@knownorigin.io">hello@knownorigin.io</a> <br/> <br/>
+            <a href="https://t.me/knownorigin" target="_blank">Join us on Telegram</a> <br/> <br/>
+            <a href="https://twitter.com/knownorigin_io" target="_blank">Follow us on Twitter</a> <br/> <br/>
+            <a href="https://medium.com/knownorigin" target="_blank">Medium articles</a>
+          </td>
+          <td width="20%">
+            <p><current-network></current-network></p>
+          </td>
+        </tr>
+      </table>
     </footer>
   </div>
 </template>
@@ -99,7 +104,6 @@
   $primary: #3e27d9;
   $secondary: #f2f2f2;
   $background: #f2f5fb;
-  $black: #545454;
   $gray: #545454;
   $white: #FDFDFD;
   $font_family_1: 'Avenir', Helvetica, Arial, sans-serif;
@@ -119,23 +123,20 @@
     font-size: 38px;
     margin-top: 20px;
     margin-bottom: 20px;
-    color: $black;
+    color: $gray;
     border-bottom: 1px;
     padding-bottom: 20px;
     padding-left: 25px;
   }
 
-  #splash h2 {
-    color: $white;
-    font-size: 18px;
-  }
-
   h2 {
-    color: $primary;
+    color: $gray;
     display: block;
     font-size: 26px;
     margin-top: 20px;
     margin-bottom: 20px;
+    padding-bottom: 15px;
+    padding-left: 25px;
   }
 
   h3 {
@@ -145,6 +146,7 @@
     margin-top: 15px;
     margin-bottom: 15px;
     font-weight: bold;
+    padding-left: 25px;
   }
 
   h4 {
@@ -159,6 +161,7 @@
     line-height: 28px;
     margin-bottom: 10px;
     color: $gray;
+    padding-left: 25px;
   }
 
   td {

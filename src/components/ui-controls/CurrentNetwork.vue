@@ -1,6 +1,6 @@
 <template>
   <div class="current-network">
-    {{ currentNetwork }}
+    Network: {{ currentNetwork }}
   </div>
 </template>
 

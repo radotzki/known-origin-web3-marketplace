@@ -40,7 +40,7 @@
                   <clickable-transaction :transaction="getTransactionForAsset(asset.id)"></clickable-transaction>
                 </p>
               </div>
-              
+
               <div v-if="isPurchaseFailed(asset.id)" class="icon-message">
                 <img src="../../../static/Failure.svg" style="width: 100px"/>
                 <h2 class="text-danger pad-top">Your purchase failed!</h2>
