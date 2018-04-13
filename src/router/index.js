@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Dashboard from '@/components/pages/Dashboard';
 import Artists from '@/components/pages/Artists';
 import Details from '@/components/pages/Details';
 import Gallery from '@/components/pages/Gallery';
@@ -27,8 +26,8 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'dashboard',
-      component: Dashboard
+      name: 'home',
+      component: Gallery
     },
     {
       path: '/artists',

@@ -1,15 +1,6 @@
 <template>
   <div id="app">
 
-    <header id="header" class="centered">
-      <router-link :to="{ name: 'account' }" class="pull-right">
-        <img src="/../static/account.svg" style="height:25px"/>
-      </router-link>
-      <div class="header-branding ">
-        <router-link :to="{ name: 'dashboard' }" class="header-dash">KnownOrigin.io</router-link>
-      </div>
-    </header>
-
     <modal name="no-web3-found" :height="450" :width="350" :clickToClose="true">
       <div class="no-web3-found-container">
         <div>
@@ -35,18 +26,18 @@
       </div>
     </modal>
 
-    <div class="centered margin-bottom">
+    <div class="margin-bottom">
       <router-view></router-view>
     </div>
 
-    <footer id="footer" class="centered">
+    <footer id="footer">
       <current-network style="float: right"></current-network>
       <p>&copy; 2018 KNOWNORIGIN</p>
       <p>BE ORIGINAL. BUY ORIGINAL.</p>
       <p>
         <a href="mailto:hello@knownorigin.io">hello@knownorigin.io</a> |
         <a href="https://t.me/knownorigin" target="_blank">Join us on Telegram</a> |
-        <a href="https://twitter.com/knownorigin_io" target="_blank">Follow us on Twitter</a>
+        <a href="https://twitter.com/knownorigin_io" target="_blank">Follow us on Twitter</a> |
         <a href="https://medium.com/knownorigin" target="_blank">Medium articles</a>
       </p>
 
@@ -108,7 +99,7 @@
   $primary: #3e27d9;
   $secondary: #f2f2f2;
   $background: #f2f5fb;
-  $black: black;
+  $black: #545454;
   $gray: #545454;
   $white: #FDFDFD;
   $font_family_1: 'Avenir', Helvetica, Arial, sans-serif;
@@ -125,12 +116,13 @@
   /* mq 60em*/
   h1 {
     display: block;
-    font-size: 30px;
+    font-size: 38px;
     margin-top: 20px;
     margin-bottom: 20px;
-    color: $primary;
+    color: $black;
     border-bottom: 1px;
     padding-bottom: 20px;
+    padding-left: 25px;
   }
 
   #splash h2 {
@@ -242,16 +234,6 @@
     }
   }
 
-  #splash .btn {
-    width: 50% !important;
-    display: inline-table;
-    padding: 10px;
-  }
-
-  .router-link-exact-active {
-    font-weight: normal;
-  }
-
   #app {
     font-family: $font_family_1;
     -webkit-font-smoothing: antialiased;
@@ -293,6 +275,7 @@
     line-height: 1em;
     text-transform: none;
     color: $primary;
+    padding-left: 25px;
   }
 
   .centered {
@@ -500,37 +483,9 @@
     font-size: 12px;
   }
 
-  #partners, #quote {
-    text-align: center;
-    margin: 5px;
-  }
-
-  #splash {
-    display: table;
-    text-align: center;
-    color: $white;
-    background-image: url('../static/background.jpg');
-    width: 50%;
-    height: 300px;
-
-    .strap {
-      padding-top: 58px;
-      font-size: 28px;
-      line-height: 1.5em;
-      min-height: 164px;
-    }
-  }
-
-  #quote {
-    text-align: left;
-    font-size: 18px;
-    font-style: italic;
-    padding: 10px;
-  }
-
   .assets_to_buy {
-    background: $white;
     max-width: 400px;
+    padding-left: 25px;
   }
 
   .twitterLink {
@@ -549,26 +504,6 @@
   #topSection {
     display: flex;
     flex-direction: row;
-  }
-
-  #intro {
-    width: 50%;
-  }
-
-  #intro h2 {
-    margin-top: 0px;
-  }
-
-  #how-ko-works {
-    h4 {
-      font-size: 24px;
-    }
-
-    h3 {
-      font-size: 34px;
-      margin-bottom: 0px;
-      padding-bottom: 0px;
-    }
   }
 
   .viewAllArtists {

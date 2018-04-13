@@ -1,8 +1,16 @@
 <template>
   <div id="account">
-    <router-link :to="{ name: 'dashboard' }" class="back-arrow" style="float: left">
-      <img src="../../../static/back_arrow.svg" style="width: 35px"/>
-    </router-link>
+    <header id="header">
+      <router-link :to="{ name: 'account' }" class="pull-right">
+        <img src="/../static/account.svg" style="height:25px"/>
+      </router-link>
+      <div class="header-branding">
+        &nbsp;
+        <router-link :to="{ name: 'home' }" class="back-arrow" style="float: left">
+          <img src="../../../static/back_arrow.svg" style="width: 35px"/>
+        </router-link>
+      </div>
+    </header>
 
     <h1>My Account</h1>
 
@@ -13,11 +21,9 @@
     <address-icon :eth-address="account"></address-icon>
     </p>
 
-    <hr/>
-
     <h2>My collection ({{assetsPurchasedByAccount.length}})</h2>
 
-    <div class="centered">
+    <div>
       <section class="cards centered" v-if="assetsPurchasedByAccount">
         <asset v-for="tokenId, key in assetsPurchasedByAccount"
                :asset="assetById(tokenId)"

@@ -1,8 +1,16 @@
 <template>
   <div id="artists">
-    <router-link :to="{ name: 'dashboard' }" class="back-arrow" style="float: left">
-      <img src="../../../static/back_arrow.svg" style="width: 35px"/>
-    </router-link>
+    <header id="header">
+      <router-link :to="{ name: 'account' }" class="pull-right">
+        <img src="/../static/account.svg" style="height:25px"/>
+      </router-link>
+      <div class="header-branding">
+        &nbsp;
+        <router-link :to="{ name: 'home' }" class="back-arrow" style="float: left">
+          <img src="../../../static/back_arrow.svg" style="width: 35px"/>
+        </router-link>
+      </div>
+    </header>
 
     <h1>Artists</h1>
 

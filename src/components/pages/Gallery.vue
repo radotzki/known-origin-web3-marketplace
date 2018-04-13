@@ -1,15 +1,18 @@
 <template>
   <div id="gallery">
-    <router-link :to="{ name: 'dashboard' }" class="back-arrow" style="float: left">
-      <img src="../../../static/back_arrow.svg" style="width: 35px"/>
-    </router-link>
+
+    <header id="header">
+      <router-link :to="{ name: 'account' }" class="pull-right">
+        <img src="/../static/account.svg" style="height:25px"/>
+      </router-link>
+      <div class="header-branding ">
+        <router-link :to="{ name: 'home' }" class="header-dash">KnownOrigin.io</router-link>
+      </div>
+    </header>
 
     <h1>Gallery</h1>
 
-    <hr/>
-
-    <div>
-      <p>
+    <div class="filters">
         <toggle-button :value="showSold"
                        :labels="{checked: 'Sold', unchecked: 'Unsold'}"
                        :sync="true" color="#82C7EB" :width="65"
@@ -20,12 +23,8 @@
           <option value="desc">High to low</option>
         </select>
 
-        <input type="text" v-model="search"/>
-      </p>
-
+        <input type="text" v-model="search" placeholder="Search assets..."/>
     </div>
-
-    <hr/>
 
     <div class="text-center text-blue" v-if="editions.length === 0">
       <img src="../../../static/Timer.svg" style="width: 100px"/><br/>
@@ -47,7 +46,7 @@
 
 <script>
 
-  import {mapGetters, mapState} from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
   import GalleryEdition from '../GalleryEdition';
 
   export default {
@@ -91,4 +90,8 @@
 </script>
 
 <style scoped>
+  .filters {
+    padding-left: 25px;
+    padding-bottom: 20px;
+  }
 </style>

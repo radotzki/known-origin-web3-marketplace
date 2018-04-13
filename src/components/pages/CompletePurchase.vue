@@ -1,109 +1,119 @@
 <template>
   <div v-if="asset">
+    <header id="header">
+      <router-link :to="{ name: 'account' }" class="pull-right">
+        <img src="/../static/account.svg" style="height:25px"/>
+      </router-link>
+      <div class="header-branding">
+        &nbsp;
+        <router-link
+          :to="{ name: 'confirmPurchase', params: { edition: asset.edition }}"
+          class="back-arrow" style="float: left">
+          <img src="../../../static/back_arrow.svg" style="width: 35px"/>
+        </router-link>
+      </div>
+    </header>
 
-    <router-link
-      :to="{ name: 'confirmPurchase',
-        params: { edition: asset.edition }}"
-      class="back-arrow" style="float: left">
-      <img src="../../../static/back_arrow.svg" style="width: 35px"/>
-    </router-link>
+    <div class="assets_to_buy">
+      <article class="card pad-bottom">
+        <div>
+          <div class="border-box">
+            <div class="card-content">
 
-    <h1>&nbsp;</h1>
-
-    <article class="card assets_to_buy pad-bottom">
-      <div>
-        <div class="border-box">
-          <div class="card-content">
-
-            <div v-if="isPurchaseTriggered(asset.id)" class="icon-message">
-              <img src="../../../static/Timer.svg" style="width: 100px"/>
-              <h2 class="text-blue pad-top">Your purchase is being initiated...</h2>
-            </div>
-
-            <div v-if="isPurchaseStarted(asset.id)" class="icon-message">
-              <img src="../../../static/Timer.svg" style="width: 100px"/>
-              <h2 class="text-blue pad-top">Your purchase is being confirming...</h2>
-              <p>
-                <clickable-transaction :transaction="getTransactionForAsset(asset.id)"></clickable-transaction>
-              </p>
-            </div>
-
-            <div v-if="isPurchaseSuccessful(asset.id)" class="icon-message">
-              <img src="../../../static/GreenTick.svg" style="width: 100px"/>
-              <h2 class="text-success pad-top">Your purchase was successful!</h2>
-              <p>
-                <clickable-transaction :transaction="getTransactionForAsset(asset.id)"></clickable-transaction>
-              </p>
-            </div>
-
-            <div v-if="isPurchaseFailed(asset.id)" class="icon-message">
-              <img src="../../../static/Failure.svg" style="width: 100px"/>
-              <h2 class="text-danger pad-top">Your purchase failed!</h2>
-            </div>
-
-            <h3>{{ asset.otherMeta.artworkName }}</h3>
-
-            <edition-name-by-artist :edition="asset" :purchase="true"></edition-name-by-artist>
-
-            <token-id :value="asset.id"></token-id>
-
-            <hr/>
-
-            <div v-if="!assetPurchaseState(asset.id)">
-
-              <div v-if="asset.purchased == 0" class="pad-top pad-bottom">
-                <table>
-                  <tr>
-                    <td width="25%"><img src="/../../static/Account_You_icn.svg" style="height: 50px"/></td>
-                    <td width="75%">
-                      You:<br/>
-                      <address-icon :eth-address="account" :size="'small'"></address-icon>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td width="25%"><img src="/../../static/DotDivider@x2.svg" style="height: 50px"/></td>
-                    <td width="75%"><hr/></td>
-                  </tr>
-                  <tr>
-                    <td width="25%"><img src="/../../static/ETH_icn.svg" style="height: 50px"/></td>
-                    <td width="75%">
-                      Amount:<br/>
-                      <strong>{{ asset.priceInEther }} ETH</strong>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td width="25%"><img src="/../../static/DotDivider@x2.svg" style="height: 50px"/></td>
-                    <td width="75%"><hr/></td>
-                  </tr>
-                  <tr>
-                    <td width="25%"><img src="/../../static/Account_You_icn.svg" style="height: 50px"/></td>
-                    <td width="75%">
-                      Transfer to:<br/>
-                      <address-icon :eth-address="asset.owner" :size="'small'"></address-icon>
-                    </td>
-                  </tr>
-                </table>
+              <div v-if="isPurchaseTriggered(asset.id)" class="icon-message">
+                <img src="../../../static/Timer.svg" style="width: 100px"/>
+                <h2 class="text-blue pad-top">Your purchase is being initiated...</h2>
               </div>
 
+              <div v-if="isPurchaseStarted(asset.id)" class="icon-message">
+                <img src="../../../static/Timer.svg" style="width: 100px"/>
+                <h2 class="text-blue pad-top">Your purchase is being confirmed...</h2>
+                <p>
+                  <clickable-transaction :transaction="getTransactionForAsset(asset.id)"></clickable-transaction>
+                </p>
+              </div>
+
+              <div v-if="isPurchaseSuccessful(asset.id)" class="icon-message">
+                <img src="../../../static/GreenTick.svg" style="width: 100px"/>
+                <h2 class="text-success pad-top">Your purchase was successful!</h2>
+                <p>
+                  <clickable-transaction :transaction="getTransactionForAsset(asset.id)"></clickable-transaction>
+                </p>
+              </div>
+              
+              <div v-if="isPurchaseFailed(asset.id)" class="icon-message">
+                <img src="../../../static/Failure.svg" style="width: 100px"/>
+                <h2 class="text-danger pad-top">Your purchase failed!</h2>
+              </div>
+
+              <h3>{{ asset.otherMeta.artworkName }}</h3>
+
+              <edition-name-by-artist :edition="asset" :purchase="true"></edition-name-by-artist>
+
+              <token-id :value="asset.id"></token-id>
+
               <hr/>
+
+              <div v-if="!assetPurchaseState(asset.id)">
+
+                <div v-if="asset.purchased == 0" class="pad-top pad-bottom">
+                  <table>
+                    <tr>
+                      <td width="25%"><img src="/../../static/Account_You_icn.svg" style="height: 50px"/></td>
+                      <td width="75%">
+                        You:<br/>
+                        <address-icon :eth-address="account" :size="'small'"></address-icon>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td width="25%"><img src="/../../static/DotDivider@x2.svg" style="height: 50px"/></td>
+                      <td width="75%">
+                        <hr/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td width="25%"><img src="/../../static/ETH_icn.svg" style="height: 50px"/></td>
+                      <td width="75%">
+                        Amount:<br/>
+                        <strong>{{ asset.priceInEther }} ETH</strong>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td width="25%"><img src="/../../static/DotDivider@x2.svg" style="height: 50px"/></td>
+                      <td width="75%">
+                        <hr/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td width="25%"><img src="/../../static/Account_You_icn.svg" style="height: 50px"/></td>
+                      <td width="75%">
+                        Transfer to:<br/>
+                        <address-icon :eth-address="asset.owner" :size="'small'"></address-icon>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+
+                <hr/>
+              </div>
+
+              <div><h3>Total ETH: <span class="pull-right ">{{ asset.priceInEther }}</span></h3></div>
+            </div>
+          </div>
+          <div class="border-box-buttons">
+            <div v-if="isPurchaseFailed(asset.id)" class="pad-bottom">
+              <button type="button" v-on:click="retryPurchase" class="btn btn-link">
+                Retry
+              </button>
             </div>
 
-            <div><h3>Total ETH: <span class="pull-right ">{{ asset.priceInEther }}</span></h3></div>
+            <complete-purchase-button :asset="asset" class="pad-bottom" @purchaseInitiated="onPurchaseInitiated">
+            </complete-purchase-button>
           </div>
         </div>
-        <div class="border-box-buttons">
-          <div v-if="isPurchaseFailed(asset.id)" class="pad-bottom">
-            <button type="button" v-on:click="retryPurchase" class="btn btn-link">
-              Retry
-            </button>
-          </div>
 
-          <complete-purchase-button :asset="asset" class="pad-bottom" @purchaseInitiated="onPurchaseInitiated">
-          </complete-purchase-button>
-        </div>
-      </div>
-
-    </article>
+      </article>
+    </div>
 
   </div>
 </template>
