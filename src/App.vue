@@ -43,6 +43,7 @@
         <a href="mailto:hello@knownorigin.io">hello@knownorigin.io</a> |
         <a href="https://t.me/knownorigin" target="_blank">Join us on Telegram</a> |
         <a href="https://twitter.com/knownorigin_io" target="_blank">Follow us on Twitter</a>
+        <a href="https://medium.com/knownorigin" target="_blank">Medium articles</a>
       </p>
 
       <div class="text-center pad-top">
