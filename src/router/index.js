@@ -10,6 +10,7 @@ import ConfirmPurchase from '@/components/pages/ConfirmPurchase';
 import ConfirmPurchaseQr from '@/components/pages/ConfirmPurchaseQr';
 import ArtistPage from '@/components/pages/ArtistPage';
 import CompletePurchase from '@/components/pages/CompletePurchase';
+import AssetDetailView from '@/components/pages/AssetDetailView';
 
 Vue.use(Router);
 
@@ -65,6 +66,12 @@ export default new Router({
       component: Assets
     },
     {
+      path: '/assets/:tokenId',
+      name: 'assetDetailView',
+      component: AssetDetailView,
+      props: true
+    },
+    {
       path: '/artists/:artistCode',
       name: 'artist',
       component: ArtistPage,
@@ -93,12 +100,6 @@ export default new Router({
       name: 'completePurchase',
       component: CompletePurchase,
       props: true
-    },
-    {
-      path: '/assets/:tokenId',
-      name: 'completePurchaseShort',
-      component: CompletePurchase,
-      props: true
-    },
+    }
   ]
 });

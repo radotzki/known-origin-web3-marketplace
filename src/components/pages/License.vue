@@ -6,7 +6,7 @@
       </router-link>
       <div class="header-branding">
         &nbsp;
-        <router-link :to="{ name: 'dashboard' }" class="back-arrow" style="float: left">
+        <router-link :to="{ name: 'home' }" class="back-arrow" style="float: left">
           <img src="../../../static/back_arrow.svg" style="width: 35px"/>
         </router-link>
       </div>
@@ -164,12 +164,10 @@
   import Gallery from './Gallery';
 
   export default {
-    name: 'dashboard',
+    name: 'license',
     components: {},
     computed: {
       ...mapState([
-        'account',
-        'accountBalance'
       ])
     },
     mounted() {
