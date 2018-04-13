@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "known-origin-io"
+    "beta-known-origin-io": "beta-known-origin-io",
+    "known-origin-io": "known-origin-io"
   }
 }
