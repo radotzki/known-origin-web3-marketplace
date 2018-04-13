@@ -1,5 +1,6 @@
 <template>
-  <span v-if="ethAddress">
+  <span v-if="transaction">
+    View transaction on Etherscan
     <a class="token-id" :href="buildLink" target="_blank">{{ dotDotDot }}</a>
   </span>
 </template>
@@ -10,10 +11,10 @@
   import { mapGetters, mapState } from 'vuex';
 
   export default {
-    name: 'addressIcon',
-    components: {EthAddress},
+    name: 'clickableTransaction',
+    components: {},
     props: {
-      ethAddress: {
+      transaction: {
         type: String
       }
     },
@@ -22,18 +23,18 @@
         'etherscanBase',
       ]),
       dotDotDot: function () {
-        if (this.ethAddress) {
-          return this.ethAddress.substr(0, 6) + '...' + this.ethAddress.substr(this.ethAddress.length - 6, this.ethAddress.length);
+        if (this.transaction) {
+          return this.transaction.substr(0, 12) + '...' + this.transaction.substr(this.transaction.length - 12, this.transaction.length);
         }
         return '';
       },
       buildLink: function () {
-        return `${this.etherscanBase}/address/${this.ethAddress}`;
+        return `${this.etherscanBase}/tx/${this.transaction}`;
       }
     }
   };
 </script>
 
 <style>
- 
+
 </style>

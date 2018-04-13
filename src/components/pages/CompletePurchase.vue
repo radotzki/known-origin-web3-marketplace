@@ -23,11 +23,17 @@
             <div v-if="isPurchaseStarted(asset.id)" class="icon-message">
               <img src="../../../static/Timer.svg" style="width: 100px"/>
               <h2 class="text-blue pad-top">Your purchase is being confirming...</h2>
+              <p>
+                <clickable-transaction :transaction="getTransactionForAsset(asset.id)"></clickable-transaction>
+              </p>
             </div>
 
             <div v-if="isPurchaseSuccessful(asset.id)" class="icon-message">
               <img src="../../../static/GreenTick.svg" style="width: 100px"/>
               <h2 class="text-success pad-top">Your purchase was successful!</h2>
+              <p>
+                <clickable-transaction :transaction="getTransactionForAsset(asset.id)"></clickable-transaction>
+              </p>
             </div>
 
             <div v-if="isPurchaseFailed(asset.id)" class="icon-message">
@@ -117,10 +123,12 @@
   import * as mutations from '../../store/mutation-types';
   import { KnownOriginDigitalAsset } from '../../contracts/index';
   import * as actions from '../../store/actions';
+  import ClickableTransaction from "../ui-controls/ClickableTransaction.vue";
 
   export default {
     name: 'completePurchase',
     components: {
+      ClickableTransaction,
       PurchaseState,
       Asset,
       AddressIcon,
@@ -145,6 +153,7 @@
         'isPurchaseStarted',
         'isPurchaseSuccessful',
         'isPurchaseFailed',
+        'getTransactionForAsset',
       ]),
       ...mapState([
         'account'

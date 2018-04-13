@@ -26,7 +26,7 @@ module.exports = function (deployer, network, accounts) {
   console.log(`_curatorAccount = ${_curatorAccount}`);
   console.log(`_developerAccount = ${_developerAccount}`);
 
-  if (network === 'ganache' || network === 'live' || network === 'ropsten' || network === 'rinkeby') {
+  if (network === 'live' || network === 'ropsten' || network === 'rinkeby') {
     deployer
       .then(() => KnownOriginDigitalAsset.deployed())
       .then((instance) => {

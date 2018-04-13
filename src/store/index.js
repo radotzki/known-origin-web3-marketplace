@@ -117,7 +117,10 @@ const store = new Vuex.Store({
     },
     isPurchaseFailed: (state, getters) => (assetId) => {
       return _.get(getters.assetPurchaseState(assetId), 'state') === mutations.PURCHASE_FAILED;
-    }
+    },
+    getTransactionForAsset: (state, getters) => (assetId) => {
+      return getters.assetPurchaseState(assetId).transaction;
+    },
   },
   mutations: {
     [mutations.SET_COMMISSION_ADDRESSES](state, {curatorAddress, contractDeveloperAddress, contractAddress}) {
@@ -173,13 +176,18 @@ const store = new Vuex.Store({
     [mutations.PURCHASE_SUCCESSFUL](state, {tokenId, buyer}) {
       state.purchaseState = {
         ...state.purchaseState,
-        [tokenId]: {tokenId, buyer, state: 'PURCHASE_SUCCESSFUL'}
+        [tokenId]: {
+          tokenId,
+          buyer,
+          transaction: state.purchaseState[tokenId].transaction,
+          state: 'PURCHASE_SUCCESSFUL'
+        }
       };
     },
-    [mutations.PURCHASE_STARTED](state, {tokenId, buyer, data}) {
+    [mutations.PURCHASE_STARTED](state, {tokenId, buyer, transaction}) {
       state.purchaseState = {
         ...state.purchaseState,
-        [tokenId]: {tokenId, buyer, data, state: 'PURCHASE_STARTED'}
+        [tokenId]: {tokenId, buyer, transaction, state: 'PURCHASE_STARTED'}
       };
     },
     [mutations.UPDATE_PURCHASE_STATE](state, {tokenId}) {
@@ -455,7 +463,7 @@ const store = new Vuex.Store({
             .then((data) => {
               // 2) Purchase transaction submitted
               console.log('Purchase transaction submitted', data);
-              commit(mutations.PURCHASE_STARTED, {tokenId: _tokenId, buyer: _buyer});
+              commit(mutations.PURCHASE_STARTED, {tokenId: _tokenId, buyer: _buyer, transaction: data.tx});
             })
             .catch((error) => {
               // Purchase failure
@@ -504,7 +512,7 @@ const store = new Vuex.Store({
             .then((data) => {
               // 2) Purchase transaction submitted
               console.log('Purchase transaction submitted', data);
-              commit(mutations.PURCHASE_STARTED, {tokenId: _tokenId, buyer: _buyer});
+              commit(mutations.PURCHASE_STARTED, {tokenId: _tokenId, buyer: _buyer, transaction: data.tx});
             })
             .catch((error) => {
               // Purchase failure
@@ -553,7 +561,7 @@ const store = new Vuex.Store({
             .then((data) => {
               // 2) Purchase transaction submitted
               console.log('Purchase transaction submitted', data);
-              commit(mutations.PURCHASE_STARTED, {tokenId: _tokenId, buyer: _buyer, data: data});
+              commit(mutations.PURCHASE_STARTED, {tokenId: _tokenId, buyer: _buyer, transaction: data.tx});
             })
             .catch((error) => {
               // Purchase failure
