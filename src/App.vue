@@ -10,23 +10,27 @@
       </div>
     </header>
 
-    <modal name="no-web3-found" :height="400" :width="300" :clickToClose="true">
+    <modal name="no-web3-found" :height="450" :width="350" :clickToClose="true">
       <div class="no-web3-found-container">
         <div>
           <h2 class="text-danger">No Ethereum Provider Detected!</h2>
+
           <p>
             You need to install <a href='https://metamask.io' target="_blank">MetaMask</a> to use this application and buy digital assets.
           </p>
-          <div>
-            <a href='https://metamask.io' target="_blank"><img src="../static/pay_with_metamask.png"/></a>
+
+          <div style="display: block; margin-left: auto; margin-right: auto; width: 50%;">
+            <a href='https://metamask.io' target="_blank"><img src="../static/metamask-logo-eyes.png" style="width: 150px"/></a>
           </div>
 
           <p>
             Or install a Ethereum wallet such as <a href="https://trustwalletapp.com" target="_blank">TrustWallet</a>
           </p>
+
           <div>
             <a href="https://trustwalletapp.com" target="_blank"><img src="/../static/trustwallet_logo.svg" style="height:50px"/></a>
           </div>
+
         </div>
       </div>
     </modal>
