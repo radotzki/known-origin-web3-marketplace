@@ -43,6 +43,7 @@ const store = new Vuex.Store({
     assets: [],
     assetsByEditions: [],
     assetsByArtistCode: [],
+    editionSummary: [],
 
     // Frontend state
     purchaseState: {}
@@ -81,15 +82,26 @@ const store = new Vuex.Store({
     featuredArtists: (state) => {
       return state.artists.filter((a) => a.featured);
     },
-    isCurator: (state) => {
-      // FIXME isKnownOrigin
+    isKnownOrigin: (state) => {
       if (state.curatorAddress && state.account) {
         return state.curatorAddress.toLowerCase() === state.account.toLowerCase() || state.contractDeveloperAddress.toLowerCase() === state.account.toLowerCase();
       }
       return false;
     },
     lookupAssetsByArtistCode: (state) => (artistCode) => {
-      return _.filter(state.assetsByEditions, (key, value) => value.startsWith(artistCode));
+      return _.filter(state.assetsByEditions, (value, key) => key.startsWith(artistCode));
+    },
+    editionSummaryFilter: (state) => (showSold = false, priceFilter = 'asc') => {
+
+      if (showSold) {
+        return _.orderBy(state.editionSummary.filter((edition) => {
+          return edition.totalSupply === edition.totalPurchased;
+        }), 'priceInEther', priceFilter);
+      }
+
+      return _.orderBy(state.editionSummary.filter((edition) => {
+        return edition.totalSupply !== edition.totalPurchased;
+      }), 'priceInEther', priceFilter);
     },
     assetPurchaseState: (state) => (assetId) => {
       return _.get(state.purchaseState, assetId);
@@ -113,10 +125,11 @@ const store = new Vuex.Store({
       state.contractDeveloperAddress = contractDeveloperAddress;
       state.contractAddress = contractAddress;
     },
-    [mutations.SET_ASSETS](state, {assets, assetsByEditions, assetsByArtistCode}) {
+    [mutations.SET_ASSETS](state, {assets, assetsByEditions, assetsByArtistCode, editionSummary}) {
       Vue.set(state, 'assets', assets);
       Vue.set(state, 'assetsByEditions', assetsByEditions);
       Vue.set(state, 'assetsByArtistCode', assetsByArtistCode);
+      Vue.set(state, 'editionSummary', editionSummary);
     },
     [mutations.SET_ARTISTS](state, {artists}) {
       state.artists = artists;
@@ -205,21 +218,35 @@ const store = new Vuex.Store({
     [actions.INIT_APP]({commit, dispatch, state}, account) {
       web3.eth.getAccounts()
         .then((accounts) => {
-          // TODO add refresh cycle / timeout
 
           let account = accounts[0];
+
+          const setAccountAndBalance = (account) => {
+            return web3.eth.getBalance(account)
+              .then((balance) => {
+                let accountBalance = Web3.utils.fromWei(balance);
+                // store the account details
+                commit(mutations.SET_ACCOUNT, {account, accountBalance});
+              });
+          };
+
+          const refreshHandler = () => {
+            web3.eth.getAccounts()
+              .then((updatedAccounts) => {
+                if (updatedAccounts[0] !== account) {
+                  account = updatedAccounts[0];
+                  return setAccountAndBalance(account);
+                }
+              });
+          };
+
+          // Every second check if the main account has changed
+          setInterval(refreshHandler, 1000);
 
           // init the KODA contract
           dispatch(actions.REFRESH_CONTRACT_DETAILS);
 
-          return web3.eth.getBalance(account)
-            .then((balance) => {
-
-              let accountBalance = Web3.utils.fromWei(balance);
-
-              // store the account details
-              commit(mutations.SET_ACCOUNT, {account, accountBalance});
-            });
+          return setAccountAndBalance(account);
         })
         .catch(function (error) {
           console.log('ERROR - account locked', error);
@@ -301,9 +328,10 @@ const store = new Vuex.Store({
 
             return lookupIPFSData(tokenUri).then((ipfsMeta) => {
               // set IPFS lookup back on object
-              _.set(fullAssetDetails, 'otherMeta', ipfsMeta.otherMeta);
+              _.set(fullAssetDetails, 'artworkName', ipfsMeta.name);
               _.set(fullAssetDetails, 'description', ipfsMeta.description);
               _.set(fullAssetDetails, 'lowResImg', ipfsMeta.lowResImg);
+              _.set(fullAssetDetails, 'otherMeta', ipfsMeta.otherMeta);
               return fullAssetDetails;
             });
           });
@@ -322,10 +350,30 @@ const store = new Vuex.Store({
               let assetsByEditions = _.groupBy(assets, 'edition');
               let assetsByArtistCode = _.groupBy(assets, 'artistCode');
 
+              // flatten out the editions so we can easily work with them on the gallery page
+              let editionSummary = _.map(assetsByEditions, function (assets, editionKey) {
+
+                let editionSummary = {
+                  edition: editionKey,
+                  totalSupply: assets.length,
+                  totalPurchased: assets.filter((asset) => asset.purchased === 1 || asset.purchased === 2).length
+                };
+
+                // Add the first asset to the flat list
+                _.extend(editionSummary, assets[0]);
+
+                // chop the ID to ensure its not an asset
+                delete editionSummary.id;
+                delete editionSummary.purchased;
+
+                return editionSummary;
+              });
+
               commit(mutations.SET_ASSETS, {
                 assets: assets,
                 assetsByEditions: assetsByEditions,
                 assetsByArtistCode: assetsByArtistCode,
+                editionSummary: editionSummary,
               });
             });
         });

@@ -10,16 +10,23 @@
       </div>
     </header>
 
-    <modal name="no-web3-found" :height="400" :clickToClose="false">
+    <modal name="no-web3-found" :height="400" :width="300" :clickToClose="true">
       <div class="no-web3-found-container">
         <div>
-          <h1 class="text-danger">No Ethereum provider detected!</h1>
+          <h2 class="text-danger">No Ethereum Provider Detected!</h2>
           <p>
-            You need to install <a href='https://metmask.io' target="_blank">MetaMask</a> to use this application and buy digital assets.
+            You need to install <a href='https://metamask.io' target="_blank">MetaMask</a> to use this application and buy digital assets.
           </p>
-        </div>
-        <div>
-          <a href='https://metmask.io' target="_blank"><img src="../static/pay_with_metamask.png"/></a>
+          <div>
+            <a href='https://metamask.io' target="_blank"><img src="../static/pay_with_metamask.png"/></a>
+          </div>
+
+          <p>
+            Or install a Ethereum wallet such as <a href="https://trustwalletapp.com" target="_blank">TrustWallet</a>
+          </p>
+          <div>
+            <a href="https://trustwalletapp.com" target="_blank"><img src="/../static/trustwallet_logo.svg" style="height:50px"/></a>
+          </div>
         </div>
       </div>
     </modal>
@@ -57,7 +64,7 @@
   /* global web3:true */
 
   import Web3 from 'web3';
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import * as actions from './store/actions';
   import * as mutations from './store/mutation-types';
   import CurrentNetwork from './components/ui-controls/CurrentNetwork';
@@ -76,6 +83,7 @@
         this.$modal.show('no-web3-found');
         return;
       }
+
       if (web3) {
         // Use Mist / MetaMask's / provided provider
         window.web3 = new Web3(web3.currentProvider);
@@ -86,8 +94,6 @@
         // Find current network
         this.$store.dispatch(actions.GET_CURRENT_NETWORK);
 
-      } else {
-        // TODO fire action - WEB_3_NOT_FOUND - show error banner
       }
     },
   };
@@ -589,7 +595,7 @@
   }
 
   .no-web3-found-container {
-    margin: 50px;
+    margin: 10px;
   }
 
   .loading {
