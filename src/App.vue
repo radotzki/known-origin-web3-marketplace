@@ -39,7 +39,7 @@
           </td>
           <td width="20%">
             <router-link :to="{ name: 'gallery' }">Gallery</router-link> <br/> <br/>
-            <router-link :to="{ name: 'account' }">My Account</router-link> <br/> <br/>
+            <router-link :to="{ name: 'account' }">Account</router-link> <br/> <br/>
             <router-link :to="{ name: 'details' }">Contract</router-link> <br/> <br/>
             <router-link :to="{ name: 'license' }">License</router-link> <br/> <br/>
             <router-link :to="{ name: 'assets' }">Assets</router-link> <br/> <br/>
@@ -53,7 +53,9 @@
             <a href="https://medium.com/knownorigin" target="_blank">Medium articles</a>
           </td>
           <td width="20%">
-            <p><current-network></current-network></p>
+            <p>
+              <current-network></current-network>
+            </p>
           </td>
         </tr>
       </table>
@@ -82,20 +84,19 @@
       if (typeof web3 === 'undefined') {
         console.log('No web3? You should consider trying MetaMask!');
         this.$modal.show('no-web3-found');
-        return;
       }
 
-      if (web3) {
-        // Use Mist / MetaMask's / provided provider
+      if (typeof web3 !== 'undefined') {
         window.web3 = new Web3(web3.currentProvider);
-
-        // Bootstrap the full app
-        this.$store.dispatch(actions.INIT_APP);
-
-        // Find current network
-        this.$store.dispatch(actions.GET_CURRENT_NETWORK);
-
+      } else {
+        window.web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/nbCbdzC6IG9CF6hmvAVQ"));
       }
+
+      // Find current network
+      this.$store.dispatch(actions.GET_CURRENT_NETWORK);
+
+      // Bootstrap the full app
+      this.$store.dispatch(actions.INIT_APP);
     },
   };
 </script>

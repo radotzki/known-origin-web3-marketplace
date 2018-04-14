@@ -254,7 +254,9 @@ const store = new Vuex.Store({
           // init the KODA contract
           dispatch(actions.REFRESH_CONTRACT_DETAILS);
 
-          return setAccountAndBalance(account);
+          if (account) {
+            return setAccountAndBalance(account);
+          }
         })
         .catch(function (error) {
           console.log('ERROR - account locked', error);
