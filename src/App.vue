@@ -162,6 +162,7 @@
     margin-bottom: 10px;
     color: $gray;
     padding-left: 25px;
+    padding-right: 25px;
   }
 
   td {
@@ -306,19 +307,25 @@
   .card-content {
     padding: 10px;
     width: 100%;
+
     h2 {
       margin-top: 0;
       margin-bottom: .5em;
       font-weight: normal;
       text-align: center;
     }
+
+    h3 {
+      padding-left: 0px;
+    }
+
     p {
       font-size: 95%;
-
+      padding-left: 0px;
     }
   }
 
-  #featured-artists, #artists {
+  #artists {
     margin-top: 20px !important;
 
     .card-content {
@@ -354,10 +361,6 @@
 
   .bold {
     font-weight: bold;
-  }
-
-  .btn-center {
-    text-align: center;
   }
 
   .pull-right {
@@ -398,6 +401,9 @@
       flex: 0 1 calc(50% - 0.5em);
     }
 
+    .assets_to_buy {
+      padding-left: 25px;
+    }
   }
 
   @media screen and (min-width: 60em) {
@@ -410,26 +416,13 @@
       flex: 0 1 calc(33% - 0.5em);
     }
 
-    #intro {
-      padding-left: 15px;
+    .assets_to_buy {
+      padding-left: 25px;
     }
   }
 
   @media only screen and (max-width: 768px) {
-    #topSection {
-      flex-direction: column !important;
-    }
-    #splash {
-      width: 100% !important;
-    }
 
-    #intro {
-      width: 100% !important;
-    }
-
-    #intro h2 {
-      margin-top: 20px !important;
-    }
   }
 
   .thumbnail {
@@ -488,7 +481,6 @@
 
   .assets_to_buy {
     max-width: 400px;
-    padding-left: 25px;
   }
 
   .twitterLink {
@@ -502,19 +494,6 @@
     display: flex;
     height: 90%;
     flex-direction: column;
-  }
-
-  #topSection {
-    display: flex;
-    flex-direction: row;
-  }
-
-  .viewAllArtists {
-    width: 100%;
-    display: block;
-    text-align: center;
-    font-size: 20px;
-    margin-bottom: 40px;
   }
 
   .text-danger {

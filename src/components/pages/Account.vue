@@ -12,16 +12,11 @@
       </div>
     </header>
 
-    <h1>My Account</h1>
+    <h1>My Account ({{assetsPurchasedByAccount.length}})</h1>
 
-    <img src="/../static/account.svg" style="height:50px"/>
-
-    <h3>My Address</h3>
     <p class="pad-bottom">
     <address-icon :eth-address="account"></address-icon>
     </p>
-
-    <h2>My collection ({{assetsPurchasedByAccount.length}})</h2>
 
     <div>
       <section class="cards centered" v-if="assetsPurchasedByAccount">
@@ -33,12 +28,6 @@
 
       <section v-if="assetsPurchasedByAccount.length == 0" class="text-center">
         <p>You don't have any digital assets yet...</p>
-
-        <div class="pad-top">
-          <router-link :to="{ name: 'gallery'}" class="btn btn-link">
-            View gallery
-          </router-link>
-        </div>
       </section>
     </div>
 

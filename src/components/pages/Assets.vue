@@ -12,7 +12,6 @@
       </div>
     </header>
 
-
     <h1>Assets <span v-if="assets">({{ assets.length }})</span></h1>
 
     <div class="text-center text-blue" v-if="assets.length == 0">
