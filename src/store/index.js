@@ -8,8 +8,10 @@ import axios from 'axios';
 import artistData from './artist-data';
 import createLogger from 'vuex/dist/logger';
 import {getNetIdString, getEtherscanAddress} from '../utils';
+import contract from 'truffle-contract';
+import knownOriginDigitalAsset from '../../build/contracts/KnownOriginDigitalAsset.json';
 
-import {KnownOriginDigitalAsset} from '../contracts/index';
+const KnownOriginDigitalAsset = contract(knownOriginDigitalAsset);
 
 Vue.use(Vuex);
 
@@ -228,6 +230,9 @@ const store = new Vuex.Store({
       commit(mutations.UPDATE_PURCHASE_STATE, {tokenId: asset.id});
     },
     [actions.INIT_APP]({commit, dispatch, state}, web3) {
+
+      // NON-ASYNC action - set web3 provider on init
+      KnownOriginDigitalAsset.setProvider(web3.currentProvider);
 
       // Set the web3 instance
       commit(mutations.SET_WEB3, web3);
