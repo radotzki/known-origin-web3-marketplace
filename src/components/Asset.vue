@@ -17,6 +17,15 @@
 
         <price-in-eth :value="asset.priceInEther"></price-in-eth>
 
+        <div class="centered">
+          <tweet-purchase-button :asset-id="asset.id"></tweet-purchase-button>
+        </div>
+
+        <!-- disabled for now until we know more -->
+        <!--<hr/>-->
+        <!--<div>-->
+          <!--<verify-purchase :asset-id="asset.id"></verify-purchase>-->
+        <!--</div>-->
       </div>
     </div>
     <!-- .card-content -->
@@ -25,7 +34,7 @@
 </template>
 
 <script>
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import _ from 'lodash';
   import PurchaseState from './ui-controls/PurchaseState';
   import AddressIcon from './ui-controls/AddressIcon';
@@ -33,9 +42,20 @@
   import PriceInEth from './ui-controls/PriceInEth';
   import TokenId from './ui-controls/TokenId';
   import EditionNameByArtist from './ui-controls/EditionNameByArtist';
+  import TweetPurchaseButton from "./ui-controls/TweetPurchaseButton.vue";
+  import VerifyPurchase from "./ui-controls/VerifyPurchase.vue";
 
   export default {
-    components: {AddressIcon, PurchaseState, AssetFigure, PriceInEth, EditionNameByArtist, TokenId},
+    components: {
+      VerifyPurchase,
+      TweetPurchaseButton,
+      AddressIcon,
+      PurchaseState,
+      AssetFigure,
+      PriceInEth,
+      EditionNameByArtist,
+      TokenId
+    },
     name: 'asset',
     props: {
       asset: {

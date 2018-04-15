@@ -12,6 +12,7 @@
       </div>
     </header>
 
+
     <h1>Artists</h1>
 
     <div>

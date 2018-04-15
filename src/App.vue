@@ -80,23 +80,22 @@
       ...mapState([]),
     },
     mounted() {
+
+      let bootStrappedWeb3;
+
       // Checking if Web3 has been injected by the browser (Mist/MetaMask)
-      if (typeof web3 === 'undefined') {
+      if (typeof web3 !== 'undefined') {
+        bootStrappedWeb3 = new Web3(web3.currentProvider);
+      } else {
         console.log('No web3? You should consider trying MetaMask!');
         this.$modal.show('no-web3-found');
+        bootStrappedWeb3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/nbCbdzC6IG9CF6hmvAVQ"));
       }
 
-      if (typeof web3 !== 'undefined') {
-        window.web3 = new Web3(web3.currentProvider);
-      } else {
-        window.web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/nbCbdzC6IG9CF6hmvAVQ"));
-      }
-
-      // Find current network
-      this.$store.dispatch(actions.GET_CURRENT_NETWORK);
+      window.web3 = bootStrappedWeb3;
 
       // Bootstrap the full app
-      this.$store.dispatch(actions.INIT_APP);
+      this.$store.dispatch(actions.INIT_APP, bootStrappedWeb3);
     },
   };
 </script>
@@ -163,6 +162,7 @@
     margin-bottom: 10px;
     color: $gray;
     padding-left: 25px;
+    padding-right: 25px;
   }
 
   td {
@@ -191,6 +191,10 @@
 
     &:hover {
       text-decoration: none;
+    }
+
+    &.btn-sm {
+      width: 50% !important;
     }
 
     &.btn-action {
@@ -307,19 +311,25 @@
   .card-content {
     padding: 10px;
     width: 100%;
+
     h2 {
       margin-top: 0;
       margin-bottom: .5em;
       font-weight: normal;
       text-align: center;
     }
+
+    h3 {
+      padding-left: 0px;
+    }
+
     p {
       font-size: 95%;
-
+      padding-left: 0px;
     }
   }
 
-  #featured-artists, #artists {
+  #artists {
     margin-top: 20px !important;
 
     .card-content {
@@ -355,10 +365,6 @@
 
   .bold {
     font-weight: bold;
-  }
-
-  .btn-center {
-    text-align: center;
   }
 
   .pull-right {
@@ -399,6 +405,9 @@
       flex: 0 1 calc(50% - 0.5em);
     }
 
+    .assets_to_buy {
+      padding-left: 25px;
+    }
   }
 
   @media screen and (min-width: 60em) {
@@ -411,26 +420,13 @@
       flex: 0 1 calc(33% - 0.5em);
     }
 
-    #intro {
-      padding-left: 15px;
+    .assets_to_buy {
+      padding-left: 25px;
     }
   }
 
   @media only screen and (max-width: 768px) {
-    #topSection {
-      flex-direction: column !important;
-    }
-    #splash {
-      width: 100% !important;
-    }
 
-    #intro {
-      width: 100% !important;
-    }
-
-    #intro h2 {
-      margin-top: 20px !important;
-    }
   }
 
   .thumbnail {
@@ -489,7 +485,6 @@
 
   .assets_to_buy {
     max-width: 400px;
-    padding-left: 25px;
   }
 
   .twitterLink {
@@ -503,19 +498,6 @@
     display: flex;
     height: 90%;
     flex-direction: column;
-  }
-
-  #topSection {
-    display: flex;
-    flex-direction: row;
-  }
-
-  .viewAllArtists {
-    width: 100%;
-    display: block;
-    text-align: center;
-    font-size: 20px;
-    margin-bottom: 40px;
   }
 
   .text-danger {

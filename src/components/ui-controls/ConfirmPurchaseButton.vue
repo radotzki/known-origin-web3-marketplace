@@ -5,10 +5,6 @@
         Buy Now
       </a>
     </p>
-
-    <h3 class="text-danger text-center" v-if="!findNextAssetToPurchase(edition)">
-      SOLD
-    </h3>
   </div>
 </template>
 

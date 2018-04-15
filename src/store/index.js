@@ -17,6 +17,7 @@ const store = new Vuex.Store({
   plugins: [createLogger()],
   state: {
     // connectivity
+    web3: null,
     account: null,
     accountBalance: null,
     currentNetwork: null,
@@ -194,6 +195,9 @@ const store = new Vuex.Store({
       delete state.purchaseState[tokenId];
       state.purchaseState = {...state.purchaseState};
     },
+    [mutations.SET_WEB3](state, web3) {
+      state.web3 = web3;
+    },
   },
   actions: {
     [actions.GET_ASSETS_PURCHASED_FOR_ACCOUNT]({commit, dispatch, state}) {
@@ -223,7 +227,14 @@ const store = new Vuex.Store({
       dispatch(actions.GET_ALL_ASSETS);
       commit(mutations.UPDATE_PURCHASE_STATE, {tokenId: asset.id});
     },
-    [actions.INIT_APP]({commit, dispatch, state}, account) {
+    [actions.INIT_APP]({commit, dispatch, state}, web3) {
+
+      // Set the web3 instance
+      commit(mutations.SET_WEB3, web3);
+
+      // Find current network
+      dispatch(actions.GET_CURRENT_NETWORK);
+
       web3.eth.getAccounts()
         .then((accounts) => {
 
@@ -575,6 +586,17 @@ const store = new Vuex.Store({
           console.log('Failure', e);
           commit(mutations.PURCHASE_FAILED, {tokenId: assetToPurchase.id, buyer: state.account});
         });
+    },
+    [actions.VERIFY_PURCHASE]({commit, dispatch, state}, assetId) {
+      state.web3.eth.personal.sign(
+        Web3.utils.utf8ToHex(`I verify that I have purchased this asset from KnownOrigin - KODA assetId=${assetId}`),
+        state.account
+      ).then(function (result) {
+        console.log(result);
+        // TODO - store in firebase under the specific account?
+        // OR
+        // TODO - post to API to verify/record action taken?
+      });
     }
   }
 });

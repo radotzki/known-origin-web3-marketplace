@@ -15,8 +15,6 @@
           {{ edition.description }}
         </p>
 
-        <hr/>
-
         <price-in-eth :value="edition.priceInEther"></price-in-eth>
 
         <p v-if="!purchase" class="pad-top">
@@ -64,5 +62,4 @@
 </script>
 
 <style scoped>
-
 </style>
