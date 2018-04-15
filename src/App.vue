@@ -94,7 +94,6 @@
 
         // Find current network
         this.$store.dispatch(actions.GET_CURRENT_NETWORK);
-
       }
     },
   };
