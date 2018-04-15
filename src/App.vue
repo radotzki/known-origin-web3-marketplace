@@ -87,13 +87,11 @@
 
       if (web3) {
         // Use Mist / MetaMask's / provided provider
-        window.web3 = new Web3(web3.currentProvider);
+        let bootStrappedWeb3 = new Web3(web3.currentProvider);
+        window.web3 = bootStrappedWeb3;
 
         // Bootstrap the full app
-        this.$store.dispatch(actions.INIT_APP);
-
-        // Find current network
-        this.$store.dispatch(actions.GET_CURRENT_NETWORK);
+        this.$store.dispatch(actions.INIT_APP, bootStrappedWeb3);
       }
     },
   };
@@ -190,6 +188,10 @@
 
     &:hover {
       text-decoration: none;
+    }
+
+    &.btn-sm {
+      width: 50% !important;
     }
 
     &.btn-action {

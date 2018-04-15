@@ -20,6 +20,12 @@
         <div class="centered">
           <tweet-purchase-button :asset-id="asset.id"></tweet-purchase-button>
         </div>
+
+        <!-- disabled for now until we know more -->
+        <!--<hr/>-->
+        <!--<div>-->
+          <!--<verify-purchase :asset-id="asset.id"></verify-purchase>-->
+        <!--</div>-->
       </div>
     </div>
     <!-- .card-content -->
@@ -37,10 +43,18 @@
   import TokenId from './ui-controls/TokenId';
   import EditionNameByArtist from './ui-controls/EditionNameByArtist';
   import TweetPurchaseButton from "./ui-controls/TweetPurchaseButton.vue";
+  import VerifyPurchase from "./ui-controls/VerifyPurchase.vue";
 
   export default {
     components: {
-      TweetPurchaseButton, AddressIcon, PurchaseState, AssetFigure, PriceInEth, EditionNameByArtist, TokenId
+      VerifyPurchase,
+      TweetPurchaseButton,
+      AddressIcon,
+      PurchaseState,
+      AssetFigure,
+      PriceInEth,
+      EditionNameByArtist,
+      TokenId
     },
     name: 'asset',
     props: {
