@@ -13,8 +13,6 @@
           {{ asset.otherMeta.description }}
         </p>
 
-        <hr/>
-
         <price-in-eth :value="asset.priceInEther"></price-in-eth>
 
         <div class="centered">

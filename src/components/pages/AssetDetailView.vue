@@ -1,5 +1,5 @@
 <template>
-  <div id="artists">
+  <div>
     <header id="header">
       <router-link :to="{ name: 'account' }" class="pull-right">
         <img src="/../static/account.svg" style="height:25px"/>
@@ -12,22 +12,13 @@
       </div>
     </header>
 
-    <div>
-      <div class="centered" v-if="asset">
-        <section class="cards centered" v-if="asset">
-          <asset :asset="asset" :key="asset.id">
-          </asset>
-        </section>
-      </div>
+    <div class="text-center text-blue" v-if="!asset">
+      <img src="../../../static/Timer.svg" style="width: 100px"/><br/>
+      <span class="loading">Loading...</span>
+    </div>
 
-      <div class="border-box-buttons">
-        <div class="pad-bottom">
-
-          <button type="button" class="btn btn-link" @click="goHome">
-            Gallery
-          </button>
-        </div>
-      </div>
+    <div class="assets_to_buy" v-if="asset">
+      <asset :asset="asset" :key="asset.id"></asset>
     </div>
 
   </div>

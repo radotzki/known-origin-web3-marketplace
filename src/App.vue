@@ -36,8 +36,10 @@
           <td width="80%">
             <p>&copy; 2018 KNOWNORIGIN</p>
             <p>BE ORIGINAL. BUY ORIGINAL.</p>
+            <current-network></current-network>
           </td>
           <td width="20%">
+
             <router-link :to="{ name: 'gallery' }">Gallery</router-link> <br/> <br/>
             <router-link :to="{ name: 'account' }">My Account</router-link> <br/> <br/>
             <router-link :to="{ name: 'details' }">Contract</router-link> <br/> <br/>
@@ -45,17 +47,17 @@
             <router-link :to="{ name: 'assets' }">Assets</router-link> <br/> <br/>
           </td>
         </tr>
-        <tr>
-          <td width="80%">
-            <a href="mailto:hello@knownorigin.io">hello@knownorigin.io</a> <br/> <br/>
-            <a href="https://t.me/knownorigin" target="_blank">Join us on Telegram</a> <br/> <br/>
-            <a href="https://twitter.com/knownorigin_io" target="_blank">Follow us on Twitter</a> <br/> <br/>
-            <a href="https://medium.com/knownorigin" target="_blank">Medium articles</a>
-          </td>
-          <td width="20%">
-            <p><current-network></current-network></p>
-          </td>
-        </tr>
+        <!--<tr>-->
+          <!--<td width="80%">-->
+            <!--<a href="mailto:hello@knownorigin.io">hello@knownorigin.io</a> <br/> <br/>-->
+            <!--<a href="https://t.me/knownorigin" target="_blank">Join us on Telegram</a> <br/> <br/>-->
+            <!--<a href="https://twitter.com/knownorigin_io" target="_blank">Follow us on Twitter</a> <br/> <br/>-->
+            <!--<a href="https://medium.com/knownorigin" target="_blank">Medium articles</a>-->
+          <!--</td>-->
+          <!--<td width="20%">-->
+            <!--<p><current-network></current-network></p>-->
+          <!--</td>-->
+        <!--</tr>-->
       </table>
     </footer>
   </div>

@@ -19,7 +19,7 @@
       <span class="loading">Loading...</span>
     </div>
 
-    <div class="centered" v-if="assets">
+    <div v-if="assets">
       <section class="cards centered" v-if="assets">
         <asset v-for="asset in assets"
                :asset="asset"
