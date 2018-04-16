@@ -6,9 +6,7 @@
 
         <edition-name-by-artist :edition="asset"></edition-name-by-artist>
 
-        <token-id :value="asset.id"></token-id>
-
-        <p class="pad-top">
+        <p>
           <strong>Artwork description</strong><br/>
           {{ asset.otherMeta.description }}
         </p>

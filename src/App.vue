@@ -386,11 +386,6 @@
     color: $white;
   }
 
-  .token-id {
-    font-weight: bold;
-    color: $gray;
-  }
-
   @media screen and (min-width: 40em) {
     .cards {
       margin-top: -1em;

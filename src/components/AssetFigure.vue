@@ -6,7 +6,8 @@
     </figure>
 
     <div class="edition-run-container">
-      <span class="edition-run" v-if="!isAsset"><strong>1 of {{assetsForEdition(edition.edition).length}}</strong></span>
+      <span class="edition-run" v-if="!isAsset">1 of {{ assetsForEdition(edition.edition).length }}</span>
+      <span class="edition-run" v-if="isAsset"><token-id :value="edition.id"></token-id></span>
     </div>
 
     <div v-if="isAsset && edition.purchased != 0 || !isAsset && availableAssetsForEdition(edition.edition).length == 0" class="sold-bar">
@@ -17,9 +18,13 @@
 
 <script>
   import { mapGetters, mapState } from 'vuex';
+  import TokenId from './ui-controls/TokenId';
 
   export default {
     name: 'assetFigure',
+    components: {
+      TokenId
+    },
     props: ['edition', 'isAsset'],
     computed: {
       ...mapGetters([
