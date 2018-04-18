@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div>
 
     <modal name="no-web3-found" :height="450" :width="350" :clickToClose="true">
       <div class="no-web3-found-container">
@@ -26,43 +26,48 @@
       </div>
     </modal>
 
-    <div class="margin-bottom">
-      <router-view></router-view>
-    </div>
+    <header>
+      <!-- Fixed navbar -->
+      <nav class="navbar navbar-expand-md navbar-dark bg-primary fixed-top">
+        <a class="navbar-brand" href="#">KnownOrigin.io</a>
+      </nav>
+    </header>
 
-    <footer id="footer">
-      <table width="100%">
-        <tr>
-          <td width="80%">
-            <p>&copy; 2018 KNOWNORIGIN</p>
-            <p>BE ORIGINAL. BUY ORIGINAL.</p>
-            <p>
-              <a href="mailto:hello@knownorigin.io" target="_blank">
-                <font-awesome-icon :icon="['fas', 'envelope-square']" size="2x"></font-awesome-icon>
-              </a>
-              <a href="https://medium.com/knownorigin" target="_blank">
-                <font-awesome-icon :icon="['fab', 'medium']" size="2x"></font-awesome-icon>
-              </a>
-              <a href="https://t.me/knownorigin" target="_blank">
-                <font-awesome-icon :icon="['fab', 'telegram-plane']" size="2x"></font-awesome-icon>
-              </a>
-              <a href="https://twitter.com/knownorigin_io" target="_blank">
-                <font-awesome-icon :icon="['fab', 'twitter']" size="2x"></font-awesome-icon>
-              </a>
-            </p>
-            <p>
-              <current-network></current-network>
-            </p>
-          </td>
-          <td width="20%">
-            <router-link :to="{ name: 'gallery' }">Gallery</router-link> <br/> <br/>
-            <router-link :to="{ name: 'account' }">Account</router-link> <br/> <br/>
-            <router-link :to="{ name: 'details' }">Contract</router-link> <br/> <br/>
-            <router-link :to="{ name: 'license' }">License</router-link> <br/> <br/>
-            <router-link :to="{ name: 'assets' }">Assets</router-link> <br/> <br/>
-          </td>
-        </tr>
-      </table>
+    <main role="main" class="container">
+      <router-view></router-view>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm">
+            <span>BE ORIGINAL. BUY ORIGINAL.</span>
+          </div>
+          <div class="col-sm">
+            <small>
+              <router-link :to="{ name: 'gallery' }">Gallery</router-link> &bull;
+              <router-link :to="{ name: 'account' }">Account</router-link> &bull;
+              <router-link :to="{ name: 'details' }">Contract</router-link> &bull;
+              <router-link :to="{ name: 'license' }">License</router-link> &bull;
+              <router-link :to="{ name: 'assets' }">Assets</router-link>
+            </small>
+          </div>
+          <div class="col-sm">
+            <a href="mailto:hello@knownorigin.io" target="_blank">
+              <font-awesome-icon :icon="['fas', 'envelope-square']"></font-awesome-icon>
+            </a>
+            <a href="https://medium.com/knownorigin" target="_blank">
+              <font-awesome-icon :icon="['fab', 'medium']"></font-awesome-icon>
+            </a>
+            <a href="https://t.me/knownorigin" target="_blank">
+              <font-awesome-icon :icon="['fab', 'telegram-plane']"></font-awesome-icon>
+            </a>
+            <a href="https://twitter.com/knownorigin_io" target="_blank">
+              <font-awesome-icon :icon="['fab', 'twitter']"></font-awesome-icon>
+            </a>
+          </div>
+        </div>
+      </div>
     </footer>
   </div>
 </template>
@@ -71,7 +76,7 @@
   /* global web3:true */
 
   import Web3 from 'web3';
-  import {mapGetters, mapState} from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
   import * as actions from './store/actions';
   import * as mutations from './store/mutation-types';
   import CurrentNetwork from './components/ui-controls/CurrentNetwork';
@@ -108,427 +113,56 @@
 </script>
 
 <style lang="scss">
+
+  $body-bg: #f2f5fb;
+  $body-color: #545454;
   $primary: #3e27d9;
-  $secondary: #f2f2f2;
-  $background: #f2f5fb;
-  $gray: #545454;
-  $white: #FDFDFD;
-  $font_family_1: 'Avenir', Helvetica, Arial, sans-serif;
 
-  $sold: red;
-  $warning: darkorange;
-  $success: #2ed573;
+  $font-family-base: 'Avenir', Helvetica, Arial, sans-serif;
 
-  /*--------------------------------------------------------------
-    Header styles minus menu
-    --------------------------------------------------------------*/
-  /* Flexbox styles */
-  /* mq 40em*/
-  /* mq 60em*/
-  h1 {
-    display: block;
-    font-size: 38px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    color: $gray;
-    border-bottom: 1px;
-    padding-bottom: 20px;
-    padding-left: 25px;
+  @import '../node_modules/bootstrap/scss/bootstrap.scss';
+
+  /* Sticky footer styles
+-------------------------------------------------- */
+  html {
+    position: relative;
+    min-height: 100%;
   }
 
-  h2 {
-    color: $gray;
-    display: block;
-    font-size: 26px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    padding-left: 25px;
-  }
-
-  h3 {
-    display: block;
-    color: $gray;
-    font-size: 16px;
-    margin-top: 15px;
-    margin-bottom: 15px;
-    font-weight: bold;
-    padding-left: 25px;
-  }
-
-  h4 {
-    color: $primary;
-    font-weight: bold;
-    font-size: 16px;
+  body {
+    /* Margin bottom by footer height */
+    margin-bottom: 70px;
     margin-top: 10px;
-    margin-bottom: 10px;
   }
 
-  p {
-    line-height: 28px;
-    margin-bottom: 10px;
-    color: $gray;
-    padding-left: 25px;
-    padding-right: 25px;
-  }
-
-  td {
-    vertical-align: middle;
-  }
-
-  #footer p {
-    color: rgba(255, 255, 255, 0.5);
-  }
-
-  * {
-    box-sizing: border-box;
-    vertical-align: middle;
-  }
-
-  .btn {
-    display: block;
-    width: 100%;
-    color: $white;
-    font-size: 20px;
-    padding: 10px 20px 10px 20px;
-    text-decoration: none;
-    text-align: center;
-    border: solid $primary 2px;
-    border-radius: 28px;
-
-    &:hover {
-      text-decoration: none;
-    }
-
-    &.btn-sm {
-      width: 50% !important;
-    }
-
-    &.btn-action {
-      background-color: $primary;
-      color: $white;
-      border: solid $primary 2px;
-    }
-
-    &.btn-sold {
-      background-color: $sold;
-      color: $white;
-      border: solid $sold 2px;
-    }
-
-    &.btn-link {
-      color: $primary;
-      border: solid $primary 2px;
-    }
-
-    &.btn-warning {
-      background-color: $warning;
-      border: solid $warning 2px;
-      color: $white;
-    }
-
-    &.btn-danger {
-      background-color: $sold;
-    }
-
-    &.btn-success {
-      background-color: $success;
-      border: solid $success 2px;
-      color: $white;
-
-      &:disabled {
-        background: $gray;
-        text-decoration: none;
-        border: solid $gray 2px;
-      }
-    }
-
-    &.btn-muted {
-      border: solid $gray 2px;
-      color: $gray;
-    }
-  }
-
-  #app {
-    font-family: $font_family_1;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    background-color: $background;
-    margin: 0;
-  }
-
-  a {
-    color: $primary;
-  }
-
-  #header {
-    color: $primary;
-    padding-top: 10px;
-    padding-bottom: 25px;
-    margin-bottom: 35px;
-    margin-top: 10px;
-    background-color: $white;
-  }
-
-  #footer {
-    background-color: $primary;
-    color: $secondary;
-    padding: 10px;
-    padding-bottom: 50px;
-
-    a {
-      color: $secondary;
-      text-decoration: none;
-    }
-  }
-
-  .header-branding {
-    font-weight: 300;
-    font-style: normal;
-    font-size: 26px;
-    letter-spacing: 0em;
-    line-height: 1em;
-    text-transform: none;
-    color: $primary;
-    padding-left: 25px;
-  }
-
-  .centered {
-    margin: 0 auto;
-    padding: 0 10px;
-  }
-
-  .pad-top {
-    padding-top: 20px;
-  }
-
-  .pad-bottom {
-    padding-bottom: 20px;
-  }
-
-  .margin-bottom {
-    margin-bottom: 150px;
-  }
-
-  .card {
-    background: $white;
-    margin-bottom: 15px;
-  }
-
-  .card-content {
-    padding: 10px;
-    width: 100%;
-
-    h2 {
-      margin-top: 0;
-      margin-bottom: .5em;
-      font-weight: normal;
-      text-align: center;
-    }
-
-    h3 {
-      padding-left: 0px;
-    }
-
-    p {
-      font-size: 95%;
-      padding-left: 0px;
-    }
-  }
-
-  #artists {
-    margin-top: 20px !important;
-
-    .card-content {
-      box-shadow: inset 0 -1px 0px rgba(0, 0, 0, 0.1);
-    }
-
-    .card {
-      background: $background;
-    }
-
-    h2 {
-      margin-bottom: 40px !important;
-    }
-
-    h3 {
-      color: $primary;
-    }
-
-    img, .artists img {
-      width: 50%;
-    }
-
-  }
-
-  img {
-    width: 100%;
-    height: auto;
-  }
-
-  .muted {
-    color: $gray;
-  }
-
-  .bold {
-    font-weight: bold;
-  }
-
-  .pull-right {
-    float: right;
-    text-decoration: none;
-  }
-
-  .header-dash {
-    text-decoration: none;
-  }
-
-  .back-arrow {
-    font-size: 1.25em;
-    text-decoration: none;
-    padding-right: 20px;
-  }
-
-  .btn-sold {
-    background-color: $sold;
-    color: $white;
-  }
-
-  @media screen and (min-width: 40em) {
-    .cards {
-      margin-top: -1em;
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-    }
-    .card {
-      margin-bottom: 1em;
-      display: flex;
-      flex: 0 1 calc(50% - 0.5em);
-    }
-
-    .assets_to_buy {
-      padding-left: 25px;
-    }
-  }
-
-  @media screen and (min-width: 60em) {
-    .cards {
-      margin-top: inherit;
-    }
-    .card {
-      margin-bottom: 2em;
-      display: flex;
-      flex: 0 1 calc(33% - 0.5em);
-    }
-
-    .assets_to_buy {
-      padding-left: 25px;
-    }
-  }
-
-  @media only screen and (max-width: 768px) {
-
-  }
-
-  .thumbnail {
-    text-align: center;
-  }
-
-  .uppercase {
-    text-transform: uppercase;
-    text-align: center;
-    font-size: 20px;
-    font-weight: 400;
-  }
-
-  .edition-type {
+  .footer {
     position: absolute;
+    bottom: 0;
+    width: 100%;
+    min-height: 60px;
+    line-height: 25px;
     background-color: $primary;
-    color: $secondary;
-    padding: 10px;
-    opacity: 0.8;
   }
 
-  .edition-sold {
-    position: absolute;
-    background-color: $sold;
-    color: $secondary;
-    padding: 10px;
-    opacity: 0.6;
-    font-size: 1.25em;
+  body > .container {
+    padding: 60px 15px 0;
   }
 
-  .edition-run {
-    background-color: $gray;
-    color: $white;
-    border-radius: 28px;
-    padding-left: 15px;
+  .footer > .container {
     padding-right: 15px;
-    opacity: 0.6;
+    padding-left: 15px;
+    color: #f2f5fb;
+    span {
+      color: rgba(255, 255, 255, 0.5);
+    }
+    a {
+      color: white;
+      padding-left: 2px;
+      padding-right: 2px;
+    }
   }
 
-  .error {
-    background-color: $sold;
-  }
-
-  strong {
-    font-weight: bold;
-  }
-
-  .license-text {
-    font-size: 0.8em;
-    margin: 5px;
-  }
-
-  .current-network {
-    font-size: 12px;
-  }
-
-  .assets_to_buy {
-    max-width: 400px;
-  }
-
-  .twitterLink {
-    display: block;
-    text-align: center;
-    margin-top: 20px;
-
-  }
-
-  .artist-info {
-    display: flex;
-    height: 90%;
-    flex-direction: column;
-  }
-
-  .text-danger {
-    color: $sold !important;
-  }
-
-  .text-success {
-    color: $success !important;
-  }
-
-  .text-muted {
-    color: $gray !important;
-  }
-
-  .text-center {
-    text-align: center;
-  }
-
-  .text-blue {
-    color: #4A90E2 !important;
-  }
-
-  .no-web3-found-container {
-    margin: 10px;
-  }
-
-  .loading {
-    padding-top: 20px;
-    font-weight: bold;
-    font-size: 32px;
+  code {
+    font-size: 80%;
   }
 </style>

@@ -14,7 +14,8 @@
 
     <h1>KODA smart contract</h1>
 
-    <table>
+    <table class="table table-striped">
+      <tbody>
       <tr v-if="contractSymbol">
         <td>Contract</td>
         <td><clickable-address :eth-address="contractAddress"></clickable-address></td>
@@ -47,6 +48,7 @@
         <td>Total</td>
         <td>{{ totalPurchaseValueInEther }} ETH</td>
       </tr>
+      </tbody>
     </table>
 
   </div>
@@ -79,7 +81,4 @@
 </script>
 
 <style scoped>
-  td {
-    padding: 20px;
-  }
 </style>
