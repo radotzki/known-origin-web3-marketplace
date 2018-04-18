@@ -1,5 +1,6 @@
 # Known Origin Digital Market Place
 
+[![Build Status](https://travis-ci.org/knownorigin/known-origin-web3-marketplace.svg?branch=master)](https://travis-ci.org/knownorigin/known-origin-web3-marketplace)
 
 ## Installation
 1. Install [Node](https://nodejs.org/en/) v8.x or above
