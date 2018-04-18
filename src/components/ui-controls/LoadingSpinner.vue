@@ -1,13 +1,12 @@
 <template>
-  <div class="text-center text-blue">
-    <p>
-      <br />
-      <font-awesome-icon :icon="['fas', 'sync']" size="6x" spin></font-awesome-icon>
-    </p>
-    <p>
-      <br />
-      <span class="loading">Loading...</span>
-    </p>
+  <div>
+    <div class="spinner"></div>
+    <div class="text-center">
+      <br/>
+      <p>
+        <span class="loading">Loading...</span>
+      </p>
+    </div>
   </div>
 </template>
 
@@ -21,5 +20,30 @@
 </script>
 
 <style scoped>
+  .spinner {
+    width: 80px;
+    height: 80px;
 
+    border: 2px solid #f3f3f3;
+    border-top: 3px solid #f25a41;
+    border-radius: 100%;
+
+    /*position: absolute;*/
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+
+    animation: spin 1s infinite linear;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
 </style>
