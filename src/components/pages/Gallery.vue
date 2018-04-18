@@ -1,41 +1,34 @@
 <template>
   <div id="gallery">
 
-    <header id="header">
-      <router-link :to="{ name: 'account' }" class="pull-right">
-        <img src="/../static/account.svg" style="height:25px"/>
-      </router-link>
-      <div class="header-branding ">
-        <router-link :to="{ name: 'home' }" class="header-dash">KnownOrigin.io</router-link>
-      </div>
-    </header>
-
     <h1>Gallery</h1>
-
-    <div class="filters">
-        <toggle-button :value="showSold"
-                       :labels="{checked: 'Sold', unchecked: 'Unsold'}"
-                       :sync="true" color="#82C7EB" :width="65"
-                       @change="onSoldToggleChanged"/>
-
-        <select style="border: thin dashed;" title="price filter" v-model="priceFilter">
-          <option value="asc">Low to high</option>
-          <option value="desc">High to low</option>
-        </select>
-
-        <input type="text" v-model="search" placeholder="Search assets..."/>
-    </div>
 
     <loading-spinner v-if="editions.length === 0"></loading-spinner>
 
-    <div v-if="editions">
-      <section class="cards centered">
-        <galleryEdition
-          v-for="edition in editions"
-          :edition="edition"
-          :key="edition.edition">
-        </galleryEdition>
-      </section>
+    <div class="form-row mb-4" v-if="editions">
+      <div class="col">
+        <select class="form-control" title="price filter" v-model="priceFilter">
+          <option value="asc">Low to high</option>
+          <option value="desc">High to low</option>
+        </select>
+      </div>
+      <div class="col">
+        <input type="text" class="form-control" v-model="search" placeholder="Search assets..."/>
+      </div>
+      <div class="col text-right">
+        <toggle-button :value="showSold"
+                       :labels="{checked: 'Sold', unchecked: 'Unsold'}"
+                       :sync="true" color="#82C7EB" :width="65"
+                       @change="onSoldToggleChanged"></toggle-button>
+      </div>
+    </div>
+
+    <div class="card-columns" v-if="editions">
+      <galleryEdition
+        v-for="edition in editions"
+        :edition="edition"
+        :key="edition.edition">
+      </galleryEdition>
     </div>
 
   </div>

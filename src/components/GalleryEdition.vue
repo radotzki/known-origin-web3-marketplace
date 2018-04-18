@@ -1,34 +1,29 @@
 <template>
-  <article class="card" v-if="edition">
-    <div>
-      <asset-figure :edition="edition"></asset-figure>
-      <div class="card-content">
 
-        <edition-name-by-artist :edition="edition" :purchase="purchase"></edition-name-by-artist>
+  <div class="card" v-if="edition">
+    <img class="card-img-top" :src="edition.lowResImg"/>
+    <!--<asset-figure :edition="edition"></asset-figure>-->
+    <div class="card-body">
 
-        <p class="muted">
-          {{ availableAssetsForEdition(edition.edition).length }} available
-        </p>
+      <edition-name-by-artist :edition="edition" :purchase="purchase"></edition-name-by-artist>
 
-        <p v-if="purchase">
-          <strong>Artwork description</strong><br/>
-          {{ edition.description }}
-        </p>
+      <p class="card-text"><small class="text-muted">{{ availableAssetsForEdition(edition.edition).length }} available</small></p>
 
-        <price-in-eth :value="edition.priceInEther"></price-in-eth>
+      <p class="card-text">{{ edition.description }}</p>
 
-        <p v-if="!purchase" class="pad-top">
-          <router-link :to="{ name: 'confirmPurchase', params: { artistCode: edition.edition.substring(0, 3), edition: edition.edition }}" class="btn btn-link">
-            View details
-          </router-link>
-        </p>
-
-        <confirm-purchase-button :edition="edition" class="" v-if="purchase"></confirm-purchase-button>
-      </div>
     </div>
-    <!-- .card-content -->
-  </article>
-
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item"><price-in-eth :value="edition.priceInEther"></price-in-eth></li>
+    </ul>
+    <div class="card-footer" v-if="!purchase">
+      <router-link :to="{ name: 'confirmPurchase', params: { artistCode: edition.edition.substring(0, 3), edition: edition.edition }}">
+        View details
+      </router-link>
+    </div>
+    <div class="card-footer" v-if="purchase">
+      <confirm-purchase-button :edition="edition"></confirm-purchase-button>
+    </div>
+  </div>
 </template>
 
 <script>

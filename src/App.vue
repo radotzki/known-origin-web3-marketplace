@@ -27,9 +27,11 @@
     </modal>
 
     <header>
-      <!-- Fixed navbar -->
       <nav class="navbar navbar-expand-md navbar-dark bg-primary fixed-top">
         <a class="navbar-brand" href="#">KnownOrigin.io</a>
+        <router-link :to="{ name: 'account' }" class="">
+          <img src="/../static/account.svg" style="height:25px"/>
+        </router-link>
       </nav>
     </header>
 
