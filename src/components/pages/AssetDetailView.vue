@@ -12,10 +12,7 @@
       </div>
     </header>
 
-    <div class="text-center text-blue" v-if="!asset">
-      <img src="../../../static/Timer.svg" style="width: 100px"/><br/>
-      <span class="loading">Loading...</span>
-    </div>
+    <loading-spinner v-if="!asset"></loading-spinner>
 
     <div class="assets_to_buy" v-if="asset">
       <asset :asset="asset" :key="asset.id"></asset>
@@ -28,10 +25,14 @@
   import {mapGetters, mapState} from 'vuex';
   import Artist from '../Artist';
   import Asset from "../Asset.vue";
+  import LoadingSpinner from "../ui-controls/LoadingSpinner.vue";
 
   export default {
     name: 'assetDetailView',
-    components: {Asset},
+    components: {
+      LoadingSpinner,
+      Asset
+    },
     props: {
       tokenId: {
         required: true,

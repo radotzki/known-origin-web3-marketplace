@@ -26,10 +26,7 @@
         <input type="text" v-model="search" placeholder="Search assets..."/>
     </div>
 
-    <div class="text-center text-blue" v-if="editions.length === 0">
-      <img src="../../../static/Timer.svg" style="width: 100px"/><br/>
-      <span class="loading">Loading...</span>
-    </div>
+    <loading-spinner v-if="editions.length === 0"></loading-spinner>
 
     <div v-if="editions">
       <section class="cards centered">
@@ -48,10 +45,12 @@
 
   import { mapGetters, mapState } from 'vuex';
   import GalleryEdition from '../GalleryEdition';
+  import LoadingSpinner from "../ui-controls/LoadingSpinner.vue";
 
   export default {
     name: 'gallery',
     components: {
+      LoadingSpinner,
       GalleryEdition
     },
     data() {

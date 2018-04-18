@@ -12,10 +12,7 @@
       </div>
     </header>
 
-    <div class="text-center text-blue" v-if="!edition">
-      <img src="../../../static/Timer.svg" style="width: 100px"/><br/>
-      <span class="loading">Loading...</span>
-    </div>
+    <loading-spinner v-if="!edition"></loading-spinner>
 
     <div v-else-if="edition">
 
@@ -29,16 +26,22 @@
 </template>
 
 <script>
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import Artist from '../Artist';
   import GalleryEdition from '../GalleryEdition';
   import ConfirmPurchaseButton from '../ui-controls/ConfirmPurchaseButton';
   import _ from 'lodash';
   import EditionQrCode from '../ui-controls/EditionQrCode';
+  import LoadingSpinner from "../ui-controls/LoadingSpinner.vue";
 
   export default {
     name: 'confirmPurchase',
-    components: {EditionQrCode, GalleryEdition, ConfirmPurchaseButton},
+    components: {
+      LoadingSpinner,
+      EditionQrCode,
+      GalleryEdition,
+      ConfirmPurchaseButton
+    },
     computed: {
       ...mapGetters([
         'firstAssetForEdition'
