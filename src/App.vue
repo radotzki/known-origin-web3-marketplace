@@ -36,28 +36,32 @@
           <td width="80%">
             <p>&copy; 2018 KNOWNORIGIN</p>
             <p>BE ORIGINAL. BUY ORIGINAL.</p>
-            <current-network></current-network>
+            <p>
+              <a href="mailto:hello@knownorigin.io" target="_blank">
+                <font-awesome-icon :icon="['fas', 'envelope-square']" size="2x"></font-awesome-icon>
+              </a>
+              <a href="https://medium.com/knownorigin" target="_blank">
+                <font-awesome-icon :icon="['fab', 'medium']" size="2x"></font-awesome-icon>
+              </a>
+              <a href="https://t.me/knownorigin" target="_blank">
+                <font-awesome-icon :icon="['fab', 'telegram-plane']" size="2x"></font-awesome-icon>
+              </a>
+              <a href="https://twitter.com/knownorigin_io" target="_blank">
+                <font-awesome-icon :icon="['fab', 'twitter']" size="2x"></font-awesome-icon>
+              </a>
+            </p>
+            <p>
+              <current-network></current-network>
+            </p>
           </td>
           <td width="20%">
-
             <router-link :to="{ name: 'gallery' }">Gallery</router-link> <br/> <br/>
-            <router-link :to="{ name: 'account' }">My Account</router-link> <br/> <br/>
+            <router-link :to="{ name: 'account' }">Account</router-link> <br/> <br/>
             <router-link :to="{ name: 'details' }">Contract</router-link> <br/> <br/>
             <router-link :to="{ name: 'license' }">License</router-link> <br/> <br/>
             <router-link :to="{ name: 'assets' }">Assets</router-link> <br/> <br/>
           </td>
         </tr>
-        <!--<tr>-->
-          <!--<td width="80%">-->
-            <!--<a href="mailto:hello@knownorigin.io">hello@knownorigin.io</a> <br/> <br/>-->
-            <!--<a href="https://t.me/knownorigin" target="_blank">Join us on Telegram</a> <br/> <br/>-->
-            <!--<a href="https://twitter.com/knownorigin_io" target="_blank">Follow us on Twitter</a> <br/> <br/>-->
-            <!--<a href="https://medium.com/knownorigin" target="_blank">Medium articles</a>-->
-          <!--</td>-->
-          <!--<td width="20%">-->
-            <!--<p><current-network></current-network></p>-->
-          <!--</td>-->
-        <!--</tr>-->
       </table>
     </footer>
   </div>
@@ -71,10 +75,14 @@
   import * as actions from './store/actions';
   import * as mutations from './store/mutation-types';
   import CurrentNetwork from './components/ui-controls/CurrentNetwork';
+  import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 
   export default {
     name: 'app',
-    components: {CurrentNetwork},
+    components: {
+      FontAwesomeIcon,
+      CurrentNetwork
+    },
     computed: {
       ...mapGetters([]),
       ...mapState([]),

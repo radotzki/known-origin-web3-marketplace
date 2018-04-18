@@ -9,6 +9,12 @@ import VModal from 'vue-js-modal';
 import AsyncComputed from 'vue-async-computed';
 import ToggleButton from 'vue-js-toggle-button';
 
+// Add brands to fontawesome
+import fontawesome from '@fortawesome/fontawesome';
+import brands from '@fortawesome/fontawesome-free-brands';
+import solid from '@fortawesome/fontawesome-free-solid';
+fontawesome.library.add(brands, solid);
+
 Vue.use(VModal);
 Vue.use(AsyncComputed);
 Vue.use(ToggleButton);
