@@ -14,10 +14,7 @@
 
     <h1>Assets <span v-if="assets">({{ assets.length }})</span></h1>
 
-    <div class="text-center text-blue" v-if="assets.length == 0">
-      <img src="../../../static/Timer.svg" style="width: 100px"/><br/>
-      <span class="loading">Loading...</span>
-    </div>
+    <loading-spinner v-if="assets.length == 0"></loading-spinner>
 
     <div v-if="assets">
       <section class="cards centered" v-if="assets">
@@ -33,16 +30,20 @@
 
 <script>
 
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import Artist from '../Artist';
   import Gallery from './Gallery';
   import Asset from '../Asset';
   import AddressIcon from '../ui-controls/AddressIcon';
   import EthAddress from '../ui-controls/EthAddress';
+  import LoadingSpinner from "../ui-controls/LoadingSpinner.vue";
 
   export default {
     name: 'assets',
-    components: {Asset},
+    components: {
+      LoadingSpinner,
+      Asset
+    },
     computed: {
       ...mapState([
         'assets'
