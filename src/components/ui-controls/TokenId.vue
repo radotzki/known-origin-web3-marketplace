@@ -1,5 +1,5 @@
 <template>
-  <span class="token-id">{{ pad }}</span>
+  <span class="badge badge-primary">{{ pad }}</span>
 </template>
 
 <script>

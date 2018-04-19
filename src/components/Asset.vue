@@ -1,8 +1,16 @@
 <template>
   <div class="card" v-if="asset">
     <img class="card-img-top" :src="asset.lowResImg"/>
-    <!--<asset-figure :edition="asset" :is-asset="true"></asset-figure>-->
+
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item bg-danger text-center text-white" v-if="asset.purchased != 0 || availableAssetsForEdition(asset.edition).length == 0">
+        SOLD
+      </li>
+    </ul>
+
     <div class="card-body">
+
+      <p class="card-text"><token-id :value="asset.id"></token-id></p>
 
       <edition-name-by-artist :edition="asset"></edition-name-by-artist>
 
