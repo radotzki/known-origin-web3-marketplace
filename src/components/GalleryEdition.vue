@@ -1,5 +1,4 @@
 <template>
-
   <div class="card" v-if="edition">
 
     <img class="card-img-top" :src="edition.lowResImg"/>

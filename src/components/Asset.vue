@@ -1,36 +1,34 @@
 <template>
-  <article class="card" v-if="asset">
-    <div>
-      <asset-figure :edition="asset" :is-asset="true"></asset-figure>
-      <div class="card-content">
+  <div class="card" v-if="asset">
+    <img class="card-img-top" :src="asset.lowResImg"/>
+    <!--<asset-figure :edition="asset" :is-asset="true"></asset-figure>-->
+    <div class="card-body">
 
-        <edition-name-by-artist :edition="asset"></edition-name-by-artist>
+      <edition-name-by-artist :edition="asset"></edition-name-by-artist>
 
-        <p>
-          <strong>Artwork description</strong><br/>
-          {{ asset.otherMeta.description }}
-        </p>
-
-        <price-in-eth :value="asset.priceInEther"></price-in-eth>
-
-        <div class="centered">
-          <tweet-purchase-button :asset-id="asset.id"></tweet-purchase-button>
-        </div>
-
-        <!-- disabled for now until we know more -->
-        <!--<hr/>-->
-        <!--<div>-->
-          <!--<verify-purchase :asset-id="asset.id"></verify-purchase>-->
-        <!--</div>-->
-      </div>
+      <p class="card-text">{{ asset.otherMeta.description }}</p>
     </div>
-    <!-- .card-content -->
-  </article>
 
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">
+        <price-in-eth :value="asset.priceInEther"></price-in-eth>
+      </li>
+    </ul>
+
+    <div class="card-footer">
+      <tweet-purchase-button :asset-id="asset.id"></tweet-purchase-button>
+    </div>
+
+    <!-- disabled for now until we know more -->
+    <!--<hr/>-->
+    <!--<div>-->
+    <!--<verify-purchase :asset-id="asset.id"></verify-purchase>-->
+
+  </div>
 </template>
 
 <script>
-  import {mapGetters, mapState} from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
   import _ from 'lodash';
   import PurchaseState from './ui-controls/PurchaseState';
   import AddressIcon from './ui-controls/AddressIcon';
@@ -59,11 +57,14 @@
       },
     },
     computed: {
-      ...mapGetters([]),
+      ...mapGetters([
+        'assetsForEdition',
+        'availableAssetsForEdition'
+      ]),
     }
   };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 
 </style>
