@@ -92,9 +92,5 @@
   };
 </script>
 
-<style scoped>
-  .filters {
-    padding-left: 25px;
-    padding-bottom: 20px;
-  }
+<style scoped lang="scss">
 </style>

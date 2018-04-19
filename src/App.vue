@@ -50,10 +50,10 @@
           <div class="col-sm">
             <small>
               <router-link :to="{ name: 'gallery' }">Gallery</router-link> &bull;
+              <router-link :to="{ name: 'artists' }">Artists</router-link> &bull;
               <router-link :to="{ name: 'account' }">Account</router-link> &bull;
-              <router-link :to="{ name: 'details' }">Contract</router-link> &bull;
-              <router-link :to="{ name: 'license' }">License</router-link> &bull;
-              <router-link :to="{ name: 'assets' }">Assets</router-link>
+              <router-link :to="{ name: 'details' }">Smart Contract</router-link> &bull;
+              <router-link :to="{ name: 'license' }">License</router-link>
             </small>
           </div>
           <div class="col-sm text-center">
@@ -137,6 +137,7 @@
     /* Margin bottom by footer height */
     margin-bottom: 70px;
     margin-top: 10px;
+    padding-top: 70px;
   }
 
   .footer {
