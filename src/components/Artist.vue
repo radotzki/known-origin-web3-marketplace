@@ -6,7 +6,11 @@
 
     <div class="card-body">
 
-      <h5 class="card-title text-uppercase">{{ artist.name }}</h5>
+      <h5 class="card-title text-uppercase">
+        <router-link :to="{ name: 'artist', params: { artistCode: artist.artistCode} }">
+          {{ artist.name }}
+        </router-link>
+      </h5>
 
       <p class="card-text text-left">{{ artist.strapline }}</p>
     </div>
