@@ -19,7 +19,7 @@
     </ul>
 
     <div class="card-footer text-center" v-if="!purchase">
-      <router-link :to="{ name: 'confirmPurchase', params: { artistCode: edition.edition.substring(0, 3), edition: edition.edition }}">
+      <router-link class="btn btn-outline-primary btn-block" tag="button" :to="{ name: 'confirmPurchase', params: { artistCode: edition.edition.substring(0, 3), edition: edition.edition }}">
         View details
       </router-link>
     </div>

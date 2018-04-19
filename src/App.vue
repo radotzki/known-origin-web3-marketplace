@@ -171,4 +171,9 @@
   code {
     font-size: 80%;
   }
+
+  .btn-group-vertical > button{
+    margin-bottom:10px;
+    border-radius:10px !important;
+  }
 </style>

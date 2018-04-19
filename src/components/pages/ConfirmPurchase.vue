@@ -1,7 +1,5 @@
 <template>
   <div>
-    <h1>&nbsp;</h1>
-
     <loading-spinner v-if="!edition"></loading-spinner>
 
     <div v-else-if="edition" class="row justify-content-sm-center">
@@ -53,6 +51,5 @@
   };
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
 </style>
