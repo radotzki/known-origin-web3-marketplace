@@ -3,9 +3,9 @@
 
     <h1>Gallery</h1>
 
-    <loading-spinner v-if="editions.length === 0"></loading-spinner>
+    <loading-spinner v-if="!hasFinishedLoading()"></loading-spinner>
 
-    <div class="form-row mb-4" v-if="editions.length > 0">
+    <div class="form-row mb-4" v-if="hasFinishedLoading()">
       <div class="col">
         <select class="form-control" title="price filter" v-model="priceFilter">
           <option value="asc">Low to high</option>
@@ -36,7 +36,7 @@
 
 <script>
 
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import GalleryEdition from '../GalleryEdition';
   import LoadingSpinner from "../ui-controls/LoadingSpinner.vue";
 
@@ -49,6 +49,7 @@
     data() {
       return {
         showSold: false,
+        finishedLoading: false,
         priceFilter: 'asc',
         search: ''
       };
@@ -56,15 +57,24 @@
     methods: {
       onSoldToggleChanged: function ({value}) {
         this.showSold = value;
-      }
+      },
+      hasFinishedLoading: function () {
+        // Use the lack of assets in the store to determine initial loading state
+        if (this.assets === null) {
+          return false;
+        }
+        return this.editions.length > 0 || this.finishedLoading === true;
+      },
     },
     computed: {
       ...mapState([
-        'editionSummary'
+        'editionSummary',
+        'assets',
       ]),
       editions: function () {
+        this.finishedLoading = false;
 
-        return this.$store.getters.editionSummaryFilter(this.showSold, this.priceFilter)
+        let results = this.$store.getters.editionSummaryFilter(this.showSold, this.priceFilter)
           .filter(function (item) {
 
             if (this.search.length === 0) {
@@ -76,7 +86,9 @@
 
             return matchesName || matchesDescription;
           }.bind(this));
-      },
+        this.finishedLoading = true;
+        return results;
+      }
     }
   };
 </script>
