@@ -1,6 +1,5 @@
 <template>
-  <div id="gallery">
-
+  <div>
     <h1>Gallery</h1>
 
     <loading-spinner v-if="!hasFinishedLoading()"></loading-spinner>

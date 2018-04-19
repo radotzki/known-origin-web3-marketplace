@@ -24,7 +24,7 @@
       </router-link>
     </div>
 
-    <div class="card-footer" v-if="purchase">
+    <div class="card-footer text-center" v-if="purchase">
       <confirm-purchase-button :edition="edition"></confirm-purchase-button>
     </div>
 
