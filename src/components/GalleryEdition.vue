@@ -3,9 +3,11 @@
 
     <img class="card-img-top" :src="edition.lowResImg"/>
 
-    <!--<asset-figure :edition="edition"></asset-figure>-->
-
     <div class="card-body">
+
+      <p class="card-text">
+        <span class="badge badge-primary">1 of {{ assetsForEdition(edition.edition).length }}</span>
+      </p>
 
       <edition-name-by-artist :edition="edition" :purchase="purchase"></edition-name-by-artist>
 
@@ -54,6 +56,7 @@
     computed: {
       ...mapGetters([
         'availableAssetsForEdition',
+        'assetsForEdition',
       ]),
     },
     methods: {

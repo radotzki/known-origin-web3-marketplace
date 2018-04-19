@@ -1,36 +1,24 @@
 <template>
-  <div id="account">
-    <header id="header">
-      <router-link :to="{ name: 'account' }" class="pull-right">
-        <img src="/../static/account.svg" style="height:25px"/>
-      </router-link>
-      <div class="header-branding">
-        &nbsp;
-        <router-link :to="{ name: 'home' }" class="back-arrow" style="float: left">
-          <img src="../../../static/back_arrow.svg" style="width: 35px"/>
-        </router-link>
-      </div>
-    </header>
+  <div>
 
     <h1>My Account ({{assetsPurchasedByAccount.length}})</h1>
 
-    <p class="pad-bottom">
-    <address-icon :eth-address="account"></address-icon>
-    </p>
-
-    <div>
-      <section class="cards centered" v-if="assetsPurchasedByAccount">
-        <asset v-for="tokenId, key in assetsPurchasedByAccount"
-               :asset="assetById(tokenId)"
-               :key="key">
-        </asset>
-      </section>
-
-      <section v-if="assetsPurchasedByAccount.length == 0" class="text-center">
-        <p>You don't have any digital assets yet...</p>
-      </section>
+    <div class="row mb-4">
+      <div class="col">
+        <address-icon :eth-address="account"></address-icon>
+      </div>
     </div>
 
+    <div class="card-columns" v-if="assetsPurchasedByAccount.length > 0">
+      <asset v-for="tokenId, key in assetsPurchasedByAccount"
+             :asset="assetById(tokenId)"
+             :key="key">
+      </asset>
+    </div>
+
+    <div v-if="assetsPurchasedByAccount.length == 0" class="row text-center">
+      <div class="col">You don't have any digital assets yet...</div>
+    </div>
   </div>
 </template>
 
