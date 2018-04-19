@@ -1,5 +1,5 @@
 <template>
-  <span class="badge badge-primary">{{ pad }}</span>
+  <span class="badge badge-light">{{ pad }}</span>
 </template>
 
 <script>

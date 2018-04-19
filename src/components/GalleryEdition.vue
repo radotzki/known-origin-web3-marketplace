@@ -6,18 +6,17 @@
     <div class="card-body">
 
       <p class="card-text">
-        <span class="badge badge-primary">1 of {{ assetsForEdition(edition.edition).length }}</span>
+        <span class="badge badge-light">1 of {{ assetsForEdition(edition.edition).length }}</span>
+        <span class="badge badge-light">{{ availableAssetsForEdition(edition.edition).length }} available</span>
       </p>
 
       <edition-name-by-artist :edition="edition" :purchase="purchase"></edition-name-by-artist>
 
       <p class="card-text">{{ edition.description }}</p>
-
-      <p class="card-text"><small class="text-muted">{{ availableAssetsForEdition(edition.edition).length }} available</small></p>
     </div>
 
     <ul class="list-group list-group-flush">
-      <li class="list-group-item"><price-in-eth :value="edition.priceInEther"></price-in-eth></li>
+      <li class="list-group-item text-center"><price-in-eth :value="edition.priceInEther"></price-in-eth></li>
     </ul>
 
     <div class="card-footer text-center" v-if="!purchase">

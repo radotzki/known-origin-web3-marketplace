@@ -12,7 +12,7 @@
 
       <p class="card-text">
         <token-id :value="asset.id"></token-id>
-        <span class="badge badge-primary">1 of {{ assetsForEdition(asset.edition).length }}</span>
+        <span class="badge badge-light">1 of {{ assetsForEdition(asset.edition).length }}</span>
       </p>
 
       <edition-name-by-artist :edition="asset"></edition-name-by-artist>
@@ -25,7 +25,7 @@
         <span class="text-muted">Owner:</span>
         <address-icon :eth-address="asset.owner" :size="'small'"></address-icon>
       </li>
-      <li class="list-group-item">
+      <li class="list-group-item text-center">
         <price-in-eth :value="asset.priceInEther"></price-in-eth>
       </li>
     </ul>
