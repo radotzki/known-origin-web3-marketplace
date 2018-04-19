@@ -28,7 +28,9 @@
 
     <header>
       <nav class="navbar navbar-expand-md navbar-dark bg-primary fixed-top">
-        <a class="navbar-brand" href="#">KnownOrigin.io</a>
+        <router-link :to="{ name: 'home' }" class="navbar-brand">
+          KnownOrigin.io
+        </router-link>
         <router-link :to="{ name: 'account' }" class="">
           <img src="/../static/account.svg" style="height:25px"/>
         </router-link>
@@ -43,7 +45,7 @@
       <div class="container">
         <div class="row">
           <div class="col-sm">
-            <span>BE ORIGINAL. BUY ORIGINAL.</span>
+            <small class="slogan">BE ORIGINAL. BUY ORIGINAL.</small>
           </div>
           <div class="col-sm">
             <small>
@@ -54,7 +56,7 @@
               <router-link :to="{ name: 'assets' }">Assets</router-link>
             </small>
           </div>
-          <div class="col-sm">
+          <div class="col-sm text-center">
             <a href="mailto:hello@knownorigin.io" target="_blank">
               <font-awesome-icon :icon="['fas', 'envelope-square']"></font-awesome-icon>
             </a>
@@ -153,8 +155,9 @@
   .footer > .container {
     padding-right: 15px;
     padding-left: 15px;
+    padding-top: 15px;
     color: #f2f5fb;
-    span {
+    .slogan {
       color: rgba(255, 255, 255, 0.5);
     }
     a {

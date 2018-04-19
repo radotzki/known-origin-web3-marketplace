@@ -5,7 +5,7 @@
 
     <loading-spinner v-if="editions.length === 0"></loading-spinner>
 
-    <div class="form-row mb-4" v-if="editions">
+    <div class="form-row mb-4" v-if="editions.length > 0">
       <div class="col">
         <select class="form-control" title="price filter" v-model="priceFilter">
           <option value="asc">Low to high</option>
@@ -23,7 +23,7 @@
       </div>
     </div>
 
-    <div class="card-columns" v-if="editions">
+    <div class="card-columns" v-if="editions.length > 0">
       <galleryEdition
         v-for="edition in editions"
         :edition="edition"

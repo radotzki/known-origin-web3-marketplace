@@ -7,15 +7,14 @@
 
       <edition-name-by-artist :edition="edition" :purchase="purchase"></edition-name-by-artist>
 
-      <p class="card-text"><small class="text-muted">{{ availableAssetsForEdition(edition.edition).length }} available</small></p>
-
       <p class="card-text">{{ edition.description }}</p>
 
+      <p class="card-text"><small class="text-muted">{{ availableAssetsForEdition(edition.edition).length }} available</small></p>
     </div>
     <ul class="list-group list-group-flush">
       <li class="list-group-item"><price-in-eth :value="edition.priceInEther"></price-in-eth></li>
     </ul>
-    <div class="card-footer" v-if="!purchase">
+    <div class="card-footer text-center" v-if="!purchase">
       <router-link :to="{ name: 'confirmPurchase', params: { artistCode: edition.edition.substring(0, 3), edition: edition.edition }}">
         View details
       </router-link>
