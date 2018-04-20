@@ -1,9 +1,8 @@
 <template>
   <div>
 
-    <modal name="no-web3-found" :height="450" :width="350" :clickToClose="true">
-      <div class="no-web3-found-container">
-        <div>
+    <modal name="no-web3-found" :clickToClose="true">
+      <div class="alert alert-light" role="alert">
           <h2 class="text-danger">No Ethereum Provider Detected!</h2>
 
           <p>
@@ -21,8 +20,6 @@
           <div>
             <a href="https://trustwalletapp.com" target="_blank"><img src="/../static/trustwallet_logo.svg" style="height:50px"/></a>
           </div>
-
-        </div>
       </div>
     </modal>
 
@@ -46,7 +43,7 @@
       </nav>
     </header>
 
-    <main role="main" class="container pb-4">
+    <main role="main" class="container">
       <router-view></router-view>
     </main>
 
@@ -66,13 +63,13 @@
             </small>
           </div>
           <div class="col-sm text-center">
-            <a href="mailto:hello@knownorigin.io" target="_blank">
+            <a href="mailto:hello@knownorigin.io" target="_blank" class="pr-2">
               <font-awesome-icon :icon="['fas', 'envelope-square']" size="lg"></font-awesome-icon>
             </a>
-            <a href="https://medium.com/knownorigin" target="_blank">
+            <a href="https://medium.com/knownorigin" target="_blank" class="pr-2">
               <font-awesome-icon :icon="['fab', 'medium']" size="lg"></font-awesome-icon>
             </a>
-            <a href="https://t.me/knownorigin" target="_blank">
+            <a href="https://t.me/knownorigin" target="_blank" class="pr-2">
               <font-awesome-icon :icon="['fab', 'telegram-plane']" size="lg"></font-awesome-icon>
             </a>
             <a href="https://twitter.com/knownorigin_io" target="_blank">
@@ -160,7 +157,7 @@
   }
 
   body > .container {
-    padding: 60px 15px 0;
+    padding: 60px 60px 0;
   }
 
   .footer > .container {
@@ -172,14 +169,10 @@
       color: rgba(255, 255, 255, 0.5);
     }
     a {
-      color: white;
+      color: #f2f5fb;
       padding-left: 2px;
       padding-right: 2px;
     }
-  }
-
-  code {
-    font-size: 80%;
   }
 
   .btn-group-vertical > button {

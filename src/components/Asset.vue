@@ -51,7 +51,6 @@
   import _ from 'lodash';
   import PurchaseState from './ui-controls/PurchaseState';
   import AddressIcon from './ui-controls/AddressIcon';
-  import AssetFigure from './AssetFigure';
   import PriceInEth from './ui-controls/PriceInEth';
   import TokenId from './ui-controls/TokenId';
   import EditionNameByArtist from './ui-controls/EditionNameByArtist';
@@ -65,7 +64,6 @@
       TweetPurchaseButton,
       AddressIcon,
       PurchaseState,
-      AssetFigure,
       PriceInEth,
       EditionNameByArtist,
       TokenId,

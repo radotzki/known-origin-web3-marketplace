@@ -95,7 +95,6 @@
   import _ from 'lodash';
   import AddressIcon from '../ui-controls/AddressIcon';
   import PurchaseState from '../ui-controls/PurchaseState';
-  import AssetFigure from '../AssetFigure';
   import PriceInEth from '../ui-controls/PriceInEth';
   import TokenId from '../ui-controls/TokenId.vue';
   import EditionNameByArtist from '../ui-controls/EditionNameByArtist';
@@ -115,7 +114,6 @@
       AddressIcon,
       CompletePurchaseButton,
       PriceInEth,
-      AssetFigure,
       EditionNameByArtist,
       TokenId
     },

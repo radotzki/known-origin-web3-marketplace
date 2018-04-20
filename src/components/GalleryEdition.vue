@@ -47,7 +47,6 @@
   import PriceInEth from './ui-controls/PriceInEth.vue';
   import EditionNameByArtist from './ui-controls/EditionNameByArtist.vue';
   import ConfirmPurchaseButton from './ui-controls/ConfirmPurchaseButton';
-  import AssetFigure from './AssetFigure.vue';
   import TweetAssetButton from "./ui-controls/TweetAssetButton.vue";
 
   export default {
@@ -55,7 +54,6 @@
     components: {
       TweetAssetButton,
       PriceInEth,
-      AssetFigure,
       EditionNameByArtist,
       ConfirmPurchaseButton
     },
