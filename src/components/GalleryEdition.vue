@@ -15,7 +15,7 @@
         <span class="badge badge-light">1 of {{ assetsForEdition(edition.edition).length }}</span>
         <span class="badge badge-light" v-if="availableAssetsForEdition(edition.edition).length > 0">{{ availableAssetsForEdition(edition.edition).length }} available</span>
         <span class="float-right">
-          <tweet-asset-button :edition="edition"></tweet-asset-button>
+          <tweet-asset-button :edition="edition" v-if="purchase"></tweet-asset-button>
         </span>
       </p>
 
