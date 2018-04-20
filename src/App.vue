@@ -68,7 +68,7 @@
             <a href="https://medium.com/knownorigin" target="_blank" class="pr-2">
               <font-awesome-icon :icon="['fab', 'medium']" size="lg"></font-awesome-icon>
             </a>
-            <a href="https://t.me/knownorigin" target="_blank" class="pr-2">
+            <a href="https://t.me/knownorigin_io" target="_blank" class="pr-2">
               <font-awesome-icon :icon="['fab', 'telegram-plane']" size="lg"></font-awesome-icon>
             </a>
             <a href="https://twitter.com/knownorigin_io" target="_blank">
