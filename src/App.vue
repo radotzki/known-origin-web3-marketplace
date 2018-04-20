@@ -31,9 +31,18 @@
         <router-link :to="{ name: 'home' }" class="navbar-brand">
           KnownOrigin.io
         </router-link>
-        <router-link :to="{ name: 'account' }" class="">
-          <img src="/../static/account.svg" style="height:25px"/>
-        </router-link>
+
+        <ul class="navbar-nav justify-content-end">
+          <li class="nav-item d-none d-sm-block">
+            <router-link :to="{ name: 'gallery' }" class="nav-link">Gallery</router-link>
+          </li>
+          <li class="nav-item d-none d-sm-block">
+            <router-link :to="{ name: 'artists' }" class="nav-link">Artists</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link :to="{ name: 'account' }" class="nav-link">Account</router-link>
+          </li>
+        </ul>
       </nav>
     </header>
 
@@ -172,8 +181,8 @@
     font-size: 80%;
   }
 
-  .btn-group-vertical > button{
-    margin-bottom:10px;
-    border-radius:10px !important;
+  .btn-group-vertical > button {
+    margin-bottom: 10px;
+    border-radius: 10px !important;
   }
 </style>

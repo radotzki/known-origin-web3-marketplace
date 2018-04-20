@@ -12,7 +12,7 @@
 
       <edition-name-by-artist :edition="edition" :purchase="purchase"></edition-name-by-artist>
 
-      <p class="card-text">{{ edition.description }}</p>
+      <p class="card-text" v-if="purchase">{{ edition.description }}</p>
     </div>
 
     <ul class="list-group list-group-flush">
