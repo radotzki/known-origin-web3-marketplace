@@ -130,6 +130,7 @@
   $body-bg: #f2f5fb;
   $body-color: #545454;
   $primary: #3e27d9;
+  $enable-rounded: false;
 
   $font-family-base: 'Avenir', Helvetica, Arial, sans-serif;
 
@@ -183,6 +184,5 @@
 
   .btn-group-vertical > button {
     margin-bottom: 10px;
-    border-radius: 10px !important;
   }
 </style>
