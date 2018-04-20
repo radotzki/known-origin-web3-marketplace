@@ -73,6 +73,13 @@
             <complete-purchase-button :asset="asset" class="pad-bottom" @purchaseInitiated="onPurchaseInitiated"></complete-purchase-button>
           </div>
 
+          <div v-if="isPurchaseFailed(asset.id)" class="card-footer">
+            <div class="btn-group-vertical btn-block">
+              <button type="button" v-on:click="retryPurchase" class="btn btn-outline-primary btn-block">
+                Retry
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

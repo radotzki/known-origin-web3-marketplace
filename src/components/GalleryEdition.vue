@@ -3,6 +3,12 @@
 
     <img class="card-img-top" :src="edition.lowResImg"/>
 
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item bg-danger text-center text-white" v-if="availableAssetsForEdition(edition.edition).length == 0">
+        SOLD
+      </li>
+    </ul>
+
     <div class="card-body">
 
       <p class="card-text">

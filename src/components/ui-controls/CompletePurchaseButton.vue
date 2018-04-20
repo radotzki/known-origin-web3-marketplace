@@ -25,22 +25,24 @@
             Confirm buy
           </button>
 
-          <button type="button" v-on:click="completeFiatPurchase" class="btn btn-warning btn-block text-white" v-if="isKnownOrigin && !soldAsFiat">
+          <button type="button" v-on:click="completeFiatPurchase" class="btn btn-warning btn-block " v-if="isKnownOrigin && !soldAsFiat">
             FIAT purchase
           </button>
 
           <button type="button" v-on:click="reverseFiatPurchase" class="btn btn-danger btn-block" v-if="isKnownOrigin && soldAsFiat">
             Reverse FIAT purchase
           </button>
-
-          <router-link v-if="asset.purchased !== 0" :to="{ name: 'account'}" tag="button" class="btn btn-outline-primary btn-block">
-            View account
-          </router-link>
-
-          <router-link :to="{ name: 'gallery'}" tag="button" class="btn btn-outline-primary btn-block">
-            Back to gallery
-          </router-link>
         </div>
+      </div>
+
+      <div class="btn-group-vertical btn-block">
+        <router-link v-if="asset.purchased !== 0" :to="{ name: 'account'}" tag="button" class="btn btn-outline-primary btn-block">
+          View account
+        </router-link>
+
+        <router-link :to="{ name: 'gallery'}" tag="button" class="btn btn-outline-primary btn-block">
+          Back to gallery
+        </router-link>
       </div>
     </form>
 
