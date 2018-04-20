@@ -7,7 +7,7 @@
         <div class="form-check mb-2" v-if="isUnsold">
           <label class="form-check-label" :for="'confirm_terms'">
             <input type="checkbox" :id="'confirm_terms'" v-model="confirm_terms">
-            I agree with KODA license
+            I agree with the KODA license
           </label>
         </div>
 
@@ -25,7 +25,7 @@
             Confirm buy
           </button>
 
-          <button type="button" v-on:click="completeFiatPurchase" class="btn btn-warning btn-block text-white" v-if="isKnownOrigin && !soldAsFiat">
+          <button type="button" v-on:click="completeFiatPurchase" class="btn btn-warning btn-block " v-if="isKnownOrigin && !soldAsFiat">
             FIAT purchase
           </button>
 
