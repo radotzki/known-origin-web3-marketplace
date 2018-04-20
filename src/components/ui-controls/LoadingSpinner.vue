@@ -1,13 +1,5 @@
 <template>
-  <div>
-    <div class="spinner"></div>
-    <div class="text-center">
-      <br/>
-      <p>
-        <span class="loading">Loading...</span>
-      </p>
-    </div>
-  </div>
+  <div class="spinner"></div>
 </template>
 
 <script>
@@ -25,7 +17,7 @@
     height: 80px;
 
     border: 2px solid #f3f3f3;
-    border-top: 3px solid #f25a41;
+    border-top: 3px solid #3e27d9;
     border-radius: 100%;
 
     /*position: absolute;*/

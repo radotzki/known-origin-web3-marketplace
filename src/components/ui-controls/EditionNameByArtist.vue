@@ -1,12 +1,8 @@
 <template>
-  <div>
-    <h3>
-      <span v-if="!purchase">{{ edition.otherMeta.artworkName }}</span>
-      by
-      {{ edition.otherMeta.artist }}
-    </h3>
-    <p class="edition-code">{{ edition.edition }}</p>
-  </div>
+  <span>
+    <h5 class="card-title">{{ edition.otherMeta.artworkName }}</h5>
+    <h6 class="card-subtitle mb-2 text-muted">By {{ edition.otherMeta.artist }}</h6>
+  </span>
 </template>
 
 <script>
@@ -17,8 +13,4 @@
 </script>
 
 <style scoped>
-  .edition-code {
-    font-size: 0.85em;
-    padding: 0px;
-  }
 </style>

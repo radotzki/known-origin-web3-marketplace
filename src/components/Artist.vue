@@ -1,27 +1,20 @@
 <template>
-  <article class="card" v-if="artist">
+  <div class="card text-center" v-if="artist">
+    <router-link :to="{ name: 'artist', params: { artistCode: artist.artistCode} }">
+        <img :src="artist.img" class="pt-4"/>
+    </router-link>
 
-    <div class="card-content">
-      <div class="artist-info">
+    <div class="card-body">
+
+      <h5 class="card-title text-uppercase">
         <router-link :to="{ name: 'artist', params: { artistCode: artist.artistCode} }">
-          <figure class="thumbnail">
-            <img :src="artist.img"/>
-          </figure>
+          {{ artist.name }}
         </router-link>
-        <h3 class="uppercase">{{ artist.name }}</h3>
+      </h5>
 
-        <p>{{ artist.strapline }}</p>
-      </div>
-
-      <!--<div class="twitterLink">-->
-        <!--<p v-if="artist.twitter">-->
-          <!--<a :href="'http://twitter.com/' + artist.twitter" target="_blank">{{ artist.twitter }}</a>-->
-        <!--</p>-->
-      <!--</div>-->
-
+      <p class="card-text text-left">{{ artist.strapline }}</p>
     </div>
-    <!-- .card-content -->
-  </article>
+  </div>
 </template>
 
 <script>
@@ -32,4 +25,7 @@
 </script>
 
 <style scoped>
+  img {
+    width: 50%;
+  }
 </style>

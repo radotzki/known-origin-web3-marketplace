@@ -1,24 +1,9 @@
 <template>
   <div>
-    <header id="header">
-      <router-link :to="{ name: 'account' }" class="pull-right">
-        <img src="/../static/account.svg" style="height:25px"/>
-      </router-link>
-      <div class="header-branding">
-        &nbsp;
-        <router-link :to="{ name: 'gallery' }" class="back-arrow" style="float: left">
-          <img src="../../../static/back_arrow.svg" style="width: 35px"/>
-        </router-link>
-      </div>
-    </header>
-
     <loading-spinner v-if="!edition"></loading-spinner>
 
-    <div v-else-if="edition">
-
-      <h1>{{ edition.otherMeta.artworkName }}</h1>
-
-      <div class="assets_to_buy">
+    <div v-else-if="edition" class="row justify-content-sm-center">
+      <div class="col col-sm-6">
         <gallery-edition :edition="edition" :purchase="true"></gallery-edition>
       </div>
     </div>
@@ -26,7 +11,7 @@
 </template>
 
 <script>
-  import {mapGetters, mapState} from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
   import Artist from '../Artist';
   import GalleryEdition from '../GalleryEdition';
   import ConfirmPurchaseButton from '../ui-controls/ConfirmPurchaseButton';
@@ -66,6 +51,5 @@
   };
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
 </style>

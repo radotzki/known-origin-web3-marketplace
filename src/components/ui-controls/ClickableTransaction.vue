@@ -1,7 +1,6 @@
 <template>
   <span v-if="transaction">
-    View transaction on Etherscan
-    <a class="token-id" :href="buildLink" target="_blank">{{ dotDotDot }}</a>
+    View transaction: <a class="token-id" :href="buildLink" target="_blank">{{ dotDotDot }}</a>
   </span>
 </template>
 

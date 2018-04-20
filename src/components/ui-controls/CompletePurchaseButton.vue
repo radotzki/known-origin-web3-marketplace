@@ -1,54 +1,47 @@
 <template>
-  <div class="complete_purchase_container">
+  <div>
     <form v-if="account">
 
       <div v-if="!assetPurchaseState(asset.id)">
 
-        <div class="pad-bottom" v-if="isUnsold">
-          <input type="checkbox" :id="'confirm_terms'" v-model="confirm_terms">
-          <label :for="'confirm_terms'">I agree with KODA license</label>
+        <div class="form-check mb-2" v-if="isUnsold">
+          <label class="form-check-label" :for="'confirm_terms'">
+            <input type="checkbox" :id="'confirm_terms'" v-model="confirm_terms">
+            <span class="pl-2">I agree with the KODA license</span>
+          </label>
         </div>
 
-        <div class="pad-bottom muted license-text" v-if="isUnsold">
-          By choosing <strong>I agree</strong>, you understand and agree to KnownOrigin's term of service and usage license.
-          <router-link :to="{ name: 'license' }" target="_blank">Read license</router-link>
+        <div v-if="isUnsold" class="mb-2">
+          <small>
+            By choosing <strong>I agree</strong>, you understand and agree to KnownOrigin's term of service and usage license.
+            <router-link :to="{ name: 'license' }" target="_blank">Read license</router-link>
+          </small>
         </div>
 
-        <button type="button" class="btn btn-success"
-                :disabled="!confirm_terms || isPurchaseTriggered(asset.id)"
-                v-on:click="completePurchase" v-if="isUnsold">
-          Confirm buy
-        </button>
+        <div class="btn-group-vertical btn-block">
+          <button type="button" class="btn btn-success btn-block"
+                  :disabled="!confirm_terms || isPurchaseTriggered(asset.id)"
+                  v-on:click="completePurchase" v-if="isUnsold">
+            Confirm buy
+          </button>
 
-        <div class="pad-top">
-          <button type="button" v-on:click="completeFiatPurchase" class="btn btn-warning" v-if="isKnownOrigin && !soldAsFiat">
+          <button type="button" v-on:click="completeFiatPurchase" class="btn btn-warning btn-block " v-if="isKnownOrigin && !soldAsFiat">
             FIAT purchase
           </button>
 
-          <button type="button" v-on:click="reverseFiatPurchase" class="btn btn-danger" v-if="isKnownOrigin && soldAsFiat">
+          <button type="button" v-on:click="reverseFiatPurchase" class="btn btn-danger btn-block" v-if="isKnownOrigin && soldAsFiat">
             Reverse FIAT purchase
           </button>
+
+          <router-link v-if="asset.purchased !== 0" :to="{ name: 'account'}" tag="button" class="btn btn-outline-primary btn-block">
+            View account
+          </router-link>
+
+          <router-link :to="{ name: 'gallery'}" tag="button" class="btn btn-outline-primary btn-block">
+            Back to gallery
+          </router-link>
         </div>
       </div>
-
-      <!--<div>-->
-        <!--<button class="btn btn-sold" v-if="asset.purchased !== 0">-->
-          <!--SOLD-->
-        <!--</button>-->
-      <!--</div>-->
-
-      <div class="pad-bottom">
-        <router-link v-if="asset.purchased !== 0" :to="{ name: 'account'}" class="btn btn-link">
-          View account
-        </router-link>
-      </div>
-
-      <div>
-        <router-link :to="{ name: 'gallery'}" class="btn btn-muted">
-          Back to gallery
-        </router-link>
-      </div>
-
     </form>
 
     <p v-if="!account">
@@ -116,7 +109,8 @@
   };
 </script>
 
-<style scoped>
-
-
+<style scoped lang="scss">
+  .form-check {
+    padding-left: 0px;
+  }
 </style>
