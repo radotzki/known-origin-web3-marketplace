@@ -9,6 +9,33 @@
 
           <div class="card-body">
 
+            <div class="text-center" v-if="isPurchaseTriggered(asset.id)">
+              <img src="../../../static/Timer.svg" style="width: 100px"/>
+              <p class="card-text text-muted mt-4">Your purchase is being initiated...</p>
+            </div>
+
+            <div class="text-center" v-if="isPurchaseStarted(asset.id)">
+              <img src="../../../static/Timer.svg" style="width: 100px"/>
+              <p class="card-text text-muted mt-4">Your purchase is being confirmed...</p>
+              <small class="text-muted">
+                <clickable-transaction :transaction="getTransactionForAsset(asset.id)"></clickable-transaction>
+              </small>
+            </div>
+
+            <div class="text-center" v-if="isPurchaseSuccessful(asset.id)">
+              <img src="../../../static/GreenTick.svg" style="width: 100px"/>
+              <p class="card-text text-success mt-4">Your purchase was successful!</p>
+              <small class="text-muted">
+                <clickable-transaction :transaction="getTransactionForAsset(asset.id)"></clickable-transaction>
+              </small>
+              <tweet-purchase-button :asset-id="asset.id"></tweet-purchase-button>
+            </div>
+
+            <div class="text-center" v-if="isPurchaseFailed(asset.id)">
+              <img src="../../../static/Failure.svg" style="width: 100px"/>
+              <p class="card-text text-danger mt-4">Your purchase failed!</p>
+            </div>
+
             <p class="card-text">
               <token-id :value="asset.id"></token-id>
             </p>
@@ -16,11 +43,12 @@
             <edition-name-by-artist :edition="asset"></edition-name-by-artist>
           </div>
 
-          <ul class="list-group list-group-flush">
+          <ul class="list-group list-group-flush" v-if="!assetPurchaseState(asset.id)">
             <li class="list-group-item">
               <div class="d-inline-block"><img src="/../../static/Account_You_icn.svg" style="height: 50px"/></div>
               <div class="d-inline-block">
-                <span class="pl-4 pr-2 text-muted">You:</span><address-icon :eth-address="account" :size="'small'"></address-icon>
+                <span class="pl-4 pr-2 text-muted">You:</span>
+                <address-icon :eth-address="account" :size="'small'"></address-icon>
               </div>
             </li>
             <li class="list-group-item">
@@ -32,7 +60,8 @@
             <li class="list-group-item">
               <div class="d-inline-block"><img src="/../../static/Account_You_icn.svg" style="height: 50px"/></div>
               <div class="d-inline-block">
-                <span class="pl-4 pr-2 text-muted">Transfer to:</span><address-icon :eth-address="asset.owner" :size="'small'"></address-icon>
+                <span class="pl-4 pr-2 text-muted">Transfer to:</span>
+                <address-icon :eth-address="asset.owner" :size="'small'"></address-icon>
               </div>
             </li>
             <li class="list-group-item text-right">
@@ -41,108 +70,9 @@
           </ul>
 
           <div class="card-footer">
-            <complete-purchase-button :asset="asset" class="pad-bottom" @purchaseInitiated="onPurchaseInitiated">
-            </complete-purchase-button>
+            <complete-purchase-button :asset="asset" class="pad-bottom" @purchaseInitiated="onPurchaseInitiated"></complete-purchase-button>
           </div>
 
-
-          <!--<div class="border-box">-->
-          <!--<div class="card-content">-->
-
-          <!--<div v-if="isPurchaseTriggered(asset.id)" class="icon-message">-->
-          <!--<img src="../../../static/Timer.svg" style="width: 100px"/>-->
-          <!--<h2 class="text-blue pad-top">Your purchase is being initiated...</h2>-->
-          <!--</div>-->
-
-          <!--<div v-if="isPurchaseStarted(asset.id)" class="icon-message">-->
-          <!--<img src="../../../static/Timer.svg" style="width: 100px"/>-->
-          <!--<h2 class="text-blue pad-top">Your purchase is being confirmed...</h2>-->
-          <!--<p>-->
-          <!--<clickable-transaction :transaction="getTransactionForAsset(asset.id)"></clickable-transaction>-->
-          <!--</p>-->
-          <!--</div>-->
-
-          <!--<div v-if="isPurchaseSuccessful(asset.id)" class="icon-message">-->
-          <!--<img src="../../../static/GreenTick.svg" style="width: 100px"/>-->
-          <!--<h2 class="text-success pad-top">Your purchase was successful!</h2>-->
-          <!--<p>-->
-          <!--<clickable-transaction :transaction="getTransactionForAsset(asset.id)"></clickable-transaction>-->
-          <!--</p>-->
-          <!--<div class="centered">-->
-          <!--<tweet-purchase-button :asset-id="asset.id"></tweet-purchase-button>-->
-          <!--</div>-->
-          <!--</div>-->
-
-          <!--<div v-if="isPurchaseFailed(asset.id)" class="icon-message">-->
-          <!--<img src="../../../static/Failure.svg" style="width: 100px"/>-->
-          <!--<h2 class="text-danger pad-top">Your purchase failed!</h2>-->
-          <!--</div>-->
-
-          <!--<h3>{{ asset.otherMeta.artworkName }}</h3>-->
-
-          <!--<edition-name-by-artist :edition="asset" :purchase="true"></edition-name-by-artist>-->
-
-          <!--<token-id :value="asset.id"></token-id>-->
-
-          <!--<hr/>-->
-
-          <!--<div v-if="!assetPurchaseState(asset.id)">-->
-
-          <!--<div v-if="asset.purchased == 0" class="pad-top pad-bottom">-->
-          <!--<table>-->
-          <!--<tr>-->
-          <!--<td width="25%"><img src="/../../static/Account_You_icn.svg" style="height: 50px"/></td>-->
-          <!--<td width="75%">-->
-          <!--You:<br/>-->
-          <!--<address-icon :eth-address="account" :size="'small'"></address-icon>-->
-          <!--</td>-->
-          <!--</tr>-->
-          <!--<tr>-->
-          <!--<td width="25%"><img src="/../../static/DotDivider@x2.svg" style="height: 50px"/></td>-->
-          <!--<td width="75%">-->
-          <!--<hr/>-->
-          <!--</td>-->
-          <!--</tr>-->
-          <!--<tr>-->
-          <!--<td width="25%"><img src="/../../static/ETH_icn.svg" style="height: 50px"/></td>-->
-          <!--<td width="75%">-->
-          <!--Amount:<br/>-->
-          <!--<strong>{{ asset.priceInEther }} ETH</strong>-->
-          <!--</td>-->
-          <!--</tr>-->
-          <!--<tr>-->
-          <!--<td width="25%"><img src="/../../static/DotDivider@x2.svg" style="height: 50px"/></td>-->
-          <!--<td width="75%">-->
-          <!--<hr/>-->
-          <!--</td>-->
-          <!--</tr>-->
-          <!--<tr>-->
-          <!--<td width="25%"><img src="/../../static/Account_You_icn.svg" style="height: 50px"/></td>-->
-          <!--<td width="75%">-->
-          <!--Transfer to:<br/>-->
-          <!--<address-icon :eth-address="asset.owner" :size="'small'"></address-icon>-->
-          <!--</td>-->
-          <!--</tr>-->
-          <!--</table>-->
-          <!--</div>-->
-
-          <!--<hr/>-->
-          <!--</div>-->
-
-          <!--<div><h3>Total ETH: <span class="pull-right ">{{ asset.priceInEther }}</span></h3></div>-->
-          <!--</div>-->
-          <!--</div>-->
-          <!--<div class="border-box-buttons">-->
-          <!--<div v-if="isPurchaseFailed(asset.id)" class="pad-bottom">-->
-          <!--<button type="button" v-on:click="retryPurchase" class="btn btn-link">-->
-          <!--Retry-->
-          <!--</button>-->
-          <!--</div>-->
-
-          <!--<complete-purchase-button :asset="asset" class="pad-bottom" @purchaseInitiated="onPurchaseInitiated">-->
-          <!--</complete-purchase-button>-->
-          <!--</div>-->
-          <!--</div>-->
         </div>
       </div>
     </div>
