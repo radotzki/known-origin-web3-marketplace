@@ -14,12 +14,6 @@
       <div class="col">
         <input type="text" class="form-control" v-model="search" placeholder="Search assets..."/>
       </div>
-      <div class="col text-right">
-        <toggle-button :value="showSold"
-                       :labels="{checked: 'Sold', unchecked: 'Unsold'}"
-                       :sync="true" color="#82C7EB" :width="65"
-                       @change="onSoldToggleChanged"></toggle-button>
-      </div>
     </div>
 
     <div class="card-columns" v-if="editions.length > 0">
@@ -30,6 +24,16 @@
       </galleryEdition>
     </div>
 
+
+    <div class="form-row mb-4" v-if="hasFinishedLoading()">
+      <div class="col">
+        <toggle-button :value="showSold"
+                       :labels="{checked: 'Sold', unchecked: 'Unsold'}"
+                       :sync="true" color="#82C7EB" :width="65"
+                       @change="onSoldToggleChanged">
+        </toggle-button>
+      </div>
+    </div>
   </div>
 </template>
 

@@ -13,6 +13,13 @@
       <p class="card-text">
         <token-id :value="asset.id"></token-id>
         <span class="badge badge-light">1 of {{ assetsForEdition(asset.edition).length }}</span>
+        <span class="badge badge-light">
+          <span v-if="assetsForEdition(asset.edition).length == 1">Super-rare</span>
+          <span v-if="assetsForEdition(asset.edition).length > 1 && assetsForEdition(asset.edition).length < 5">Rare</span>
+        </span>
+        <span class="float-right">
+          <tweet-asset-button :edition="asset" v-if="individual"></tweet-asset-button>
+        </span>
       </p>
 
       <edition-name-by-artist :edition="asset"></edition-name-by-artist>
@@ -57,6 +64,7 @@
   import TweetPurchaseButton from "./ui-controls/TweetPurchasedAssetButton.vue";
   import VerifyPurchase from "./ui-controls/VerifyPurchase.vue";
   import ClickableAddress from './ui-controls/ClickableAddress';
+  import TweetAssetButton from "./ui-controls/TweetAssetButton.vue";
 
   export default {
     components: {
@@ -67,7 +75,8 @@
       PriceInEth,
       EditionNameByArtist,
       TokenId,
-      ClickableAddress
+      ClickableAddress,
+      TweetAssetButton
     },
     name: 'asset',
     props: {

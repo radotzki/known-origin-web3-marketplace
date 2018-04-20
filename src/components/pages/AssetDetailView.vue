@@ -25,8 +25,7 @@
     },
     props: {
       tokenId: {
-        required: true,
-        type: String
+        required: true
       }
     },
     methods: {

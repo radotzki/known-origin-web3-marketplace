@@ -33,15 +33,15 @@
             Reverse FIAT purchase
           </button>
 
-          <router-link v-if="asset.purchased !== 0" :to="{ name: 'account'}" tag="button" class="btn btn-outline-primary btn-block">
-            View account
-          </router-link>
-
           <router-link :to="{ name: 'gallery'}" tag="button" class="btn btn-outline-primary btn-block">
             Back to gallery
           </router-link>
         </div>
       </div>
+
+      <router-link v-if="asset.purchased !== 0" :to="{ name: 'account'}" tag="button" class="btn btn-outline-primary btn-block">
+        View account
+      </router-link>
     </form>
 
     <p v-if="!account">

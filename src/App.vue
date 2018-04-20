@@ -58,8 +58,7 @@
               <router-link :to="{ name: 'gallery' }">Gallery</router-link> &bull;
               <router-link :to="{ name: 'artists' }">Artists</router-link> &bull;
               <router-link :to="{ name: 'account' }">Account</router-link> &bull;
-              <router-link :to="{ name: 'details' }">Contract</router-link> &bull;
-              <router-link :to="{ name: 'license' }">License</router-link>
+              <router-link :to="{ name: 'details' }">Contract</router-link>
             </small>
           </div>
           <div class="col-sm text-center">
@@ -141,10 +140,23 @@
   }
 
   body {
-    /* Margin bottom by footer height */
-    margin-bottom: 70px;
+    margin-bottom: 60px;
     margin-top: 10px;
-    padding-top: 70px;
+    padding-top: 60px;
+    padding-bottom: 20px;
+  }
+
+  /* mobile only */
+  @media screen and (max-width: 767px) {
+    body {
+      padding-bottom: 100px;
+    }
+
+    .footer {
+      .col-sm {
+        padding-bottom: 10px;
+      }
+    }
   }
 
   .footer {
@@ -165,9 +177,11 @@
     padding-left: 15px;
     padding-top: 15px;
     color: #f2f5fb;
+
     .slogan {
       color: rgba(255, 255, 255, 0.5);
     }
+
     a {
       color: #f2f5fb;
       padding-left: 2px;

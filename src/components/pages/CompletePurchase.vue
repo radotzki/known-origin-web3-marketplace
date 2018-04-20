@@ -9,12 +9,12 @@
 
           <div class="card-body">
 
-            <div class="text-center" v-if="isPurchaseTriggered(asset.id)">
+            <div class="text-center mb-2" v-if="isPurchaseTriggered(asset.id)">
               <img src="../../../static/Timer.svg" style="width: 100px"/>
               <p class="card-text text-muted mt-4">Your purchase is being initiated...</p>
             </div>
 
-            <div class="text-center" v-if="isPurchaseStarted(asset.id)">
+            <div class="text-center mb-2" v-if="isPurchaseStarted(asset.id)">
               <img src="../../../static/Timer.svg" style="width: 100px"/>
               <p class="card-text text-muted mt-4">Your purchase is being confirmed...</p>
               <small class="text-muted">
@@ -22,22 +22,29 @@
               </small>
             </div>
 
-            <div class="text-center" v-if="isPurchaseSuccessful(asset.id)">
+            <div class="text-center mb-2" v-if="isPurchaseSuccessful(asset.id)">
               <img src="../../../static/GreenTick.svg" style="width: 100px"/>
               <p class="card-text text-success mt-4">Your purchase was successful!</p>
               <small class="text-muted">
                 <clickable-transaction :transaction="getTransactionForAsset(asset.id)"></clickable-transaction>
               </small>
-              <tweet-purchased-asset-button :asset-id="asset.id"></tweet-purchased-asset-button>
+              <div class="mt-2">
+                <tweet-purchase-button :asset-id="asset.id"></tweet-purchase-button>
+              </div>
             </div>
 
-            <div class="text-center" v-if="isPurchaseFailed(asset.id)">
+            <div class="text-center mb-2" v-if="isPurchaseFailed(asset.id)">
               <img src="../../../static/Failure.svg" style="width: 100px"/>
               <p class="card-text text-danger mt-4">Your purchase failed!</p>
             </div>
 
             <p class="card-text">
               <token-id :value="asset.id"></token-id>
+              <span class="badge badge-light">1 of {{ assetsForEdition(asset.edition).length }}</span>
+              <span class="badge badge-light">
+                <span v-if="assetsForEdition(asset.edition).length == 1">Super-rare</span>
+                <span v-if="assetsForEdition(asset.edition).length > 1 && assetsForEdition(asset.edition).length < 5">Rare</span>
+              </span>
             </p>
 
             <edition-name-by-artist :edition="asset"></edition-name-by-artist>
@@ -47,20 +54,20 @@
             <li class="list-group-item">
               <div class="d-inline-block"><img src="/../../static/Account_You_icn.svg" style="height: 50px"/></div>
               <div class="d-inline-block">
-                <span class="pl-2 pr-2 text-muted">You:</span>
+                <span class="pl-2 text-muted">You:</span>
                 <address-icon :eth-address="account" :size="'small'"></address-icon>
               </div>
             </li>
             <li class="list-group-item">
               <div class="d-inline-block"><img src="/../../static/ETH_icn.svg" style="height: 50px"/></div>
               <div class="d-inline-block">
-                <span class="pl-2 pr-2 text-muted">Amount:</span>{{ asset.priceInEther }} ETH
+                <span class="pl-2 text-muted">Amount:</span> <strong>{{ asset.priceInEther }} ETH</strong>
               </div>
             </li>
             <li class="list-group-item">
               <div class="d-inline-block"><img src="/../../static/Account_You_icn.svg" style="height: 50px"/></div>
               <div class="d-inline-block">
-                <span class="pl-2 pr-2 text-muted">To:</span>
+                <span class="pl-2 text-muted">To:</span>
                 <address-icon :eth-address="asset.owner" :size="'small'"></address-icon>
               </div>
             </li>
