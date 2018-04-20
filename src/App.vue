@@ -67,16 +67,16 @@
           </div>
           <div class="col-sm text-center">
             <a href="mailto:hello@knownorigin.io" target="_blank">
-              <font-awesome-icon :icon="['fas', 'envelope-square']"></font-awesome-icon>
+              <font-awesome-icon :icon="['fas', 'envelope-square']" size="lg"></font-awesome-icon>
             </a>
             <a href="https://medium.com/knownorigin" target="_blank">
-              <font-awesome-icon :icon="['fab', 'medium']"></font-awesome-icon>
+              <font-awesome-icon :icon="['fab', 'medium']" size="lg"></font-awesome-icon>
             </a>
             <a href="https://t.me/knownorigin" target="_blank">
-              <font-awesome-icon :icon="['fab', 'telegram-plane']"></font-awesome-icon>
+              <font-awesome-icon :icon="['fab', 'telegram-plane']" size="lg"></font-awesome-icon>
             </a>
             <a href="https://twitter.com/knownorigin_io" target="_blank">
-              <font-awesome-icon :icon="['fab', 'twitter']"></font-awesome-icon>
+              <font-awesome-icon :icon="['fab', 'twitter']" size="lg"></font-awesome-icon>
             </a>
           </div>
         </div>
