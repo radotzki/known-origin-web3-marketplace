@@ -82,8 +82,9 @@
 
             let matchesName = item.artworkName.toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
             let matchesDescription = item.description.toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
+            let matchesArtist = item.otherMeta.artist.toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
 
-            return matchesName || matchesDescription;
+            return matchesName || matchesDescription || matchesArtist;
           }.bind(this));
         this.finishedLoading = true;
         return results;
