@@ -7,7 +7,7 @@
         <div class="form-check mb-2" v-if="isUnsold">
           <label class="form-check-label" :for="'confirm_terms'">
             <input type="checkbox" :id="'confirm_terms'" v-model="confirm_terms">
-            I agree with the KODA license
+            <span class="pl-2">I agree with the KODA license</span>
           </label>
         </div>
 

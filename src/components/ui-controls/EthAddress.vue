@@ -9,7 +9,7 @@
     computed: {
       dotDotDot: function () {
         if (this.value) {
-          return this.value.substr(0, 12) + '...' + this.value.substr(this.value.length - 12, this.value.length);
+          return this.value.substr(0, 8) + '...' + this.value.substr(this.value.length - 8, this.value.length);
         }
         return str;
       }

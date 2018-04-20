@@ -47,24 +47,24 @@
             <li class="list-group-item">
               <div class="d-inline-block"><img src="/../../static/Account_You_icn.svg" style="height: 50px"/></div>
               <div class="d-inline-block">
-                <span class="pl-4 pr-2 text-muted">You:</span>
+                <span class="pl-2 pr-2 text-muted">You:</span>
                 <address-icon :eth-address="account" :size="'small'"></address-icon>
               </div>
             </li>
             <li class="list-group-item">
               <div class="d-inline-block"><img src="/../../static/ETH_icn.svg" style="height: 50px"/></div>
               <div class="d-inline-block">
-                <span class="pl-4 pr-2 text-muted">Amount:</span>{{ asset.priceInEther }} ETH
+                <span class="pl-2 pr-2 text-muted">Amount:</span>{{ asset.priceInEther }} ETH
               </div>
             </li>
             <li class="list-group-item">
               <div class="d-inline-block"><img src="/../../static/Account_You_icn.svg" style="height: 50px"/></div>
               <div class="d-inline-block">
-                <span class="pl-4 pr-2 text-muted">Transfer to:</span>
+                <span class="pl-2 pr-2 text-muted">To:</span>
                 <address-icon :eth-address="asset.owner" :size="'small'"></address-icon>
               </div>
             </li>
-            <li class="list-group-item text-right">
+            <li class="list-group-item text-right no-bottom-border">
               <price-in-eth :value="asset.priceInEther"></price-in-eth>
             </li>
           </ul>
@@ -161,5 +161,7 @@
 </script>
 
 <style scoped>
-
+  li.no-bottom-border {
+    border-bottom: 0 none;
+  }
 </style>

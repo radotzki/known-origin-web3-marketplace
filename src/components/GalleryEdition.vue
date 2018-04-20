@@ -13,7 +13,7 @@
 
       <p class="card-text">
         <span class="badge badge-light">1 of {{ assetsForEdition(edition.edition).length }}</span>
-        <span class="badge badge-light">{{ availableAssetsForEdition(edition.edition).length }} available</span>
+        <span class="badge badge-light" v-if="availableAssetsForEdition(edition.edition).length > 0">{{ availableAssetsForEdition(edition.edition).length }} available</span>
         <span class="float-right">
           <tweet-asset-button :edition="edition"></tweet-asset-button>
         </span>
@@ -25,7 +25,7 @@
     </div>
 
     <ul class="list-group list-group-flush">
-      <li class="list-group-item text-center"><price-in-eth :value="edition.priceInEther"></price-in-eth></li>
+      <li class="list-group-item text-center no-bottom-border"><price-in-eth :value="edition.priceInEther"></price-in-eth></li>
     </ul>
 
     <div class="card-footer text-center" v-if="!purchase">
@@ -34,7 +34,7 @@
       </router-link>
     </div>
 
-    <div class="card-footer text-center" v-if="purchase">
+    <div class="card-footer text-center" v-if="purchase && availableAssetsForEdition(edition.edition).length > 0">
       <confirm-purchase-button :edition="edition"></confirm-purchase-button>
     </div>
 
@@ -66,7 +66,7 @@
       },
       purchase: {
         type: Boolean
-      },
+      }
     },
     computed: {
       ...mapGetters([
@@ -80,4 +80,7 @@
 </script>
 
 <style scoped lang="scss">
+  li.no-bottom-border {
+    border-bottom: 0 none;
+  }
 </style>

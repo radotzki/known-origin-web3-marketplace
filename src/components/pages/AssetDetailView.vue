@@ -48,7 +48,5 @@
 </script>
 
 <style scoped>
-  .border-box-buttons {
-    margin: 15px;
-  }
+
 </style>

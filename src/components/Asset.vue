@@ -27,7 +27,7 @@
           <clickable-address :eth-address="asset.owner"></clickable-address>
         </small>
       </li>
-      <li class="list-group-item text-center">
+      <li class="list-group-item text-center no-bottom-border">
         <price-in-eth :value="asset.priceInEther"></price-in-eth>
       </li>
     </ul>
@@ -90,5 +90,7 @@
 </script>
 
 <style scoped lang="scss">
-
+  li.no-bottom-border {
+    border-bottom: 0 none;
+  }
 </style>
