@@ -59,7 +59,7 @@
       },
       hasFinishedLoading: function () {
         // Use the lack of assets in the store to determine initial loading state
-        if (this.assets === null) {
+        if (this.assets.length === 0) {
           return false;
         }
         return this.editions.length > 0 || this.finishedLoading === true;

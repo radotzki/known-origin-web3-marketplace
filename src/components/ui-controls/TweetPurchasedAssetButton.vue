@@ -10,7 +10,7 @@
 
 <script>
   export default {
-    name: 'tweetPurchaseButton',
+    name: 'tweetPurchasedAssetButton',
     props: ['assetId'],
     computed: {
       purchaseText: function () {

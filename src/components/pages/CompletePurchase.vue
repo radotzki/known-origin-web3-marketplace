@@ -28,7 +28,7 @@
               <small class="text-muted">
                 <clickable-transaction :transaction="getTransactionForAsset(asset.id)"></clickable-transaction>
               </small>
-              <tweet-purchase-button :asset-id="asset.id"></tweet-purchase-button>
+              <tweet-purchased-asset-button :asset-id="asset.id"></tweet-purchased-asset-button>
             </div>
 
             <div class="text-center" v-if="isPurchaseFailed(asset.id)">
@@ -96,7 +96,7 @@
   import { KnownOriginDigitalAsset } from '../../contracts/index';
   import * as actions from '../../store/actions';
   import ClickableTransaction from "../ui-controls/ClickableTransaction.vue";
-  import TweetPurchaseButton from "../ui-controls/TweetPurchaseButton.vue";
+  import TweetPurchaseButton from "../ui-controls/TweetPurchasedAssetButton.vue";
 
   export default {
     name: 'completePurchase',

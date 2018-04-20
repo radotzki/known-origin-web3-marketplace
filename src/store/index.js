@@ -41,7 +41,7 @@ const store = new Vuex.Store({
 
     // non-contract data
     artists: artistData,
-    assets: null,
+    assets: [],
     assetsByEditions: [],
     assetsByArtistCode: [],
     editionSummary: [],

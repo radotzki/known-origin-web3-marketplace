@@ -55,7 +55,7 @@
   import PriceInEth from './ui-controls/PriceInEth';
   import TokenId from './ui-controls/TokenId';
   import EditionNameByArtist from './ui-controls/EditionNameByArtist';
-  import TweetPurchaseButton from "./ui-controls/TweetPurchaseButton.vue";
+  import TweetPurchaseButton from "./ui-controls/TweetPurchasedAssetButton.vue";
   import VerifyPurchase from "./ui-controls/VerifyPurchase.vue";
   import ClickableAddress from './ui-controls/ClickableAddress';
 

@@ -8,6 +8,9 @@
       <p class="card-text">
         <span class="badge badge-light">1 of {{ assetsForEdition(edition.edition).length }}</span>
         <span class="badge badge-light">{{ availableAssetsForEdition(edition.edition).length }} available</span>
+        <span class="float-right">
+          <tweet-asset-button :edition="edition"></tweet-asset-button>
+        </span>
       </p>
 
       <edition-name-by-artist :edition="edition" :purchase="purchase"></edition-name-by-artist>
@@ -39,10 +42,17 @@
   import EditionNameByArtist from './ui-controls/EditionNameByArtist.vue';
   import ConfirmPurchaseButton from './ui-controls/ConfirmPurchaseButton';
   import AssetFigure from './AssetFigure.vue';
+  import TweetAssetButton from "./ui-controls/TweetAssetButton.vue";
 
   export default {
     name: 'galleryEdition',
-    components: {PriceInEth, AssetFigure, EditionNameByArtist, ConfirmPurchaseButton},
+    components: {
+      TweetAssetButton,
+      PriceInEth,
+      AssetFigure,
+      EditionNameByArtist,
+      ConfirmPurchaseButton
+    },
     props: {
       edition: {
         required: true,
