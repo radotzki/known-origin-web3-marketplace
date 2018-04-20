@@ -7,7 +7,7 @@
         <div class="form-check mb-2" v-if="isUnsold">
           <label class="form-check-label" :for="'confirm_terms'">
             <input type="checkbox" :id="'confirm_terms'" v-model="confirm_terms">
-            I agree with KODA license
+            I agree with the KODA license
           </label>
         </div>
 
@@ -32,17 +32,15 @@
           <button type="button" v-on:click="reverseFiatPurchase" class="btn btn-danger btn-block" v-if="isKnownOrigin && soldAsFiat">
             Reverse FIAT purchase
           </button>
+
+          <router-link v-if="asset.purchased !== 0" :to="{ name: 'account'}" tag="button" class="btn btn-outline-primary btn-block">
+            View account
+          </router-link>
+
+          <router-link :to="{ name: 'gallery'}" tag="button" class="btn btn-outline-primary btn-block">
+            Back to gallery
+          </router-link>
         </div>
-      </div>
-
-      <div class="btn-group-vertical btn-block">
-        <router-link v-if="asset.purchased !== 0" :to="{ name: 'account'}" tag="button" class="btn btn-outline-primary btn-block">
-          View account
-        </router-link>
-
-        <router-link :to="{ name: 'gallery'}" tag="button" class="btn btn-outline-primary btn-block">
-          Back to gallery
-        </router-link>
       </div>
     </form>
 
