@@ -4,7 +4,7 @@
 
     <div v-if="asset" class="row justify-content-sm-center">
       <div class="col col-sm-6">
-        <asset :asset="asset" :key="asset.id"></asset>
+        <asset :asset="asset" :key="asset.id" :individual="true"></asset>
       </div>
     </div>
 

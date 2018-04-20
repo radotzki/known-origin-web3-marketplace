@@ -46,7 +46,7 @@
       </nav>
     </header>
 
-    <main role="main" class="container">
+    <main role="main" class="container pb-4">
       <router-view></router-view>
     </main>
 

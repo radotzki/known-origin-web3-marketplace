@@ -1,7 +1,6 @@
 <template>
   <div v-if="assetId">
     <a class="twitter-share-button"
-       data-size="large"
        target="_blank"
        :href="purchaseText">
       Tweet

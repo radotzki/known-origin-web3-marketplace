@@ -17,21 +17,25 @@
 
       <edition-name-by-artist :edition="asset"></edition-name-by-artist>
 
-      <p class="card-text">{{ asset.otherMeta.description }}</p>
+      <p class="card-text" v-if="individual">{{ asset.otherMeta.description }}</p>
     </div>
 
     <ul class="list-group list-group-flush">
       <li class="list-group-item">
-        <span class="text-muted">Owner:</span>
-        <address-icon :eth-address="asset.owner" :size="'small'"></address-icon>
+        <small>
+          <span class="text-muted">Owner:</span>
+          <clickable-address :eth-address="asset.owner"></clickable-address>
+        </small>
       </li>
       <li class="list-group-item text-center">
         <price-in-eth :value="asset.priceInEther"></price-in-eth>
       </li>
     </ul>
 
-    <div class="card-footer">
-      <!--<tweet-purchase-button :asset-id="asset.id"></tweet-purchase-button>-->
+    <div class="card-footer" v-if="!individual">
+      <router-link :to="{ name: 'assetDetailView', params: { tokenId: asset.id} }" tag="button" class="btn btn-outline-primary btn-block">
+        View asset
+      </router-link>
     </div>
 
     <!-- disabled for now until we know more -->
@@ -53,6 +57,7 @@
   import EditionNameByArtist from './ui-controls/EditionNameByArtist';
   import TweetPurchaseButton from "./ui-controls/TweetPurchaseButton.vue";
   import VerifyPurchase from "./ui-controls/VerifyPurchase.vue";
+  import ClickableAddress from './ui-controls/ClickableAddress';
 
   export default {
     components: {
@@ -63,13 +68,17 @@
       AssetFigure,
       PriceInEth,
       EditionNameByArtist,
-      TokenId
+      TokenId,
+      ClickableAddress
     },
     name: 'asset',
     props: {
       asset: {
         type: Object
       },
+      individual: {
+        type: Boolean
+      }
     },
     computed: {
       ...mapGetters([
