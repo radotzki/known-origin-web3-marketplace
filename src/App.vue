@@ -74,6 +74,7 @@
             <a href="https://twitter.com/knownorigin_io" target="_blank">
               <font-awesome-icon :icon="['fab', 'twitter']" size="lg"></font-awesome-icon>
             </a>
+            <current-network></current-network>
           </div>
         </div>
       </div>
@@ -85,7 +86,7 @@
   /* global web3:true */
 
   import Web3 from 'web3';
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import * as actions from './store/actions';
   import * as mutations from './store/mutation-types';
   import CurrentNetwork from './components/ui-controls/CurrentNetwork';
@@ -102,6 +103,7 @@
       ...mapState([]),
     },
     mounted() {
+
       let bootStrappedWeb3;
 
       // Checking if Web3 has been injected by the browser (Mist/MetaMask)
@@ -110,13 +112,23 @@
       } else {
         console.log('No web3? You should consider trying MetaMask!');
         this.$modal.show('no-web3-found');
+
+        console.log('No Web3 Detected... falling back to using HTTP Provider');
         bootStrappedWeb3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/nbCbdzC6IG9CF6hmvAVQ"));
       }
 
       window.web3 = bootStrappedWeb3;
 
-      // Bootstrap the full app
-      this.$store.dispatch(actions.INIT_APP, bootStrappedWeb3);
+      // Listen for when web3 is connected and then bootstrap the app
+      window.web3.eth.net.isListening()
+        .then(() => {
+          console.log('is connected');
+
+          // Bootstrap the full app
+          this.$store.dispatch(actions.INIT_APP, bootStrappedWeb3);
+        })
+        .catch(e => console.log('Something went wrong', e));
+
     },
   };
 </script>

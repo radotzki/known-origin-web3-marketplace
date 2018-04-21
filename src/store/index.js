@@ -9,9 +9,9 @@ import artistData from './artist-data';
 import createLogger from 'vuex/dist/logger';
 import {getNetIdString, getEtherscanAddress} from '../utils';
 import contract from 'truffle-contract';
-import knownOriginDigitalAsset from '../../build/contracts/KnownOriginDigitalAsset.json';
+import knownOriginDigitalAssetJson from '../../build/contracts/KnownOriginDigitalAsset.json';
 
-const KnownOriginDigitalAsset = contract(knownOriginDigitalAsset);
+let KnownOriginDigitalAsset;
 
 Vue.use(Vuex);
 
@@ -230,6 +230,11 @@ const store = new Vuex.Store({
       commit(mutations.UPDATE_PURCHASE_STATE, {tokenId: asset.id});
     },
     [actions.INIT_APP]({commit, dispatch, state}, web3) {
+
+
+      KnownOriginDigitalAsset = contract(knownOriginDigitalAssetJson);
+
+      console.log(web3.currentProvider);
 
       // NON-ASYNC action - set web3 provider on init
       KnownOriginDigitalAsset.setProvider(web3.currentProvider);
@@ -471,7 +476,7 @@ const store = new Vuex.Store({
                 totalNumberOfPurchases: results[1].toString(10)
               });
             });
-        });
+        }).catch((error) => console.log("Something went bang!", error));
     },
     [actions.PURCHASE_ASSET]: function ({commit, dispatch, state}, assetToPurchase) {
       console.log('assetToPurchase', assetToPurchase);
