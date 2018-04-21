@@ -119,16 +119,8 @@
 
       window.web3 = bootStrappedWeb3;
 
-      // Listen for when web3 is connected and then bootstrap the app
-      window.web3.eth.net.isListening()
-        .then(() => {
-          console.log('is connected');
-
-          // Bootstrap the full app
-          this.$store.dispatch(actions.INIT_APP, bootStrappedWeb3);
-        })
-        .catch(e => console.log('Something went wrong', e));
-
+      // Bootstrap the full app
+      this.$store.dispatch(actions.INIT_APP, bootStrappedWeb3);
     },
   };
 </script>
