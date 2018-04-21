@@ -1,9 +1,5 @@
 <template>
-  <div v-if="artist">
-      <h1>{{ artist.name }}</h1>
-
-      <!--<img :src="artist.img"/>-->
-  </div>
+  <h1 v-if="artist">{{ artist.name }}</h1>
 </template>
 
 <script>
@@ -14,8 +10,4 @@
 </script>
 
 <style scoped>
-  .twitter {
-    background-color: deepskyblue;
-    padding: 10px;
-  }
 </style>

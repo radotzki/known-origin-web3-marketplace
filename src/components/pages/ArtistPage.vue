@@ -1,27 +1,13 @@
 <template>
   <div>
-    <header id="header">
-      <router-link :to="{ name: 'account' }" class="pull-right">
-        <img src="/../static/account.svg" style="height:25px"/>
-      </router-link>
-      <div class="header-branding">
-        &nbsp;
-        <router-link :to="{ name: 'home' }" class="back-arrow" style="float: left">
-          <img src="../../../static/back_arrow.svg" style="width: 35px"/>
-        </router-link>
-      </div>
-    </header>
-
     <artist-short-bio :artist="lookupArtist()"></artist-short-bio>
 
-    <div class="centered">
-      <section class="cards">
+    <div class="card-columns">
         <galleryEdition
           v-for="assetEdition, key in lookupAssetsByArtistCode($route.params.artistCode)"
           :edition="assetEdition[0]"
           :key="key">
         </galleryEdition>
-      </section>
     </div>
   </div>
 </template>

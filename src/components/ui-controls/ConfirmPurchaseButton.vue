@@ -1,11 +1,5 @@
 <template>
-  <div class="confirm_purchase_container">
-    <p class="pad-top">
-      <a v-on:click="confirmPurchase" class="btn btn-action" v-if="findNextAssetToPurchase(edition)">
-        Buy Now
-      </a>
-    </p>
-  </div>
+    <a v-on:click="confirmPurchase" class="btn btn-primary btn-block text-white" v-if="findNextAssetToPurchase(edition)">Buy Now</a>
 </template>
 
 <script>
@@ -49,7 +43,6 @@
   };
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
 
 </style>

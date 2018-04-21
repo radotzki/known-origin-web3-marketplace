@@ -293,6 +293,7 @@ const store = new Vuex.Store({
             return axios.get(`${rootMeta.meta}`)
               .then((otherMeta) => {
                 return {
+                  tokenUri: tokenUri,
                   name: rootMeta.name,
                   description: rootMeta.description,
                   otherMeta: otherMeta.data,
@@ -335,7 +336,8 @@ const store = new Vuex.Store({
 
             const tokenUri = editionInfo[3];
 
-            let fullAssetDetails = {
+            // Populate all data - minus tokenURI data
+            return {
               id: assetInfo[0].toNumber(),
               owner: owner.toString(),
               purchased: assetInfo[2].toNumber(),
@@ -351,15 +353,6 @@ const store = new Vuex.Store({
               editionNumber: editionInfo[2].toNumber(),
               tokenUri: tokenUri
             };
-
-            return lookupIPFSData(tokenUri).then((ipfsMeta) => {
-              // set IPFS lookup back on object
-              _.set(fullAssetDetails, 'artworkName', ipfsMeta.name);
-              _.set(fullAssetDetails, 'description', ipfsMeta.description);
-              _.set(fullAssetDetails, 'lowResImg', ipfsMeta.lowResImg);
-              _.set(fullAssetDetails, 'otherMeta', ipfsMeta.otherMeta);
-              return fullAssetDetails;
-            });
           });
       };
 
@@ -367,41 +360,82 @@ const store = new Vuex.Store({
         .then((contract) => {
           let supply = _.range(0, state.totalSupply);
 
-          return Promise.all(_.map(supply, (index) => lookupAssetInfo(contract, index)))
-            .then((assets) => {
+          /**
+           * Functions takes a list of assets and loads all the metadata associated with them, preventing duplicate tokenUris
+           */
+          const populateTokenUriData = (assets) => {
 
-              // Strip out burnt tokens which will appear as nulls in the list
-              assets = _.without(assets, null);
+            // find unique tokenUri's as editions will share the same metadata
+            let uniqueTokenUri = _.map(_.uniqBy(assets, 'tokenUri'), 'tokenUri');
 
-              let assetsByEditions = _.groupBy(assets, 'edition');
-              let assetsByArtistCode = _.groupBy(assets, 'artistCode');
+            // Look up each unique tokenUri
+            let tokenUriLookups = _.map(uniqueTokenUri, (tokenUri) => lookupIPFSData(tokenUri));
 
-              // flatten out the editions so we can easily work with them on the gallery page
-              let editionSummary = _.map(assetsByEditions, function (assets, editionKey) {
 
-                let editionSummary = {
-                  edition: editionKey,
-                  totalSupply: assets.length,
-                  totalPurchased: assets.filter((asset) => asset.purchased === 1 || asset.purchased === 2).length
-                };
+            return Promise.all(tokenUriLookups).then((results) => {
 
-                // Add the first asset to the flat list
-                _.extend(editionSummary, assets[0]);
+              // flatten out the array of loading IPFS data into a map keyed by {tokenUri:data}
+              let dataByTokenUri = _.keyBy(results, 'tokenUri');
 
-                // chop the ID to ensure its not an asset
-                delete editionSummary.id;
-                delete editionSummary.purchased;
+              // find and set metadata onto each asset
+              return _.map(assets, (asset) => {
 
-                return editionSummary;
-              });
+                // grab data by tokenUri
+                let ipfsMeta = dataByTokenUri[asset.tokenUri];
 
-              commit(mutations.SET_ASSETS, {
-                assets: assets,
-                assetsByEditions: assetsByEditions,
-                assetsByArtistCode: assetsByArtistCode,
-                editionSummary: editionSummary,
+                // set IPFS lookup back on object
+                _.set(asset, 'artworkName', ipfsMeta.name);
+                _.set(asset, 'description', ipfsMeta.description);
+                _.set(asset, 'lowResImg', ipfsMeta.lowResImg);
+                _.set(asset, 'otherMeta', ipfsMeta.otherMeta);
+
+                return asset;
               });
             });
+          };
+
+          /**
+           * Functions takes a set of assets, maps to various models and set on the store
+           */
+          const bindAssetsToStore = (assets) => {
+
+            let assetsByEditions = _.groupBy(assets, 'edition');
+            let assetsByArtistCode = _.groupBy(assets, 'artistCode');
+
+            // flatten out the editions so we can easily work with them on the gallery page
+            let editionSummary = _.map(assetsByEditions, function (assets, editionKey) {
+
+              let editionSummary = {
+                edition: editionKey,
+                totalSupply: assets.length,
+                totalPurchased: assets.filter((asset) => asset.purchased === 1 || asset.purchased === 2).length
+              };
+
+              // Add the first asset to the flat list
+              _.extend(editionSummary, assets[0]);
+
+              // chop the ID to ensure its not an asset
+              delete editionSummary.id;
+              delete editionSummary.purchased;
+
+              return editionSummary;
+            });
+
+            commit(mutations.SET_ASSETS, {
+              assets: assets,
+              assetsByEditions: assetsByEditions,
+              assetsByArtistCode: assetsByArtistCode,
+              editionSummary: editionSummary,
+            });
+          };
+
+          return Promise.all(_.map(supply, (index) => lookupAssetInfo(contract, index)))
+            .then((assets) => {
+              // Strip out burnt tokens which will appear as nulls in the list
+              return _.without(assets, null);
+            })
+            .then(populateTokenUriData)
+            .then(bindAssetsToStore);
         });
     },
     [actions.REFRESH_CONTRACT_DETAILS]({commit, dispatch, state}) {

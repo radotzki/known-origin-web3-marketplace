@@ -1,32 +1,10 @@
 <template>
-  <div id="artists">
-    <header id="header">
-      <router-link :to="{ name: 'account' }" class="pull-right">
-        <img src="/../static/account.svg" style="height:25px"/>
-      </router-link>
-      <div class="header-branding">
-        &nbsp;
-        <router-link :to="{ name: 'home' }" class="back-arrow" style="float: left">
-          <img src="../../../static/back_arrow.svg" style="width: 35px"/>
-        </router-link>
-      </div>
-    </header>
+  <div>
+    <loading-spinner v-if="!asset"></loading-spinner>
 
-    <div>
-      <div class="centered" v-if="asset">
-        <section class="cards centered" v-if="asset">
-          <asset :asset="asset" :key="asset.id">
-          </asset>
-        </section>
-      </div>
-
-      <div class="border-box-buttons">
-        <div class="pad-bottom">
-
-          <button type="button" class="btn btn-link" @click="goHome">
-            Gallery
-          </button>
-        </div>
+    <div v-if="asset" class="row justify-content-sm-center">
+      <div class="col col-sm-6">
+        <asset :asset="asset" :key="asset.id" :individual="true"></asset>
       </div>
     </div>
 
@@ -34,17 +12,20 @@
 </template>
 
 <script>
-  import {mapGetters, mapState} from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
   import Artist from '../Artist';
   import Asset from "../Asset.vue";
+  import LoadingSpinner from "../ui-controls/LoadingSpinner.vue";
 
   export default {
     name: 'assetDetailView',
-    components: {Asset},
+    components: {
+      LoadingSpinner,
+      Asset
+    },
     props: {
       tokenId: {
-        required: true,
-        type: String
+        required: true
       }
     },
     methods: {
@@ -66,7 +47,5 @@
 </script>
 
 <style scoped>
-  .border-box-buttons {
-    margin: 15px;
-  }
+
 </style>

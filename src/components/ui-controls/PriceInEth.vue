@@ -1,5 +1,5 @@
 <template>
-  <p class="price centered">Price {{ value }} ETH</p>
+  <strong>Price {{ value }} ETH</strong>
 </template>
 
 <script>
@@ -14,8 +14,4 @@
 </script>
 
 <style scoped>
-  .price {
-    font-weight: bold;
-    text-align: center;
-  }
 </style>

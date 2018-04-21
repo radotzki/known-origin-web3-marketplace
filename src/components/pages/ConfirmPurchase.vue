@@ -1,27 +1,9 @@
 <template>
   <div>
-    <header id="header">
-      <router-link :to="{ name: 'account' }" class="pull-right">
-        <img src="/../static/account.svg" style="height:25px"/>
-      </router-link>
-      <div class="header-branding">
-        &nbsp;
-        <router-link :to="{ name: 'gallery' }" class="back-arrow" style="float: left">
-          <img src="../../../static/back_arrow.svg" style="width: 35px"/>
-        </router-link>
-      </div>
-    </header>
+    <loading-spinner v-if="!edition"></loading-spinner>
 
-    <div class="text-center text-blue" v-if="!edition">
-      <img src="../../../static/Timer.svg" style="width: 100px"/><br/>
-      <span class="loading">Loading...</span>
-    </div>
-
-    <div v-else-if="edition">
-
-      <h1>{{ edition.otherMeta.artworkName }}</h1>
-
-      <div class="assets_to_buy">
+    <div v-else-if="edition" class="row justify-content-sm-center">
+      <div class="col col-sm-6">
         <gallery-edition :edition="edition" :purchase="true"></gallery-edition>
       </div>
     </div>
@@ -35,10 +17,16 @@
   import ConfirmPurchaseButton from '../ui-controls/ConfirmPurchaseButton';
   import _ from 'lodash';
   import EditionQrCode from '../ui-controls/EditionQrCode';
+  import LoadingSpinner from "../ui-controls/LoadingSpinner.vue";
 
   export default {
     name: 'confirmPurchase',
-    components: {EditionQrCode, GalleryEdition, ConfirmPurchaseButton},
+    components: {
+      LoadingSpinner,
+      EditionQrCode,
+      GalleryEdition,
+      ConfirmPurchaseButton
+    },
     computed: {
       ...mapGetters([
         'firstAssetForEdition'
@@ -63,6 +51,5 @@
   };
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
 </style>

@@ -1,7 +1,6 @@
 <template>
   <div v-if="assetId">
     <a class="twitter-share-button"
-       data-size="large"
        target="_blank"
        :href="purchaseText">
       Tweet
@@ -11,7 +10,7 @@
 
 <script>
   export default {
-    name: 'tweetPurchaseButton',
+    name: 'tweetPurchasedAssetButton',
     props: ['assetId'],
     computed: {
       purchaseText: function () {

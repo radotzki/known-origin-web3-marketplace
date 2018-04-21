@@ -1,0 +1,41 @@
+<template>
+  <div class="spinner"></div>
+</template>
+
+<script>
+  import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
+
+  export default {
+    components: {FontAwesomeIcon},
+    name: 'loadingSpinner'
+  };
+</script>
+
+<style scoped>
+  .spinner {
+    width: 80px;
+    height: 80px;
+
+    border: 2px solid #f3f3f3;
+    border-top: 3px solid #3e27d9;
+    border-radius: 100%;
+
+    /*position: absolute;*/
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+
+    animation: spin 1s infinite linear;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>

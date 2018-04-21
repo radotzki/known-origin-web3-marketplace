@@ -1,34 +1,48 @@
 <template>
-  <article class="card" v-if="edition">
-    <div>
-      <asset-figure :edition="edition"></asset-figure>
-      <div class="card-content">
+  <div class="card" v-if="edition">
 
-        <edition-name-by-artist :edition="edition" :purchase="purchase"></edition-name-by-artist>
+    <img class="card-img-top" :src="edition.lowResImg"/>
 
-        <p class="muted">
-          {{ availableAssetsForEdition(edition.edition).length }} available
-        </p>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item bg-danger text-center text-white" v-if="availableAssetsForEdition(edition.edition).length == 0">
+        SOLD
+      </li>
+    </ul>
 
-        <p v-if="purchase">
-          <strong>Artwork description</strong><br/>
-          {{ edition.description }}
-        </p>
+    <div class="card-body">
 
-        <price-in-eth :value="edition.priceInEther"></price-in-eth>
+      <p class="card-text">
+        <span class="badge badge-light">1 of {{ assetsForEdition(edition.edition).length }}</span>
+        <span class="badge badge-light" v-if="availableAssetsForEdition(edition.edition).length > 0">{{ availableAssetsForEdition(edition.edition).length }} available</span>
+        <span class="badge badge-light">
+          <span v-if="assetsForEdition(edition.edition).length == 1">Super-rare</span>
+          <span v-if="assetsForEdition(edition.edition).length > 1 && assetsForEdition(edition.edition).length < 5">Rare</span>
+        </span>
+        <span class="float-right">
+          <tweet-asset-button :edition="edition" v-if="purchase"></tweet-asset-button>
+        </span>
+      </p>
 
-        <p v-if="!purchase" class="pad-top">
-          <router-link :to="{ name: 'confirmPurchase', params: { artistCode: edition.edition.substring(0, 3), edition: edition.edition }}" class="btn btn-link">
-            View details
-          </router-link>
-        </p>
+      <edition-name-by-artist :edition="edition" :purchase="purchase"></edition-name-by-artist>
 
-        <confirm-purchase-button :edition="edition" class="" v-if="purchase"></confirm-purchase-button>
-      </div>
+      <p class="card-text" v-if="purchase">{{ edition.description }}</p>
     </div>
-    <!-- .card-content -->
-  </article>
 
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item text-center no-bottom-border"><price-in-eth :value="edition.priceInEther"></price-in-eth></li>
+    </ul>
+
+    <div class="card-footer text-center" v-if="!purchase">
+      <router-link class="btn btn-outline-primary btn-block" tag="button" :to="{ name: 'confirmPurchase', params: { artistCode: edition.edition.substring(0, 3), edition: edition.edition }}">
+        View details
+      </router-link>
+    </div>
+
+    <div class="card-footer text-center" v-if="purchase && availableAssetsForEdition(edition.edition).length > 0">
+      <confirm-purchase-button :edition="edition"></confirm-purchase-button>
+    </div>
+
+  </div>
 </template>
 
 <script>
@@ -37,11 +51,16 @@
   import PriceInEth from './ui-controls/PriceInEth.vue';
   import EditionNameByArtist from './ui-controls/EditionNameByArtist.vue';
   import ConfirmPurchaseButton from './ui-controls/ConfirmPurchaseButton';
-  import AssetFigure from './AssetFigure.vue';
+  import TweetAssetButton from "./ui-controls/TweetAssetButton.vue";
 
   export default {
     name: 'galleryEdition',
-    components: {PriceInEth, AssetFigure, EditionNameByArtist, ConfirmPurchaseButton},
+    components: {
+      TweetAssetButton,
+      PriceInEth,
+      EditionNameByArtist,
+      ConfirmPurchaseButton
+    },
     props: {
       edition: {
         required: true,
@@ -49,11 +68,12 @@
       },
       purchase: {
         type: Boolean
-      },
+      }
     },
     computed: {
       ...mapGetters([
         'availableAssetsForEdition',
+        'assetsForEdition',
       ]),
     },
     methods: {
@@ -61,5 +81,8 @@
   };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+  li.no-bottom-border {
+    border-bottom: 0 none;
+  }
 </style>
