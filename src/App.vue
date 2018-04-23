@@ -74,7 +74,7 @@
             <a href="https://twitter.com/knownorigin_io" target="_blank">
               <font-awesome-icon :icon="['fab', 'twitter']" size="lg"></font-awesome-icon>
             </a>
-            <current-network></current-network>
+            <small class=""><current-network></current-network></small>
           </div>
         </div>
       </div>
@@ -145,8 +145,12 @@
   body {
     margin-bottom: 60px;
     margin-top: 10px;
-    padding-top: 60px;
+    padding-top: 70px;
     padding-bottom: 20px;
+  }
+
+  .navbar-brand {
+    font-size: 1.5rem;
   }
 
   /* mobile only */
@@ -159,6 +163,10 @@
       .col-sm {
         padding-bottom: 10px;
       }
+    }
+
+    h1 {
+      font-size: 1.5rem;
     }
   }
 
