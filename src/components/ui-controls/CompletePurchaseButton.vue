@@ -19,7 +19,7 @@
         </div>
 
         <div class="btn-group-vertical btn-block">
-          <button type="button" class="btn btn-success btn-block"
+          <button type="button" class="btn btn-success btn-block text-white"
                   :disabled="!confirm_terms || isPurchaseTriggered(asset.id)"
                   v-on:click="completePurchase" v-if="isUnsold">
             Confirm buy

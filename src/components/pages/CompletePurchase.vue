@@ -10,12 +10,12 @@
           <div class="card-body">
 
             <div class="text-center mb-2" v-if="isPurchaseTriggered(asset.id)">
-              <img src="../../../static/Timer.svg" style="width: 100px"/>
+              <loading-spinner></loading-spinner>
               <p class="card-text text-muted mt-4">Your purchase is being initiated...</p>
             </div>
 
             <div class="text-center mb-2" v-if="isPurchaseStarted(asset.id)">
-              <img src="../../../static/Timer.svg" style="width: 100px"/>
+              <loading-spinner></loading-spinner>
               <p class="card-text text-muted mt-4">Your purchase is being confirmed...</p>
               <small class="text-muted">
                 <clickable-transaction :transaction="getTransactionForAsset(asset.id)"></clickable-transaction>
@@ -109,6 +109,7 @@
   import * as actions from '../../store/actions';
   import ClickableTransaction from "../ui-controls/ClickableTransaction.vue";
   import TweetPurchaseButton from "../ui-controls/TweetPurchasedAssetButton.vue";
+  import LoadingSpinner from "../ui-controls/LoadingSpinner.vue";
 
   export default {
     name: 'completePurchase',
@@ -121,7 +122,8 @@
       CompletePurchaseButton,
       PriceInEth,
       EditionNameByArtist,
-      TokenId
+      TokenId,
+      LoadingSpinner
     },
     data () {
       return {
