@@ -23,7 +23,7 @@
       ]),
       dotDotDot: function () {
         if (this.ethAddress) {
-          return this.ethAddress.substr(0, 12) + '...' + this.ethAddress.substr(this.ethAddress.length - 12, this.ethAddress.length);
+          return this.ethAddress.substr(0, 6) + '...' + this.ethAddress.substr(this.ethAddress.length - 6, this.ethAddress.length);
         }
         return '';
       },

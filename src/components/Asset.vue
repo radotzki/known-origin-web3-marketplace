@@ -15,7 +15,7 @@
         <span class="badge badge-light">
           <span v-if="assetsForEdition(asset.edition).length == 1">Super-rare</span>
           <span v-if="assetsForEdition(asset.edition).length > 1 && assetsForEdition(asset.edition).length < 5">Rare</span>
-          <span v-if="assetsForEdition(edition.edition).length > 5">Common</span>
+          <span v-if="assetsForEdition(asset.edition).length > 5">Common</span>
         </span>
         <span class="badge badge-light">1 of {{ assetsForEdition(asset.edition).length }}</span>
         <span class="float-right">
