@@ -8,8 +8,10 @@ import axios from 'axios';
 import artistData from './artist-data';
 import createLogger from 'vuex/dist/logger';
 import {getNetIdString, getEtherscanAddress} from '../utils';
+import contract from 'truffle-contract';
+import knownOriginDigitalAssetJson from '../../build/contracts/KnownOriginDigitalAsset.json';
 
-import {KnownOriginDigitalAsset} from '../contracts/index';
+const KnownOriginDigitalAsset = contract(knownOriginDigitalAssetJson);
 
 Vue.use(Vuex);
 
@@ -229,6 +231,18 @@ const store = new Vuex.Store({
     },
     [actions.INIT_APP]({commit, dispatch, state}, web3) {
 
+      // NON-ASYNC action - set web3 provider on init
+      KnownOriginDigitalAsset.setProvider(web3.currentProvider);
+
+      //dirty hack for web3@1.0.0 support for localhost testrpc, see https://github.com/trufflesuite/truffle-contract/issues/56#issuecomment-331084530
+      if (typeof KnownOriginDigitalAsset.currentProvider.sendAsync !== "function") {
+        KnownOriginDigitalAsset.currentProvider.sendAsync = function () {
+          return KnownOriginDigitalAsset.currentProvider.send.apply(
+            KnownOriginDigitalAsset.currentProvider, arguments
+          );
+        };
+      }
+
       // Set the web3 instance
       commit(mutations.SET_WEB3, web3);
 
@@ -265,7 +279,9 @@ const store = new Vuex.Store({
           // init the KODA contract
           dispatch(actions.REFRESH_CONTRACT_DETAILS);
 
-          return setAccountAndBalance(account);
+          if (account) {
+            return setAccountAndBalance(account);
+          }
         })
         .catch(function (error) {
           console.log('ERROR - account locked', error);
@@ -464,7 +480,7 @@ const store = new Vuex.Store({
                 totalNumberOfPurchases: results[1].toString(10)
               });
             });
-        });
+        }).catch((error) => console.log("Something went bang!", error));
     },
     [actions.PURCHASE_ASSET]: function ({commit, dispatch, state}, assetToPurchase) {
       console.log('assetToPurchase', assetToPurchase);

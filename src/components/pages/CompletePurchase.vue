@@ -106,7 +106,6 @@
   import TokenId from '../ui-controls/TokenId.vue';
   import EditionNameByArtist from '../ui-controls/EditionNameByArtist';
   import * as mutations from '../../store/mutation-types';
-  import { KnownOriginDigitalAsset } from '../../contracts/index';
   import * as actions from '../../store/actions';
   import ClickableTransaction from "../ui-controls/ClickableTransaction.vue";
   import TweetPurchaseButton from "../ui-controls/TweetPurchasedAssetButton.vue";

@@ -37,6 +37,10 @@ const getEtherscanAddress = () => {
         default:
           return '';
       }
+    })
+    .then((etherScanAddress) => {
+      console.log(`Setting etherscan address as ${etherScanAddress}`);
+      return etherScanAddress;
     });
 };
 

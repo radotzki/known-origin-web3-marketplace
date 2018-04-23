@@ -1,6 +1,7 @@
 <template>
   <div>
 
+
     <modal name="no-web3-found" :clickToClose="true" :width="250">
       <div class="alert alert-warning fade show" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close" @click="$modal.hide('no-web3-found')">
@@ -73,6 +74,7 @@
             <a href="https://twitter.com/knownorigin_io" target="_blank">
               <font-awesome-icon :icon="['fab', 'twitter']" size="lg"></font-awesome-icon>
             </a>
+            <current-network></current-network>
           </div>
         </div>
       </div>
@@ -84,7 +86,7 @@
   /* global web3:true */
 
   import Web3 from 'web3';
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import * as actions from './store/actions';
   import * as mutations from './store/mutation-types';
   import CurrentNetwork from './components/ui-controls/CurrentNetwork';
@@ -101,21 +103,24 @@
       ...mapState([]),
     },
     mounted() {
+
+      let bootStrappedWeb3;
+
       // Checking if Web3 has been injected by the browser (Mist/MetaMask)
-      if (typeof web3 === 'undefined') {
+      if (typeof web3 !== 'undefined') {
+        bootStrappedWeb3 = new Web3(web3.currentProvider);
+      } else {
         console.log('No web3? You should consider trying MetaMask!');
         this.$modal.show('no-web3-found');
-        return;
+
+        console.log('No Web3 Detected... falling back to using HTTP Provider');
+        bootStrappedWeb3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/nbCbdzC6IG9CF6hmvAVQ"));
       }
 
-      if (web3) {
-        // Use Mist / MetaMask's / provided provider
-        let bootStrappedWeb3 = new Web3(web3.currentProvider);
-        window.web3 = bootStrappedWeb3;
+      window.web3 = bootStrappedWeb3;
 
-        // Bootstrap the full app
-        this.$store.dispatch(actions.INIT_APP, bootStrappedWeb3);
-      }
+      // Bootstrap the full app
+      this.$store.dispatch(actions.INIT_APP, bootStrappedWeb3);
     },
   };
 </script>
