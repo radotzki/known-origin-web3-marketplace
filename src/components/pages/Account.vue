@@ -43,6 +43,12 @@
       ...mapGetters([
         'assetById',
       ])
+    },
+    mounted() {
+      // Checking if Web3 has been injected by the browser
+      if (typeof web3 === 'undefined') {
+        this.$modal.show('no-web3-found');
+      }
     }
   };
 </script>

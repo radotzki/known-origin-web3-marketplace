@@ -110,10 +110,9 @@
       if (typeof web3 !== 'undefined') {
         bootStrappedWeb3 = new Web3(web3.currentProvider);
       } else {
-        console.log('No web3? You should consider trying MetaMask!');
-        this.$modal.show('no-web3-found');
+        console.log('No web3! You should consider trying MetaMask or an Ethereum browser');
+        console.log('Falling back to using HTTP Provider');
 
-        console.log('No Web3 Detected... falling back to using HTTP Provider');
         bootStrappedWeb3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/nbCbdzC6IG9CF6hmvAVQ"));
       }
 

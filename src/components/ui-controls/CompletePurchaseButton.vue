@@ -44,7 +44,7 @@
       </router-link>
     </form>
 
-    <p v-if="!account">
+    <p v-if="!account" class="text-center pt-2">
       Your account is locked!
     </p>
 
