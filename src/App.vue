@@ -1,25 +1,24 @@
 <template>
   <div>
 
-    <modal name="no-web3-found" :clickToClose="true">
-      <div class="alert alert-light" role="alert">
-          <h2 class="text-danger">No Ethereum Provider Detected!</h2>
+    <modal name="no-web3-found" :clickToClose="true" :width="250">
+      <div class="alert alert-warning fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close" @click="$modal.hide('no-web3-found')">
+          <span aria-hidden="true">&times;</span>
+        </button>
 
-          <p>
-            You need to install <a href='https://metamask.io' target="_blank">MetaMask</a> to use this application and buy digital assets.
-          </p>
+        <p class="pt-4">
+          <strong>You require a Web3 Ethereum enabled browser to buy assets!</strong>
+        </p>
 
-          <div style="display: block; margin-left: auto; margin-right: auto; width: 50%;">
-            <a href='https://metamask.io' target="_blank"><img src="../static/metamask-logo-eyes.png" style="width: 150px"/></a>
-          </div>
+        <p>
+          On chrome try <a href="https://metamask.io" target="_blank">metamask.io</a> or install a mobile wallet such as <a href="https://trustwalletapp.com" target="_blank">TrustWallet</a>
+        </p>
 
-          <p>
-            Or install a Ethereum wallet such as <a href="https://trustwalletapp.com" target="_blank">TrustWallet</a>
-          </p>
-
-          <div>
-            <a href="https://trustwalletapp.com" target="_blank"><img src="/../static/trustwallet_logo.svg" style="height:50px"/></a>
-          </div>
+        <div class="text-center">
+          <a href='https://metamask.io' target="_blank" class="pr-4"><img src="../static/metamask-logo-eyes.png" style="height: 50px"/></a>
+          <a href="https://trustwalletapp.com" target="_blank"><img src="/../static/trustwallet_logo.svg" style="height:50px"/></a>
+        </div>
       </div>
     </modal>
 
