@@ -22,7 +22,8 @@ const artists = [
     twitter: '@peterdavis_art',
     strapline: 'I am a Prize-winning professional portrait painter and member of MAFA. My aim, as a social realist painter, is to capture the spirit of the age and create contemporary portraiture.',
     bio: 'I am a prize-winning professional portrait painter and elected member of the Manchester Academy of Fine Arts (MAFA). My aim, as a social realist painter, is to capture the spirit of the age and create contemporary portraiture that tells stories about my sitters through a strong visual narrative.',
-    img: 'static/artists/PeterD_@x2.png'
+    img: 'static/artists/PeterD_@x2.png',
+    live: true
   },
   {
     artistCode: 'STA',
