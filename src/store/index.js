@@ -52,12 +52,6 @@ const store = new Vuex.Store({
     purchaseState: {}
   },
   getters: {
-    /**
-     * artists we have which should not be shown in the app
-     **/
-    visibleAssets: (state) => () => {
-      return _.reject(state.artists, {hidden: true});
-    },
     assetsForEdition: (state) => (edition) => {
       return state.assets.filter((asset) => asset.edition === edition);
     },
@@ -82,8 +76,8 @@ const store = new Vuex.Store({
     findArtist: (state) => (artistCode) => {
       return _.find(state.artists, (artist) => artist.artistCode.toString() === artistCode);
     },
-    featuredArtists: (state) => {
-      return state.artists.filter((a) => a.featured);
+    liveArtists: (state) => {
+      return state.artists.filter((a) => a.live);
     },
     isKnownOrigin: (state) => {
       if (state.curatorAddress && state.account) {
