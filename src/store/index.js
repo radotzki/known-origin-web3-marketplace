@@ -151,6 +151,10 @@ const store = new Vuex.Store({
       state.account = account;
       state.accountBalance = accountBalance;
       store.dispatch(actions.GET_ASSETS_PURCHASED_FOR_ACCOUNT);
+
+      // Full story identification of account for tracking
+      /* global FS:true */
+      FS.identify(account);
     },
     [mutations.SET_CURRENT_NETWORK](state, currentNetwork) {
       state.currentNetwork = currentNetwork;
