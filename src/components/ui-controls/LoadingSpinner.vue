@@ -13,17 +13,16 @@
 
 <style scoped lang="scss">
 
-  $body-color: #545454;
   $primary: #3e27d9;
 
   .spinner {
     width: 80px;
     height: 80px;
 
-    border: 2px solid $body-color;
+    border: 2px solid #6c757d;
     border-top: 3px solid $primary;
     border-radius: 100%;
-    
+
     top: 0;
     bottom: 0;
     left: 0;
