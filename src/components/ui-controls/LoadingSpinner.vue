@@ -11,16 +11,19 @@
   };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+
+  $body-color: #545454;
+  $primary: #3e27d9;
+
   .spinner {
     width: 80px;
     height: 80px;
 
-    border: 2px solid #f3f3f3;
-    border-top: 3px solid #3e27d9;
+    border: 2px solid $body-color;
+    border-top: 3px solid $primary;
     border-radius: 100%;
-
-    /*position: absolute;*/
+    
     top: 0;
     bottom: 0;
     left: 0;
