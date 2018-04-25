@@ -12,11 +12,7 @@
     <div class="card-body">
 
       <p class="card-text">
-        <span class="badge badge-light">
-          <span v-if="assetsForEdition(edition.edition).length == 1">Ultra rare</span>
-          <span v-if="assetsForEdition(edition.edition).length > 1 && assetsForEdition(edition.edition).length <= 5">Rare</span>
-          <span v-if="assetsForEdition(edition.edition).length > 5">Common</span>
-        </span>
+        <rarity-indicator :assets-in-edition="assetsForEdition(edition.edition)"></rarity-indicator>
         <span class="badge badge-light">1 of {{ assetsForEdition(edition.edition).length }}</span>
         <span class="badge badge-light" v-if="availableAssetsForEdition(edition.edition).length > 0">{{ availableAssetsForEdition(edition.edition).length }} available</span>
         <span class="float-right">
@@ -53,10 +49,12 @@
   import EditionNameByArtist from './ui-controls/EditionNameByArtist.vue';
   import ConfirmPurchaseButton from './ui-controls/ConfirmPurchaseButton';
   import TweetAssetButton from "./ui-controls/TweetAssetButton.vue";
+  import RarityIndicator from "./ui-controls/RarityIndicator.vue";
 
   export default {
     name: 'galleryEdition',
     components: {
+      RarityIndicator,
       TweetAssetButton,
       PriceInEth,
       EditionNameByArtist,

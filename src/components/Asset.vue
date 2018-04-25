@@ -12,11 +12,9 @@
 
       <p class="card-text">
         <token-id :value="asset.id"></token-id>
-        <span class="badge badge-light">
-          <span v-if="assetsForEdition(asset.edition).length == 1">Ultra rare</span>
-          <span v-if="assetsForEdition(asset.edition).length > 1 && assetsForEdition(asset.edition).length < 5">Rare</span>
-          <span v-if="assetsForEdition(asset.edition).length > 5">Common</span>
-        </span>
+
+        <rarity-indicator :assets-in-edition="assetsForEdition(asset.edition)"></rarity-indicator>
+
         <span class="badge badge-light">1 of {{ assetsForEdition(asset.edition).length }}</span>
         <span class="float-right">
           <tweet-asset-button :edition="asset" v-if="individual"></tweet-asset-button>
@@ -66,9 +64,11 @@
   import VerifyPurchase from "./ui-controls/VerifyPurchase.vue";
   import ClickableAddress from './ui-controls/ClickableAddress';
   import TweetAssetButton from "./ui-controls/TweetAssetButton.vue";
+  import RarityIndicator from "./ui-controls/RarityIndicator.vue";
 
   export default {
     components: {
+      RarityIndicator,
       VerifyPurchase,
       TweetPurchaseButton,
       AddressIcon,

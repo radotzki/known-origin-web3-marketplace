@@ -41,10 +41,7 @@
             <p class="card-text">
               <token-id :value="asset.id"></token-id>
               <span class="badge badge-light">1 of {{ assetsForEdition(asset.edition).length }}</span>
-              <span class="badge badge-light">
-                <span v-if="assetsForEdition(asset.edition).length == 1">Ultra rare</span>
-                <span v-if="assetsForEdition(asset.edition).length > 1 && assetsForEdition(asset.edition).length < 5">Rare</span>
-              </span>
+              <rarity-indicator :assets-in-edition="assetsForEdition(asset.edition)"></rarity-indicator>
             </p>
 
             <edition-name-by-artist :edition="asset"></edition-name-by-artist>
@@ -110,10 +107,12 @@
   import ClickableTransaction from "../ui-controls/ClickableTransaction.vue";
   import TweetPurchaseButton from "../ui-controls/TweetPurchasedAssetButton.vue";
   import LoadingSpinner from "../ui-controls/LoadingSpinner.vue";
+  import RarityIndicator from "../ui-controls/RarityIndicator.vue";
 
   export default {
     name: 'completePurchase',
     components: {
+      RarityIndicator,
       TweetPurchaseButton,
       ClickableTransaction,
       PurchaseState,
