@@ -36,9 +36,28 @@
         <td>Total</td>
         <td>{{ totalPurchaseValueInEther }} ETH</td>
       </tr>
+      <tr v-if="totalEditions()">
+        <td>Number of editions</td>
+        <td>{{totalEditions()}}</td>
+      </tr>
+      <tr v-if="totalListedArtists()">
+        <td>Number of artists</td>
+        <td>{{totalListedArtists()}}</td>
+      </tr>
+      <tr v-if="mostExpensivePiece()">
+        <td>Most expensive piece</td>
+        <td>{{mostExpensivePiece().priceInEther}} ETH</td>
+      </tr>
       </tbody>
     </table>
 
+    <!--<h1>Activity Stream</h1>-->
+
+    <!--<table class="table table-striped">-->
+      <!--<tbody>-->
+
+      <!--</tbody>-->
+    <!--</table>-->
   </div>
 </template>
 
@@ -49,9 +68,14 @@
   import ClickableAddress from '../ui-controls/ClickableAddress';
 
   export default {
-    name: 'details',
+    name: 'contractDetails',
     components: {AddressIcon, ClickableAddress},
     computed: {
+      ...mapGetters([
+        'totalEditions',
+        'totalListedArtists',
+        'mostExpensivePiece',
+      ]),
       ...mapState([
         'curatorAddress',
         'contractDeveloperAddress',

@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Artists from '@/components/pages/Artists';
-import Details from '@/components/pages/Details';
+import ContractDetails from '@/components/pages/ContractDetails';
 import Gallery from '@/components/pages/Gallery';
 import Account from '@/components/pages/Account';
 import License from '@/components/pages/License';
@@ -36,9 +36,9 @@ export default new Router({
       component: Artists
     },
     {
-      path: '/details',
+      path: '/contractDetails',
       name: 'details',
-      component: Details
+      component: ContractDetails
     },
     {
       path: '/gallery',

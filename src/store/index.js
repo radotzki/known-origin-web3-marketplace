@@ -118,6 +118,15 @@ const store = new Vuex.Store({
     getTransactionForAsset: (state, getters) => (assetId) => {
       return getters.assetPurchaseState(assetId).transaction;
     },
+    totalEditions: (state, getters) => () => {
+      return _.size(_.uniqBy(state.assets, 'edition'));
+    },
+    totalListedArtists: (state, getters) => () => {
+      return _.size(_.uniqBy(state.assets, 'artistCode'));
+    },
+    mostExpensivePiece: (state, getters) => () => {
+      return _.head(_.orderBy(state.assets, 'priceInWei'));
+    },
   },
   mutations: {
     [mutations.SET_COMMISSION_ADDRESSES](state, {curatorAddress, contractDeveloperAddress, contractAddress}) {
@@ -154,7 +163,10 @@ const store = new Vuex.Store({
 
       // Full story identification of account for tracking
       /* global FS:true */
-      FS.identify(account);
+      FS.identify(account, {
+        accountBalance: accountBalance,
+        currentNetwork: state.currentNetwork
+      });
     },
     [mutations.SET_CURRENT_NETWORK](state, currentNetwork) {
       state.currentNetwork = currentNetwork;
