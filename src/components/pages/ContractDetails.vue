@@ -48,6 +48,10 @@
         <td>Most expensive piece</td>
         <td>{{mostExpensivePiece().priceInEther}} ETH</td>
       </tr>
+      <tr v-if="cheapestPiece()">
+        <td>Cheapest piece</td>
+        <td>{{cheapestPiece().priceInEther}} ETH</td>
+      </tr>
       </tbody>
     </table>
 
@@ -74,6 +78,7 @@
       ...mapGetters([
         'totalEditions',
         'totalListedArtists',
+        'cheapestPiece',
         'mostExpensivePiece',
       ]),
       ...mapState([

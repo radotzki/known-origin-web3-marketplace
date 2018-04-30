@@ -125,7 +125,10 @@ const store = new Vuex.Store({
       return _.size(_.uniqBy(state.assets, 'artistCode'));
     },
     mostExpensivePiece: (state, getters) => () => {
-      return _.head(_.orderBy(state.assets, 'priceInWei'));
+      return _.head(_.orderBy(state.assets, 'priceInEtherSortable', 'desc'));
+    },
+    cheapestPiece: (state, getters) => () => {
+      return _.head(_.orderBy(state.assets, 'priceInEtherSortable', 'asc'));
     },
   },
   mutations: {
@@ -364,6 +367,7 @@ const store = new Vuex.Store({
               purchased: assetInfo[2].toNumber(),
               priceInWei: assetInfo[3].toString(),
               priceInEther: Web3.utils.fromWei(assetInfo[3].toString(), 'ether').valueOf(),
+              priceInEtherSortable: Web3.utils.fromWei(assetInfo[3].toString(), 'ether'),
               auctionStartDate: assetInfo[4].toString(10),
 
               edition: edition,
