@@ -5,7 +5,7 @@
 
     <div class="row mb-4">
       <div class="col">
-        <address-icon :eth-address="account"></address-icon>
+        <clickable-address :eth-address="account"></clickable-address>
       </div>
     </div>
 
@@ -30,10 +30,11 @@
   import Asset from '../Asset';
   import AddressIcon from '../ui-controls/AddressIcon';
   import EthAddress from '../ui-controls/EthAddress';
+  import ClickableAddress from '../ui-controls/ClickableAddress';
 
   export default {
     name: 'account',
-    components: {Asset, AddressIcon, EthAddress},
+    components: {Asset, AddressIcon, EthAddress, ClickableAddress},
     computed: {
       ...mapState([
         'account',

@@ -1,12 +1,13 @@
 <template>
-  <div class="spinner"></div>
+  <div>
+    <div class="spinner"></div>
+  </div>
+
 </template>
 
 <script>
-  import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
-
   export default {
-    components: {FontAwesomeIcon},
+    components: {},
     name: 'loadingSpinner'
   };
 </script>
@@ -14,12 +15,13 @@
 <style scoped lang="scss">
 
   $primary: #3e27d9;
+  $body-bg: #f2f5fb;
 
   .spinner {
     width: 80px;
     height: 80px;
 
-    border: 2px solid #6c757d;
+    border: 2px solid $body-bg;
     border-top: 3px solid $primary;
     border-radius: 100%;
 

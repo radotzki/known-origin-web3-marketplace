@@ -4,6 +4,13 @@
 
     <loading-spinner v-if="!hasFinishedLoading()"></loading-spinner>
 
+    <div class="row justify-content-sm-center" v-if="!hasFinishedLoading()">
+      <div class="col text-center mt-5">
+        <p>We are loading assets from the Blockchain.</p>
+        <p>Please be patient as we are fully decentralised.</p>
+      </div>
+    </div>
+
     <div class="form-row mb-4" v-if="hasFinishedLoading()">
       <div class="col">
         <select class="form-control" title="price filter" v-model="priceFilter">

@@ -352,10 +352,10 @@ const store = new Vuex.Store({
             const rawEdition = editionInfo[1];
             const owner = assetInfo[1];
 
-            // Handle burnt tokens by checking edition and owner are both blank
-            if (rawEdition === "0x00000000000000000000000000000000" && owner === "0x0000000000000000000000000000000000000000") {
-              return null; // return nulls for for so we can strip them out at the nxt stage
-            }
+            // // Handle burnt tokens by checking edition and owner are both blank
+            // if (rawEdition === "0x00000000000000000000000000000000" && owner === "0x0000000000000000000000000000000000000000") {
+            //   return null; // return nulls for for so we can strip them out at the nxt stage
+            // }
 
             // should always be 16 chars long
             const edition = Web3.utils.toAscii(rawEdition);

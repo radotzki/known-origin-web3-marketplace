@@ -1,7 +1,7 @@
 <template>
   <span>
     <h5 class="card-title">{{ edition.otherMeta.artworkName }}</h5>
-    <h6 class="card-subtitle mb-2 text-muted">By {{ edition.otherMeta.artist }}</h6>
+    <h6 class="card-subtitle mb-2 text-muted">By <router-link :to="{ name: 'artist', params: { artistCode: edition.artistCode} }">{{ edition.otherMeta.artist }}</router-link></h6>
   </span>
 </template>
 
@@ -12,5 +12,10 @@
   };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+  $body-color: #545454;
+
+  a {
+    color: $body-color;
+  }
 </style>

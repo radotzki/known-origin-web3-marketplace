@@ -62,17 +62,17 @@
             </small>
           </div>
           <div class="col-sm text-center">
-            <a href="mailto:hello@knownorigin.io" target="_blank" class="pr-2">
+            <a href="mailto:hello@knownorigin.io" target="_blank" class="pr-2" title="Mail">
               <font-awesome-icon :icon="['fas', 'envelope-square']" size="lg"></font-awesome-icon>
             </a>
-            <a href="https://medium.com/knownorigin" target="_blank" class="pr-2">
-              <font-awesome-icon :icon="['fab', 'medium']" size="lg"></font-awesome-icon>
+            <a href="https://twitter.com/knownorigin_io" target="_blank" title="Twitter">
+              <font-awesome-icon :icon="['fab', 'twitter']" size="lg"></font-awesome-icon>
             </a>
-            <a href="https://t.me/knownorigin_io" target="_blank" class="pr-2">
+            <a href="https://t.me/knownorigin_io" target="_blank" class="pr-2" title="Telegram">
               <font-awesome-icon :icon="['fab', 'telegram-plane']" size="lg"></font-awesome-icon>
             </a>
-            <a href="https://twitter.com/knownorigin_io" target="_blank">
-              <font-awesome-icon :icon="['fab', 'twitter']" size="lg"></font-awesome-icon>
+            <a href="https://medium.com/knownorigin" target="_blank" class="pr-2" title="Medium">
+              <font-awesome-icon :icon="['fab', 'medium']" size="lg"></font-awesome-icon>
             </a>
             <small class=""><current-network></current-network></small>
           </div>
