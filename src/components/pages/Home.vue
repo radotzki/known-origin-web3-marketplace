@@ -85,8 +85,8 @@
       <div class="col text-white mt-4 mb-4 d-none d-md-block">
         <h4>Community</h4>
         <p class="mt-5">
-          <a href="https://t.me/knownorigin_io" target="_blank" class="community-icon m-5"><font-awesome-icon :icon="['fab', 'telegram-plane']"></font-awesome-icon></a>
-          <a href="https://twitter.com/knownorigin_io" target="_blank" class="community-icon m-5"><font-awesome-icon :icon="['fab', 'twitter']"></font-awesome-icon></a>
+          <a href="https://t.me/knownorigin_io" target="_blank" class="community-icon m-5" title="Telegram"><font-awesome-icon :icon="['fab', 'telegram-plane']"></font-awesome-icon></a>
+          <a href="https://twitter.com/knownorigin_io" target="_blank" class="community-icon m-5" title="Twitter"><font-awesome-icon :icon="['fab', 'twitter']"></font-awesome-icon></a>
         </p>
       </div>
       <div class="col text-white mt-4 mb-4">
@@ -158,7 +158,7 @@
   }
 
   h2 {
-    font-size: 78px;
+    font-size: 58px;
   }
 
   h5 {
