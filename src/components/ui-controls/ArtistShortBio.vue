@@ -1,8 +1,8 @@
 <template>
   <div v-if="artist"  class="clearfix">
-    <img :src="'../' + artist.img" class="float-right"/>
     <h1>{{ artist.name }}</h1>
-    <p class="mt-2 mb-4 mr-5 lead">{{ artist.strapline }}</p>
+    <img :src="'../' + artist.img" class="float-left pr-4"/>
+    <p class="mt-4 mb-4 ml-5 lead">{{ artist.strapline }}</p>
   </div>
 </template>
 
@@ -22,6 +22,10 @@
   @media screen and (max-width: 767px) {
     img {
       max-height: 75px;
+    }
+
+    .lead {
+      font-size: 1rem;
     }
   }
 </style>
