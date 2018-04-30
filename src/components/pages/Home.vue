@@ -12,25 +12,27 @@
       <div class="col text-center"></div>
     </div>
 
-    <div class="row" id="featured">
-      <div class="col mt-4">
-        <h5 class="text-center pb-4">Featured artists</h5>
-        <div class="card-columns">
-          <galleryEdition
-            v-for="assetEdition, key in lookupAssetsByArtistCode('AKP')"
-            :edition="assetEdition[0]"
-            :key="key">
-          </galleryEdition>
+    <div class="container">
+      <div class="row" id="featured">
+        <div class="col mt-4">
+          <h5 class="text-center pb-4">Featured artists</h5>
+          <div class="card-columns">
+            <galleryEdition
+              v-for="assetEdition, key in lookupAssetsByArtistCode('AKP')"
+              :edition="assetEdition[0]"
+              :key="key">
+            </galleryEdition>
 
-          <galleryEdition
-            v-for="assetEdition, key in lookupAssetsByArtistCode('89A')"
-            :edition="assetEdition[0]"
-            :key="key">
-          </galleryEdition>
-        </div>
+            <galleryEdition
+              v-for="assetEdition, key in lookupAssetsByArtistCode('89A')"
+              :edition="assetEdition[0]"
+              :key="key">
+            </galleryEdition>
+          </div>
 
-        <div class="m-4 text-center">
-          <router-link :to="{ name: 'gallery' }" class="btn btn-outline-primary btn-lg">Open gallery</router-link>
+          <div class="m-4 text-center">
+            <router-link :to="{ name: 'gallery' }" class="btn btn-outline-primary btn-lg">Open gallery</router-link>
+          </div>
         </div>
       </div>
     </div>

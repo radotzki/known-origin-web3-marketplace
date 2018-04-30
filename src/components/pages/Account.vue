@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="container">
 
-    <h1>My Account ({{assetsPurchasedByAccount.length}})</h1>
+    <h1>Account ({{assetsPurchasedByAccount.length}})</h1>
 
     <div class="row mb-4">
       <div class="col">

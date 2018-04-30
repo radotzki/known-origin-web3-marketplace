@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <h1>Smart contract</h1>
 
     <table class="table table-striped">

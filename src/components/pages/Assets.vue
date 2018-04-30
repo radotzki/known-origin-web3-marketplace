@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <h1>Assets <span v-if="assets">({{ assets.length }})</span></h1>
 
     <loading-spinner v-if="!hasFinishedLoading()"></loading-spinner>

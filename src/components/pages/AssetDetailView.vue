@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <loading-spinner v-if="!asset"></loading-spinner>
 
     <div v-if="asset" class="row justify-content-sm-center">

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <loading-spinner v-if="!edition"></loading-spinner>
 
     <div v-else-if="edition" class="row justify-content-sm-center">

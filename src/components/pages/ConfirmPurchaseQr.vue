@@ -1,5 +1,5 @@
 <template>
-  <div v-if="edition">
+  <div v-if="edition" class="container">
     <header id="header">
       <router-link :to="{ name: 'account' }" class="pull-right">
         <img src="/../static/account.svg" style="height:25px"/>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <h1>Artists</h1>
 
     <div class="card-columns">

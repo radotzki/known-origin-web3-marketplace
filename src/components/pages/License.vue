@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <h1>License</h1>
 
     <h2>KnownOrigin.io Attribution-NonCommercial-NoDerivatives 4.0 International Public License</h2>

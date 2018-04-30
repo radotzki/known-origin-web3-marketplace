@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <artist-short-bio :artist="lookupArtist()"></artist-short-bio>
 
     <div class="card-columns">
