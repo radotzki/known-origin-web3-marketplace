@@ -63,7 +63,7 @@
       </div>
     </div>
 
-    <div class="row d-none d-md-block" id="quote">
+    <div class="row" id="quote">
       <div class="col mt-4">
         <blockquote class="blockquote text-right">
           <p class="mb-0">
@@ -72,7 +72,7 @@
             <font-awesome-icon :icon="['fas', 'quote-right']"></font-awesome-icon>
           </p>
           <footer class="blockquote-footer mt-4">
-            David, James, &amp; Andy - December 2017 <br/>
+            David, James, &amp; Andy (December 2017)<br/>
             <a href="https://medium.com/knownorigin/pop-up-galleries-artists-and-blockchain-5574115ab507">Read full article
               <font-awesome-icon :icon="['fas', 'external-link-alt']" class="pl-2"></font-awesome-icon>
             </a>
@@ -81,7 +81,25 @@
       </div>
     </div>
 
-    <hr/>
+    <div class="row" id="community">
+      <div class="col text-white mt-4 mb-4 d-none d-md-block">
+        <h4>Community</h4>
+        <p class="mt-5">
+          <a href="https://t.me/knownorigin_io" target="_blank" class="community-icon m-5"><font-awesome-icon :icon="['fab', 'telegram-plane']"></font-awesome-icon></a>
+          <a href="https://twitter.com/knownorigin_io" target="_blank" class="community-icon m-5"><font-awesome-icon :icon="['fab', 'twitter']"></font-awesome-icon></a>
+        </p>
+      </div>
+      <div class="col text-white mt-4 mb-4">
+        <h4>We are in BETA</h4>
+        <p class="lead">Help us become a better product</p>
+        <p>Join the community (and talk to us) on
+          <a href="https://t.me/knownorigin_io" target="_blank">Telegram <font-awesome-icon :icon="['fas', 'external-link-alt']" class="pl-1"></font-awesome-icon></a>
+        </p>
+        <p>Or get regular updates on
+          <a href="https://twitter.com/knownorigin_io" target="_blank">Twitter <font-awesome-icon :icon="['fas', 'external-link-alt']" class="pl-1"></font-awesome-icon></a>
+        </p>
+      </div>
+    </div>
 
     <div class="row" id="partners">
       <div class="col mt-4 text-center">
@@ -89,13 +107,13 @@
 
         <div class="row">
           <div class="col">
-            <img src="../../../static/partners/SHM_icn.png" class="img-fluid"/>
+            <img src="../../../static/partners/SHM_icn.png"/>
           </div>
           <div class="col">
-            <a href="http://www.blockrocket.tech" target="_blank"><img src="../../../static/partners/BlockRock_icn.png" class="img-fluid"/></a>
+            <a href="http://www.blockrocket.tech" target="_blank"><img src="../../../static/partners/BlockRock_icn.png"/></a>
           </div>
           <div class="col">
-            <a href="https://trustwalletapp.com/"><img src="../../../static/partners/TrustWallet_icn.png" class="img-fluid"/></a>
+            <a href="https://trustwalletapp.com/" target="_blank"><img src="../../../static/partners/TrustWallet_icn.png"/></a>
           </div>
         </div>
       </div>
@@ -179,11 +197,20 @@
     background-position: center;
   }
 
-  #how-to {
+  #how-to, #community {
     background-image: url('../../../static/Bigbg.jpg');
     padding-top: 100px;
-    padding-bottom: 100px;
-    padding-left: 250px;
+    padding-bottom: 75px;
+    padding-left: 100px;
+    padding-right: 100px;
+
+    a {
+      color: #FFF;
+    }
+
+    .community-icon {
+      font-size: 78px;
+    }
   }
 
   #join {
@@ -219,10 +246,15 @@
       margin-right: 50px;
     }
 
-    #how-to {
+    blockquote {
+      font-size: 1rem;
+    }
+
+    #how-to, #community {
       padding-top: 50px;
       padding-bottom: 50px;
-      padding-left: 50px;
+      padding-left: 25px;
+      padding-right: 25px;
     }
 
     #brand_logo {
