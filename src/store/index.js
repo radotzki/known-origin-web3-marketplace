@@ -33,6 +33,7 @@ const store = new Vuex.Store({
 
     // contract totals
     totalSupply: null,
+    tokenIdPointer: null,
     totalPurchaseValueInWei: null,
     totalNumberOfPurchases: null,
     totalPurchaseValueInEther: null,
@@ -154,7 +155,8 @@ const store = new Vuex.Store({
       state.totalNumberOfPurchases = totalNumberOfPurchases;
       state.totalPurchaseValueInEther = totalPurchaseValueInEther;
     },
-    [mutations.SET_CONTRACT_DETAILS](state, {name, symbol, totalSupply}) {
+    [mutations.SET_CONTRACT_DETAILS](state, {name, symbol, totalSupply, tokenIdPointer}) {
+      state.tokenIdPointer = tokenIdPointer;
       state.totalSupply = totalSupply;
       state.contractSymbol = symbol;
       state.contractName = name;
@@ -383,7 +385,7 @@ const store = new Vuex.Store({
 
       KnownOriginDigitalAsset.deployed()
         .then((contract) => {
-          let supply = _.range(0, state.totalSupply);
+          let supply = _.range(0, state.tokenIdPointer);
 
           /**
            * Functions takes a list of assets and loads all the metadata associated with them, preventing duplicate tokenUris
@@ -477,12 +479,13 @@ const store = new Vuex.Store({
               });
             });
 
-          Promise.all([contract.name(), contract.symbol(), contract.totalSupply()])
+          Promise.all([contract.name(), contract.symbol(), contract.totalSupply(), contract.tokenIdPointer()])
             .then((results) => {
               commit(mutations.SET_CONTRACT_DETAILS, {
                 name: results[0],
                 symbol: results[1],
-                totalSupply: results[2].toString()
+                totalSupply: results[2].toString(),
+                tokenIdPointer: results[3].toString(),
               });
 
               // We require totalSupply to lookup all ASSETS
