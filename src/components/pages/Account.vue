@@ -44,11 +44,7 @@
         'assetById',
       ])
     },
-    mounted() {
-      if (!this.account) {
-        this.$modal.show('no-web3-found');
-      }
-    }
+    mounted() {}
   };
 </script>
 
