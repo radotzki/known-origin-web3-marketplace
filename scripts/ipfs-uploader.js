@@ -64,6 +64,8 @@ const uploadMetaData = ({ipfsPath}) => {
       let ipfsData = {
         name: `${meta.artworkName}`,
         description: `${meta.description}`,
+        attributes: meta.attributes,
+        external_uri: `${meta.external_uri}`,
         image: `https://ipfs.infura.io/ipfs/${metaPath.hash}/image`,
         meta: `https://ipfs.infura.io/ipfs/${metaPath.hash}/other`
       };
@@ -105,3 +107,6 @@ const getFromCache = (ipfsPath) => {
 module.exports = {
   uploadMetaData: uploadMetaData
 };
+
+// To manually upload fresh IPFS data use this and invoke it on the commandland e.g. node ./scripts/ipfs-uploader.js
+// uploadMetaData({ipfsPath: 'stina_jones_happy_fox'});

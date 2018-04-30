@@ -93,6 +93,54 @@ const artists = [
     live: true
   },
   {
+    artistCode: 'STJ',
+    name: 'Stina Jones',
+    bio: 'I’m a freelance Illustrator & Graphic Designer based in Manchester, with 15 years industry experience ',
+    strapline: 'I’m a freelance Illustrator & Graphic Designer based in Manchester, with 15 years industry experience ',
+    img: 'static/artists/StinaJones1_Profile@x2.png',
+    live: true
+  },
+  {
+    artistCode: 'PSP',
+    name: 'Paris Psalter',
+    bio: 'Will Halcomb is a digital designer and artist from Birmingham, Alabama. A recent graduate of the University of Mississippi with a degree in Graphic Design (BFA), he now lives in NYC.',
+    strapline: 'Will Halcomb is a digital designer and artist from Birmingham, Alabama. A recent graduate of the University of Mississippi with a degree in Graphic Design (BFA), he now lives in NYC.',
+    img: 'static/artists/ParisPSalter_Profile@x2.png',
+    live: true
+  },
+  {
+    artistCode: 'AKP',
+    name: 'Aktiv Protesk',
+    bio: 'Independent digital artists',
+    strapline: 'Independent digital artists',
+    img: 'static/artists/AktivProtesk_@x2_preview.jpeg',
+    live: true
+  },
+  {
+    artistCode: 'LHD',
+    name: 'Lee Holland',
+    bio: 'Hi, I’m Lee Holland, a multi-disciplined designer and illustrator based in Sheffield, United Kingdom.',
+    strapline: 'Hi, I’m Lee Holland, a multi-disciplined designer and illustrator based in Sheffield, United Kingdom.',
+    img: 'static/artists/LeeHolland_Profile@x2.png',
+    live: true
+  },
+  {
+    artistCode: 'MKL',
+    name: 'Mike Lewis',
+    bio: 'Mike Lewis, (AKA The Mighty Lark,) began painting, drawing and illustrating professionally in the summer of 2003.',
+    strapline: 'Mike Lewis, (AKA The Mighty Lark,) began painting, drawing and illustrating professionally in the summer of 2003.',
+    img: 'static/artists/MikeLewis_Profile@x2.png',
+    live: true
+  },
+  {
+    artistCode: 'TSM',
+    name: 'Tony Smith',
+    bio: '',
+    strapline: '',
+    img: 'static/artists/TonySmith_Profile@x2.png',
+    live: true
+  },
+  {
     artistCode: 'HSM',
     name: 'Hamish Muir',
     twitter: '@CoinJournal',
