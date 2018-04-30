@@ -43,7 +43,7 @@
       </nav>
     </header>
 
-    <main role="main" class="container">
+    <main role="main" class="container-fluid">
       <router-view></router-view>
     </main>
 
@@ -126,12 +126,14 @@
 
 <style lang="scss">
 
+  @import url('https://fonts.googleapis.com/css?family=Poppins:400,700');
+
   $body-bg: #f2f5fb;
   $body-color: #545454;
   $primary: #3e27d9;
   $enable-rounded: false;
 
-  $font-family-base: 'Avenir', Helvetica, Arial, sans-serif;
+  $font-family-base: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;
 
   @import '../node_modules/bootstrap/scss/bootstrap.scss';
 

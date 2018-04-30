@@ -1,5 +1,5 @@
 <template>
-  <div class="card" v-if="asset">
+  <div class="card shadow-sm" v-if="asset">
     <img class="card-img-top" :src="asset.lowResImg"/>
 
     <ul class="list-group list-group-flush">

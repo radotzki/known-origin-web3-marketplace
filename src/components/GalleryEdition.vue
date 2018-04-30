@@ -1,5 +1,5 @@
 <template>
-  <div class="card" v-if="edition">
+  <div class="card shadow-sm" v-if="edition">
 
     <img class="card-img-top" :src="edition.lowResImg"/>
 
