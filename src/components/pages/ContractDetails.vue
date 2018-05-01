@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1>Smart contract</h1>
+    <h1>Contract</h1>
 
     <div class="row justify-content-center">
       <div class="col-sm-8">
@@ -25,13 +25,13 @@
                 </td>
               </tr>
               <tr v-if="contractDeveloperAddress">
-                <td>Developer:</td>
+                <td>Developer</td>
                 <td>
                   <clickable-address :eth-address="contractDeveloperAddress"></clickable-address>
                 </td>
               </tr>
               <tr v-if="totalSupply">
-                <td>Supply:</td>
+                <td>Supply</td>
                 <td>{{ totalSupply }}</td>
               </tr>
               <tr v-if="totalNumberOfPurchases">
