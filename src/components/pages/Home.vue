@@ -195,9 +195,9 @@
 
   #brand_logo {
     min-height: 300px;
-    background-image: url('../../../static/1024x576_Dots_v2.jpg');
-    background-repeat: no-repeat;
-    /*background-attachment: fixed;*/
+    background-image: url('../../../static/1024x576_Dots_letterBox.jpg');
+    /*background-repeat: no-repeat;*/
+    background-attachment: fixed;
     background-position: center;
   }
 
