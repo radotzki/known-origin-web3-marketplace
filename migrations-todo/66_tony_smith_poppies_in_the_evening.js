@@ -7,7 +7,6 @@ const blocktimestampPlusOne = require('../scripts/migrations/blocktimestampPlusO
 const ARTWORK = {
   "ipfsPath": "tony_smith_poppies_in_the_evening",
   "edition": "TSMPOPEVENING001",
-  "numberOfEditions": 1,
   "costInEth": 1.1
 };
 

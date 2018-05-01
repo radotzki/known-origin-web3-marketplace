@@ -1,13 +1,12 @@
 const KnownOriginDigitalAsset = artifacts.require('KnownOriginDigitalAsset');
 
-const loadSeedData = require('../scripts/migrations/loadSeedData');
-const loadContractCredentials = require('../scripts/migrations/loadContractCredentials');
-const blocktimestampPlusOne = require('../scripts/migrations/blocktimestampPlusOne');
+const loadSeedData = require('../../scripts/migrations/loadSeedData');
+const loadContractCredentials = require('../../scripts/migrations/loadContractCredentials');
+const blocktimestampPlusOne = require('../../scripts/migrations/blocktimestampPlusOne');
 
 const ARTWORK = {
   "ipfsPath": "aktiv_protesk_stellar",
   "edition": "AKPSTELLAR000DIG",
-  "numberOfEditions": 1,
   "costInEth": 0.008
 };
 
@@ -15,7 +14,7 @@ const galleryData = {
   "artists": [
     {
       "name": "Aktiv Protesk",
-      "artworks": [ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK]
+      "artworks": [ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK/*, ARTWORK, ARTWORK*/]
     }
   ]
 };

@@ -1,12 +1,12 @@
 const KnownOriginDigitalAsset = artifacts.require('KnownOriginDigitalAsset');
 
-const loadSeedData = require('../scripts/migrations/loadSeedData');
-const loadContractCredentials = require('../scripts/migrations/loadContractCredentials');
-const blocktimestampPlusOne = require('../scripts/migrations/blocktimestampPlusOne');
+const loadSeedData = require('../../scripts/migrations/loadSeedData');
+const loadContractCredentials = require('../../scripts/migrations/loadContractCredentials');
+const blocktimestampPlusOne = require('../../scripts/migrations/blocktimestampPlusOne');
 
 const ARTWORK = {
-  "ipfsPath": "aktiv_protesk_pebble",
-  "edition": "AKPPEBBLE0000DIG",
+  "ipfsPath": "aktiv_protesk_filament",
+  "edition": "AKPFILAMENT00DIG",
   "numberOfEditions": 1,
   "costInEth": 0.008
 };
@@ -15,14 +15,14 @@ const galleryData = {
   "artists": [
     {
       "name": "Aktiv Protesk",
-      "artworks": [ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK]
+      "artworks": [ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK/*, ARTWORK, ARTWORK*/]
     }
   ]
 };
 
 const artistAccount = "0x7DEc37c03ea5ca2C47ad2509BE6abAf8C63CDB39";
 
-module.exports = function (deployer, network, accounts) {
+module.exports = async function (deployer, network, accounts) {
 
   const {_curatorAccount, _developerAccount, _artistAccount} = loadContractCredentials(network, accounts, artistAccount);
 

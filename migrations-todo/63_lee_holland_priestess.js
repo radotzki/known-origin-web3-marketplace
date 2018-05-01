@@ -7,7 +7,6 @@ const blocktimestampPlusOne = require('../scripts/migrations/blocktimestampPlusO
 const ARTWORK = {
   "ipfsPath": "lee_holland_priestess",
   "edition": "LHDPRIESTESS0001",
-  "numberOfEditions": 1,
   "costInEth": 0.09
 };
 

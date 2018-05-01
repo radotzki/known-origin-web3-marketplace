@@ -325,9 +325,9 @@
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "pragma solidity ^0.4.21;\n\nimport \"./ERC721Basic.sol\";\n\n/**\n * @title ERC-721 Non-Fungible Token Standard, optional enumeration extension\n * @dev See https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md\n */\ncontract ERC721Enumerable is ERC721Basic {\n  function totalSupply() public view returns (uint256);\n  function tokenOfOwnerByIndex(address _owner, uint256 _index) public view returns (uint256 _tokenId);\n  function tokenByIndex(uint256 _index) public view returns (uint256);\n}\n\n/**\n * @title ERC-721 Non-Fungible Token Standard, optional metadata extension\n * @dev See https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md\n */\ncontract ERC721Metadata is ERC721Basic {\n  function name() public view returns (string _name);\n  function symbol() public view returns (string _symbol);\n  function tokenURI(uint256 _tokenId) public view returns (string);\n}\n\n/**\n * @title ERC-721 Non-Fungible Token Standard, full implementation interface\n * @dev See https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md\n */\ncontract ERC721 is ERC721Basic, ERC721Enumerable, ERC721Metadata {\n}\n",
-  "sourcePath": "/Users/andy/workspace/known-origin-web3-marketplace/contracts/ERC721.sol",
+  "sourcePath": "/Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/contracts/ERC721.sol",
   "ast": {
-    "absolutePath": "/Users/andy/workspace/known-origin-web3-marketplace/contracts/ERC721.sol",
+    "absolutePath": "/Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/contracts/ERC721.sol",
     "exportedSymbols": {
       "ERC721": [
         63
@@ -354,7 +354,7 @@
         "src": "0:24:1"
       },
       {
-        "absolutePath": "/Users/andy/workspace/known-origin-web3-marketplace/contracts/ERC721Basic.sol",
+        "absolutePath": "/Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/contracts/ERC721Basic.sol",
         "file": "./ERC721Basic.sol",
         "id": 12,
         "nodeType": "ImportDirective",
@@ -967,7 +967,7 @@
     "src": "0:1097:1"
   },
   "legacyAST": {
-    "absolutePath": "/Users/andy/workspace/known-origin-web3-marketplace/contracts/ERC721.sol",
+    "absolutePath": "/Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/contracts/ERC721.sol",
     "exportedSymbols": {
       "ERC721": [
         63
@@ -994,7 +994,7 @@
         "src": "0:24:1"
       },
       {
-        "absolutePath": "/Users/andy/workspace/known-origin-web3-marketplace/contracts/ERC721Basic.sol",
+        "absolutePath": "/Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/contracts/ERC721Basic.sol",
         "file": "./ERC721Basic.sol",
         "id": 12,
         "nodeType": "ImportDirective",
@@ -1612,5 +1612,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.0",
-  "updatedAt": "2018-04-30T11:58:11.811Z"
+  "updatedAt": "2018-04-30T21:01:09.154Z"
 }

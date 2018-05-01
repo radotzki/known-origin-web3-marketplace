@@ -14,7 +14,6 @@ const flattenArtistData = (galleryData) => {
 
       let ipfsPath = artwork.ipfsPath;
 
-      let numberOfEditions = artwork.numberOfEditions;
       let edition = artwork.edition;
       if (edition.length !== 16) {
         throw new Error(`Edition ${edition} not 16 chars long`);
@@ -23,7 +22,6 @@ const flattenArtistData = (galleryData) => {
       let costInWei = Eth.toWei(artwork.costInEth, 'ether');
 
       flatInserts.push({
-        numberOfEditions,
         costInWei,
         ipfsPath,
         edition,
@@ -47,7 +45,7 @@ module.exports = function (instance, _artistAccount, _openingTime, galleryData, 
     return ipfsUploader.uploadMetaData(insert)
       .then((tokenUri) => {
 
-        return _.map(_.range(0, insert.numberOfEditions), function (count) {
+        return _.map(_.range(0, 1), function (count) {
           console.log(`Sourcing [${insert.edition}] - item [${count}]`);
 
           return {
