@@ -261,5 +261,9 @@
       min-height: 200px;
       background-image: url('../../../static/KO_dots.jpg');
     }
+
+    #quote {
+      margin: 10px;
+    }
   }
 </style>
