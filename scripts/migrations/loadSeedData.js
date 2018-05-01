@@ -37,7 +37,7 @@ const flattenArtistData = (galleryData) => {
 };
 
 
-module.exports = (instance, _artistAccount, _openingTime, galleryData, _developerAccount) => {
+module.exports = function (instance, _artistAccount, _openingTime, galleryData, _developerAccount) {
 
   const flatInserts = flattenArtistData(galleryData);
 
@@ -62,6 +62,7 @@ module.exports = (instance, _artistAccount, _openingTime, galleryData, _develope
 
   // Each each set of inserts per edition, Promise.each is serial to prevent duplicate transaction issues
   return Promise.each(populatedMintItems, function (insertsForEditionArray) {
+
     // insert each series before moving on the to the next one
     return Promise.map(insertsForEditionArray, function ({tokenUri, edition, costInWei, openingTime}) {
 
