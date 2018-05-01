@@ -2,7 +2,7 @@
   <div class="container">
     <artist-short-bio :artist="lookupArtist()"></artist-short-bio>
 
-    <div class="card-columns">
+    <div class="card-columns mt-4">
         <galleryEdition
           v-for="assetEdition, key in lookupAssetsByArtistCode($route.params.artistCode)"
           :edition="assetEdition[0]"

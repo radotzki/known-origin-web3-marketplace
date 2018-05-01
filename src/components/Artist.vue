@@ -1,5 +1,5 @@
 <template>
-  <div class="card text-center" v-if="artist">
+  <div class="card text-center shadow-sm" v-if="artist">
     <router-link :to="{ name: 'artist', params: { artistCode: artist.artistCode} }">
         <img :src="artist.img" class="pt-4"/>
     </router-link>

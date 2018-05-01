@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col lead-section">
         <h1>Rare<br/>digital<br/>assets.</h1>
-        <p class="lead">Discover, buy and collect digital artwork by some of the worlds most respected artists, illustrators and creative practitioners.</p>
+        <p class="lead mt-5">Discover, buy and collect digital artwork by some of the worlds most respected artists, illustrators and creative practitioners.</p>
         <router-link :to="{ name: 'gallery' }" class="btn btn-outline-primary btn-lg">Open gallery</router-link>
       </div>
     </div>
@@ -20,13 +20,13 @@
             <galleryEdition
               v-for="assetEdition, key in lookupAssetsByArtistCode('AKP')"
               :edition="assetEdition[0]"
-              :key="key">
+              :key="'AKP' + key">
             </galleryEdition>
 
             <galleryEdition
               v-for="assetEdition, key in lookupAssetsByArtistCode('89A')"
               :edition="assetEdition[0]"
-              :key="key">
+              :key="'89A' + key">
             </galleryEdition>
           </div>
 
@@ -42,10 +42,14 @@
     <div class="row" id="join">
       <div class="col mt-4 mb-4 text-center">
         <h2><strong>Join the collective</strong></h2>
-        <p>Head over to our artist micro-site to learn how to get involved...</p>
-        <a href="https://knownorigin.io" target="_blank" class="btn btn-outline-primary btn-lg">Artist form
-          <font-awesome-icon :icon="['fas', 'external-link-alt']" class="pl-2"></font-awesome-icon>
-        </a>
+        <!--<p>Head over to our artist micro-site to learn how to get involved...</p>-->
+        <!--<a href="https://knownorigin.io" target="_blank" class="btn btn-outline-primary btn-lg">Artist form-->
+          <!--<font-awesome-icon :icon="['fas', 'external-link-alt']" class="pl-2"></font-awesome-icon>-->
+        <!--</a>-->
+        <p class="lead">
+          Want to sell digital art on our marketplace?
+          <a href="mailto:hello@knownorigin.io" target="_blank" title="Hello">Email</a> us and we can explain how it all works.
+        </p>
       </div>
     </div>
 
@@ -190,9 +194,9 @@
   }
 
   #brand_logo {
-    min-height: 400px;
-    background-image: url('../../../static/KO_dots.jpg');
-    background-repeat: no-repeat;
+    min-height: 300px;
+    background-image: url('../../../static/1024x576_Dots_letterBox.jpg');
+    /*background-repeat: no-repeat;*/
     background-attachment: fixed;
     background-position: center;
   }
@@ -259,7 +263,10 @@
 
     #brand_logo {
       min-height: 200px;
-      background-image: url('../../../static/KO_dots.jpg');
+    }
+
+    #quote {
+      margin: 10px;
     }
   }
 </style>
