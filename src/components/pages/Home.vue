@@ -194,11 +194,11 @@
   }
 
   #brand_logo {
-    min-height: 400px;
-    background-image: url('../../../static/1024x576_line_bg.jpg');
-    /*background-repeat: no-repeat;*/
+    min-height: 300px;
+    background-image: url('../../../static/1024x576_Dots_v2.jpg');
+    background-repeat: no-repeat;
     /*background-attachment: fixed;*/
-    /*background-position: center;*/
+    background-position: center;
   }
 
   #how-to, #community {
@@ -263,7 +263,6 @@
 
     #brand_logo {
       min-height: 200px;
-      background-image: url('../../../static/KO_dots.jpg');
     }
 
     #quote {
