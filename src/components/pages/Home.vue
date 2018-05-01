@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col lead-section">
         <h1>Rare<br/>digital<br/>assets.</h1>
-        <p class="lead">Discover, buy and collect digital artwork by some of the worlds most respected artists, illustrators and creative practitioners.</p>
+        <p class="lead mt-5">Discover, buy and collect digital artwork by some of the worlds most respected artists, illustrators and creative practitioners.</p>
         <router-link :to="{ name: 'gallery' }" class="btn btn-outline-primary btn-lg">Open gallery</router-link>
       </div>
     </div>

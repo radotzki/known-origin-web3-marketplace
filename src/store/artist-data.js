@@ -113,7 +113,7 @@ const artists = [
     name: 'Aktiv Protesk',
     bio: 'Independent digital artists',
     strapline: 'Independent digital artists',
-    img: 'static/artists/AktivProtesk_@x2_preview.jpeg',
+    img: 'static/artists/AktivProtesk_@x2.png',
     live: true
   },
   {
