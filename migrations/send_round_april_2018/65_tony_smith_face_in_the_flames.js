@@ -1,8 +1,8 @@
 const KnownOriginDigitalAsset = artifacts.require('KnownOriginDigitalAsset');
 
-const loadSeedData = require('../scripts/migrations/loadSeedData');
-const loadContractCredentials = require('../scripts/migrations/loadContractCredentials');
-const blocktimestampPlusOne = require('../scripts/migrations/blocktimestampPlusOne');
+const loadSeedData = require('../../scripts/migrations/loadSeedData');
+const loadContractCredentials = require('../../scripts/migrations/loadContractCredentials');
+const blocktimestampPlusOne = require('../../scripts/migrations/blocktimestampPlusOne');
 
 const ARTWORK = {
   "ipfsPath": "tony_smith_face_in_the_flames",
