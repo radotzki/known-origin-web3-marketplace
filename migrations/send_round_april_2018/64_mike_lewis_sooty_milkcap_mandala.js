@@ -1,8 +1,8 @@
 const KnownOriginDigitalAsset = artifacts.require('KnownOriginDigitalAsset');
 
-const loadSeedData = require('../scripts/migrations/loadSeedData');
-const loadContractCredentials = require('../scripts/migrations/loadContractCredentials');
-const blocktimestampPlusOne = require('../scripts/migrations/blocktimestampPlusOne');
+const loadSeedData = require('../../scripts/migrations/loadSeedData');
+const loadContractCredentials = require('../../scripts/migrations/loadContractCredentials');
+const blocktimestampPlusOne = require('../../scripts/migrations/blocktimestampPlusOne');
 
 const ARTWORK = {
   "ipfsPath": "mike_lewis_sooty_milkcap_mandala",
@@ -14,7 +14,7 @@ const galleryData = {
   "artists": [
     {
       "name": "Mike Lewis",
-      "artworks": [ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK]
+      "artworks": [ARTWORK, ARTWORK , ARTWORK]
     }
   ]
 };
@@ -34,7 +34,7 @@ module.exports = function (deployer, network, accounts) {
         return {
           instance,
           _openingTime
-        }
+        };
       });
     })
     .then(({instance, _openingTime}) => {

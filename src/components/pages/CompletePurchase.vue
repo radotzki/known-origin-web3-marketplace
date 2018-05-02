@@ -5,13 +5,16 @@
 
     <div v-else-if="asset" class="row justify-content-sm-center">
       <div class="col col-sm-6">
-        <div class="card">
+        <div class="card shadow-sm">
+
+          <img class="card-img-top" :src="asset.lowResImg"/>
 
           <div class="card-body">
 
             <div class="text-center mb-2" v-if="isPurchaseTriggered(asset.id)">
               <loading-spinner></loading-spinner>
-              <p class="card-text text-muted mt-4">Your purchase is being initiated...</p>
+              <p class="card-text text-muted mt-4">Your purchase has been initiated</p>
+              <p class="card-text text-muted mt-4">Please be patient. Blockchains need to be mined.</p>
             </div>
 
             <div class="text-center mb-2" v-if="isPurchaseStarted(asset.id)">
