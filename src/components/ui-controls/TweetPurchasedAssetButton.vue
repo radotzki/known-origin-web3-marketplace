@@ -23,7 +23,9 @@
     },
     mounted: function () {
       this.$nextTick(function () {
-        twttr.widgets.load();
+        if(twttr.widgets.load){
+          twttr.widgets.load();
+        }
       });
     }
   };
