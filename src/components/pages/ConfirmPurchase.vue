@@ -2,6 +2,13 @@
   <div class="container">
     <loading-spinner v-if="!edition"></loading-spinner>
 
+    <div class="row justify-content-sm-center" v-if="!edition">
+      <div class="col text-center mt-5">
+        <p>We are loading assets from the Blockchain.</p>
+        <p>Please be patient as we are fully decentralised.</p>
+      </div>
+    </div>
+
     <div v-else-if="edition" class="row justify-content-sm-center">
       <div class="col col-sm-6">
         <gallery-edition :edition="edition" :purchase="true"></gallery-edition>

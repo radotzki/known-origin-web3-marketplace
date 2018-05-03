@@ -3,6 +3,13 @@
 
     <loading-spinner v-if="!asset"></loading-spinner>
 
+    <div class="row justify-content-sm-center" v-if="!asset">
+      <div class="col text-center mt-5">
+        <p>We are loading assets from the Blockchain.</p>
+        <p>Please be patient as we are fully decentralised.</p>
+      </div>
+    </div>
+
     <div v-else-if="asset" class="row justify-content-sm-center">
       <div class="col col-sm-6">
         <div class="card shadow-sm">
@@ -55,7 +62,7 @@
               <div class="d-inline-block"><img src="/../../static/Account_You_icn.svg" style="height: 50px"/></div>
               <div class="d-inline-block">
                 <span class="pl-2 text-muted">You:</span>
-                <address-icon :eth-address="account" :size="'small'"></address-icon>
+                <clickable-address :eth-address="account"></clickable-address>
               </div>
             </li>
             <li class="list-group-item">
@@ -68,7 +75,7 @@
               <div class="d-inline-block"><img src="/../../static/Account_You_icn.svg" style="height: 50px"/></div>
               <div class="d-inline-block">
                 <span class="pl-2 text-muted">To:</span>
-                <address-icon :eth-address="asset.owner" :size="'small'"></address-icon>
+                <clickable-address :eth-address="asset.owner"></clickable-address>
               </div>
             </li>
             <li class="list-group-item text-right no-bottom-border">
@@ -107,10 +114,11 @@
   import EditionNameByArtist from '../ui-controls/EditionNameByArtist';
   import * as mutations from '../../store/mutation-types';
   import * as actions from '../../store/actions';
-  import ClickableTransaction from "../ui-controls/ClickableTransaction.vue";
-  import TweetPurchaseButton from "../ui-controls/TweetPurchasedAssetButton.vue";
-  import LoadingSpinner from "../ui-controls/LoadingSpinner.vue";
-  import RarityIndicator from "../ui-controls/RarityIndicator.vue";
+  import ClickableTransaction from "../ui-controls/ClickableTransaction";
+  import ClickableAddress from "../ui-controls/ClickableAddress";
+  import TweetPurchaseButton from "../ui-controls/TweetPurchasedAssetButton";
+  import LoadingSpinner from "../ui-controls/LoadingSpinner";
+  import RarityIndicator from "../ui-controls/RarityIndicator";
 
   export default {
     name: 'completePurchase',
@@ -125,7 +133,8 @@
       PriceInEth,
       EditionNameByArtist,
       TokenId,
-      LoadingSpinner
+      LoadingSpinner,
+      ClickableAddress
     },
     data () {
       return {

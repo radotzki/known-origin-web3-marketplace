@@ -1,8 +1,8 @@
 <template>
   <div v-if="edition">
     <div>
-      <h4>#{{ edition.edition }}</h4>
-      <img :src="generateQrCode" alt="qrcode"/>
+      <h4>{{ edition.edition }}</h4>
+      <img :src="generateQrCode" alt="qrcode" class="mt-5"/>
     </div>
   </div>
 </template>

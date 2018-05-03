@@ -1,20 +1,8 @@
 <template>
   <div v-if="edition" class="container">
-    <header id="header">
-      <router-link :to="{ name: 'account' }" class="pull-right">
-        <img src="/../static/account.svg" style="height:25px"/>
-      </router-link>
-      <div class="header-branding">
-        &nbsp;
-        <router-link :to="{ name: 'gallery' }" class="back-arrow" style="float: left">
-          <img src="../../../static/back_arrow.svg" style="width: 35px"/>
-        </router-link>
-      </div>
-    </header>
+    <edition-name-by-artist :edition="edition"></edition-name-by-artist>
 
-    <h1>{{ edition.otherMeta.artworkName }}</h1>
-
-    <div class="qr-code">
+    <div class="qr-code mt-5">
       <edition-qr-code :edition="edition"></edition-qr-code>
     </div>
   </div>
@@ -25,12 +13,13 @@
   import Artist from '../Artist';
   import GalleryEdition from '../GalleryEdition';
   import ConfirmPurchaseButton from '../ui-controls/ConfirmPurchaseButton';
+  import EditionNameByArtist from '../ui-controls/EditionNameByArtist';
   import _ from 'lodash';
   import EditionQrCode from '../ui-controls/EditionQrCode';
 
   export default {
     name: 'confirmPurchase',
-    components: {EditionQrCode, GalleryEdition, ConfirmPurchaseButton},
+    components: {EditionQrCode, GalleryEdition, ConfirmPurchaseButton, EditionNameByArtist},
     computed: {
       ...mapGetters([
         'firstAssetForEdition'
