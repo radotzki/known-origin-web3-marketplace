@@ -1,5 +1,15 @@
 <template>
   <div v-if="edition" class="container">
+
+    <loading-spinner v-if="!edition"></loading-spinner>
+
+    <div class="row justify-content-sm-center" v-if="!edition">
+      <div class="col text-center mt-5">
+        <p>We are loading assets from the Blockchain.</p>
+        <p>Please be patient as we are fully decentralised.</p>
+      </div>
+    </div>
+
     <edition-name-by-artist :edition="edition"></edition-name-by-artist>
 
     <div class="qr-code mt-5">
