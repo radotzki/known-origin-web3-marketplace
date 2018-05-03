@@ -152,7 +152,7 @@
   }
 
   .navbar-brand {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
 
   /* mobile only */
@@ -204,5 +204,9 @@
 
   .btn-group-vertical > button {
     margin-bottom: 10px;
+  }
+
+  .badge {
+    font-weight: normal !important;
   }
 </style>

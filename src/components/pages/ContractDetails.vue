@@ -32,7 +32,7 @@
               </tr>
               <tr v-if="totalSupply">
                 <td>Supply</td>
-                <td>{{ totalSupply }}</td>
+                <td><router-link :to="{ name: 'assets' }">{{ totalSupply }}</router-link></td>
               </tr>
               <tr v-if="totalNumberOfPurchases">
                 <td>Sales</td>

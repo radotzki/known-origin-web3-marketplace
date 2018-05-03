@@ -23,7 +23,7 @@
     },
     mounted: function () {
       this.$nextTick(function () {
-        if(twttr.widgets.load){
+        if (twttr.widgets.load) {
           twttr.widgets.load();
         }
       });

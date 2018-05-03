@@ -1,5 +1,5 @@
 <template>
-  <span class="badge badge-light">{{ pad }}</span>
+  <span class="badge badge-primary">{{ pad }}</span>
 </template>
 
 <script>
@@ -16,6 +16,6 @@
   };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 
 </style>

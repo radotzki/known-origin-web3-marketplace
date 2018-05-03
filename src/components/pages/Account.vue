@@ -1,7 +1,7 @@
 <template>
   <div class="container">
 
-    <h1>Account ({{assetsPurchasedByAccount.length}})</h1>
+    <h1>Account <span class="badge badge-primary" v-if="assetsPurchasedByAccount.length > 0">{{ assetsPurchasedByAccount.length }}</span></h1>
 
     <div class="row mb-4">
       <div class="col">
@@ -16,9 +16,13 @@
       </asset>
     </div>
 
-    <div v-if="assetsPurchasedByAccount.length == 0" class="row text-center">
-      <div class="col">You don't have any digital assets yet...</div>
+    <div v-if="assetsPurchasedByAccount.length == 0" class="row justify-content-sm-center">
+      <div class="col col-sm-6 text-center">
+        <div class="alert alert-secondary" role="alert">You don't have any digital assets yet.</div>
+        <router-link :to="{ name: 'gallery' }" class="btn btn-outline-primary btn-lg">Open gallery</router-link>
+      </div>
     </div>
+
   </div>
 </template>
 
