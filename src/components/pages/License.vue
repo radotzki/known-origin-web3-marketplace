@@ -2,9 +2,9 @@
   <div class="container">
     <h1>License</h1>
 
-    <h2>KnownOrigin.io Attribution-NonCommercial-NoDerivatives 4.0 International Public License</h2>
+    <h2>KnownOrigin.io 4.0 International Public License</h2>
 
-    <p>By exercising the Licensed Rights (defined below), You accept and agree to be bound by the terms and conditions of this KnownOrigin.io Attribution-NonCommercial-NoDerivatives 4.0 International Public License (“Public License”). To the extent this Public License may be interpreted as a contract, You are granted the Licensed Rights in consideration of Your acceptance of these terms and conditions, and the Licensor grants You such rights in consideration of benefits the Licensor receives from making the Licensed Material available under these terms and conditions.</p>
+    <p>By exercising the Licensed Rights (defined below), You accept and agree to be bound by the terms and conditions of this KnownOrigin.io 4.0 International Public License (“Public License”). To the extent this Public License may be interpreted as a contract, You are granted the Licensed Rights in consideration of Your acceptance of these terms and conditions, and the Licensor grants You such rights in consideration of benefits the Licensor receives from making the Licensed Material available under these terms and conditions.</p>
 
     <h3>Section 1 – Definitions.</h3>
 
@@ -21,6 +21,8 @@
     <p><strong>Licensed Rights</strong> means the rights granted to You subject to the terms and conditions of this Public License, which are limited to all Copyright and Similar Rights that apply to Your use of the Licensed Material and that the Licensor has authority to license. Licensor means the individual(s) or entity(ies) granting rights under this Public License.</p>
 
     <p><strong>NonCommercial</strong> means not primarily intended for or directed towards commercial advantage or monetary compensation. For purposes of this Public License, the exchange of the Licensed Material for other material subject to Copyright and Similar Rights by digital file-sharing or similar means is NonCommercial provided there is no payment of monetary compensation in connection with the exchange.</p>
+
+    <p><strong>Ownership of digital assets</strong> means misrepresentation of assets for resale is a breach of the KODA license agreement. Duplication of artwork/assets for resale is not a the true and authentic digital asset associated to the smart contract. Any change of ownership should be done via the Ethereum blockchain/smart contract. Any commercial usage should credit the original artists/curator.</p>
 
     <p><strong>Share</strong> means to provide material to the public by any means or process that requires permission under the Licensed Rights, such as reproduction, public display, public performance, distribution, dissemination, communication, or importation, and to make material available to the public including in ways that members of the public may access the material from a place and at a time individually chosen by them.</p>
 
