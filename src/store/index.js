@@ -294,7 +294,8 @@ const store = new Vuex.Store({
       commit(mutations.UPDATE_PURCHASE_STATE, {tokenId: asset.id});
     },
     [actions.GET_USD_PRICE]: function ({commit, dispatch, state}) {
-      Vue.http.get('https://api.coinmarketcap.com/v1/ticker/ethereum/?convert=USD')
+
+      axios.get('https://api.coinmarketcap.com/v1/ticker/ethereum/?convert=USD')
         .then((response) => {
           let responseBody = response.body;
           let currentPriceInUSD = responseBody[0].price_usd;

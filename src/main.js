@@ -8,7 +8,6 @@ import logging from './logging';
 import VModal from 'vue-js-modal';
 import AsyncComputed from 'vue-async-computed';
 import ToggleButton from 'vue-js-toggle-button';
-import VueResource from 'vue-resource';
 
 // Add brands to fontawesome
 import fontawesome from '@fortawesome/fontawesome';
@@ -20,7 +19,6 @@ fontawesome.library.add(brands, solid);
 Vue.use(VModal);
 Vue.use(AsyncComputed);
 Vue.use(ToggleButton);
-Vue.use(VueResource);
 
 Vue.config.productionTip = false
 
