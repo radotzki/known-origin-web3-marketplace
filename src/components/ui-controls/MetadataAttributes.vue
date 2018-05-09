@@ -2,7 +2,7 @@
   <span class="attributes">
 
     <span v-if="this.attributes">
-        <a style="cursor: pointer" v-on:click="isActive = !isActive" v-if="!isActive">more</a>
+        <button class="btn btn-link" v-on:click="isActive = !isActive" v-if="!isActive">more</button>
     </span>
 
     <span v-for="(value, key) in this.attributes" v-show="isActive">
@@ -39,15 +39,13 @@
       isNumber: function (value) {
         return value instanceof Number;
       },
-    },
-    computed: {
-      prettyPrintAttributes: function () {
-        return this.attributes;
-      },
     }
   };
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
+  button {
+    font-size: 0.7rem;
+    padding: 0;
+  }
 </style>
