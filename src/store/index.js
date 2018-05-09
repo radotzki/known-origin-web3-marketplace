@@ -366,7 +366,7 @@ const store = new Vuex.Store({
                   name: rootMeta.name,
                   description: rootMeta.description,
                   external_uri: _.get(rootMeta, 'external_uri', 'http://knownorigin.io'),
-                  attributes: _.get(rootMeta, 'attributes', []),
+                  attributes: _.get(rootMeta, 'attributes'),
                   otherMeta: otherMeta.data,
                   lowResImg: rootMeta.image
                 };
@@ -459,8 +459,10 @@ const store = new Vuex.Store({
                 _.set(asset, 'description', ipfsMeta.description);
                 _.set(asset, 'lowResImg', ipfsMeta.lowResImg);
                 _.set(asset, 'external_uri', ipfsMeta.external_uri);
-                _.set(asset, 'attributes', ipfsMeta.attributes);
                 _.set(asset, 'otherMeta', ipfsMeta.otherMeta);
+                if (ipfsMeta.attributes) {
+                  _.set(asset, 'attributes', ipfsMeta.attributes);
+                }
 
                 return asset;
               });

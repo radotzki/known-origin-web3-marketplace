@@ -19,6 +19,8 @@
         <span class="float-right">
           <tweet-asset-button :edition="asset" v-if="individual"></tweet-asset-button>
         </span>
+
+        <metadata-attributes :attributes="asset.attributes"></metadata-attributes>
       </p>
 
       <edition-name-by-artist :edition="asset"></edition-name-by-artist>
@@ -33,6 +35,7 @@
           <clickable-address :eth-address="asset.owner"></clickable-address>
         </small>
       </li>
+
       <li class="list-group-item text-center no-bottom-border">
         <price-in-eth :value="asset.priceInEther"></price-in-eth>
       </li>
@@ -65,9 +68,11 @@
   import ClickableAddress from './ui-controls/ClickableAddress';
   import TweetAssetButton from "./ui-controls/TweetAssetButton.vue";
   import RarityIndicator from "./ui-controls/RarityIndicator.vue";
+  import MetadataAttributes from "./ui-controls/MetadataAttributes.vue";
 
   export default {
     components: {
+      MetadataAttributes,
       RarityIndicator,
       VerifyPurchase,
       TweetPurchaseButton,
