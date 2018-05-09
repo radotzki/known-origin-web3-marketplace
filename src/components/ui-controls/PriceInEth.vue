@@ -14,4 +14,7 @@
 </script>
 
 <style scoped lang="scss">
+  .price {
+    color: #000;
+  }
 </style>

@@ -16,9 +16,6 @@
         <span class="badge badge-light">1 of {{ assetsForEdition(edition.edition).length }}</span>
         <span class="badge badge-light" v-if="availableAssetsForEdition(edition.edition).length > 0">{{ availableAssetsForEdition(edition.edition).length }} available</span>
         <span class="float-right">
-          <usd-price :price-in-ether="edition.priceInEther"></usd-price>
-        </span>
-        <span class="float-right">
           <tweet-asset-button :edition="edition" v-if="purchase"></tweet-asset-button>
         </span>
       </p>
@@ -29,7 +26,10 @@
     </div>
 
     <ul class="list-group list-group-flush">
-      <li class="list-group-item text-center no-bottom-border"><price-in-eth :value="edition.priceInEther"></price-in-eth></li>
+      <li class="list-group-item text-center no-bottom-border">
+        <price-in-eth :value="edition.priceInEther"></price-in-eth>
+        <span class="pl-2"><usd-price :price-in-ether="edition.priceInEther"></usd-price></span>
+      </li>
     </ul>
 
     <div class="card-footer text-center" v-if="!purchase">

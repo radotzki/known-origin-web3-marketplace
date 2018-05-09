@@ -1,7 +1,7 @@
 <template>
-  <div class="text-mute" v-if="usdPrice">
-    ${{usdPrice}}
-  </div>
+  <span class="text-mute" v-if="usdPrice">
+    <small>${{ usdPrice }}</small>
+  </span>
 </template>
 
 <script>
@@ -29,5 +29,7 @@
 </script>
 
 <style scoped>
-
+  small {
+    font-size: 0.7rem;
+  }
 </style>
