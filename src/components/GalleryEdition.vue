@@ -28,7 +28,7 @@
     <ul class="list-group list-group-flush">
       <li class="list-group-item text-center no-bottom-border">
         <price-in-eth :value="edition.priceInEther"></price-in-eth>
-        <span class="pl-2"><usd-price :price-in-ether="edition.priceInEther"></usd-price></span>
+        <span class="pl-1"><usd-price :price-in-ether="edition.priceInEther"></usd-price></span>
       </li>
     </ul>
 
