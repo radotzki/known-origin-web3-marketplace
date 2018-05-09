@@ -26,7 +26,10 @@
     </div>
 
     <ul class="list-group list-group-flush">
-      <li class="list-group-item text-center no-bottom-border"><price-in-eth :value="edition.priceInEther"></price-in-eth></li>
+      <li class="list-group-item text-center no-bottom-border">
+        <price-in-eth :value="edition.priceInEther"></price-in-eth>
+        <span class="pl-1"><usd-price :price-in-ether="edition.priceInEther"></usd-price></span>
+      </li>
     </ul>
 
     <div class="card-footer text-center" v-if="!purchase">
@@ -50,10 +53,12 @@
   import ConfirmPurchaseButton from './ui-controls/ConfirmPurchaseButton';
   import TweetAssetButton from "./ui-controls/TweetAssetButton.vue";
   import RarityIndicator from "./ui-controls/RarityIndicator.vue";
+  import UsdPrice from "./ui-controls/USDPrice.vue";
 
   export default {
     name: 'galleryEdition',
     components: {
+      UsdPrice,
       RarityIndicator,
       TweetAssetButton,
       PriceInEth,
