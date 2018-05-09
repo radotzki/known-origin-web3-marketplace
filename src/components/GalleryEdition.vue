@@ -16,6 +16,9 @@
         <span class="badge badge-light">1 of {{ assetsForEdition(edition.edition).length }}</span>
         <span class="badge badge-light" v-if="availableAssetsForEdition(edition.edition).length > 0">{{ availableAssetsForEdition(edition.edition).length }} available</span>
         <span class="float-right">
+          <usd-price :price-in-ether="edition.priceInEther"></usd-price>
+        </span>
+        <span class="float-right">
           <tweet-asset-button :edition="edition" v-if="purchase"></tweet-asset-button>
         </span>
       </p>
@@ -50,10 +53,12 @@
   import ConfirmPurchaseButton from './ui-controls/ConfirmPurchaseButton';
   import TweetAssetButton from "./ui-controls/TweetAssetButton.vue";
   import RarityIndicator from "./ui-controls/RarityIndicator.vue";
+  import UsdPrice from "./ui-controls/USDPrice.vue";
 
   export default {
     name: 'galleryEdition',
     components: {
+      UsdPrice,
       RarityIndicator,
       TweetAssetButton,
       PriceInEth,

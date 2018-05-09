@@ -23,6 +23,7 @@ const store = new Vuex.Store({
     account: null,
     accountBalance: null,
     currentNetwork: null,
+    currentUsdPrice: null,
     etherscanBase: null,
     assetsPurchasedByAccount: [],
 
@@ -176,6 +177,9 @@ const store = new Vuex.Store({
     [mutations.SET_CURRENT_NETWORK](state, currentNetwork) {
       state.currentNetwork = currentNetwork;
     },
+    [mutations.SET_USD_PRICE](state, currentUsdPrice) {
+      state.currentUsdPrice = currentUsdPrice;
+    },
     [mutations.SET_ETHERSCAN_NETWORK](state, etherscanBase) {
       state.etherscanBase = etherscanBase;
     },
@@ -289,7 +293,19 @@ const store = new Vuex.Store({
       dispatch(actions.GET_ALL_ASSETS);
       commit(mutations.UPDATE_PURCHASE_STATE, {tokenId: asset.id});
     },
+    [actions.GET_USD_PRICE]: function ({commit, dispatch, state}) {
+      Vue.http.get('https://api.coinmarketcap.com/v1/ticker/ethereum/?convert=USD')
+        .then((response) => {
+          let responseBody = response.body;
+          let currentPriceInUSD = responseBody[0].price_usd;
+          commit(mutations.SET_USD_PRICE, currentPriceInUSD);
+        }, (response) => {
+          console.error(response);
+        });
+    },
     [actions.INIT_APP]({commit, dispatch, state}, web3) {
+
+      dispatch(actions.GET_USD_PRICE);
 
       // NON-ASYNC action - set web3 provider on init
       KnownOriginDigitalAsset.setProvider(web3.currentProvider);

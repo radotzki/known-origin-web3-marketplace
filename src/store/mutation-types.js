@@ -5,6 +5,8 @@ export const SET_CURRENT_NETWORK = 'SET_CURRENT_NETWORK';
 export const SET_ETHERSCAN_NETWORK = 'SET_ETHERSCAN_NETWORK';
 export const SET_WEB3 = 'SET_WEB3';
 
+// External API calls
+export const SET_USD_PRICE = 'SET_USD_PRICE';
 
 ///////////////////
 // Contract Data //
