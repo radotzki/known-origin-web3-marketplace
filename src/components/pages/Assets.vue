@@ -15,6 +15,13 @@
       <div class="col-6">
         <input type="text" class="form-control" v-model="search" placeholder="Search assets..."/>
       </div>
+      <div class="col-1">
+        <toggle-button :value="showSold"
+                       :labels="{checked: 'Sold', unchecked: 'All'}"
+                       :sync="true" color="#82C7EB" :width="70"
+                       @change="onSoldToggleChanged">
+        </toggle-button>
+      </div>
     </div>
 
     <div class="card-columns" v-if="assets.length > 0">
@@ -23,6 +30,7 @@
              :key="asset.id">
       </asset>
     </div>
+
   </div>
 </template>
 
@@ -44,11 +52,15 @@
     },
     data() {
       return {
+        showSold: false,
         priceFilter: 'asc',
         search: ''
       };
     },
     methods: {
+      onSoldToggleChanged: function ({value}) {
+        this.showSold = value;
+      },
       hasFinishedLoading: function () {
         // Use the lack of assets in the store to determine initial loading state
         if (this.assets === null) {
@@ -62,20 +74,27 @@
         'assets'
       ]),
       filteredAssets: function () {
+        let self = this;
         let results = this.assets
           .filter(function (item) {
+            if (self.showSold) {
+              return item.purchased === 1 || item.purchased === 2;
+            }
+            return true;
+          })
+          .filter(function (item) {
 
-            if (this.search.length === 0) {
+            if (self.search.length === 0) {
               return true;
             }
 
-            let matchesName = item.artworkName.toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
-            let matchesDescription = item.description.toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
-            let matchesArtist = item.otherMeta.artist.toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
-            let matchesTokenId = item.id.toString().toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
+            let matchesName = item.artworkName.toLowerCase().indexOf(self.search.toLowerCase()) >= 0;
+            let matchesDescription = item.description.toLowerCase().indexOf(self.search.toLowerCase()) >= 0;
+            let matchesArtist = item.otherMeta.artist.toLowerCase().indexOf(self.search.toLowerCase()) >= 0;
+            let matchesTokenId = item.id.toString().toLowerCase().indexOf(self.search.toLowerCase()) >= 0;
 
             return matchesName || matchesDescription || matchesArtist || matchesTokenId;
-          }.bind(this));
+          });
 
         return results;
       }

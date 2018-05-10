@@ -53,12 +53,13 @@
           <div class="col-sm">
             <small class="slogan">BE ORIGINAL. BUY ORIGINAL.</small>
           </div>
-          <div class="col-sm">
+          <div class="col-sm text-center">
             <small>
               <router-link :to="{ name: 'gallery' }">Gallery</router-link> &bull;
               <router-link :to="{ name: 'artists' }">Artists</router-link> &bull;
               <router-link :to="{ name: 'account' }">Account</router-link> &bull;
-              <router-link :to="{ name: 'details' }">Contract</router-link>
+              <router-link :to="{ name: 'details' }">Contract</router-link> &bull;
+              <router-link :to="{ name: 'assets' }">All Assets</router-link>
             </small>
           </div>
           <div class="col-sm text-center">
