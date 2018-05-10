@@ -16,11 +16,12 @@
         <rarity-indicator :assets-in-edition="assetsForEdition(asset.edition)"></rarity-indicator>
 
         <span class="badge badge-light">1 of {{ assetsForEdition(asset.edition).length }}</span>
+
+        <metadata-attributes :attributes="asset.attributes"></metadata-attributes>
+
         <span class="float-right">
           <tweet-asset-button :edition="asset" v-if="individual"></tweet-asset-button>
         </span>
-
-        <metadata-attributes :attributes="asset.attributes"></metadata-attributes>
       </p>
 
       <edition-name-by-artist :edition="asset"></edition-name-by-artist>
@@ -63,12 +64,12 @@
   import PriceInEth from './ui-controls/PriceInEth';
   import TokenId from './ui-controls/TokenId';
   import EditionNameByArtist from './ui-controls/EditionNameByArtist';
-  import TweetPurchaseButton from "./ui-controls/TweetPurchasedAssetButton.vue";
-  import VerifyPurchase from "./ui-controls/VerifyPurchase.vue";
+  import TweetPurchaseButton from "./ui-controls/TweetPurchasedAssetButton";
+  import VerifyPurchase from "./ui-controls/VerifyPurchase";
   import ClickableAddress from './ui-controls/ClickableAddress';
-  import TweetAssetButton from "./ui-controls/TweetAssetButton.vue";
-  import RarityIndicator from "./ui-controls/RarityIndicator.vue";
-  import MetadataAttributes from "./ui-controls/MetadataAttributes.vue";
+  import TweetAssetButton from "./ui-controls/TweetAssetButton";
+  import RarityIndicator from "./ui-controls/RarityIndicator";
+  import MetadataAttributes from "./ui-controls/MetadataAttributes";
 
   export default {
     components: {

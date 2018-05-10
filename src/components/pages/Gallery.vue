@@ -31,7 +31,6 @@
       </galleryEdition>
     </div>
 
-
     <div class="form-row mb-4" v-if="hasFinishedLoading()">
       <div class="col">
         <toggle-button :value="showSold"

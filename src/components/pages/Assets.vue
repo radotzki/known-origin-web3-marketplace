@@ -11,8 +11,14 @@
       </div>
     </div>
 
+    <div class="form-row mb-4" v-if="hasFinishedLoading()">
+      <div class="col-6">
+        <input type="text" class="form-control" v-model="search" placeholder="Search assets..."/>
+      </div>
+    </div>
+
     <div class="card-columns" v-if="assets.length > 0">
-      <asset v-for="asset in assets"
+      <asset v-for="asset in filteredAssets"
              :asset="asset"
              :key="asset.id">
       </asset>
@@ -36,6 +42,12 @@
       LoadingSpinner,
       Asset
     },
+    data() {
+      return {
+        priceFilter: 'asc',
+        search: ''
+      };
+    },
     methods: {
       hasFinishedLoading: function () {
         // Use the lack of assets in the store to determine initial loading state
@@ -48,7 +60,25 @@
     computed: {
       ...mapState([
         'assets'
-      ])
+      ]),
+      filteredAssets: function () {
+        let results = this.assets
+          .filter(function (item) {
+
+            if (this.search.length === 0) {
+              return true;
+            }
+
+            let matchesName = item.artworkName.toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
+            let matchesDescription = item.description.toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
+            let matchesArtist = item.otherMeta.artist.toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
+            let matchesTokenId = item.id.toString().toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
+
+            return matchesName || matchesDescription || matchesArtist || matchesTokenId;
+          }.bind(this));
+
+        return results;
+      }
     }
   };
 </script>

@@ -15,6 +15,9 @@
         <rarity-indicator :assets-in-edition="assetsForEdition(edition.edition)"></rarity-indicator>
         <span class="badge badge-light">1 of {{ assetsForEdition(edition.edition).length }}</span>
         <span class="badge badge-light" v-if="availableAssetsForEdition(edition.edition).length > 0">{{ availableAssetsForEdition(edition.edition).length }} available</span>
+
+        <metadata-attributes :attributes="edition.attributes"></metadata-attributes>
+
         <span class="float-right">
           <tweet-asset-button :edition="edition" v-if="purchase"></tweet-asset-button>
         </span>
@@ -54,6 +57,7 @@
   import TweetAssetButton from "./ui-controls/TweetAssetButton.vue";
   import RarityIndicator from "./ui-controls/RarityIndicator.vue";
   import UsdPrice from "./ui-controls/USDPrice.vue";
+  import MetadataAttributes from "./ui-controls/MetadataAttributes";
 
   export default {
     name: 'galleryEdition',
@@ -63,7 +67,8 @@
       TweetAssetButton,
       PriceInEth,
       EditionNameByArtist,
-      ConfirmPurchaseButton
+      ConfirmPurchaseButton,
+      MetadataAttributes
     },
     props: {
       edition: {
