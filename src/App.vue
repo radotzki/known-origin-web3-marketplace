@@ -30,10 +30,10 @@
         </router-link>
 
         <ul class="navbar-nav justify-content-end">
-          <li class="nav-item d-none d-sm-block">
+          <li class="nav-item d-none d-md-block">
             <router-link :to="{ name: 'gallery' }" class="nav-link">Gallery</router-link>
           </li>
-          <li class="nav-item d-none d-sm-block">
+          <li class="nav-item d-none d-md-block">
             <router-link :to="{ name: 'artists' }" class="nav-link">Artists</router-link>
           </li>
           <li class="nav-item">
