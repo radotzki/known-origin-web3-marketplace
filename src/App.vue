@@ -37,7 +37,8 @@
             <router-link :to="{ name: 'artists' }" class="nav-link">Artists</router-link>
           </li>
           <li class="nav-item">
-            <router-link :to="{ name: 'account' }" class="nav-link">Account</router-link>
+            <router-link :to="{ name: 'account' }" class="nav-link">Account <span class="badge badge-nav" v-if="assetsPurchasedByAccount.length > 0">{{ assetsPurchasedByAccount.length }}</span></router-link>
+
           </li>
         </ul>
       </nav>
@@ -100,7 +101,7 @@
     },
     computed: {
       ...mapGetters([]),
-      ...mapState([]),
+      ...mapState(['assetsPurchasedByAccount']),
     },
     mounted() {
 
@@ -208,5 +209,10 @@
 
   .badge {
     font-weight: normal !important;
+  }
+
+  .badge-nav {
+    background-color: rgba(255, 255, 255, 0.5);
+    color: $primary;
   }
 </style>
