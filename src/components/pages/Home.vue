@@ -18,7 +18,7 @@
           <h5 class="text-center pb-4">Featured artists</h5>
           <div class="card-columns">
             <galleryEdition
-              v-for="assetEdition, key in lookupAssetsByArtistCode('JOC').slice(0, 3)"
+              v-for="assetEdition, key in lookupAssetsByArtistCode('JOC').slice(2, 4)"
               :edition="assetEdition[0]"
               :key="'JOC' + key">
             </galleryEdition>
