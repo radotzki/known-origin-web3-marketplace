@@ -20,13 +20,13 @@
             <galleryEdition
               v-for="assetEdition, key in lookupAssetsByArtistCode('AKP')"
               :edition="assetEdition[0]"
-              :key="'AKP' + key">
+              :key="'LHD' + key">
             </galleryEdition>
 
             <galleryEdition
               v-for="assetEdition, key in lookupAssetsByArtistCode('89A')"
               :edition="assetEdition[0]"
-              :key="'89A' + key">
+              :key="'JOC' + key">
             </galleryEdition>
           </div>
 
