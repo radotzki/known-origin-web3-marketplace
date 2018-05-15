@@ -6,7 +6,7 @@ const blocktimestampPlusOne = require('../../scripts/migrations/blocktimestampPl
 
 const ARTWORK = {
   "ipfsPath": "lee_holland_priestess",
-  "edition": "LHDPRIESTESS0001",
+  "edition": "LHDPRIESTESS0DIG", // Live = LHDPRIESTESS0001
   "costInEth": 0.09
 };
 

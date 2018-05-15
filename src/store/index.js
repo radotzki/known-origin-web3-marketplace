@@ -393,6 +393,9 @@ const store = new Vuex.Store({
       const mapAssetType = (rawType) => {
         switch (rawType) {
           case 'DIG':
+          // ERROR - the following two types have been patched in live, this needs to stay
+          case '001':
+          case 'D01':
             return 'digital';
           case 'PHY':
             return 'physical';
