@@ -12,21 +12,15 @@
       <div class="col text-center"></div>
     </div>
 
-    <div class="container">
+    <div class="container" v-if="featuredAssets().length > 0">
       <div class="row" id="featured">
         <div class="col mt-4">
-          <h5 class="text-center pb-4">Featured artists</h5>
+          <h5 class="text-center pb-4">Featured artwork</h5>
           <div class="card-columns">
             <galleryEdition
-              v-for="assetEdition, key in lookupAssetsByArtistCode('JOC').slice(2, 4)"
-              :edition="assetEdition[0]"
-              :key="'JOC' + key">
-            </galleryEdition>
-
-            <galleryEdition
-              v-for="assetEdition, key in lookupAssetsByArtistCode('LHD')"
-              :edition="assetEdition[0]"
-              :key="'LHD' + key">
+              v-for="asset in featuredAssets()"
+              :edition="asset"
+              :key="asset.edition">
             </galleryEdition>
           </div>
 
@@ -138,7 +132,9 @@
     name: 'home',
     components: {ArtistShortBio, GalleryEdition, FontAwesomeIcon},
     computed: {
-      ...mapGetters(['lookupAssetsByArtistCode'])
+      ...mapGetters([
+        'featuredAssets'
+      ])
     },
     methods: {
       lookupArtist: function () {

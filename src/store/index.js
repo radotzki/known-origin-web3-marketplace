@@ -90,6 +90,12 @@ const store = new Vuex.Store({
     lookupAssetsByArtistCode: (state) => (artistCode) => {
       return _.filter(state.assetsByEditions, (value, key) => key.startsWith(artistCode));
     },
+    featuredAssets: (state) => () => {
+      const featuredAssets = [150, 55, 60, 73, 124, 136, 37, 146, 39];
+      return _.filter(state.assets, (asset) => {
+        return featuredAssets.indexOf(asset.id) >= 0;
+      });
+    },
     editionSummaryFilter: (state) => (showSold = false, priceFilter = 'asc') => {
 
       if (showSold) {

@@ -31,6 +31,7 @@ module.exports = {
     "padded-blocks": 0,
     "no-undef": 0,
     "no-trailing-spaces": 0,
+    "no-fallthrough": 0,
 
     // allow async-await
     'generator-star-spacing': 0,
