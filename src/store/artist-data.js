@@ -1,5 +1,62 @@
 const artists = [
   {
+    artistCode: 'OBX',
+    name: 'obxium',
+    bio: 'Coexisting and evolving with the algorithms while fighting for the user with digital art centered around cryptography and cryptocurrencies',
+    strapline: 'Coexisting and evolving with the algorithms while fighting for the user with digital art centered around cryptography and cryptocurrencies',
+    img: 'static/artists/Obxium_profile@x2.png',
+    live: true
+  },
+  {
+    artistCode: 'STR',
+    name: 'Stan Ragets',
+    bio: 'Stan Ragets has a background in computer programming and seeks to blend the technical and artistic sides of fractals together.',
+    strapline: 'Stan Ragets has a background in computer programming and seeks to blend the technical and artistic sides of fractals together.',
+    img: 'static/artists/StanR_Profile@x2.png',
+    live: true
+  },
+  {
+    artistCode: 'FKA',
+    name: 'Franky Aguilar',
+    bio: 'California native, studied web design and interactive media at The Art Institute of CA-San Francisco 2010.',
+    strapline: 'California native, studied web design and interactive media at The Art Institute of CA-San Francisco 2010.',
+    img: 'static/artists/Frank_G_Profile@x2.png',
+    live: true
+  },
+  {
+    artistCode: 'AKP',
+    name: 'Aktiv Protesk',
+    bio: 'Independent digital artists',
+    strapline: 'Independent digital artists',
+    img: 'static/artists/AktivProtesk_@x2.png',
+    live: true
+  },
+  {
+    artistCode: 'LHD',
+    name: 'Lee Holland',
+    bio: 'Hi, I’m Lee Holland, a multi-disciplined designer and illustrator based in Sheffield, United Kingdom. ',
+    strapline: 'Hi, I’m Lee Holland, a multi-disciplined designer and illustrator based in Sheffield, United Kingdom.',
+    img: 'static/artists/LeeHolland_Profile@x2.png',
+    live: true
+  },
+  {
+    artistCode: 'CNJ',
+    name: 'CoinJournal',
+    twitter: '@CoinJournal',
+    bio: 'CoinJournal is a Manchester-based Bitcoin and cryptocurrency news site. The artwork submitted has been produced as a collaboration with several different designers, incorporating the style of 1930s cartoons and celebrating the disruptive nature of cryptocurrencies.',
+    strapline: 'CoinJournal is a Manchester based artist who collaborates with several different designers, incorporating the style of 1930s cartoons',
+    img: 'static/artists/coinjournal_x2.png',
+    live: true
+  },
+  {
+    artistCode: 'STJ',
+    name: 'Stina Jones',
+    bio: 'I’m a freelance Illustrator & Graphic Designer based in Manchester, with 15 years industry experience ',
+    strapline: 'I’m a freelance Illustrator & Graphic Designer based in Manchester, with 15 years industry experience ',
+    img: 'static/artists/StinaJones1_Profile@x2.png',
+    live: true
+  },
+  {
     artistCode: 'BJD',
     name: 'Barrie J Davis',
     twitter: '@barriejdavies',
@@ -40,15 +97,6 @@ const artists = [
     bio: 'Laura Hawkins is a designer and illustrator based in Manchester. Her illustration alias ‘Paper Hawk’ was born of her desire to create illustrations full of character, charm and life - that weren\'t \'perfect\', but who\'s imperfections were what made them interesting.Working in graphic design since graduating from Falmouth College of Arts back in 2005 Laura had been increasingly drawn to illustration. After a recent move from London to Manchester, she began experimenting with using paper as the \'paint\', and discovered a passion she never knew existed.Her aim with Paper Hawk is to make engaging, interesting and unique illustrations that bring a brief to life. Using papers salvaged from magazines, newspapers, recycling bins, empty paper packaging, and donations from friends and colleagues her work aims to giving new life to something that would otherwise be discarded. She also creates some of the papers herself by painting with watercolours or inks and then tearing these up too.',
     strapline: 'Laura Hawkins is a Illustrator & paper collage artist inspired by nature.',
     img: 'static/artists/LauraH_@x2.png',
-    live: true
-  },
-  {
-    artistCode: 'CNJ',
-    name: 'CoinJournal',
-    twitter: '@CoinJournal',
-    bio: 'CoinJournal is a Manchester-based Bitcoin and cryptocurrency news site. The artwork submitted has been produced as a collaboration with several different designers, incorporating the style of 1930s cartoons and celebrating the disruptive nature of cryptocurrencies.',
-    strapline: 'CoinJournal is a Manchester based artist who collaborates with several different designers, incorporating the style of 1930s cartoons',
-    img: 'static/artists/coinjournal_x2.png',
     live: true
   },
   {
@@ -93,35 +141,11 @@ const artists = [
     live: true
   },
   {
-    artistCode: 'STJ',
-    name: 'Stina Jones',
-    bio: 'I’m a freelance Illustrator & Graphic Designer based in Manchester, with 15 years industry experience ',
-    strapline: 'I’m a freelance Illustrator & Graphic Designer based in Manchester, with 15 years industry experience ',
-    img: 'static/artists/StinaJones1_Profile@x2.png',
-    live: true
-  },
-  {
     artistCode: 'PSP',
     name: 'Paris Psalter',
     bio: 'Will Halcomb is a digital designer and artist from Birmingham, Alabama. A recent graduate of the University of Mississippi with a degree in Graphic Design (BFA), he now lives in NYC.',
     strapline: 'Will Halcomb is a digital designer and artist from Birmingham, Alabama. A recent graduate of the University of Mississippi with a degree in Graphic Design (BFA), he now lives in NYC.',
     img: 'static/artists/ParisPSalter_Profile@x2.png',
-    live: true
-  },
-  {
-    artistCode: 'AKP',
-    name: 'Aktiv Protesk',
-    bio: 'Independent digital artists',
-    strapline: 'Independent digital artists',
-    img: 'static/artists/AktivProtesk_@x2.png',
-    live: true
-  },
-  {
-    artistCode: 'LHD',
-    name: 'Lee Holland',
-    bio: 'Hi, I’m Lee Holland, a multi-disciplined designer and illustrator based in Sheffield, United Kingdom.',
-    strapline: 'Hi, I’m Lee Holland, a multi-disciplined designer and illustrator based in Sheffield, United Kingdom.',
-    img: 'static/artists/LeeHolland_Profile@x2.png',
     live: true
   },
   {

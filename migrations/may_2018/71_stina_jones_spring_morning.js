@@ -5,22 +5,21 @@ const loadContractCredentials = require('../../scripts/migrations/loadContractCr
 const blocktimestampPlusOne = require('../../scripts/migrations/blocktimestampPlusOne');
 
 const ARTWORK = {
-  'ipfsPath': 'stina_jones_happy_fox',
-  'edition': 'STJHAPPYFOX00DIG',
-  'numberOfEditions': 1,
-  'costInEth': 0.1
+  "ipfsPath": "stina_jones_spring_morning",
+  "edition": "STJSPGMRN0001DIG",
+  "costInEth": 0.085 //$50
 };
 
 const galleryData = {
-  'artists': [
+  "artists": [
     {
       'name': 'Stina Jones',
-      'artworks': [ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK]
+      "artworks": [ARTWORK, ARTWORK, ARTWORK/*, ARTWORK, ARTWORK*/]
     }
   ]
 };
 
-const artistAccount = undefined;
+const artistAccount = "0x92baffdd6cfb11a4e57a58ffec4833b4d1abd25d";
 
 module.exports = function (deployer, network, accounts) {
 
@@ -48,4 +47,5 @@ module.exports = function (deployer, network, accounts) {
 
       return instance;
     });
+
 };

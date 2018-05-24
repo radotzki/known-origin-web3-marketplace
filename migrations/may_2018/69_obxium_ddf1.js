@@ -5,21 +5,21 @@ const loadContractCredentials = require('../../scripts/migrations/loadContractCr
 const blocktimestampPlusOne = require('../../scripts/migrations/blocktimestampPlusOne');
 
 const ARTWORK = {
-  "ipfsPath": "tony_smith_theyre_watching",
-  "edition": "TSMTHEYWATCH0DIG", // Live = TSMTHEYWATCH0001
-  "costInEth": 1.1
+  "ipfsPath": "obxium_ddf1",
+  "edition": "OBXDDF1000000DIG",
+  "costInEth": 0.07 //$42
 };
 
 const galleryData = {
   "artists": [
     {
-      "name": "Tony Smith",
+      "name": "obxium",
       "artworks": [ARTWORK]
     }
   ]
 };
 
-const artistAccount = undefined;
+const artistAccount = "0xf65DB13b5ee031CB0ebBa525eF21aa6C586681b3";
 
 module.exports = function (deployer, network, accounts) {
 

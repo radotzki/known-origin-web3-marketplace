@@ -3,6 +3,8 @@ const fs = require('fs');
 const streams = require('memory-streams');
 const _ = require('lodash');
 
+const {validateEdition} = require('./migrations/edition-utils');
+
 const ipfs = IPFS('ipfs.infura.io', '5001', {protocol: 'https'});
 
 // Reset this cache file to { } to push fresh data to IPFS
@@ -22,7 +24,7 @@ const CACHE_FILE = './config/data/ipfs_data/cache.json';
 /other meta   -> (optional) - A contract MAY choose to include any number of additional subpaths
  */
 
-const uploadMetaData = ({ipfsPath}) => {
+const uploadMetaData = ({ipfsPath, edition}) => {
   console.log(`Attempting to upload files in [${ipfsPath}]`);
 
   // Check cache as to not upload duplicates
@@ -42,20 +44,22 @@ const uploadMetaData = ({ipfsPath}) => {
     image = fs.createReadStream(`./config/data/ipfs_data/${ipfsPath}/low_res.jpeg`);
   }
 
+  let {assetType, artistCode} = validateEdition(edition);
+
   return ipfs.add([
-    {
-      path: `${ipfsPath}/image`,
-      content: image,
-    },
-    {
-      path: `${ipfsPath}/description`,
-      content: new streams.ReadableStream(`${meta.description}`).read(),
-    },
-    {
-      path: `${ipfsPath}/other`,
-      content: fs.createReadStream(`./config/data/ipfs_data/${ipfsPath}/meta.json`),
-    }
-  ], {recursive: false}
+      {
+        path: `${ipfsPath}/image`,
+        content: image,
+      },
+      {
+        path: `${ipfsPath}/description`,
+        content: new streams.ReadableStream(`${meta.description}`).read(),
+      },
+      {
+        path: `${ipfsPath}/other`,
+        content: fs.createReadStream(`./config/data/ipfs_data/${ipfsPath}/meta.json`),
+      }
+    ], {recursive: false}
   )
     .then((res) => {
       console.log('Uploaded meta file to IPFS', res);
@@ -65,7 +69,7 @@ const uploadMetaData = ({ipfsPath}) => {
         name: `${meta.artworkName}`,
         description: `${meta.description}`,
         attributes: meta.attributes,
-        external_uri: `${meta.external_uri}`,
+        external_uri: `https://knownorigin.io/artists/${artistCode}/editions/${edition}`,
         image: `https://ipfs.infura.io/ipfs/${metaPath.hash}/image`,
         meta: `https://ipfs.infura.io/ipfs/${metaPath.hash}/other`
       };

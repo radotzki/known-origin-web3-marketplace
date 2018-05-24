@@ -5,21 +5,21 @@ const loadContractCredentials = require('../../scripts/migrations/loadContractCr
 const blocktimestampPlusOne = require('../../scripts/migrations/blocktimestampPlusOne');
 
 const ARTWORK = {
-  "ipfsPath": "lee_holland_priestess",
-  "edition": "LHDPRIESTESS0DIG", // Live = LHDPRIESTESS0001
-  "costInEth": 0.09
+  "ipfsPath": "stina_jones_happy_friday_bird",
+  "edition": "STJHPYFRIBIRDDIG",
+  "costInEth": 0.085 //$50
 };
 
 const galleryData = {
   "artists": [
     {
-      "name": "Lee Holland",
-      "artworks": [ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK]
+      'name': 'Stina Jones',
+      "artworks": [ARTWORK, ARTWORK, ARTWORK/*, ARTWORK, ARTWORK*/]
     }
   ]
 };
 
-const artistAccount = "0x109ab2d5d70229bebfb4961821feafc66fa90150";
+const artistAccount = "0x92baffdd6cfb11a4e57a58ffec4833b4d1abd25d";
 
 module.exports = function (deployer, network, accounts) {
 
@@ -47,4 +47,5 @@ module.exports = function (deployer, network, accounts) {
 
       return instance;
     });
+
 };

@@ -3,7 +3,8 @@ const Eth = require('ethjs');
 const ipfsUploader = require('../ipfs-uploader');
 const Promise = require('bluebird');
 
-const artistData = require('../../src/store/artist-data.js');
+const flattenAttributesMetaData = require('./metadata-attributes-flattener');
+const {validateEdition} = require('./edition-utils');
 
 const flattenArtistData = (galleryData) => {
   let flatInserts = [];
@@ -17,20 +18,9 @@ const flattenArtistData = (galleryData) => {
       let ipfsPath = artwork.ipfsPath;
 
       let edition = artwork.edition;
-      if (edition.length !== 16) {
-        throw new Error(`Edition [${edition}] not 16 chars long`);
-      }
 
-      let assetType = edition.substring(13, 16);
-      if (['DIG', 'PHY'].indexOf(assetType) < 0) {
-        throw new Error(`Edition [${edition}] asset type [${assetType}] not recognised`);
-      }
-
-      let artistCode = edition.substring(0, 3);
-      let found = _.find(artistData, {artistCode: artistCode});
-      if (!found) {
-        throw new Error(`Edition [${edition}] artist code [${artistCode}] not recognised`);
-      }
+      // This validates the edition
+      validateEdition(edition);
 
       let costInWei = Eth.toWei(artwork.costInEth, 'ether');
 
@@ -49,6 +39,8 @@ const flattenArtistData = (galleryData) => {
 
 
 module.exports = function (instance, _artistAccount, _openingTime, galleryData, _developerAccount) {
+
+  flattenAttributesMetaData();
 
   const flatInserts = flattenArtistData(galleryData);
 

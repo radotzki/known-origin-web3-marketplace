@@ -37,7 +37,7 @@ module.exports = {
       },
       network_id: 1,
       gas: 4075039, // default = 4712388
-      gasPrice: 2000000000 // default = 100 gwei = 100000000000
+      gasPrice: 3000000000 // default = 100 gwei = 100000000000
     },
     coverage: {
       host: "localhost",
@@ -52,7 +52,7 @@ module.exports = {
       },
       network_id: 3,
       gas: 4075039, // default = 4712388
-      gasPrice: 25000000000 // default = 100 gwei = 100000000000
+      gasPrice: 35000000000 // default = 100 gwei = 100000000000
     },
     rinkeby: {
       provider: function () {
@@ -60,7 +60,7 @@ module.exports = {
       },
       network_id: 4,
       gas: 7000000, // default = 4712388
-      gasPrice: 21000000000 // default = 100 gwei = 100000000000
+      gasPrice: 35000000000 // default = 100 gwei = 100000000000
     }
   }
 };
