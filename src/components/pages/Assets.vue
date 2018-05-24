@@ -12,8 +12,14 @@
     </div>
 
     <div class="form-row mb-4" v-if="hasFinishedLoading()">
-      <div class="col-6">
+      <div class="col">
         <input type="text" class="form-control" v-model="search" placeholder="Search assets..."/>
+      </div>
+      <div class="col d-none d-md-block">
+        <select class="form-control" title="artist filter" v-model="artistFilter">
+          <option value="all">Artists...</option>
+          <option v-for="{artistCode, name} in orderedArtists" :value="artistCode">{{name}}</option>
+        </select>
       </div>
       <div class="col-1">
         <toggle-button :value="showSold"
@@ -43,6 +49,7 @@
   import AddressIcon from '../ui-controls/AddressIcon';
   import EthAddress from '../ui-controls/EthAddress';
   import LoadingSpinner from "../ui-controls/LoadingSpinner.vue";
+  import _ from 'lodash';
 
   export default {
     name: 'assets',
@@ -54,6 +61,7 @@
       return {
         showSold: false,
         priceFilter: 'asc',
+        artistFilter: 'all',
         search: ''
       };
     },
@@ -71,32 +79,26 @@
     },
     computed: {
       ...mapState([
-        'assets'
+        'assets',
+        'artists'
       ]),
+      orderedArtists: function () {
+        return _.orderBy(this.artists, 'name');
+      },
       filteredAssets: function () {
-        let self = this;
-        let results = this.assets
-          .filter(function (item) {
-            if (self.showSold) {
-              return item.purchased === 1 || item.purchased === 2;
-            }
-            return true;
-          })
+        return this.$store.getters.editionSummaryFilter(this.showSold, this.priceFilter, this.artistFilter)
           .filter(function (item) {
 
-            if (self.search.length === 0) {
+            if (this.search.length === 0) {
               return true;
             }
 
-            let matchesName = item.artworkName.toLowerCase().indexOf(self.search.toLowerCase()) >= 0;
-            let matchesDescription = item.description.toLowerCase().indexOf(self.search.toLowerCase()) >= 0;
-            let matchesArtist = item.otherMeta.artist.toLowerCase().indexOf(self.search.toLowerCase()) >= 0;
-            let matchesTokenId = item.id.toString().toLowerCase().indexOf(self.search.toLowerCase()) >= 0;
+            let matchesName = item.artworkName.toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
+            let matchesDescription = item.description.toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
+            let matchesArtist = item.otherMeta.artist.toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
 
-            return matchesName || matchesDescription || matchesArtist || matchesTokenId;
-          });
-
-        return results;
+            return matchesName || matchesDescription || matchesArtist;
+          }.bind(this));
       }
     }
   };

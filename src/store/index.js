@@ -7,7 +7,7 @@ import Web3 from 'web3';
 import axios from 'axios';
 import artistData from './artist-data';
 import createLogger from 'vuex/dist/logger';
-import {getNetIdString, getEtherscanAddress} from '../utils';
+import {getNetIdString, getEtherscanAddress, isHighRes} from '../utils';
 import contract from 'truffle-contract';
 import knownOriginDigitalAssetJson from '../../build/contracts/KnownOriginDigitalAsset.json';
 
@@ -96,17 +96,28 @@ const store = new Vuex.Store({
         return featuredAssets.indexOf(asset.id) >= 0;
       });
     },
-    editionSummaryFilter: (state) => (showSold = false, priceFilter = 'asc') => {
+    editionSummaryFilter: (state) => (showSold = false, priceFilter = 'asc', artistFilter = 'all') => {
 
-      if (showSold) {
-        return _.orderBy(state.editionSummary.filter((edition) => {
-          return edition.totalSupply === edition.totalPurchased;
-        }), 'priceInEther', priceFilter);
-      }
+      const soldOutEditions = (edition) => {
+        return edition.totalSupply === edition.totalPurchased;
+      };
 
-      return _.orderBy(state.editionSummary.filter((edition) => {
+      const availableEditions = (edition) => {
         return edition.totalSupply !== edition.totalPurchased;
-      }), 'priceInEther', priceFilter);
+      };
+
+      const artistCodeFilter = (edition) => {
+        if (artistFilter === 'all') {
+          return true;
+        }
+        return edition.artistCode === artistFilter;
+      };
+
+      const filtered = state.editionSummary
+        .filter(showSold ? soldOutEditions : availableEditions)
+        .filter(artistCodeFilter);
+
+      return _.orderBy(filtered, 'priceInEther', priceFilter);
     },
     assetPurchaseState: (state) => (assetId) => {
       return _.get(state.purchaseState, assetId);
@@ -485,6 +496,8 @@ const store = new Vuex.Store({
                 _.set(asset, 'lowResImg', ipfsMeta.lowResImg);
                 _.set(asset, 'external_uri', ipfsMeta.external_uri);
                 _.set(asset, 'otherMeta', ipfsMeta.otherMeta);
+                _.set(asset, 'highResAvailable', isHighRes(ipfsMeta));
+
                 if (ipfsMeta.attributes) {
                   _.set(asset, 'attributes', ipfsMeta.attributes);
                 }

@@ -12,7 +12,10 @@
     <div class="card-body">
 
       <p class="card-text">
+        <high-res-label :asset="edition"></high-res-label>
+
         <rarity-indicator :assets-in-edition="assetsForEdition(edition.edition)"></rarity-indicator>
+
         <span class="badge badge-light">1 of {{ assetsForEdition(edition.edition).length }}</span>
         <span class="badge badge-light" v-if="availableAssetsForEdition(edition.edition).length > 0">{{ availableAssetsForEdition(edition.edition).length }} available</span>
 
@@ -21,6 +24,7 @@
         <span class="float-right">
           <tweet-asset-button :edition="edition" v-if="purchase"></tweet-asset-button>
         </span>
+
       </p>
 
       <edition-name-by-artist :edition="edition" :purchase="purchase"></edition-name-by-artist>
@@ -58,10 +62,12 @@
   import RarityIndicator from "./ui-controls/RarityIndicator.vue";
   import UsdPrice from "./ui-controls/USDPrice.vue";
   import MetadataAttributes from "./ui-controls/MetadataAttributes";
+  import HighResLabel from "./ui-controls/HighResLabel.vue";
 
   export default {
     name: 'galleryEdition',
     components: {
+      HighResLabel,
       UsdPrice,
       RarityIndicator,
       TweetAssetButton,

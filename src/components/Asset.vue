@@ -11,7 +11,10 @@
     <div class="card-body">
 
       <p class="card-text">
+
         <token-id :value="asset.id"></token-id>
+
+        <high-res-label :asset="asset"></high-res-label>
 
         <rarity-indicator :assets-in-edition="assetsForEdition(asset.edition)"></rarity-indicator>
 
@@ -70,9 +73,11 @@
   import TweetAssetButton from "./ui-controls/TweetAssetButton";
   import RarityIndicator from "./ui-controls/RarityIndicator";
   import MetadataAttributes from "./ui-controls/MetadataAttributes";
+  import HighResLabel from "./ui-controls/HighResLabel.vue";
 
   export default {
     components: {
+      HighResLabel,
       MetadataAttributes,
       RarityIndicator,
       VerifyPurchase,

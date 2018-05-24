@@ -1,3 +1,5 @@
+const _ = require('lodash');
+
 const getNetIdString = () => {
   return window.web3.eth.net.getId()
     .then((id) => {
@@ -44,7 +46,16 @@ const getEtherscanAddress = () => {
     });
 };
 
+const isHighRes = ({attributes}) => {
+  if (!attributes) {
+    return false;
+  }
+  let tags = _.get(attributes, 'tags', []);
+  return _.some(tags, (element) => _.indexOf(['high res', 'vector', 'High res', 'Vector'], element) >= 0);
+};
+
 export {
   getNetIdString,
   getEtherscanAddress,
+  isHighRes
 };

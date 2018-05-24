@@ -18,6 +18,12 @@
           <option value="desc">High to low</option>
         </select>
       </div>
+      <div class="col d-none d-md-block">
+        <select class="form-control" title="artist filter" v-model="artistFilter">
+          <option value="all">Artists...</option>
+          <option v-for="{artistCode, name} in orderedArtists" :value="artistCode">{{name}}</option>
+        </select>
+      </div>
       <div class="col">
         <input type="text" class="form-control" v-model="search" placeholder="Search assets..."/>
       </div>
@@ -48,6 +54,7 @@
   import {mapGetters, mapState} from 'vuex';
   import GalleryEdition from '../GalleryEdition';
   import LoadingSpinner from "../ui-controls/LoadingSpinner.vue";
+  import _ from 'lodash';
 
   export default {
     name: 'gallery',
@@ -60,6 +67,7 @@
         showSold: false,
         finishedLoading: false,
         priceFilter: 'asc',
+        artistFilter: 'all',
         search: ''
       };
     },
@@ -77,13 +85,17 @@
     },
     computed: {
       ...mapState([
+        'artists',
         'editionSummary',
         'assets',
       ]),
+      orderedArtists: function () {
+        return _.orderBy(this.artists, 'name');
+      },
       editions: function () {
         this.finishedLoading = false;
 
-        let results = this.$store.getters.editionSummaryFilter(this.showSold, this.priceFilter)
+        let results = this.$store.getters.editionSummaryFilter(this.showSold, this.priceFilter, this.artistFilter)
           .filter(function (item) {
 
             if (this.search.length === 0) {

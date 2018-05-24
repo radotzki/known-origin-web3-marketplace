@@ -50,8 +50,14 @@
 
             <p class="card-text">
               <token-id :value="asset.id"></token-id>
-              <span class="badge badge-light">1 of {{ assetsForEdition(asset.edition).length }}</span>
+
+              <high-res-label :asset="asset"></high-res-label>
+
               <rarity-indicator :assets-in-edition="assetsForEdition(asset.edition)"></rarity-indicator>
+
+              <span class="badge badge-light">1 of {{ assetsForEdition(asset.edition).length }}</span>
+
+              <metadata-attributes :attributes="asset.attributes"></metadata-attributes>
             </p>
 
             <edition-name-by-artist :edition="asset"></edition-name-by-artist>
@@ -120,10 +126,14 @@
   import TweetPurchaseButton from "../ui-controls/TweetPurchasedAssetButton";
   import LoadingSpinner from "../ui-controls/LoadingSpinner";
   import RarityIndicator from "../ui-controls/RarityIndicator";
+  import HighResLabel from "../ui-controls/HighResLabel.vue";
+  import MetadataAttributes from "../ui-controls/MetadataAttributes.vue";
 
   export default {
     name: 'completePurchase',
     components: {
+      MetadataAttributes,
+      HighResLabel,
       RarityIndicator,
       TweetPurchaseButton,
       ClickableTransaction,
