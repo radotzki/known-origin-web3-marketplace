@@ -46,7 +46,7 @@ module.exports = function (instance, _artistAccount, _openingTime, galleryData, 
 
   // convert gallery.json into individual inserts decorated with IPFS data
   const populatedMintItems = _.flatMap(flatInserts, (insert) => {
-    console.log(`Seeding test data for [${insert.ipfsPath}]`);
+    console.log(`Seeding data for [${insert.ipfsPath}]`);
     return ipfsUploader.uploadMetaData(insert)
       .then((tokenUri) => {
 

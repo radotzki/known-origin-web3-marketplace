@@ -12,13 +12,13 @@
       <div class="col text-center"></div>
     </div>
 
-    <div class="container" v-if="featuredAssets().length > 0">
+    <div class="container" v-if="featuredAssetsByTokenId().length > 0">
       <div class="row" id="featured">
         <div class="col mt-4">
           <h5 class="text-center pb-4">Featured artwork</h5>
           <div class="card-columns">
             <galleryEdition
-              v-for="asset in featuredAssets()"
+              v-for="asset in featuredAssetsByTokenId()"
               :edition="asset"
               :key="asset.edition">
             </galleryEdition>
@@ -133,7 +133,7 @@
     components: {ArtistShortBio, GalleryEdition, FontAwesomeIcon},
     computed: {
       ...mapGetters([
-        'featuredAssets'
+        'featuredAssetsByTokenId'
       ])
     },
     methods: {

@@ -46,12 +46,14 @@ const getEtherscanAddress = () => {
     });
 };
 
-const isHighRes = ({attributes}) => {
-  if (!attributes) {
+const isHighRes = ({artistCode, attributes}) => {
+  if (!attributes || !artistCode) {
     return false;
   }
   let tags = _.get(attributes, 'tags', []);
-  return _.some(tags, (element) => _.indexOf(['high res', 'vector', 'High res', 'Vector'], element) >= 0);
+  let isFlaggedAsHighRes = _.some(tags, (element) => _.indexOf(['high res', 'vector', 'High res', 'Vector'], element) >= 0);
+  let isEnabledForArtist = _.includes(['AKP'], artistCode);
+  return isFlaggedAsHighRes && isEnabledForArtist;
 };
 
 export {

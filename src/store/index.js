@@ -90,11 +90,45 @@ const store = new Vuex.Store({
     lookupAssetsByArtistCode: (state) => (artistCode) => {
       return _.filter(state.assetsByEditions, (value, key) => key.startsWith(artistCode));
     },
-    featuredAssets: (state) => () => {
-      const featuredAssets = [150, 55, 60, 73, 124, 136, 37, 146, 39];
-      return _.filter(state.assets, (asset) => {
+    featuredAssetsByEdition: (state) => () => {
+      const featuredEditionCodes = [
+        // obxium
+        'OBXDDF1000000DIG',
+
+        // Stina
+        'STJHPYFRIBIRDDIG',
+        // 'STJRUNRIOT001DIG',
+        'STJRUNRIOT001DIG',
+
+        // Stan regats
+        'STREMOJI10000DIG',
+        // 'STRLIQUIFY001DIG',
+        'STRTAMINGLIONDIG',
+        // 'STRTRTSYM0001DIG',
+
+        // Franky anguliur
+        'FKAHYPDTHSTY0DIG'
+      ];
+
+      // TODO this throws an error..?
+      return _.map(featuredEditionCodes, (edition) => _.head(state.assetsByEditions[edition]));
+    },
+    featuredAssetsByTokenId: (state) => () => {
+      const featuredAssets = [
+        45, 48, // 89—A
+        150, // Lee Holland
+        136, 145, // Aktiv
+        36, 30, //Jame O'Conel
+        177, // Franky
+        161, // obxium
+        168, 165, // Stina
+        175, 174 // Stan regats
+      ];
+      const filtered = _.filter(state.assets, (asset) => {
         return featuredAssets.indexOf(asset.id) >= 0;
       });
+
+      return _.orderBy(filtered, 'priceInEther', 'asc');
     },
     editionSummaryFilter: (state) => (showSold = false, priceFilter = 'asc', artistFilter = 'all') => {
 
@@ -496,8 +530,10 @@ const store = new Vuex.Store({
                 _.set(asset, 'lowResImg', ipfsMeta.lowResImg);
                 _.set(asset, 'external_uri', ipfsMeta.external_uri);
                 _.set(asset, 'otherMeta', ipfsMeta.otherMeta);
-                _.set(asset, 'highResAvailable', isHighRes(ipfsMeta));
-
+                _.set(asset, 'highResAvailable', isHighRes({
+                  attributes: ipfsMeta.attributes,
+                  artistCode: asset.artistCode
+                }));
                 if (ipfsMeta.attributes) {
                   _.set(asset, 'attributes', ipfsMeta.attributes);
                 }
