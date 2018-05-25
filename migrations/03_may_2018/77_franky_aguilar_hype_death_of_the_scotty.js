@@ -15,7 +15,7 @@ const galleryData = {
   "artists": [
     {
       'name': 'Franky Aguilar',
-      "artworks": [ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK/*, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK*/]
+      "artworks": [ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK/*, ARTWORK, ARTWORK*/]
     }
   ]
 };
