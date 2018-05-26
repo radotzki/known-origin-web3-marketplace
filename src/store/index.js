@@ -153,6 +153,27 @@ const store = new Vuex.Store({
 
       return _.orderBy(filtered, 'priceInEther', priceFilter);
     },
+    assetFilter: (state) => (showSold = false, priceFilter = 'asc', artistFilter = 'all') => {
+
+      const purchasedAssets = (asset) => {
+        return asset.purchased === 1 || asset.purchased === 2;
+      };
+
+      const showAllAssets = () => true;
+
+      const artistCodeFilter = (asset) => {
+        if (artistFilter === 'all') {
+          return true;
+        }
+        return asset.artistCode === artistFilter;
+      };
+
+      const filtered = state.assets
+        .filter(showSold ? purchasedAssets : showAllAssets)
+        .filter(artistCodeFilter);
+
+      return _.orderBy(filtered, 'priceInEther', priceFilter);
+    },
     assetPurchaseState: (state) => (assetId) => {
       return _.get(state.purchaseState, assetId);
     },
