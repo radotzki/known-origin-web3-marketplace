@@ -89,8 +89,11 @@
         'editionSummary',
         'assets',
       ]),
+      ...mapGetters([
+        'liveArtists',
+      ]),
       orderedArtists: function () {
-        return _.orderBy(this.artists, 'name');
+        return _.orderBy(this.liveArtists, 'name');
       },
       editions: function () {
         this.finishedLoading = false;
