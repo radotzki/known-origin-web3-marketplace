@@ -92,37 +92,65 @@ const store = new Vuex.Store({
     },
     featuredAssetsByEdition: (state) => () => {
       const featuredEditionCodes = [
+        // Arktiv
+        'AKPSTELLAR000DIG',
+
+        // obxium
+        'OBXDDF5000000DIG',
+
+        // Lee Holland
+        'LHDPRIESTESS0001',
+
+        //Manolide
+        'MNONEOPLA0001DIG',
+
+        //Takahiro Okawa
+        'TKOTAKACMNCOSDIG',
+
         // obxium
         'OBXDDF1000000DIG',
 
         // Stina
         'STJHPYFRIBIRDDIG',
-        // 'STJRUNRIOT001DIG',
+        'STJSPGMRN0001DIG',
         'STJRUNRIOT001DIG',
 
         // Stan regats
-        'STREMOJI10000DIG',
-        // 'STRLIQUIFY001DIG',
-        'STRTAMINGLIONDIG',
-        // 'STRTRTSYM0001DIG',
+        'STRGRASSROOTSDIG',
+        'STRSOFTFACE01DIG',
+        'STRTOOMNYNOONDIG',
 
         // Franky anguliur
-        'FKAHYPDTHSTY0DIG'
+        'FKAMARTIANBNGDIG',
+        'FKAHYPDTHSTY0DIG',
+        'FKABUNNYBAGS0DIG',
+
+        // 89-A
+        '89AKURUSHI001DIG',
+
+        // Katie O'Rourke
+        'KORMANCHESTERDIG',
+
+        // Laura Hawkins
+        'LHKBUZZ000001DIG'
       ];
 
-      // TODO this throws an error..?
+      if (state.assetsByEditions.length === 0) {
+        return [];
+      }
+
       return _.map(featuredEditionCodes, (edition) => _.head(state.assetsByEditions[edition]));
     },
     featuredAssetsByTokenId: (state) => () => {
       const featuredAssets = [
-        45, 48, // 89—A
+        45, // 89—A
         150, // Lee Holland
-        136, 145, // Aktiv
-        36, 30, //Jame O'Conel
-        177, // Franky
+        136, // Aktiv
+        30, //Jame O'Conel
+        185, // Franky
         161, // obxium
-        168, 165, // Stina
-        175, 174 // Stan regats
+        165, // Stina
+        175, 187 // Stan regats
       ];
       const filtered = _.filter(state.assets, (asset) => {
         return featuredAssets.indexOf(asset.id) >= 0;

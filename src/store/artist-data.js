@@ -1,11 +1,12 @@
 const artists = [
   {
     artistCode: 'OBX',
-    name: 'obxium',
+    name: 'Obxium',
     bio: 'Coexisting and evolving with the algorithms while fighting for the user with digital art centered around cryptography and cryptocurrencies',
     strapline: 'Coexisting and evolving with the algorithms while fighting for the user with digital art centered around cryptography and cryptocurrencies',
     img: 'static/artists/Obxium_profile@x2.png',
-    live: true
+    live: true,
+    ethAddress: '0xf65DB13b5ee031CB0ebBa525eF21aa6C586681b3'
   },
   {
     artistCode: 'STR',
@@ -13,7 +14,8 @@ const artists = [
     bio: 'Stan Ragets has a background in computer programming and seeks to blend the technical and artistic sides of fractals together.',
     strapline: 'Stan Ragets has a background in computer programming and seeks to blend the technical and artistic sides of fractals together.',
     img: 'static/artists/StanR_Profile@x2.png',
-    live: true
+    live: true,
+    ethAddress: '0x96DEAD6149f580884410c873F6dA8d3DDE16F13C'
   },
   {
     artistCode: 'FKA',
@@ -21,7 +23,27 @@ const artists = [
     bio: 'California native, studied web design and interactive media at The Art Institute of CA-San Francisco 2010.',
     strapline: 'California native, studied web design and interactive media at The Art Institute of CA-San Francisco 2010.',
     img: 'static/artists/Frank_G_Profile@x2.png',
-    live: true
+    live: true,
+    ethAddress: '0x2Eb9b439Ffb7dC587198e1534e465a6242192b24'
+  },
+  {
+    artistCode: 'TKO',
+    name: 'Takahiro Okawa',
+    bio: 'He was born and raised in a Japanese seaside town. In teens PUNK · NEWWAVE sounded, fashion was inspired. He entered Tokyo as a department of photography at Nihon University College of Art and moved to Tokyo.',
+    strapline: 'He was born and raised in a Japanese seaside town. In teens PUNK · NEWWAVE sounded, fashion was inspired. He entered Tokyo as a department of photography at Nihon University College of Art and moved to Tokyo.',
+    twitter: '@oi_to_up',
+    img: 'static/artists/Takahiro-Okawa@x2.png',
+    live: true,
+    ethAddress: '0x81918C90424235902b0330E4870d2267544421b0'
+  },
+  {
+    artistCode: 'MNO',
+    name: 'Manoloide',
+    bio: 'Creative coder and generative designer.',
+    strapline: 'Creative coder and generative designer.',
+    img: 'static/artists/Manoloide_Profile@x2.png',
+    live: true,
+    ethAddress: '0x6fb7f9d87d2742baba47f61207d57ac3c0443482'
   },
   {
     artistCode: 'AKP',
@@ -29,7 +51,8 @@ const artists = [
     bio: 'Independent digital artists',
     strapline: 'Independent digital artists',
     img: 'static/artists/AktivProtesk_@x2.png',
-    live: true
+    live: true,
+    ethAddress: '0x7DEc37c03ea5ca2C47ad2509BE6abAf8C63CDB39'
   },
   {
     artistCode: 'LHD',
@@ -37,7 +60,8 @@ const artists = [
     bio: 'Hi, I’m Lee Holland, a multi-disciplined designer and illustrator based in Sheffield, United Kingdom. ',
     strapline: 'Hi, I’m Lee Holland, a multi-disciplined designer and illustrator based in Sheffield, United Kingdom.',
     img: 'static/artists/LeeHolland_Profile@x2.png',
-    live: true
+    live: true,
+    ethAddress: '0xf397B52432fE7149Ce74849B15223f4502cdB1d3'
   },
   {
     artistCode: 'CNJ',
@@ -46,7 +70,8 @@ const artists = [
     bio: 'CoinJournal is a Manchester-based Bitcoin and cryptocurrency news site. The artwork submitted has been produced as a collaboration with several different designers, incorporating the style of 1930s cartoons and celebrating the disruptive nature of cryptocurrencies.',
     strapline: 'CoinJournal is a Manchester based artist who collaborates with several different designers, incorporating the style of 1930s cartoons',
     img: 'static/artists/coinjournal_x2.png',
-    live: true
+    live: true,
+    ethAddress: '0xb3Fb19f7D5caD1b7EB95ba29289D7BFFB65bE680'
   },
   {
     artistCode: 'STJ',
@@ -54,7 +79,8 @@ const artists = [
     bio: 'I’m a freelance Illustrator & Graphic Designer based in Manchester, with 15 years industry experience ',
     strapline: 'I’m a freelance Illustrator & Graphic Designer based in Manchester, with 15 years industry experience ',
     img: 'static/artists/StinaJones1_Profile@x2.png',
-    live: true
+    live: true,
+    ethAddress: '0x92baffdd6cfb11a4e57a58ffec4833b4d1abd25d'
   },
   {
     artistCode: 'BJD',
@@ -146,7 +172,8 @@ const artists = [
     bio: 'Will Halcomb is a digital designer and artist from Birmingham, Alabama. A recent graduate of the University of Mississippi with a degree in Graphic Design (BFA), he now lives in NYC.',
     strapline: 'Will Halcomb is a digital designer and artist from Birmingham, Alabama. A recent graduate of the University of Mississippi with a degree in Graphic Design (BFA), he now lives in NYC.',
     img: 'static/artists/ParisPSalter_Profile@x2.png',
-    live: true
+    live: true,
+    ethAddress: '0x8d01Bdf55Fa7f1CCfef7b670a11B8c14faf827Bf'
   },
   {
     artistCode: 'MKL',
