@@ -1,22 +1,41 @@
 <template>
   <span class="high-res-container" v-if="asset.highResAvailable">
-    <span class="badge badge-secondary" title="Soon you will be able to download this asset as a high-resolution image">
+    <span class="badge badge-secondary"
+          v-b-tooltip.hover :id="'tooltipButton-highRes-info-' + uuid">
       high res
     </span>
-    <!--<font-awesome-icon :icon="['fas', 'cloud-download-alt']"></font-awesome-icon>-->
-    <!--<font-awesome-icon :icon="['fas', 'info']"></font-awesome-icon>-->
+
+    <b-tooltip
+      ref="tooltip"
+      :target="'tooltipButton-highRes-info-' + uuid">
+      If purchased, a high resolution version can be <strong>download!</strong>
+    </b-tooltip>
   </span>
 </template>
 
 <script>
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
+  import HighResDownload from "./HighResDownload.vue";
+  import {mapGetters, mapState} from 'vuex';
 
   export default {
-    components: {FontAwesomeIcon},
+    components: {
+      HighResDownload,
+      FontAwesomeIcon
+    },
     name: 'highResLabel',
     props: ['asset'],
-    computed: {},
-    methods: {}
+    data() {
+      return {
+        // We gen a random ID to bind the popup to
+        uuid: Math.floor(Math.random() * Math.floor(1000))
+      };
+    },
+    computed: {
+      ...mapState([
+        'account',
+      ]),
+    }
   };
 </script>
 

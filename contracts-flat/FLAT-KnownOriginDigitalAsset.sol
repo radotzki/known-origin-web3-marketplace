@@ -1034,7 +1034,7 @@ contract KnownOriginDigitalAsset is ERC721Token, ERC165 {
    */
   function editionInfo(uint256 _tokenId) public view returns (
     uint256 _tokId,
-    bytes16 _edition,
+    bytes16 _edition0x0f48669b1681d41357eac232f516b77d0c10f0f1,
     uint256 _editionNumber,
     string _tokenURI,
     address _artistAccount

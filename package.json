@@ -1,5 +1,5 @@
 {
-  "name": "known-origin-web3-marketstore",
+  "name": "known-origin-web3-marketplace",
   "version": "0.0.1",
   "description": "Web3JS enabled digital assets project",
   "author": "james@blockchainmanchester.co.uk & andy@blockchainmanchester.co.uk",
@@ -24,6 +24,7 @@
     "@fortawesome/vue-fontawesome": "0.0.22",
     "axios": "^0.18.0",
     "bootstrap": "^4.1.0",
+    "bootstrap-vue": "^2.0.0-rc.11",
     "ethjs": "^0.3.3",
     "identicon.js": "^2.3.1",
     "lodash": "^4.17.5",
@@ -108,7 +109,7 @@
     "sinon": "^2.1.0",
     "sinon-chai": "^2.8.0",
     "solidity-coverage": "^0.4.12",
-    "truffle": "^4.1.5",
+    "truffle": "^4.1.11",
     "truffle-flattener": "^1.2.5",
     "truffle-hdwallet-provider": "0.0.3",
     "url-loader": "^0.5.8",
@@ -119,7 +120,8 @@
     "webpack-bundle-analyzer": "^2.2.1",
     "webpack-dev-middleware": "^1.10.0",
     "webpack-hot-middleware": "^2.18.0",
-    "webpack-merge": "^4.1.0"
+    "webpack-merge": "^4.1.0",
+    "ganache-cli": "^6.1.0"
   },
   "engines": {
     "node": ">= 8.0.0",
