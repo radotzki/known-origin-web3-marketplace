@@ -138,6 +138,7 @@
   $font-family-base: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;
 
   @import '../node_modules/bootstrap/scss/bootstrap.scss';
+  @import '../node_modules/bootstrap-vue/dist/bootstrap-vue.css';
 
   /* Sticky footer styles
 -------------------------------------------------- */

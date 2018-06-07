@@ -25,6 +25,7 @@
         <span class="float-right">
           <tweet-asset-button :edition="asset" v-if="individual"></tweet-asset-button>
         </span>
+
       </p>
 
       <edition-name-by-artist :edition="asset"></edition-name-by-artist>
@@ -46,15 +47,19 @@
     </ul>
 
     <div class="card-footer" v-if="!individual">
-      <router-link :to="{ name: 'assetDetailView', params: { tokenId: asset.id} }" tag="button" class="btn btn-outline-primary btn-block">
-        View asset
-      </router-link>
+      <div class="btn-group-vertical btn-block">
+        <router-link :to="{ name: 'assetDetailView', params: { tokenId: asset.id} }" tag="button" class="btn btn-outline-primary btn-block">
+          View asset
+        </router-link>
+
+        <high-res-download :asset="asset"></high-res-download>
+      </div>
     </div>
 
-    <!-- disabled for now until we know more -->
-    <!--<hr/>-->
-    <!--<div>-->
-    <!--<verify-purchase :asset-id="asset.id"></verify-purchase>-->
+
+  </div>
+
+
 
   </div>
 </template>
@@ -68,7 +73,7 @@
   import TokenId from './ui-controls/TokenId';
   import EditionNameByArtist from './ui-controls/EditionNameByArtist';
   import TweetPurchaseButton from "./ui-controls/TweetPurchasedAssetButton";
-  import VerifyPurchase from "./ui-controls/VerifyPurchase";
+  import HighResDownload from "./ui-controls/HighResDownload";
   import ClickableAddress from './ui-controls/ClickableAddress';
   import TweetAssetButton from "./ui-controls/TweetAssetButton";
   import RarityIndicator from "./ui-controls/RarityIndicator";
@@ -80,7 +85,7 @@
       HighResLabel,
       MetadataAttributes,
       RarityIndicator,
-      VerifyPurchase,
+      HighResDownload,
       TweetPurchaseButton,
       AddressIcon,
       PurchaseState,

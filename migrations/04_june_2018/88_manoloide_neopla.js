@@ -16,7 +16,7 @@ const galleryData = {
   "artists": [
     {
       "name": "Manoloide",
-      "artworks": [/*ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK,*/ ARTWORK, ARTWORK, ARTWORK]
+      "artworks": [ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK]
     }
   ]
 };

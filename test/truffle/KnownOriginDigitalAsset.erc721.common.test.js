@@ -324,6 +324,17 @@ contract('KnownOriginDigitalAsset', function (accounts) {
 
             // TODO find solution to decodeLogs
             it.skip('should call onERC721Received', async function () {
+
+              // Moved from decodeLogs.js
+              const SolidityEvent = require('web3/lib/web3/event.js');
+
+              function decodeLogs(logs, contract, address) {
+                return logs.map(log => {
+                  const event = new SolidityEvent(null, contract.events[log.topics[0]], address);
+                  return event.decode(log);
+                });
+              }
+
               const result = await transferFun.call(this, owner, this.to, tokenId, {from: owner});
               result.receipt.logs.length.should.be.equal(3);
               const [log] = decodeLogs([result.receipt.logs[2]], ERC721Receiver, this.receiver.address);

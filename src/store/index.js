@@ -51,7 +51,8 @@ const store = new Vuex.Store({
     editionSummary: [],
 
     // Frontend state
-    purchaseState: {}
+    purchaseState: {},
+    highResDownload: {},
   },
   getters: {
     assetsForEdition: (state) => (edition) => {
@@ -67,7 +68,8 @@ const store = new Vuex.Store({
     findNextAssetToPurchase: (state, getters) => (edition) => {
       let editions = getters.assetsForEdition(edition.edition);
       return _.chain(editions)
-        .orderBy('editionNumber')
+      // find cheapest next edition (some editions can have different prices)
+        .orderBy(['priceInEtherSortable', 'editionNumber'])
         .filter({purchased: 0})
         .head()
         .value();
@@ -232,6 +234,18 @@ const store = new Vuex.Store({
     cheapestPiece: (state, getters) => () => {
       return _.head(_.orderBy(state.assets, 'priceInEtherSortable', 'asc'));
     },
+    isHighResDownloadTriggered: (state, getters) => (tokenId) => {
+      return _.get(state.highResDownload[tokenId], 'state') === mutations.HIGH_RES_DOWNLOAD_TRIGGERED;
+    },
+    isHighResDownloadSuccess: (state, getters) => (tokenId) => {
+      return _.get(state.highResDownload[tokenId], 'state') === mutations.HIGH_RES_DOWNLOAD_SUCCESS;
+    },
+    isHighResDownloadFailed: (state, getters) => (tokenId) => {
+      return _.get(state.highResDownload[tokenId], 'state') === mutations.HIGH_RES_DOWNLOAD_FAILURE;
+    },
+    getHighResDownloadedLink: (state) => (tokenId) => {
+      return _.get(state.highResDownload[tokenId], 'url');
+    },
   },
   mutations: {
     [mutations.SET_COMMISSION_ADDRESSES](state, {curatorAddress, contractDeveloperAddress, contractAddress}) {
@@ -249,7 +263,7 @@ const store = new Vuex.Store({
       state.artists = artists;
     },
     [mutations.SET_ASSETS_PURCHASED_FROM_ACCOUNT](state, tokens) {
-      Vue.set(state, 'assetsPurchasedByAccount', tokens.map(val => val.toString(10)));
+      Vue.set(state, 'assetsPurchasedByAccount', tokens.map(val => val.toString()));
     },
     [mutations.SET_TOTAL_PURCHASED](state, {totalPurchaseValueInWei, totalNumberOfPurchases, totalPurchaseValueInEther}) {
       state.totalPurchaseValueInWei = totalPurchaseValueInWei;
@@ -286,7 +300,11 @@ const store = new Vuex.Store({
     [mutations.PURCHASE_TRIGGERED](state, {tokenId, buyer}) {
       state.purchaseState = {
         ...state.purchaseState,
-        [tokenId]: {tokenId: tokenId.toString(10), buyer, state: 'PURCHASE_TRIGGERED'}
+        [tokenId]: {
+          tokenId: tokenId.toString(10),
+          buyer,
+          state: 'PURCHASE_TRIGGERED'
+        }
       };
     },
     [mutations.PURCHASE_FAILED](state, {tokenId, buyer}) {
@@ -296,7 +314,11 @@ const store = new Vuex.Store({
       }
       state.purchaseState = {
         ...state.purchaseState,
-        [tokenId]: {tokenId: tokenId.toString(10), buyer, state: 'PURCHASE_FAILED'}
+        [tokenId]: {
+          tokenId: tokenId.toString(10),
+          buyer,
+          state: 'PURCHASE_FAILED'
+        }
       };
     },
     [mutations.PURCHASE_SUCCESSFUL](state, {tokenId, buyer}) {
@@ -316,7 +338,10 @@ const store = new Vuex.Store({
         state.purchaseState = {
           ...state.purchaseState,
           [tokenId]: {
-            tokenId: tokenId.toString(10), buyer, transaction: transaction, state: 'PURCHASE_SUCCESSFUL'
+            tokenId: tokenId.toString(),
+            buyer,
+            transaction,
+            state: 'PURCHASE_SUCCESSFUL'
           }
         };
         return;
@@ -324,12 +349,32 @@ const store = new Vuex.Store({
 
       state.purchaseState = {
         ...state.purchaseState,
-        [tokenId]: {tokenId: tokenId.toString(10), buyer, transaction, state: 'PURCHASE_STARTED'}
+        [tokenId]: {
+          tokenId: tokenId.toString(),
+          buyer,
+          transaction,
+          state: 'PURCHASE_STARTED'
+        }
       };
     },
-    [mutations.UPDATE_PURCHASE_STATE](state, {tokenId}) {
+    [mutations.RESET_PURCHASE_STATE](state, {tokenId}) {
       delete state.purchaseState[tokenId];
       state.purchaseState = {...state.purchaseState};
+    },
+    [mutations.HIGH_RES_DOWNLOAD_SUCCESS](state, {tokenId, url, expires}) {
+      state.highResDownload = {
+        ...state.highResDownload, [tokenId]: {state: mutations.HIGH_RES_DOWNLOAD_SUCCESS, url, expires}
+      };
+    },
+    [mutations.HIGH_RES_DOWNLOAD_FAILURE](state, {tokenId, status, error}) {
+      state.highResDownload = {
+        ...state.highResDownload, [tokenId]: {state: mutations.HIGH_RES_DOWNLOAD_FAILURE, status, error, failure: true}
+      };
+    },
+    [mutations.HIGH_RES_DOWNLOAD_TRIGGERED](state, {tokenId}) {
+      state.highResDownload = {
+        ...state.highResDownload, [tokenId]: {state: mutations.HIGH_RES_DOWNLOAD_TRIGGERED}
+      };
     },
     [mutations.SET_WEB3](state, web3) {
       state.web3 = web3;
@@ -391,7 +436,7 @@ const store = new Vuex.Store({
     },
     [actions.RESET_PURCHASE_STATE]: function ({commit, dispatch, state}, asset) {
       dispatch(actions.GET_ALL_ASSETS);
-      commit(mutations.UPDATE_PURCHASE_STATE, {tokenId: asset.id});
+      commit(mutations.RESET_PURCHASE_STATE, {tokenId: asset.id});
     },
     [actions.GET_USD_PRICE]: function ({commit, dispatch, state}) {
 
@@ -532,8 +577,8 @@ const store = new Vuex.Store({
               owner: owner.toString(),
               purchased: assetInfo[2].toNumber(),
               priceInWei: assetInfo[3].toString(),
-              priceInEther: Web3.utils.fromWei(assetInfo[3].toString(), 'ether').valueOf(),
-              priceInEtherSortable: Web3.utils.fromWei(assetInfo[3].toString(), 'ether'),
+              priceInEther: Web3.utils.fromWei(assetInfo[3].toString(10), 'ether').valueOf(),
+              priceInEtherSortable: Web3.utils.fromWei(assetInfo[3].toString(10), 'ether'),
               auctionStartDate: assetInfo[4].toString(10),
 
               edition: edition,
@@ -832,16 +877,90 @@ const store = new Vuex.Store({
           commit(mutations.PURCHASE_FAILED, {tokenId: assetToPurchase.id, buyer: state.account});
         });
     },
-    [actions.VERIFY_PURCHASE]({commit, dispatch, state}, assetId) {
-      state.web3.eth.personal.sign(
-        Web3.utils.utf8ToHex(`I verify that I have purchased this asset from KnownOrigin - KODA assetId=${assetId}`),
-        state.account
-      ).then(function (result) {
-        console.log(result);
-        // TODO - store in firebase under the specific account?
-        // OR
-        // TODO - post to API to verify/record action taken?
-      });
+    [actions.HIGH_RES_DOWNLOAD]({commit, dispatch, state, getters}, asset) {
+
+      // if we already have it, don't pop again
+      if (getters.isHighResDownloadSuccess(asset.id)) {
+        return;
+      }
+
+      commit(mutations.HIGH_RES_DOWNLOAD_TRIGGERED, {tokenId: asset.id});
+
+      const requestHighResDownload = ({originalMessage, signedMessage}) => {
+        return state.web3.eth.net.getId()
+          .then((networkId) => {
+
+            const highResConfig = {
+              local: "http://localhost:5000/known-origin-io/us-central1/highResDownload",
+              // beta: "https://us-central1-beta-known-origin-io.cloudfunctions.net/highResDownload",
+              live: "https://us-central1-known-origin-io.cloudfunctions.net/highResDownload"
+            };
+
+            const getDownloadApi = () => {
+              switch (window.location.hostname) {
+                // For now point all to live
+                case "beta-known-origin-io.firebaseapp.com":
+                case "known-origin-io.firebaseapp.com":
+                case "knownorigin.io":
+                  return highResConfig.live;
+                default:
+                  return highResConfig.local;
+              }
+            };
+
+            return axios({
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                'X-Requested-By': `${window.href}`
+              },
+              data: {
+                address: state.account,
+                tokenId: asset.id,
+                originalMessage,
+                signedMessage,
+                networkId
+              },
+              url: getDownloadApi(),
+            })
+              .then((response) => validateResponse(response))
+              .catch((error) => {
+                commit(mutations.HIGH_RES_DOWNLOAD_FAILURE, {
+                  message: error.data,
+                  tokenId: asset.id
+                });
+              });
+          });
+      };
+
+      const validateResponse = (response) => {
+        console.log(response);
+        if (response.status === 202 && response.data.url) {
+          commit(mutations.HIGH_RES_DOWNLOAD_SUCCESS, {
+            ...response.data,
+            tokenId: asset.id
+          });
+        } else {
+          commit(mutations.HIGH_RES_DOWNLOAD_FAILURE, {
+            message: "Unexpected response status",
+            tokenId: asset.id
+          });
+        }
+      };
+
+      let message = `I verify that I, ${state.account}, have purchased this asset, #${asset.id}, of edition, ${asset.edition}, from KnownOrigin.io. By signing this transaction you agree to adhere to the KnownOrigin license agreement. ${Date.now()}`;
+
+      state.web3.eth.personal
+        .sign(message, state.account)
+        .catch(() => {
+          // rejected
+          commit(mutations.HIGH_RES_DOWNLOAD_FAILURE, {tokenId: asset.id});
+        })
+        .then((result) => requestHighResDownload({
+          originalMessage: message,
+          signedMessage: result
+        }));
     }
   }
 });
