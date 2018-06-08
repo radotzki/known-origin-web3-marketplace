@@ -40,7 +40,9 @@
         <a href="https://t.me/knownorigin_io" target="_blank" class="community-icon" title="Telegram">telegram</a>
         or
         <a href="mailto:hello@knownorigin.io" target="_blank" title="Hello">email</a> if you think this is incorrect.
+        <button class="btn btn-sm btn-link text-muted" v-on:click="showMore = !showMore" v-if="!showMore">details</button>
       </small>
+      <pre class="text-muted" v-show="showMore">{{highResDownload[asset.id].message}} | {{hostname()}}</pre>
     </span>
 
   </div>
@@ -51,14 +53,21 @@
   import * as actions from '../../store/actions';
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
   import {mapGetters, mapState} from 'vuex';
+  import _ from 'lodash';
 
   export default {
     name: 'highResDownload',
     components: {FontAwesomeIcon},
     props: ['asset'],
+    data() {
+      return {
+        showMore: false
+      };
+    },
     computed: {
       ...mapState([
         'account',
+        'highResDownload',
       ]),
       ...mapGetters([
         'isHighResDownloadTriggered',
@@ -73,6 +82,9 @@
       },
       shouldDisplayHighRes: function () {
         return (this.asset && this.account) && this.asset.highResAvailable && (this.asset.owner.toLowerCase() === this.account.toLowerCase());
+      },
+      hostname: () => {
+        return _.get(window, 'location.hostname');
       },
       noop: () => {}
     }
