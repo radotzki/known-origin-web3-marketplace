@@ -67,9 +67,11 @@
     computed: {
       ...mapState([
         'account',
+      ]),
+      ...mapState('highres', [
         'highResDownload',
       ]),
-      ...mapGetters([
+      ...mapGetters('highres', [
         'isHighResDownloadTriggered',
         'isHighResDownloadSuccess',
         'isHighResDownloadFailed',
@@ -78,7 +80,7 @@
     },
     methods: {
       verifyPurchase: function () {
-        this.$store.dispatch(actions.HIGH_RES_DOWNLOAD, this.asset);
+        this.$store.dispatch(`highres/${actions.HIGH_RES_DOWNLOAD}`, this.asset);
       },
       shouldDisplayHighRes: function () {
         return (this.asset && this.account) && this.asset.highResAvailable && (this.asset.owner.toLowerCase() === this.account.toLowerCase());

@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import * as actions from './actions';
-import * as mutations from './mutation-types';
+import * as mutations from './mutation';
 import _ from 'lodash';
 import Web3 from 'web3';
 import axios from 'axios';
@@ -15,8 +15,15 @@ const KnownOriginDigitalAsset = contract(knownOriginDigitalAssetJson);
 
 Vue.use(Vuex);
 
+import purchase from './modules/purchase';
+import highres from './modules/highres';
+
 const store = new Vuex.Store({
   plugins: [createLogger()],
+  modules: {
+    purchase,
+    highres
+  },
   state: {
     // connectivity
     web3: null,
@@ -49,10 +56,6 @@ const store = new Vuex.Store({
     assetsByEditions: [],
     assetsByArtistCode: [],
     editionSummary: [],
-
-    // Frontend state
-    purchaseState: {},
-    highResDownload: {},
   },
   getters: {
     assetsForEdition: (state) => (edition) => {
@@ -204,24 +207,6 @@ const store = new Vuex.Store({
 
       return _.orderBy(filtered, 'priceInEther', priceFilter);
     },
-    assetPurchaseState: (state) => (assetId) => {
-      return _.get(state.purchaseState, assetId);
-    },
-    isPurchaseTriggered: (state, getters) => (assetId) => {
-      return _.get(getters.assetPurchaseState(assetId), 'state') === mutations.PURCHASE_TRIGGERED;
-    },
-    isPurchaseStarted: (state, getters) => (assetId) => {
-      return _.get(getters.assetPurchaseState(assetId), 'state') === mutations.PURCHASE_STARTED;
-    },
-    isPurchaseSuccessful: (state, getters) => (assetId) => {
-      return _.get(getters.assetPurchaseState(assetId), 'state') === mutations.PURCHASE_SUCCESSFUL;
-    },
-    isPurchaseFailed: (state, getters) => (assetId) => {
-      return _.get(getters.assetPurchaseState(assetId), 'state') === mutations.PURCHASE_FAILED;
-    },
-    getTransactionForAsset: (state, getters) => (assetId) => {
-      return getters.assetPurchaseState(assetId).transaction;
-    },
     totalEditions: (state, getters) => () => {
       return _.size(_.uniqBy(state.assets, 'edition'));
     },
@@ -234,18 +219,7 @@ const store = new Vuex.Store({
     cheapestPiece: (state, getters) => () => {
       return _.head(_.orderBy(state.assets, 'priceInEtherSortable', 'asc'));
     },
-    isHighResDownloadTriggered: (state, getters) => (tokenId) => {
-      return _.get(state.highResDownload[tokenId], 'state') === mutations.HIGH_RES_DOWNLOAD_TRIGGERED;
-    },
-    isHighResDownloadSuccess: (state, getters) => (tokenId) => {
-      return _.get(state.highResDownload[tokenId], 'state') === mutations.HIGH_RES_DOWNLOAD_SUCCESS;
-    },
-    isHighResDownloadFailed: (state, getters) => (tokenId) => {
-      return _.get(state.highResDownload[tokenId], 'state') === mutations.HIGH_RES_DOWNLOAD_FAILURE;
-    },
-    getHighResDownloadedLink: (state) => (tokenId) => {
-      return _.get(state.highResDownload[tokenId], 'url');
-    },
+
   },
   mutations: {
     [mutations.SET_COMMISSION_ADDRESSES](state, {curatorAddress, contractDeveloperAddress, contractAddress}) {
@@ -297,117 +271,14 @@ const store = new Vuex.Store({
     [mutations.SET_ETHERSCAN_NETWORK](state, etherscanBase) {
       state.etherscanBase = etherscanBase;
     },
-    [mutations.PURCHASE_TRIGGERED](state, {tokenId, buyer}) {
-      state.purchaseState = {
-        ...state.purchaseState,
-        [tokenId]: {
-          tokenId: tokenId.toString(10),
-          buyer,
-          state: 'PURCHASE_TRIGGERED'
-        }
-      };
-    },
-    [mutations.PURCHASE_FAILED](state, {tokenId, buyer}) {
-      // Guard against the timed account check winner and the event coming through as failed
-      if (state.purchaseState[tokenId].state === 'PURCHASE_SUCCESSFUL') {
-        return;
-      }
-      state.purchaseState = {
-        ...state.purchaseState,
-        [tokenId]: {
-          tokenId: tokenId.toString(10),
-          buyer,
-          state: 'PURCHASE_FAILED'
-        }
-      };
-    },
-    [mutations.PURCHASE_SUCCESSFUL](state, {tokenId, buyer}) {
-      state.purchaseState = {
-        ...state.purchaseState,
-        [tokenId]: {
-          tokenId: tokenId.toString(10),
-          buyer,
-          transaction: state.purchaseState[tokenId].transaction,
-          state: 'PURCHASE_SUCCESSFUL'
-        }
-      };
-    },
-    [mutations.PURCHASE_STARTED](state, {tokenId, buyer, transaction}) {
-      // Guard against the timed account check beating the event callbacks
-      if (state.purchaseState[tokenId].state === 'PURCHASE_SUCCESSFUL') {
-        state.purchaseState = {
-          ...state.purchaseState,
-          [tokenId]: {
-            tokenId: tokenId.toString(),
-            buyer,
-            transaction,
-            state: 'PURCHASE_SUCCESSFUL'
-          }
-        };
-        return;
-      }
-
-      state.purchaseState = {
-        ...state.purchaseState,
-        [tokenId]: {
-          tokenId: tokenId.toString(),
-          buyer,
-          transaction,
-          state: 'PURCHASE_STARTED'
-        }
-      };
-    },
-    [mutations.RESET_PURCHASE_STATE](state, {tokenId}) {
-      delete state.purchaseState[tokenId];
-      state.purchaseState = {...state.purchaseState};
-    },
-    [mutations.HIGH_RES_DOWNLOAD_SUCCESS](state, {tokenId, url, expires}) {
-      state.highResDownload = {
-        ...state.highResDownload, [tokenId]: {state: mutations.HIGH_RES_DOWNLOAD_SUCCESS, url, expires}
-      };
-    },
-    [mutations.HIGH_RES_DOWNLOAD_FAILURE](state, {tokenId, message}) {
-      state.highResDownload = {
-        ...state.highResDownload, [tokenId]: {state: mutations.HIGH_RES_DOWNLOAD_FAILURE, message}
-      };
-    },
-    [mutations.HIGH_RES_DOWNLOAD_TRIGGERED](state, {tokenId}) {
-      state.highResDownload = {
-        ...state.highResDownload, [tokenId]: {state: mutations.HIGH_RES_DOWNLOAD_TRIGGERED}
-      };
-    },
     [mutations.SET_WEB3](state, web3) {
       state.web3 = web3;
     },
+    [mutations.SET_KODA_CONTRACT](state, KnownOriginDigitalAsset) {
+      state.KnownOriginDigitalAsset = KnownOriginDigitalAsset;
+    },
   },
   actions: {
-    [actions.UPDATE_PURCHASE_STATE_FOR_ACCOUNT]({commit, dispatch, state}) {
-
-      // Get the tokens which are currently in the process of being purchased
-      let currentAssetsBeingPurchased = _.keys(state.purchaseState);
-
-      Vue.$log.debug(`Currently owned assets [${state.assetsPurchasedByAccount}] - accounts purchase state [${currentAssetsBeingPurchased}]`);
-
-      // Match all which the assets which are current being purchased against the accounts balance from the blockchain
-      let accountOwnedAssetsBeingPurchased = _.intersection(state.assetsPurchasedByAccount, currentAssetsBeingPurchased);
-
-      if (accountOwnedAssetsBeingPurchased.length > 0) {
-
-        _.forEach(accountOwnedAssetsBeingPurchased, function (asset) {
-          // If the asset is not marked as PURCHASE_SUCCESSFUL force state to move to this
-          if (state.purchaseState[asset].state !== 'PURCHASE_SUCCESSFUL') {
-            Vue.$log.debug(`Purchase state for token [${asset}] is [${state.purchaseState[asset].state}] - updating state to [PURCHASE_SUCCESSFUL]`);
-            commit(mutations.PURCHASE_SUCCESSFUL, {
-              tokenId: asset,
-              buyer: state.account,
-              force: true // mark this as a force transaction for debugging
-            });
-
-            dispatch(actions.REFRESH_CONTRACT_DETAILS); // update state of asserts etc
-          }
-        });
-      }
-    },
     [actions.GET_ASSETS_PURCHASED_FOR_ACCOUNT]({commit, dispatch, state}) {
       KnownOriginDigitalAsset.deployed()
         .then((contract) => {
@@ -416,7 +287,7 @@ const store = new Vuex.Store({
               commit(mutations.SET_ASSETS_PURCHASED_FROM_ACCOUNT, tokens);
 
               // Note: this must happen after committing the accounts balance
-              dispatch(actions.UPDATE_PURCHASE_STATE_FOR_ACCOUNT);
+              dispatch(`purchase/${actions.UPDATE_PURCHASE_STATE_FOR_ACCOUNT}`);
             });
         })
         .catch((e) => {
@@ -433,10 +304,6 @@ const store = new Vuex.Store({
         .then((etherscanBase) => {
           commit(mutations.SET_ETHERSCAN_NETWORK, etherscanBase);
         });
-    },
-    [actions.RESET_PURCHASE_STATE]: function ({commit, dispatch, state}, asset) {
-      dispatch(actions.GET_ALL_ASSETS);
-      commit(mutations.RESET_PURCHASE_STATE, {tokenId: asset.id});
     },
     [actions.GET_USD_PRICE]: function ({commit, dispatch, state}) {
 
@@ -466,6 +333,7 @@ const store = new Vuex.Store({
 
       // Set the web3 instance
       commit(mutations.SET_WEB3, web3);
+      commit(mutations.SET_KODA_CONTRACT, KnownOriginDigitalAsset);
 
       // Find current network
       dispatch(actions.GET_CURRENT_NETWORK);
@@ -717,255 +585,6 @@ const store = new Vuex.Store({
             });
         }).catch((error) => console.log("Something went bang!", error));
     },
-    [actions.PURCHASE_ASSET]: function ({commit, dispatch, state}, assetToPurchase) {
-      Vue.$log.debug(`Attempting purchase of ${assetToPurchase.type} asset - ID ${assetToPurchase.id}`);
-
-      KnownOriginDigitalAsset.deployed()
-        .then((contract) => {
-
-          let _buyer = state.account;
-          let _tokenId = assetToPurchase.id;
-
-          let purchaseEvent = contract.PurchasedWithEther({_tokenId: _tokenId, _buyer: _buyer}, {
-            fromBlock: web3.eth.blockNumber,
-            toBlock: 'latest' // wait until event comes through
-          });
-
-          // Trigger a timer to check the accounts purchases - can provide update faster waiting for the event
-          const timer = setInterval(function () {
-            console.log("Dispatching GET_ASSETS_PURCHASED_FOR_ACCOUNT");
-            dispatch(actions.GET_ASSETS_PURCHASED_FOR_ACCOUNT);
-          }, 1000);
-
-          purchaseEvent.watch(function (error, result) {
-            if (!error) {
-              // 3) Purchase succeeded
-              console.log('Purchase successful', result);
-              dispatch(actions.REFRESH_CONTRACT_DETAILS);
-              dispatch(actions.GET_ASSETS_PURCHASED_FOR_ACCOUNT);
-              commit(mutations.PURCHASE_SUCCESSFUL, {tokenId: _tokenId, buyer: _buyer});
-            } else {
-              console.log('Failure', error);
-              // Purchase failure
-              commit(mutations.PURCHASE_FAILED, {tokenId: _tokenId, buyer: _buyer});
-              purchaseEvent.stopWatching();
-            }
-            if (timer) clearInterval(timer);
-          });
-
-          // 1) Initial purchase flow
-          commit(mutations.PURCHASE_TRIGGERED, {tokenId: _tokenId, buyer: _buyer});
-
-          let purchase = contract.purchaseWithEther(_tokenId, {
-            from: _buyer,
-            value: assetToPurchase.priceInWei
-          });
-
-          purchase
-            .then((data) => {
-              // 2) Purchase transaction submitted
-              console.log('Purchase transaction submitted', data);
-              commit(mutations.PURCHASE_STARTED, {tokenId: _tokenId, buyer: _buyer, transaction: data.tx});
-            })
-            .catch((error) => {
-              // Purchase failure
-              console.log('Purchase rejection/error', error);
-              commit(mutations.PURCHASE_FAILED, {tokenId: _tokenId, buyer: _buyer});
-              if (timer) clearInterval(timer);
-            });
-        })
-        .catch((e) => {
-          console.log('Failure', e);
-          commit(mutations.PURCHASE_FAILED, {tokenId: assetToPurchase.id, buyer: state.account});
-        });
-    },
-    [actions.PURCHASE_ASSET_WITH_FIAT]({commit, dispatch, state} = controls, assetToPurchase) {
-
-      let _buyer = state.account;
-      let _tokenId = assetToPurchase.id;
-
-      return KnownOriginDigitalAsset.deployed()
-        .then((contract) => {
-
-          let purchaseEvent = contract.PurchasedWithFiat({_tokenId: _tokenId}, {
-            fromBlock: web3.eth.blockNumber,
-            toBlock: 'latest' // wait until event comes through
-          });
-
-          purchaseEvent.watch(function (error, result) {
-            if (!error) {
-              // 3) Purchase succeeded
-              dispatch(actions.REFRESH_CONTRACT_DETAILS);
-              dispatch(actions.GET_ASSETS_PURCHASED_FOR_ACCOUNT);
-              commit(mutations.PURCHASE_SUCCESSFUL, {tokenId: _tokenId, buyer: _buyer});
-            } else {
-              // Purchase failure
-              commit(mutations.PURCHASE_FAILED, {tokenId: _tokenId, buyer: _buyer});
-              purchaseEvent.stopWatching();
-              console.log('Failure', error);
-            }
-          });
-
-          // 1) Initial purchase flow
-          commit(mutations.PURCHASE_TRIGGERED, {tokenId: _tokenId, buyer: _buyer});
-
-          let purchase = contract.purchaseWithFiat(_tokenId, {from: _buyer});
-
-          purchase
-            .then((data) => {
-              // 2) Purchase transaction submitted
-              console.log('Purchase transaction submitted', data);
-              commit(mutations.PURCHASE_STARTED, {tokenId: _tokenId, buyer: _buyer, transaction: data.tx});
-            })
-            .catch((error) => {
-              // Purchase failure
-              console.log('Purchase rejection/error', error);
-              commit(mutations.PURCHASE_FAILED, {tokenId: _tokenId, buyer: _buyer});
-            });
-        })
-        .catch((e) => {
-          console.log('Failure', e);
-          commit(mutations.PURCHASE_FAILED, {tokenId: assetToPurchase.id, buyer: state.account});
-        });
-    },
-    [actions.REVERSE_PURCHASE_ASSET_WITH_FIAT]({commit, dispatch, state}, assetToPurchase) {
-
-      let _buyer = state.account;
-      let _tokenId = assetToPurchase.id;
-
-      return KnownOriginDigitalAsset.deployed()
-        .then((contract) => {
-
-          let purchaseEvent = contract.PurchasedWithFiatReversed({_tokenId: _tokenId}, {
-            fromBlock: web3.eth.blockNumber,
-            toBlock: 'latest' // wait until event comes through
-          });
-
-          purchaseEvent.watch(function (error, result) {
-            if (!error) {
-              // 3) Purchase succeeded
-              dispatch(actions.REFRESH_CONTRACT_DETAILS);
-              dispatch(actions.GET_ASSETS_PURCHASED_FOR_ACCOUNT);
-              commit(mutations.PURCHASE_SUCCESSFUL, {tokenId: _tokenId, buyer: _buyer});
-            } else {
-              // Purchase failure
-              commit(mutations.PURCHASE_FAILED, {tokenId: _tokenId, buyer: _buyer});
-              purchaseEvent.stopWatching();
-              console.log('Failure', error);
-            }
-          });
-
-          // 1) Initial purchase flow
-          commit(mutations.PURCHASE_TRIGGERED, {tokenId: _tokenId, buyer: _buyer});
-
-          let purchase = contract.reverseFiatPurchase(_tokenId, {from: _buyer});
-
-          purchase
-            .then((data) => {
-              // 2) Purchase transaction submitted
-              console.log('Purchase transaction submitted', data);
-              commit(mutations.PURCHASE_STARTED, {tokenId: _tokenId, buyer: _buyer, transaction: data.tx});
-            })
-            .catch((error) => {
-              // Purchase failure
-              console.log('Purchase rejection/error', error);
-              commit(mutations.PURCHASE_FAILED, {tokenId: _tokenId, buyer: _buyer});
-            });
-        })
-        .catch((e) => {
-          console.log('Failure', e);
-          commit(mutations.PURCHASE_FAILED, {tokenId: assetToPurchase.id, buyer: state.account});
-        });
-    },
-    [actions.HIGH_RES_DOWNLOAD]({commit, dispatch, state, getters}, asset) {
-
-      // if we already have it, don't pop again
-      if (getters.isHighResDownloadSuccess(asset.id)) {
-        return;
-      }
-
-      commit(mutations.HIGH_RES_DOWNLOAD_TRIGGERED, {tokenId: asset.id});
-
-      const requestHighResDownload = ({originalMessage, signedMessage}) => {
-        return state.web3.eth.net.getId()
-          .then((networkId) => {
-
-            const highResConfig = {
-              local: "http://localhost:5000/known-origin-io/us-central1/highResDownload",
-              // beta: "https://us-central1-beta-known-origin-io.cloudfunctions.net/highResDownload",
-              live: "https://us-central1-known-origin-io.cloudfunctions.net/highResDownload"
-            };
-
-            const getDownloadApi = () => {
-              switch (window.location.hostname) {
-                case "localhost":
-                case "127.0.0.1":
-                  return highResConfig.local;
-                default:
-                  // For now point all to live
-                  return highResConfig.live;
-              }
-            };
-
-            return axios({
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-              },
-              data: {
-                address: state.account,
-                tokenId: asset.id,
-                originalMessage,
-                signedMessage,
-                networkId
-              },
-              url: getDownloadApi(),
-            })
-              .then((response) => validateResponse(response))
-              .catch((error) => {
-                console.log('Failed to download', error);
-                commit(mutations.HIGH_RES_DOWNLOAD_FAILURE, {
-                  message: _.get(error, 'response.data.message', error),
-                  tokenId: asset.id
-                });
-              });
-          });
-      };
-
-      const validateResponse = (response) => {
-        console.log(response);
-        if (response.status === 202 && response.data.url) {
-          commit(mutations.HIGH_RES_DOWNLOAD_SUCCESS, {
-            ...response.data,
-            tokenId: asset.id
-          });
-        } else {
-          console.log('Invalid status code');
-          commit(mutations.HIGH_RES_DOWNLOAD_FAILURE, {
-            message: "Unexpected response status",
-            tokenId: asset.id
-          });
-        }
-      };
-
-      let message = `I verify that I, ${state.account}, have purchased this asset, #${asset.id}, of edition, ${asset.edition}, from KnownOrigin.io. By signing this transaction you agree to adhere to the KnownOrigin license agreement. ${Date.now()}`;
-
-      state.web3.eth.personal
-        .sign(message, state.account)
-        .then((result) => requestHighResDownload({
-          originalMessage: message,
-          signedMessage: result
-        }))
-        .catch((error) => {
-          console.log('Failed to sign message');
-          // rejected
-          commit(mutations.HIGH_RES_DOWNLOAD_FAILURE, {
-            tokenId: asset.id,
-            message: _.get(error, 'message'),
-          });
-        });
-    }
   }
 });
 

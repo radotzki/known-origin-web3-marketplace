@@ -90,7 +90,7 @@
   import Web3 from 'web3';
   import {mapGetters, mapState} from 'vuex';
   import * as actions from './store/actions';
-  import * as mutations from './store/mutation-types';
+  import * as mutations from './store/mutation';
   import CurrentNetwork from './components/ui-controls/CurrentNetwork';
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 

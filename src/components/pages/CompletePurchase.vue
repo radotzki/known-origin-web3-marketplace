@@ -119,7 +119,7 @@
   import PriceInEth from '../ui-controls/PriceInEth';
   import TokenId from '../ui-controls/TokenId.vue';
   import EditionNameByArtist from '../ui-controls/EditionNameByArtist';
-  import * as mutations from '../../store/mutation-types';
+  import * as mutations from '../../store/mutation';
   import * as actions from '../../store/actions';
   import ClickableTransaction from "../ui-controls/ClickableTransaction";
   import ClickableAddress from "../ui-controls/ClickableAddress";
@@ -157,6 +157,8 @@
         'assetsForEdition',
         'firstAssetForEdition',
         'isKnownOrigin',
+      ]),
+      ...mapGetters('purchase', [
         'assetPurchaseState',
         'isPurchaseTriggered',
         'isPurchaseStarted',
@@ -182,7 +184,7 @@
         console.log('onPurchaseInitiated');
       },
       retryPurchase: function () {
-        this.$store.dispatch(actions.RESET_PURCHASE_STATE, this.asset);
+        this.$store.dispatch(`purchase/${actions.RESET_PURCHASE_STATE}`, this.asset);
       }
     },
     mounted() {
