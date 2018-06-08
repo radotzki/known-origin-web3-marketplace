@@ -911,8 +911,7 @@ const store = new Vuex.Store({
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
-                'X-Requested-By': `${window.href}`
+                'Access-Control-Allow-Origin': '*'
               },
               data: {
                 address: state.account,
