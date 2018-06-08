@@ -12,18 +12,18 @@
     </div>
 
     <div class="card-columns mt-4">
-        <galleryEdition
-          v-for="assetEdition, key in lookupAssetsByArtistCode($route.params.artistCode)"
-          :edition="assetEdition[0]"
-          :key="key">
-        </galleryEdition>
+      <galleryEdition
+        v-for="assetEdition, key in lookupAssetsByArtistCode($route.params.artistCode)"
+        :edition="assetEdition[0]"
+        :key="key">
+      </galleryEdition>
     </div>
   </div>
 </template>
 
 <script>
 
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import ArtistShortBio from '../ui-controls/ArtistShortBio';
   import LoadingSpinner from '../ui-controls/LoadingSpinner';
   import Asset from '../Asset';
@@ -33,11 +33,16 @@
     name: 'artistPage',
     components: {ArtistShortBio, GalleryEdition, LoadingSpinner},
     computed: {
-      ...mapGetters(['lookupAssetsByArtistCode'])
+      ...mapGetters([
+        'findArtist'
+      ]),
+      ...mapGetters('assets', [
+        'lookupAssetsByArtistCode'
+      ])
     },
     methods: {
       lookupArtist: function () {
-        return this.$store.getters.findArtist(this.$route.params.artistCode);
+        return this.findArtist(this.$route.params.artistCode);
       }
     }
   };

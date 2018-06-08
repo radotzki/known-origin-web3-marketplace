@@ -92,13 +92,16 @@
       ...mapGetters([
         'liveArtists',
       ]),
+      ...mapGetters('assets', [
+        'editionSummaryFilter',
+      ]),
       orderedArtists: function () {
         return _.orderBy(this.liveArtists, 'name');
       },
       editions: function () {
         this.finishedLoading = false;
 
-        let results = this.$store.getters.editionSummaryFilter(this.showSold, this.priceFilter, this.artistFilter)
+        let results = this.editionSummaryFilter(this.showSold, this.priceFilter, this.artistFilter)
           .filter(function (item) {
 
             if (this.search.length === 0) {

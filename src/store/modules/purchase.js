@@ -283,7 +283,7 @@ const purchaseStateModule = {
       }
     },
     [actions.RESET_PURCHASE_STATE]: function ({commit, dispatch, state}, asset) {
-      dispatch(actions.GET_ALL_ASSETS, null, {root: true});
+      dispatch(`assets/${actions.GET_ALL_ASSETS}`, null, {root: true});
       commit(mutations.RESET_PURCHASE_STATE, {tokenId: asset.id});
     },
   },

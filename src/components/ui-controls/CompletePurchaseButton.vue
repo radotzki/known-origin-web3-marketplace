@@ -25,11 +25,13 @@
             Confirm buy
           </button>
 
-          <button type="button" v-on:click="completeFiatPurchase" class="btn btn-warning btn-block " v-if="isKnownOrigin && !soldAsFiat">
+          <button type="button" v-on:click="completeFiatPurchase" class="btn btn-warning btn-block "
+                  v-if="isKnownOrigin && !soldAsFiat">
             FIAT purchase
           </button>
 
-          <button type="button" v-on:click="reverseFiatPurchase" class="btn btn-danger btn-block" v-if="isKnownOrigin && soldAsFiat">
+          <button type="button" v-on:click="reverseFiatPurchase" class="btn btn-danger btn-block"
+                  v-if="isKnownOrigin && soldAsFiat">
             Reverse FIAT purchase
           </button>
 
@@ -39,7 +41,8 @@
         </div>
       </div>
 
-      <router-link v-if="asset.purchased !== 0" :to="{ name: 'account'}" tag="button" class="btn btn-outline-primary btn-block">
+      <router-link v-if="asset.purchased !== 0" :to="{ name: 'account'}" tag="button"
+                   class="btn btn-outline-primary btn-block">
         View account
       </router-link>
     </form>
@@ -52,7 +55,7 @@
 </template>
 
 <script>
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import _ from 'lodash';
   import * as actions from '../../store/actions';
   import * as mutations from '../../store/mutation';
@@ -68,7 +71,7 @@
       },
     },
     computed: {
-      ...mapGetters([
+      ...mapGetters('contract', [
         'isKnownOrigin',
       ]),
       ...mapState([
@@ -91,7 +94,7 @@
         return this.asset.purchased === 0;
       }
     },
-    data () {
+    data() {
       return {
         confirm_terms: false
       };

@@ -82,11 +82,14 @@
         'assets',
         'artists'
       ]),
+      ...mapGetters('assets', [
+        'assetFilter'
+      ]),
       orderedArtists: function () {
         return _.orderBy(this.artists, 'name');
       },
       filteredAssets: function () {
-        return this.$store.getters.assetFilter(this.showSold, this.priceFilter, this.artistFilter)
+        return this.assetFilter(this.showSold, this.priceFilter, this.artistFilter)
           .filter(function (item) {
 
             if (this.search.length === 0) {
