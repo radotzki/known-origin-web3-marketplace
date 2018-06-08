@@ -64,13 +64,6 @@
         </div>
       </div>
     </div>
-    <!--<h1>Activity Stream</h1>-->
-
-    <!--<table class="table table-striped">-->
-    <!--<tbody>-->
-
-    <!--</tbody>-->
-    <!--</table>-->
   </div>
 </template>
 
@@ -90,7 +83,7 @@
         'cheapestPiece',
         'mostExpensivePiece',
       ]),
-      ...mapState([
+      ...mapState('contract', [
         'curatorAddress',
         'contractDeveloperAddress',
         'commissionAddress',

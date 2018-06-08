@@ -8,54 +8,42 @@ import axios from 'axios';
 import artistData from './artist-data';
 import createLogger from 'vuex/dist/logger';
 import {getNetIdString, getEtherscanAddress, isHighRes} from '../utils';
-import contract from 'truffle-contract';
+import truffleContract from 'truffle-contract';
 import knownOriginDigitalAssetJson from '../../build/contracts/KnownOriginDigitalAsset.json';
 
-const KnownOriginDigitalAsset = contract(knownOriginDigitalAssetJson);
+const KnownOriginDigitalAsset = truffleContract(knownOriginDigitalAssetJson);
 
 Vue.use(Vuex);
 
 import purchase from './modules/purchase';
 import highres from './modules/highres';
+import contract from './modules/contract';
 
 const store = new Vuex.Store({
   plugins: [createLogger()],
   modules: {
     purchase,
-    highres
+    highres,
+    contract
   },
   state: {
     // connectivity
-    web3: null,
     account: null,
-    accountBalance: null,
     currentNetwork: null,
-    currentUsdPrice: null,
-    etherscanBase: null,
+    accountBalance: null,
     assetsPurchasedByAccount: [],
 
-    // contract metadata
-    contractName: '',
-    contractSymbol: '',
-    contractAddress: '',
-
-    // contract totals
-    totalSupply: null,
-    tokenIdPointer: null,
-    totalPurchaseValueInWei: null,
-    totalNumberOfPurchases: null,
-    totalPurchaseValueInEther: null,
-
-    // contract addresses
-    curatorAddress: null,
-    contractDeveloperAddress: null,
+    KnownOriginDigitalAsset: null,
+    web3: null,
+    currentUsdPrice: null,
+    etherscanBase: null,
 
     // non-contract data
     artists: artistData,
-    assets: [],
-    assetsByEditions: [],
-    assetsByArtistCode: [],
-    editionSummary: [],
+    assets: null,
+    assetsByEditions: null,
+    assetsByArtistCode: null,
+    editionSummary: null,
   },
   getters: {
     assetsForEdition: (state) => (edition) => {
@@ -68,8 +56,8 @@ const store = new Vuex.Store({
     firstAssetForEdition: (state) => (edition) => {
       return _.head(state.assets.filter((asset) => asset.edition === edition));
     },
-    findNextAssetToPurchase: (state, getters) => (edition) => {
-      let editions = getters.assetsForEdition(edition.edition);
+    findNextAssetToPurchase: (state, getters) => ({edition}) => {
+      let editions = getters.assetsForEdition(edition);
       return _.chain(editions)
       // find cheapest next edition (some editions can have different prices)
         .orderBy(['priceInEtherSortable', 'editionNumber'])
@@ -86,16 +74,10 @@ const store = new Vuex.Store({
     liveArtists: (state) => {
       return state.artists.filter((a) => a.live);
     },
-    isKnownOrigin: (state) => {
-      if (state.curatorAddress && state.account) {
-        return state.curatorAddress.toLowerCase() === state.account.toLowerCase() || state.contractDeveloperAddress.toLowerCase() === state.account.toLowerCase();
-      }
-      return false;
-    },
     lookupAssetsByArtistCode: (state) => (artistCode) => {
       return _.filter(state.assetsByEditions, (value, key) => key.startsWith(artistCode));
     },
-    featuredAssetsByEdition: (state) => () => {
+    featuredAssetsByEdition: (state, getters) => () => {
       const featuredEditionCodes = [
         // Arktiv
         'AKPSTELLAR000DIG',
@@ -140,11 +122,19 @@ const store = new Vuex.Store({
         'LHKBUZZ000001DIG'
       ];
 
-      if (state.assetsByEditions.length === 0) {
+      if (!state.assets) {
         return [];
       }
 
-      return _.map(featuredEditionCodes, (edition) => _.head(state.assetsByEditions[edition]));
+      let results = [];
+      _.forEach(featuredEditionCodes, (edition) => {
+        const nextInEditionToPurchase = getters.findNextAssetToPurchase({edition});
+        if (nextInEditionToPurchase) {
+          results.push(nextInEditionToPurchase);
+        }
+      });
+
+      return results;
     },
     featuredAssetsByTokenId: (state) => () => {
       const featuredAssets = [
@@ -222,11 +212,6 @@ const store = new Vuex.Store({
 
   },
   mutations: {
-    [mutations.SET_COMMISSION_ADDRESSES](state, {curatorAddress, contractDeveloperAddress, contractAddress}) {
-      state.curatorAddress = curatorAddress;
-      state.contractDeveloperAddress = contractDeveloperAddress;
-      state.contractAddress = contractAddress;
-    },
     [mutations.SET_ASSETS](state, {assets, assetsByEditions, assetsByArtistCode, editionSummary}) {
       Vue.set(state, 'assets', assets);
       Vue.set(state, 'assetsByEditions', assetsByEditions);
@@ -238,17 +223,6 @@ const store = new Vuex.Store({
     },
     [mutations.SET_ASSETS_PURCHASED_FROM_ACCOUNT](state, tokens) {
       Vue.set(state, 'assetsPurchasedByAccount', tokens.map(val => val.toString()));
-    },
-    [mutations.SET_TOTAL_PURCHASED](state, {totalPurchaseValueInWei, totalNumberOfPurchases, totalPurchaseValueInEther}) {
-      state.totalPurchaseValueInWei = totalPurchaseValueInWei;
-      state.totalNumberOfPurchases = totalNumberOfPurchases;
-      state.totalPurchaseValueInEther = totalPurchaseValueInEther;
-    },
-    [mutations.SET_CONTRACT_DETAILS](state, {name, symbol, totalSupply, tokenIdPointer}) {
-      state.tokenIdPointer = tokenIdPointer;
-      state.totalSupply = totalSupply;
-      state.contractSymbol = symbol;
-      state.contractName = name;
     },
     [mutations.SET_ACCOUNT](state, {account, accountBalance}) {
       state.account = account;
@@ -366,7 +340,7 @@ const store = new Vuex.Store({
           setInterval(refreshHandler, 1000);
 
           // init the KODA contract
-          dispatch(actions.REFRESH_CONTRACT_DETAILS);
+          dispatch(`contract/${actions.REFRESH_CONTRACT_DETAILS}`);
 
           if (account) {
             return setAccountAndBalance(account);
@@ -462,7 +436,7 @@ const store = new Vuex.Store({
 
       KnownOriginDigitalAsset.deployed()
         .then((contract) => {
-          let supply = _.range(0, state.tokenIdPointer);
+          let supply = _.range(0, state.contract.tokenIdPointer);
 
           /**
            * Functions takes a list of assets and loads all the metadata associated with them, preventing duplicate tokenUris
@@ -548,42 +522,6 @@ const store = new Vuex.Store({
             .then(populateTokenUriData)
             .then(bindAssetsToStore);
         });
-    },
-    [actions.REFRESH_CONTRACT_DETAILS]({commit, dispatch, state}) {
-      KnownOriginDigitalAsset.deployed()
-        .then((contract) => {
-
-          Promise.all([contract.curatorAccount(), contract.developerAccount(), contract.address])
-            .then((results) => {
-              commit(mutations.SET_COMMISSION_ADDRESSES, {
-                curatorAddress: results[0],
-                contractDeveloperAddress: results[1],
-                contractAddress: results[2]
-              });
-            });
-
-          Promise.all([contract.name(), contract.symbol(), contract.totalSupply(), contract.tokenIdPointer()])
-            .then((results) => {
-              commit(mutations.SET_CONTRACT_DETAILS, {
-                name: results[0],
-                symbol: results[1],
-                totalSupply: results[2].toString(),
-                tokenIdPointer: results[3].toString(),
-              });
-
-              // We require totalSupply to lookup all ASSETS
-              dispatch(actions.GET_ALL_ASSETS);
-            });
-
-          Promise.all([contract.totalPurchaseValueInWei(), contract.totalNumberOfPurchases()])
-            .then((results) => {
-              commit(mutations.SET_TOTAL_PURCHASED, {
-                totalPurchaseValueInEther: Web3.utils.fromWei(results[0].toString(10), 'ether'),
-                totalPurchaseValueInWei: results[0].toString(10),
-                totalNumberOfPurchases: results[1].toString(10)
-              });
-            });
-        }).catch((error) => console.log("Something went bang!", error));
     },
   }
 });
