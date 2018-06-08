@@ -366,9 +366,9 @@ const store = new Vuex.Store({
         ...state.highResDownload, [tokenId]: {state: mutations.HIGH_RES_DOWNLOAD_SUCCESS, url, expires}
       };
     },
-    [mutations.HIGH_RES_DOWNLOAD_FAILURE](state, {tokenId, status, error}) {
+    [mutations.HIGH_RES_DOWNLOAD_FAILURE](state, {tokenId, message}) {
       state.highResDownload = {
-        ...state.highResDownload, [tokenId]: {state: mutations.HIGH_RES_DOWNLOAD_FAILURE, status, error, failure: true}
+        ...state.highResDownload, [tokenId]: {state: mutations.HIGH_RES_DOWNLOAD_FAILURE, message}
       };
     },
     [mutations.HIGH_RES_DOWNLOAD_TRIGGERED](state, {tokenId}) {
@@ -898,13 +898,12 @@ const store = new Vuex.Store({
 
             const getDownloadApi = () => {
               switch (window.location.hostname) {
-                // For now point all to live
-                case "beta-known-origin-io.firebaseapp.com":
-                case "known-origin-io.firebaseapp.com":
-                case "knownorigin.io":
-                  return highResConfig.live;
-                default:
+                case "localhost":
+                case "127.0.0.1":
                   return highResConfig.local;
+                default:
+                  // For now point all to live
+                  return highResConfig.live;
               }
             };
 
@@ -926,8 +925,9 @@ const store = new Vuex.Store({
             })
               .then((response) => validateResponse(response))
               .catch((error) => {
+                console.log('Failed to download', error);
                 commit(mutations.HIGH_RES_DOWNLOAD_FAILURE, {
-                  message: error.data,
+                  message: _.get(error, 'response.data.message', error),
                   tokenId: asset.id
                 });
               });
@@ -942,6 +942,7 @@ const store = new Vuex.Store({
             tokenId: asset.id
           });
         } else {
+          console.log('Invalid status code');
           commit(mutations.HIGH_RES_DOWNLOAD_FAILURE, {
             message: "Unexpected response status",
             tokenId: asset.id
@@ -953,14 +954,18 @@ const store = new Vuex.Store({
 
       state.web3.eth.personal
         .sign(message, state.account)
-        .catch(() => {
-          // rejected
-          commit(mutations.HIGH_RES_DOWNLOAD_FAILURE, {tokenId: asset.id});
-        })
         .then((result) => requestHighResDownload({
           originalMessage: message,
           signedMessage: result
-        }));
+        }))
+        .catch((error) => {
+          console.log('Failed to sign message');
+          // rejected
+          commit(mutations.HIGH_RES_DOWNLOAD_FAILURE, {
+            tokenId: asset.id,
+            message: _.get(error, 'message'),
+          });
+        });
     }
   }
 });
