@@ -12,13 +12,16 @@ export const GET_ALL_ASSETS = 'GET_ALL_ASSETS';
 export const GET_ASSETS_PURCHASED_FOR_ACCOUNT = 'GET_ASSETS_PURCHASED_FOR_ACCOUNT';
 export const REFRESH_CONTRACT_DETAILS = 'REFRESH_CONTRACT_DETAILS';
 
-// Contract payment calls
+///////////////////
+// Purchase flow //
+///////////////////
 export const PURCHASE_ASSET = 'PURCHASE_ASSET';
 export const PURCHASE_ASSET_WITH_FIAT = 'PURCHASE_ASSET_WITH_FIAT';
 export const REVERSE_PURCHASE_ASSET_WITH_FIAT = 'REVERSE_PURCHASE_ASSET_WITH_FIAT';
 export const UPDATE_PURCHASE_STATE_FOR_ACCOUNT = 'UPDATE_PURCHASE_STATE_FOR_ACCOUNT';
-
-// Internal state triggers
 export const RESET_PURCHASE_STATE = 'RESET_PURCHASE_STATE';
 
+//////////////
+// High-res //
+//////////////
 export const HIGH_RES_DOWNLOAD = 'HIGH_RES_DOWNLOAD';
