@@ -73,7 +73,7 @@ const contractStateModule = {
               });
 
               // We require totalSupply to lookup all ASSETS
-              dispatch(actions.GET_ALL_ASSETS, null, {root: true});
+              dispatch(`assets/${actions.GET_ALL_ASSETS}`, null, {root: true});
             });
 
           Promise.all([contract.totalPurchaseValueInWei(), contract.totalNumberOfPurchases()])

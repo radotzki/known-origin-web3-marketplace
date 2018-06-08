@@ -32,7 +32,9 @@
               </tr>
               <tr v-if="totalSupply">
                 <td>Supply</td>
-                <td><router-link :to="{ name: 'assets' }">{{ totalSupply }}</router-link></td>
+                <td>
+                  <router-link :to="{ name: 'assets' }">{{ totalSupply }}</router-link>
+                </td>
               </tr>
               <tr v-if="totalNumberOfPurchases">
                 <td>Sales</td>
@@ -69,7 +71,7 @@
 
 <script>
 
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import AddressIcon from '../ui-controls/AddressIcon';
   import ClickableAddress from '../ui-controls/ClickableAddress';
 
@@ -77,7 +79,7 @@
     name: 'contractDetails',
     components: {AddressIcon, ClickableAddress},
     computed: {
-      ...mapGetters([
+      ...mapGetters('assets', [
         'totalEditions',
         'totalListedArtists',
         'cheapestPiece',

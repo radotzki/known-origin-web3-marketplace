@@ -3,7 +3,8 @@
     <img class="card-img-top" :src="asset.lowResImg"/>
 
     <ul class="list-group list-group-flush">
-      <li class="list-group-item bg-danger text-center text-white" v-if="asset.purchased != 0 || availableAssetsForEdition(asset.edition).length == 0">
+      <li class="list-group-item bg-danger text-center text-white"
+          v-if="asset.purchased != 0 || availableAssetsForEdition(asset.edition).length == 0">
         SOLD
       </li>
     </ul>
@@ -48,7 +49,8 @@
 
     <div class="card-footer" v-if="!individual">
       <div class="btn-group-vertical btn-block">
-        <router-link :to="{ name: 'assetDetailView', params: { tokenId: asset.id} }" tag="button" class="btn btn-outline-primary btn-block">
+        <router-link :to="{ name: 'assetDetailView', params: { tokenId: asset.id} }" tag="button"
+                     class="btn btn-outline-primary btn-block">
           View asset
         </router-link>
 
@@ -60,12 +62,11 @@
   </div>
 
 
-
   </div>
 </template>
 
 <script>
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import _ from 'lodash';
   import PurchaseState from './ui-controls/PurchaseState';
   import AddressIcon from './ui-controls/AddressIcon';
@@ -105,7 +106,7 @@
       }
     },
     computed: {
-      ...mapGetters([
+      ...mapGetters('assets', [
         'assetsForEdition',
         'availableAssetsForEdition'
       ]),

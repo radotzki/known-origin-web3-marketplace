@@ -1,9 +1,9 @@
 <template>
-    <a v-on:click="confirmPurchase" class="btn btn-primary btn-block text-white" v-if="findNextAssetToPurchase(edition)">Buy Now</a>
+  <a v-on:click="confirmPurchase" class="btn btn-primary btn-block text-white" v-if="findNextAssetToPurchase(edition)">Buy Now</a>
 </template>
 
 <script>
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import _ from 'lodash';
   import * as actions from '../../store/actions';
 
@@ -17,16 +17,21 @@
       },
     },
     computed: {
-      ...mapGetters(['isKnownOrigin', 'findNextAssetToPurchase']),
+      ...mapGetters('contract', [
+        'isKnownOrigin',
+      ]),
+      ...mapGetters('assets', [
+        'findNextAssetToPurchase'
+      ]),
     },
-    data () {
+    data() {
       return {
         confirm_terms: false
       };
     },
     methods: {
       confirmPurchase: function () {
-        let nextAssetToPurchase = this.$store.getters.findNextAssetToPurchase(this.edition);
+        let nextAssetToPurchase = this.findNextAssetToPurchase(this.edition);
 
         console.log('confirming purchase', nextAssetToPurchase);
 

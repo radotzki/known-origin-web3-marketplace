@@ -153,10 +153,16 @@
       };
     },
     computed: {
-      ...mapGetters([
+      ...mapState([
+        'account'
+      ]),
+      ...mapGetters('contract', [
+        'isKnownOrigin',
+      ]),
+      ...mapGetters('assets', [
+        'assetById',
         'assetsForEdition',
         'firstAssetForEdition',
-        'isKnownOrigin',
       ]),
       ...mapGetters('purchase', [
         'assetPurchaseState',
@@ -166,14 +172,11 @@
         'isPurchaseFailed',
         'getTransactionForAsset',
       ]),
-      ...mapState([
-        'account'
-      ]),
       title: function () {
         return `${this.$route.params.edition} - ID ${this.$route.params.tokenId}`;
       },
       asset: function () {
-        return this.$store.getters.assetById(this.$route.params.tokenId);
+        return this.assetById(this.$route.params.tokenId);
       },
       soldAsFiat: function () {
         return this.asset.purchased === 2;

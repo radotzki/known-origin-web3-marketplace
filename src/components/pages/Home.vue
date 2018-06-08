@@ -132,14 +132,13 @@
     name: 'home',
     components: {ArtistShortBio, GalleryEdition, FontAwesomeIcon},
     computed: {
-      ...mapGetters([
-        'featuredAssetsByTokenId',
+      ...mapGetters('assets', [
         'featuredAssetsByEdition',
       ])
     },
     methods: {
       lookupArtist: function () {
-        return this.$store.getters.findArtist(this.$route.params.artistCode);
+        return this.findArtist(this.$route.params.artistCode);
       }
     }
   };

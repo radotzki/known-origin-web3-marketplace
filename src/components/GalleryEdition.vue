@@ -86,7 +86,7 @@
       }
     },
     computed: {
-      ...mapGetters([
+      ...mapGetters('assets', [
         'availableAssetsForEdition',
         'assetsForEdition',
       ]),
