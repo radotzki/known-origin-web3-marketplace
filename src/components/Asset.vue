@@ -18,7 +18,7 @@
 
         <rarity-indicator :assets-in-edition="assetsForEdition(asset.edition)"></rarity-indicator>
 
-        <span class="badge badge-light">1 of {{ assetsForEdition(asset.edition).length }}</span>
+        <one-of-edition :assets-in-edition="assetsForEdition(asset.edition)"></one-of-edition>
 
         <metadata-attributes :attributes="asset.attributes"></metadata-attributes>
 
@@ -77,6 +77,7 @@
   import ClickableAddress from './ui-controls/ClickableAddress';
   import TweetAssetButton from "./ui-controls/TweetAssetButton";
   import RarityIndicator from "./ui-controls/RarityIndicator";
+  import OneOfEdition from "./ui-controls/OneOfEdition";
   import MetadataAttributes from "./ui-controls/MetadataAttributes";
   import HighResLabel from "./ui-controls/HighResLabel.vue";
 
@@ -85,6 +86,7 @@
       HighResLabel,
       MetadataAttributes,
       RarityIndicator,
+      OneOfEdition,
       HighResDownload,
       TweetPurchaseButton,
       AddressIcon,
