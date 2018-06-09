@@ -17,8 +17,8 @@
         <rarity-indicator :assets-in-edition="assetsForEdition(edition.edition)"></rarity-indicator>
 
         <one-of-edition :assets-in-edition="assetsForEdition(edition.edition)"></one-of-edition>
-
-        <span class="badge badge-light" v-if="availableAssetsForEdition(edition.edition).length > 0">{{ availableAssetsForEdition(edition.edition).length }} available</span>
+        
+        <available :availableAssetsForEdition="availableAssetsForEdition(edition.edition)"></available>
 
         <metadata-attributes :attributes="edition.attributes"></metadata-attributes>
 
@@ -61,6 +61,7 @@
   import ConfirmPurchaseButton from './ui-controls/ConfirmPurchaseButton';
   import TweetAssetButton from "./ui-controls/TweetAssetButton";
   import RarityIndicator from "./ui-controls/RarityIndicator";
+  import Available from "./ui-controls/Available";
   import OneOfEdition from "./ui-controls/OneOfEdition";
   import UsdPrice from "./ui-controls/USDPrice";
   import MetadataAttributes from "./ui-controls/MetadataAttributes";
@@ -69,6 +70,7 @@
   export default {
     name: 'galleryEdition',
     components: {
+      Available,
       HighResLabel,
       UsdPrice,
       RarityIndicator,
