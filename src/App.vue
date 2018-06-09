@@ -58,7 +58,6 @@
             <small>
               <router-link :to="{ name: 'gallery' }">Gallery</router-link> &bull;
               <router-link :to="{ name: 'artists' }">Artists</router-link> &bull;
-              <router-link :to="{ name: 'account' }">Account</router-link> &bull;
               <router-link :to="{ name: 'details' }">Contract</router-link> &bull;
               <router-link :to="{ name: 'assets' }">Assets</router-link>
             </small>
