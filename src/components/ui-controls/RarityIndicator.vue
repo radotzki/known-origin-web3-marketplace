@@ -7,15 +7,9 @@
 </template>
 
 <script>
-  import { mapGetters, mapState } from 'vuex';
-
   export default {
     name: 'rarityIndicator',
-    props: ['assetsInEdition'],
-    computed: {
-      ...mapGetters([
-      ]),
-    }
+    props: ['assetsInEdition']
   };
 </script>
 
