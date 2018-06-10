@@ -1,7 +1,6 @@
 <template>
   <div class="container">
     <h1>Contract</h1>
-
     <div class="row justify-content-center">
       <div class="col-sm-8">
         <table class="table table-striped bg-white">
@@ -67,7 +66,7 @@
 
 <script>
 
-  import {mapGetters, mapState} from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
   import AddressIcon from '../ui-controls/AddressIcon';
   import ClickableAddress from '../ui-controls/ClickableAddress';
 
