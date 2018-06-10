@@ -1,3 +1,4 @@
+
 <template>
   <span class="attributes">
 
@@ -7,10 +8,10 @@
 
     <span v-for="(value, key) in this.attributes" v-show="isActive">
       <span v-if="isArray(value)">
-        <span v-for="v in value" class="badge badge-light">{{v}}</span>
+        <span v-for="v in value" class="badge badge-light" v-if="v != 'high res'">{{v}}</span>
       </span>
       <span v-else>
-        <span class="badge badge-light">{{value}}</span>
+        <span class="badge badge-light" v-if="value != 'high res'">{{value}}</span>
       </span>
     </span>
 

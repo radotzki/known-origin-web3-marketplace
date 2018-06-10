@@ -27,6 +27,15 @@
       <div class="col">
         <input type="text" class="form-control" v-model="search" placeholder="Search assets..."/>
       </div>
+      <div class="col-1 d-none d-md-block" v-if="hasFinishedLoading()">
+        <div class="col">
+          <toggle-button :value="showSold"
+                         :labels="{checked: 'Sold', unchecked: 'Unsold'}"
+                         :sync="true" color="#3e27d9" :width="65"
+                         @change="onSoldToggleChanged">
+          </toggle-button>
+        </div>
+      </div>
     </div>
 
     <div class="card-columns" v-if="editions.length > 0">
@@ -37,15 +46,6 @@
       </galleryEdition>
     </div>
 
-    <div class="form-row mb-4" v-if="hasFinishedLoading()">
-      <div class="col">
-        <toggle-button :value="showSold"
-                       :labels="{checked: 'Sold', unchecked: 'Unsold'}"
-                       :sync="true" color="#82C7EB" :width="65"
-                       @change="onSoldToggleChanged">
-        </toggle-button>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -111,8 +111,9 @@
             let matchesName = item.artworkName.toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
             let matchesDescription = item.description.toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
             let matchesArtist = item.otherMeta.artist.toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
+            let matchesTokenId = `${item.id}`.indexOf(this.search.toLowerCase()) >= 0;
 
-            return matchesName || matchesDescription || matchesArtist;
+            return matchesName || matchesDescription || matchesArtist || matchesTokenId;
           }.bind(this));
         this.finishedLoading = true;
         return results;
