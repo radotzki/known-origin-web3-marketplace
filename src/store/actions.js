@@ -1,6 +1,8 @@
 // setup calls
 export const INIT_APP = 'INIT_APP';
 
+export const EVENT_STREAM = 'EVENT_STREAM';
+
 // Web3 lookups
 export const GET_CURRENT_NETWORK = 'GET_CURRENT_NETWORK';
 
@@ -25,3 +27,4 @@ export const RESET_PURCHASE_STATE = 'RESET_PURCHASE_STATE';
 // High-res //
 //////////////
 export const HIGH_RES_DOWNLOAD = 'HIGH_RES_DOWNLOAD';
+

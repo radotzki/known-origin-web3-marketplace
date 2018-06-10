@@ -13,6 +13,7 @@ const contractStateModule = {
     assetsByEditions: null,
     assetsByArtistCode: null,
     editionSummary: null,
+    events: []
   },
   getters: {
     assetsForEdition: (state) => (edition) => {
@@ -180,6 +181,10 @@ const contractStateModule = {
       Vue.set(state, 'assetsByArtistCode', assetsByArtistCode);
       Vue.set(state, 'editionSummary', editionSummary);
     },
+    [mutations.ADD_EVENT](state, anEvent) {
+      console.log(anEvent);
+      Vue.set(state, 'events', [anEvent]);
+    }
   },
   actions: {
     [actions.GET_ALL_ASSETS]({commit, dispatch, state, rootState}) {
@@ -351,9 +356,41 @@ const contractStateModule = {
               return _.without(assets, null);
             })
             .then(populateTokenUriData)
-            .then(bindAssetsToStore);
+            .then(bindAssetsToStore)
+            .then(() => dispatch(actions.EVENT_STREAM));
         });
     },
+    [actions.EVENT_STREAM]({commit, dispatch, state, rootState}) {
+      return rootState.KnownOriginDigitalAsset.deployed()
+        .then((contract) => {
+
+          let purchaseWithEtherEvent = contract.PurchasedWithEther({}, {
+            fromBlock: 0,
+            toBlock: 'latest' // wait until event comes through
+          });
+
+          let purchaseWithFiatEvent = contract.PurchasedWithFiat({}, {
+            fromBlock: 0,
+            toBlock: 'latest' // wait until event comes through
+          });
+
+          purchaseWithEtherEvent.watch(function (error, anEvent) {
+            if (!error) {
+              commit(mutations.ADD_EVENT, anEvent);
+            } else {
+              console.log('Failure', error);
+            }
+          });
+
+          purchaseWithFiatEvent.watch(function (error, anEvent) {
+            if (!error) {
+              commit(mutations.ADD_EVENT, anEvent);
+            } else {
+              console.log('Failure', error);
+            }
+          });
+        });
+    }
   }
 };
 
