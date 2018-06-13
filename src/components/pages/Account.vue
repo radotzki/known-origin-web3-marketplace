@@ -45,7 +45,7 @@
         'accountBalance',
         'assetsPurchasedByAccount',
       ]),
-      ...mapGetters([
+      ...mapGetters('assets', [
         'assetById',
       ])
     },

@@ -60,14 +60,14 @@ const contractStateModule = {
   },
   getters: {
     assetsForEdition: (state) => (edition) => {
-      return state.assets.filter((asset) => asset.edition === edition);
+      return _.filter(state.assets, (asset) => asset.edition === edition);
     },
     availableAssetsForEdition: (state, getters) => (edition) => {
       let editions = getters.assetsForEdition(edition);
       return _.filter(editions, {purchased: 0});
     },
     firstAssetForEdition: (state) => (edition) => {
-      return _.head(state.assets.filter((asset) => asset.edition === edition));
+      return _.head(_.filter(state.assets, (asset) => asset.edition === edition));
     },
     findNextAssetToPurchase: (state, getters) => ({edition}) => {
       let editions = getters.assetsForEdition(edition);
