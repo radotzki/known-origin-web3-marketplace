@@ -19,7 +19,7 @@
 </template>
 
 <script>
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import Artist from '../Artist';
   import Asset from "../Asset.vue";
   import LoadingSpinner from "../ui-controls/LoadingSpinner.vue";
@@ -41,10 +41,12 @@
       }
     },
     computed: {
-      ...mapGetters([]),
+      ...mapGetters('assets', [
+        'assetById'
+      ]),
       ...mapState([]),
       asset: function () {
-        return this.$store.getters.assetById(this.tokenId);
+        return this.assetById(this.tokenId);
       }
     },
     mounted() {

@@ -16,6 +16,9 @@
         <select class="form-control" title="price filter" v-model="priceFilter">
           <option value="asc">Low to high</option>
           <option value="desc">High to low</option>
+          <option value="high-res">High-res</option>
+          <option value="sold">Sold</option>
+          <option value="featured">Featured artwork</option>
         </select>
       </div>
       <div class="col d-none d-md-block">
@@ -26,15 +29,6 @@
       </div>
       <div class="col">
         <input type="text" class="form-control" v-model="search" placeholder="Search assets..."/>
-      </div>
-      <div class="col-1 d-none d-md-block" v-if="hasFinishedLoading()">
-        <div class="col">
-          <toggle-button :value="showSold"
-                         :labels="{checked: 'Sold', unchecked: 'Unsold'}"
-                         :sync="true" color="#3e27d9" :width="65"
-                         @change="onSoldToggleChanged">
-          </toggle-button>
-        </div>
       </div>
     </div>
 
@@ -64,7 +58,6 @@
     },
     data() {
       return {
-        showSold: false,
         finishedLoading: false,
         priceFilter: 'asc',
         artistFilter: 'all',
@@ -92,13 +85,16 @@
       ...mapGetters([
         'liveArtists',
       ]),
+      ...mapGetters('assets', [
+        'editionSummaryFilter',
+      ]),
       orderedArtists: function () {
         return _.orderBy(this.liveArtists, 'name');
       },
       editions: function () {
         this.finishedLoading = false;
 
-        let results = this.$store.getters.editionSummaryFilter(this.showSold, this.priceFilter, this.artistFilter)
+        let results = this.editionSummaryFilter(this.priceFilter, this.artistFilter)
           .filter(function (item) {
 
             if (this.search.length === 0) {

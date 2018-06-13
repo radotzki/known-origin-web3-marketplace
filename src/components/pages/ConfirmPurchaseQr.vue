@@ -19,7 +19,7 @@
 </template>
 
 <script>
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import Artist from '../Artist';
   import GalleryEdition from '../GalleryEdition';
   import ConfirmPurchaseButton from '../ui-controls/ConfirmPurchaseButton';
@@ -31,7 +31,7 @@
     name: 'confirmPurchase',
     components: {EditionQrCode, GalleryEdition, ConfirmPurchaseButton, EditionNameByArtist},
     computed: {
-      ...mapGetters([
+      ...mapGetters('assets', [
         'firstAssetForEdition'
       ]),
       edition: function () {

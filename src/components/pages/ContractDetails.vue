@@ -1,7 +1,6 @@
 <template>
   <div class="container">
     <h1>Contract</h1>
-
     <div class="row justify-content-center">
       <div class="col-sm-8">
         <table class="table table-striped bg-white">
@@ -62,13 +61,6 @@
         </table>
       </div>
     </div>
-    <!--<h1>Activity Stream</h1>-->
-
-    <!--<table class="table table-striped">-->
-    <!--<tbody>-->
-
-    <!--</tbody>-->
-    <!--</table>-->
   </div>
 </template>
 
@@ -82,13 +74,13 @@
     name: 'contractDetails',
     components: {AddressIcon, ClickableAddress},
     computed: {
-      ...mapGetters([
+      ...mapGetters('assets', [
         'totalEditions',
         'totalListedArtists',
         'cheapestPiece',
         'mostExpensivePiece',
       ]),
-      ...mapState([
+      ...mapState('contract', [
         'curatorAddress',
         'contractDeveloperAddress',
         'commissionAddress',

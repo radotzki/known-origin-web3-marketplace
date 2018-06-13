@@ -1,7 +1,6 @@
 <template>
   <span class="high-res-container" v-if="asset.highResAvailable">
-    <span class="badge badge-secondary"
-          v-b-tooltip.hover :id="'tooltipButton-highRes-info-' + uuid">
+    <span class="badge badge-primary" v-b-tooltip.hover :id="'tooltipButton-highRes-info-' + uuid">
       high res
     </span>
 
