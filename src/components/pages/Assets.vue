@@ -79,8 +79,10 @@
     },
     computed: {
       ...mapState([
-        'assets',
         'artists'
+      ]),
+      ...mapState('assets', [
+        'assets',
       ]),
       ...mapGetters('assets', [
         'assetFilter'
