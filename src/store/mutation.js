@@ -23,8 +23,6 @@ export const SET_COMMISSION_ADDRESSES = 'SET_COMMISSION_ADDRESSES';
 
 export const SET_TOTAL_PURCHASED = 'SET_TOTAL_PURCHASED';
 
-export const ADD_EVENT = 'ADD_EVENT';
-
 //////////////
 // High-res //
 //////////////

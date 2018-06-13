@@ -12,7 +12,6 @@ import ArtistPage from '@/components/pages/ArtistPage';
 import CompletePurchase from '@/components/pages/CompletePurchase';
 import AssetDetailView from '@/components/pages/AssetDetailView';
 import Home from '@/components/pages/Home';
-import Events from '@/components/pages/Events';
 
 Vue.use(Router);
 
@@ -61,11 +60,6 @@ export default new Router({
       path: '/license',
       name: 'license',
       component: License
-    },
-    {
-      path: '/events',
-      name: 'events',
-      component: Events
     },
     {
       path: '/assets',
