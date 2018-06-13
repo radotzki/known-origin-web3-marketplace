@@ -115,7 +115,7 @@ const contractStateModule = {
 
       return _.orderBy(filtered, 'priceInEther', 'asc');
     },
-    editionSummaryFilter: (state) => (showSold = false, priceFilter = 'asc', artistFilter = 'all') => {
+    editionSummaryFilter: (state) => (priceFilter = 'asc', artistFilter = 'all') => {
 
       const soldOutEditions = (edition) => {
         return edition.totalSupply === edition.totalPurchased;
@@ -137,8 +137,13 @@ const contractStateModule = {
       };
 
       let filtered = (state.editionSummary || [])
-        .filter(showSold ? soldOutEditions : availableEditions)
         .filter(artistCodeFilter);
+
+      if (priceFilter === 'sold') {
+        filtered = filtered.filter(soldOutEditions);
+      } else {
+        filtered = filtered.filter(availableEditions);
+      }
 
       if (priceFilter === 'high-res') {
         filtered = filtered.filter(highResEditions);
