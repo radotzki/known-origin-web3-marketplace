@@ -115,7 +115,7 @@ const contractStateModule = {
 
       return _.orderBy(filtered, 'priceInEther', 'asc');
     },
-    editionSummaryFilter: (state) => (showSold = false, priceFilter = 'asc', artistFilter = 'all') => {
+    editionSummaryFilter: (state) => (priceFilter = 'asc', artistFilter = 'all') => {
 
       const soldOutEditions = (edition) => {
         return edition.totalSupply === edition.totalPurchased;
@@ -125,6 +125,10 @@ const contractStateModule = {
         return edition.totalSupply !== edition.totalPurchased;
       };
 
+      const highResEditions = (edition) => {
+        return edition.highResAvailable;
+      };
+
       const artistCodeFilter = (edition) => {
         if (artistFilter === 'all') {
           return true;
@@ -132,9 +136,18 @@ const contractStateModule = {
         return edition.artistCode === artistFilter;
       };
 
-      const filtered = state.editionSummary
-        .filter(showSold ? soldOutEditions : availableEditions)
+      let filtered = (state.editionSummary || [])
         .filter(artistCodeFilter);
+
+      if (priceFilter === 'sold') {
+        filtered = filtered.filter(soldOutEditions);
+      } else {
+        filtered = filtered.filter(availableEditions);
+      }
+
+      if (priceFilter === 'high-res') {
+        filtered = filtered.filter(highResEditions);
+      }
 
       return _.orderBy(filtered, 'priceInEther', priceFilter);
     },
