@@ -18,6 +18,7 @@
           <option value="desc">High to low</option>
           <option value="high-res">High-res</option>
           <option value="sold">Sold</option>
+          <option value="featured">Featured artwork</option>
         </select>
       </div>
       <div class="col d-none d-md-block">

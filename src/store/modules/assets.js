@@ -6,6 +6,50 @@ import Web3 from 'web3';
 import {isHighRes} from '../../utils';
 import axios from 'axios';
 
+const featuredEditionCodes = [
+  // Arktiv
+  'AKPSTELLAR000DIG',
+
+  // obxium
+  'OBXDDF5000000DIG',
+
+  // Lee Holland
+  'LHDPRIESTESS0001',
+
+  //Manolide
+  'MNONEOPLA0001DIG',
+
+  //Takahiro Okawa
+  'TKOTAKACMNCOSDIG',
+
+  // obxium
+  'OBXDDF1000000DIG',
+
+  // Stina
+  'STJHPYFRIBIRDDIG',
+  'STJSPGMRN0001DIG',
+  'STJRUNRIOT001DIG',
+
+  // Stan regats
+  'STRGRASSROOTSDIG',
+  'STRSOFTFACE01DIG',
+  'STRTOOMNYNOONDIG',
+
+  // Franky anguliur
+  'FKAMARTIANBNGDIG',
+  'FKAHYPDTHSTY0DIG',
+  'FKABUNNYBAGS0DIG',
+
+  // 89-A
+  '89AKURUSHI001DIG',
+
+  // Katie O'Rourke
+  'KORMANCHESTERDIG',
+
+  // Laura Hawkins
+  'LHKBUZZ000001DIG'
+];
+
 const contractStateModule = {
   namespaced: true,
   state: {
@@ -41,61 +85,19 @@ const contractStateModule = {
       return _.filter(state.assetsByEditions, (value, key) => key.startsWith(artistCode));
     },
     featuredAssetsByEdition: (state, getters) => () => {
-      const featuredEditionCodes = [
-        // Arktiv
-        'AKPSTELLAR000DIG',
-
-        // obxium
-        'OBXDDF5000000DIG',
-
-        // Lee Holland
-        'LHDPRIESTESS0001',
-
-        //Manolide
-        'MNONEOPLA0001DIG',
-
-        //Takahiro Okawa
-        'TKOTAKACMNCOSDIG',
-
-        // obxium
-        'OBXDDF1000000DIG',
-
-        // Stina
-        'STJHPYFRIBIRDDIG',
-        'STJSPGMRN0001DIG',
-        'STJRUNRIOT001DIG',
-
-        // Stan regats
-        'STRGRASSROOTSDIG',
-        'STRSOFTFACE01DIG',
-        'STRTOOMNYNOONDIG',
-
-        // Franky anguliur
-        'FKAMARTIANBNGDIG',
-        'FKAHYPDTHSTY0DIG',
-        'FKABUNNYBAGS0DIG',
-
-        // 89-A
-        '89AKURUSHI001DIG',
-
-        // Katie O'Rourke
-        'KORMANCHESTERDIG',
-
-        // Laura Hawkins
-        'LHKBUZZ000001DIG'
-      ];
-
       if (!state.assets) {
         return [];
       }
 
       const results = [];
+
       _.forEach(featuredEditionCodes, (edition) => {
         const nextInEditionToPurchase = getters.findNextAssetToPurchase({edition});
         if (nextInEditionToPurchase) {
           results.push(nextInEditionToPurchase);
         }
       });
+
       return results;
     },
     featuredAssetsByTokenId: (state) => () => {
@@ -129,6 +131,10 @@ const contractStateModule = {
         return edition.highResAvailable;
       };
 
+      const featuredArtwork = (edition) => {
+        return featuredEditionCodes.indexOf(edition.edition) !== -1;
+      };
+
       const artistCodeFilter = (edition) => {
         if (artistFilter === 'all') {
           return true;
@@ -147,6 +153,10 @@ const contractStateModule = {
 
       if (priceFilter === 'high-res') {
         filtered = filtered.filter(highResEditions);
+      }
+
+      if (priceFilter === 'featured') {
+        filtered = filtered.filter(featuredArtwork);
       }
 
       return _.orderBy(filtered, 'priceInEther', priceFilter);
