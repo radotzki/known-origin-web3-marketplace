@@ -125,6 +125,10 @@ const contractStateModule = {
         return edition.totalSupply !== edition.totalPurchased;
       };
 
+      const highResEditions = (edition) => {
+        return edition.highResAvailable;
+      };
+
       const artistCodeFilter = (edition) => {
         if (artistFilter === 'all') {
           return true;
@@ -132,9 +136,13 @@ const contractStateModule = {
         return edition.artistCode === artistFilter;
       };
 
-      const filtered = state.editionSummary
+      let filtered = (state.editionSummary || [])
         .filter(showSold ? soldOutEditions : availableEditions)
         .filter(artistCodeFilter);
+
+      if (priceFilter === 'high-res') {
+        filtered = filtered.filter(highResEditions);
+      }
 
       return _.orderBy(filtered, 'priceInEther', priceFilter);
     },
