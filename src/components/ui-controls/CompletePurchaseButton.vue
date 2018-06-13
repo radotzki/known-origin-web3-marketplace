@@ -25,11 +25,13 @@
             Confirm buy
           </button>
 
-          <button type="button" v-on:click="completeFiatPurchase" class="btn btn-warning btn-block " v-if="isKnownOrigin && !soldAsFiat">
+          <button type="button" v-on:click="completeFiatPurchase" class="btn btn-warning btn-block "
+                  v-if="isKnownOrigin && !soldAsFiat">
             FIAT purchase
           </button>
 
-          <button type="button" v-on:click="reverseFiatPurchase" class="btn btn-danger btn-block" v-if="isKnownOrigin && soldAsFiat">
+          <button type="button" v-on:click="reverseFiatPurchase" class="btn btn-danger btn-block"
+                  v-if="isKnownOrigin && soldAsFiat">
             Reverse FIAT purchase
           </button>
 
@@ -39,7 +41,8 @@
         </div>
       </div>
 
-      <router-link v-if="asset.purchased !== 0" :to="{ name: 'account'}" tag="button" class="btn btn-outline-primary btn-block">
+      <router-link v-if="asset.purchased !== 0" :to="{ name: 'account'}" tag="button"
+                   class="btn btn-outline-primary btn-block">
         View account
       </router-link>
     </form>
@@ -52,10 +55,10 @@
 </template>
 
 <script>
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import _ from 'lodash';
   import * as actions from '../../store/actions';
-  import * as mutations from '../../store/mutation-types';
+  import * as mutations from '../../store/mutation';
   import AddressIcon from './AddressIcon.vue';
 
   export default {
@@ -68,15 +71,22 @@
       },
     },
     computed: {
-      ...mapGetters([
+      ...mapGetters('contract', [
         'isKnownOrigin',
+      ]),
+      ...mapState([
+        'account',
+      ]),
+      ...mapGetters('purchase', [
         'assetPurchaseState',
         'isPurchaseTriggered',
         'isPurchaseStarted',
         'isPurchaseSuccessful',
         'isPurchaseFailed',
       ]),
-      ...mapState(['account', 'purchaseState']),
+      ...mapState('purchase', [
+        'purchaseState'
+      ]),
       soldAsFiat: function () {
         return this.asset.purchased === 2;
       },
@@ -84,7 +94,7 @@
         return this.asset.purchased === 0;
       }
     },
-    data () {
+    data() {
       return {
         confirm_terms: false
       };
@@ -93,17 +103,17 @@
       completePurchase: function () {
         console.log('Completing purchase', this.asset);
         this.$emit('purchaseInitiated', this.asset);
-        this.$store.dispatch(actions.PURCHASE_ASSET, this.asset);
+        this.$store.dispatch(`purchase/${actions.PURCHASE_ASSET}`, this.asset);
       },
       completeFiatPurchase: function () {
         console.log('Completing FIAT purchase', this.asset);
         this.$emit('purchaseInitiated', this.asset);
-        this.$store.dispatch(actions.PURCHASE_ASSET_WITH_FIAT, this.asset);
+        this.$store.dispatch(`purchase/${actions.PURCHASE_ASSET_WITH_FIAT}`, this.asset);
       },
       reverseFiatPurchase: function () {
         console.log('Reverse FIAT purchase', this.asset);
         this.$emit('purchaseInitiated', this.asset);
-        this.$store.dispatch(actions.REVERSE_PURCHASE_ASSET_WITH_FIAT, this.asset);
+        this.$store.dispatch(`purchase/${actions.REVERSE_PURCHASE_ASSET_WITH_FIAT}`, this.asset);
       }
     }
   };

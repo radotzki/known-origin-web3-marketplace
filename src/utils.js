@@ -52,7 +52,8 @@ const isHighRes = ({artistCode, attributes}) => {
   }
   let tags = _.get(attributes, 'tags', []);
   let isFlaggedAsHighRes = _.some(tags, (element) => _.indexOf(['high res', 'vector', 'High res', 'Vector'], element) >= 0);
-  let isEnabledForArtist = _.includes(['AKP'], artistCode);
+  // Aktiv, Tony Smith, Stina
+  let isEnabledForArtist = _.includes(['AKP', 'TSM', 'STJ'], artistCode);
   return isFlaggedAsHighRes && isEnabledForArtist;
 };
 
