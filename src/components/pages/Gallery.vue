@@ -16,6 +16,7 @@
         <select class="form-control" title="price filter" v-model="priceFilter">
           <option value="asc">Low to high</option>
           <option value="desc">High to low</option>
+          <option value="high-res">High-res</option>
         </select>
       </div>
       <div class="col d-none d-md-block">
