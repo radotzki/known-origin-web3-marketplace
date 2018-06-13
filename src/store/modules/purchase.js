@@ -119,7 +119,7 @@ const purchaseStateModule = {
             if (!error) {
               // 3) Purchase succeeded
               console.log('Purchase successful', result);
-              dispatch(actions.REFRESH_CONTRACT_DETAILS, null, {root: true});
+              dispatch(`contract/${actions.REFRESH_CONTRACT_DETAILS}`, null, {root: true});
               dispatch(actions.GET_ASSETS_PURCHASED_FOR_ACCOUNT, null, {root: true});
               commit(mutations.PURCHASE_SUCCESSFUL, {tokenId: _tokenId, buyer: _buyer});
             } else {
@@ -173,7 +173,7 @@ const purchaseStateModule = {
           purchaseEvent.watch(function (error, result) {
             if (!error) {
               // 3) Purchase succeeded
-              dispatch(actions.REFRESH_CONTRACT_DETAILS, null, {root: true});
+              dispatch(`contract/${actions.REFRESH_CONTRACT_DETAILS}`, null, {root: true});
               dispatch(actions.GET_ASSETS_PURCHASED_FOR_ACCOUNT, null, {root: true});
               commit(mutations.PURCHASE_SUCCESSFUL, {tokenId: _tokenId, buyer: _buyer});
             } else {
@@ -222,7 +222,7 @@ const purchaseStateModule = {
           purchaseEvent.watch(function (error, result) {
             if (!error) {
               // 3) Purchase succeeded
-              dispatch(actions.REFRESH_CONTRACT_DETAILS, null, {root: true});
+              dispatch(`contract/${actions.REFRESH_CONTRACT_DETAILS}`, null, {root: true});
               dispatch(actions.GET_ASSETS_PURCHASED_FOR_ACCOUNT, null, {root: true});
               commit(mutations.PURCHASE_SUCCESSFUL, {tokenId: _tokenId, buyer: _buyer});
             } else {
@@ -277,7 +277,7 @@ const purchaseStateModule = {
               force: true // mark this as a force transaction for debugging
             });
 
-            dispatch(actions.REFRESH_CONTRACT_DETAILS, null, {root: true}); // update state of asserts etc
+            dispatch(`contract/${actions.REFRESH_CONTRACT_DETAILS}`, null, {root: true}); // update state of asserts etc
           }
         });
       }
