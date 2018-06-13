@@ -27,17 +27,11 @@ const featuredEditionCodes = [
 
   // Stina
   'STJHPYFRIBIRDDIG',
-  'STJSPGMRN0001DIG',
-  'STJRUNRIOT001DIG',
 
   // Stan regats
   'STRGRASSROOTSDIG',
-  'STRSOFTFACE01DIG',
-  'STRTOOMNYNOONDIG',
 
   // Franky anguliur
-  'FKAMARTIANBNGDIG',
-  'FKAHYPDTHSTY0DIG',
   'FKABUNNYBAGS0DIG',
 
   // 89-A
