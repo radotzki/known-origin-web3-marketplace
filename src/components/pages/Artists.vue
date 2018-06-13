@@ -3,7 +3,7 @@
     <h1>Artists</h1>
 
     <div class="card-columns">
-        <artist v-for="artist in liveArtists" :key="artist.name" :artist="artist"></artist>
+      <artist v-for="artist in liveArtists" :key="artist.name" :artist="artist"></artist>
     </div>
   </div>
 </template>
@@ -19,7 +19,7 @@
       ...mapGetters([
         'liveArtists',
       ]),
-      ...mapState([
+      ...mapState('assets', [
         'assets',
       ]),
     },
