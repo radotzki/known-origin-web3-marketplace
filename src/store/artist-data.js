@@ -221,6 +221,14 @@ const artists = [
     artistCode: 'LAM',
     name: 'laurence-amelie',
     img: 'static/artists/LAProfile@x2.png'
+  },
+  {
+    artistCode: 'LOS',
+    name: 'L O S E V A',
+    bio: 'L O S E V A is an independent visual artist focused on the exploration of the interactions of colors and forms, their tensions and specific language.',
+    strapline: 'L O S E V A is an independent visual artist focused on the exploration of the interactions of colors and forms, their tensions and specific language.',
+    img: 'static/artists/Alina_LProfilePic@x2_preview.png',
+    live: true
   }
 ];
 module.exports = artists;
