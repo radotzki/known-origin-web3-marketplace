@@ -13,6 +13,14 @@
 
     <div class="form-row mb-4" v-if="hasFinishedLoading()">
       <div class="col d-none d-md-block">
+        <select class="form-control" title="price filter" v-model="priceFilter">
+          <option value="asc"># ascending</option>
+          <option value="desc"># descending</option>
+          <option value="sold">Sold</option>
+          <option value="unsold">Available</option>
+        </select>
+      </div>
+      <div class="col d-none d-md-block">
         <select class="form-control" title="artist filter" v-model="artistFilter">
           <option value="all">Artists...</option>
           <option v-for="{artistCode, name} in orderedArtists" :value="artistCode">{{name}}</option>
@@ -21,16 +29,9 @@
       <div class="col">
         <input type="text" class="form-control" v-model="search" placeholder="Search assets..."/>
       </div>
-      <div class="col-1">
-        <toggle-button :value="showSold"
-                       :labels="{checked: 'Sold', unchecked: 'All'}"
-                       :sync="true" color="#3e27d9" :width="70"
-                       @change="onSoldToggleChanged">
-        </toggle-button>
-      </div>
     </div>
 
-    <div class="card-columns" v-if="assets.length > 0">
+    <div class="card-columns" v-if="filteredAssets.length > 0">
       <asset v-for="asset in filteredAssets"
              :asset="asset"
              :key="asset.id">
@@ -74,7 +75,7 @@
         if (this.assets === null) {
           return false;
         }
-        return this.assets.length > 0;
+        return this.assets.assets.length > 0;
       },
     },
     computed: {
@@ -89,7 +90,7 @@
         return _.orderBy(this.artists, 'name');
       },
       filteredAssets: function () {
-        return this.assetFilter(this.showSold, this.priceFilter, this.artistFilter)
+        return this.assetFilter(this.priceFilter, this.artistFilter)
           .filter(function (item) {
 
             if (this.search.length === 0) {

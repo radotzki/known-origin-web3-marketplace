@@ -155,13 +155,15 @@ const contractStateModule = {
 
       return _.orderBy(filtered, 'priceInEther', priceFilter);
     },
-    assetFilter: (state) => (showSold = false, priceFilter = 'asc', artistFilter = 'all') => {
+    assetFilter: (state) => (priceFilter = 'asc', artistFilter = 'all') => {
 
       const purchasedAssets = (asset) => {
         return asset.purchased === 1 || asset.purchased === 2;
       };
 
-      const showAllAssets = () => true;
+      const availableAssets = (asset) => {
+        return asset.purchased === 0;
+      };
 
       const artistCodeFilter = (asset) => {
         if (artistFilter === 'all') {
@@ -170,11 +172,21 @@ const contractStateModule = {
         return asset.artistCode === artistFilter;
       };
 
-      const filtered = state.assets
-        .filter(showSold ? purchasedAssets : showAllAssets)
-        .filter(artistCodeFilter);
+      let filtered = state.assets.filter(artistCodeFilter);
 
-      return _.orderBy(filtered, 'priceInEther', priceFilter);
+      if (priceFilter === 'asc') {
+        filtered = _.orderBy(filtered, 'id', priceFilter);
+      } else {
+        filtered = _.orderBy(filtered, 'id', 'desc');
+      }
+
+      if (priceFilter === 'sold') {
+        filtered = filtered.filter(purchasedAssets);
+      } else if (priceFilter === 'unsold') {
+        filtered = filtered.filter(availableAssets);
+      }
+
+      return filtered;
     },
 
     totalEditions: (state, getters) => () => {
