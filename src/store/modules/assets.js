@@ -328,7 +328,8 @@ const contractStateModule = {
                 _.set(asset, 'otherMeta', ipfsMeta.otherMeta);
                 _.set(asset, 'highResAvailable', isHighRes({
                   attributes: ipfsMeta.attributes,
-                  artistCode: asset.artistCode
+                  artistCode: asset.artistCode,
+                  edition: asset.edition
                 }));
                 if (ipfsMeta.attributes) {
                   _.set(asset, 'attributes', ipfsMeta.attributes);

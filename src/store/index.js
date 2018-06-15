@@ -33,6 +33,8 @@ const store = new Vuex.Store({
     account: null,
     currentNetwork: null,
     accountBalance: null,
+
+    // TODO this should be on 'assets'
     assetsPurchasedByAccount: [],
 
     KnownOriginDigitalAsset: null,

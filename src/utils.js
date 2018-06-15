@@ -46,15 +46,22 @@ const getEtherscanAddress = () => {
     });
 };
 
-const isHighRes = ({artistCode, attributes}) => {
+const isHighRes = ({artistCode, attributes, edition}) => {
   if (!attributes || !artistCode) {
     return false;
   }
   let tags = _.get(attributes, 'tags', []);
+
+  // IPFS data drives the first check
   let isFlaggedAsHighRes = _.some(tags, (element) => _.indexOf(['high res', 'vector', 'High res', 'Vector'], element) >= 0);
-  // Aktiv, Tony Smith, Stina
+
+  // All artists which are enabled all editions as high-res - Aktiv, Tony Smith, Stina
   let isEnabledForArtist = _.includes(['AKP', 'TSM', 'STJ'], artistCode);
-  return isFlaggedAsHighRes && isEnabledForArtist;
+
+  // Force the ones we didnt stamp in IPFS but have now been provided by artists
+  let forcedEditions = _.includes(['STJHAPPYFOX00DIG'], edition);
+
+  return (isFlaggedAsHighRes && isEnabledForArtist) || forcedEditions;
 };
 
 export {

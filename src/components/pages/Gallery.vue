@@ -2,6 +2,8 @@
   <div class="container">
     <h1>Gallery</h1>
 
+    {{ }}
+
     <loading-spinner v-if="!hasFinishedLoading()"></loading-spinner>
 
     <div class="row justify-content-sm-center" v-if="!hasFinishedLoading()">
@@ -70,7 +72,7 @@
       },
       hasFinishedLoading: function () {
         // Use the lack of assets in the store to determine initial loading state
-        if (this.assets.length === 0) {
+        if (!this.assets || this.assets.length === 0) {
           return false;
         }
         return this.editions.length > 0 || this.finishedLoading === true;
@@ -79,8 +81,10 @@
     computed: {
       ...mapState([
         'artists',
-        'editionSummary',
+      ]),
+      ...mapState('assets', [
         'assets',
+        'editionSummary',
       ]),
       ...mapGetters([
         'liveArtists',
@@ -101,10 +105,12 @@
               return true;
             }
 
-            let matchesName = item.artworkName.toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
-            let matchesDescription = item.description.toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
-            let matchesArtist = item.otherMeta.artist.toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
-            let matchesTokenId = `${item.id}`.indexOf(this.search.toLowerCase()) >= 0;
+            const searchString = this.search.toLowerCase();
+
+            let matchesName = item.artworkName.toLowerCase().indexOf(searchString) >= 0;
+            let matchesDescription = item.description.toLowerCase().indexOf(searchString) >= 0;
+            let matchesArtist = item.otherMeta.artist.toLowerCase().indexOf(searchString) >= 0;
+            let matchesTokenId = `${item.id}`.indexOf(searchString) >= 0;
 
             return matchesName || matchesDescription || matchesArtist || matchesTokenId;
           }.bind(this));
