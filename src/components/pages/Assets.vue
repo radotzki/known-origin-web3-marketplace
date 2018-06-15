@@ -72,7 +72,7 @@
       },
       hasFinishedLoading: function () {
         // Use the lack of assets in the store to determine initial loading state
-        if (this.assets === null) {
+        if (this.assets === null && this.assets.assets === null) {
           return false;
         }
         return this.assets.assets.length > 0;
