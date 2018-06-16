@@ -1,23 +1,23 @@
-const KnownOriginDigitalAsset = artifacts.require('KnownOriginDigitalAsset');
+const KnownOriginDigitalAsset = artifacts.require('KnownOriginDigitalAsset')
 
-const loadSeedData = require('../../scripts/migrations/loadSeedData');
-const loadContractCredentials = require('../../scripts/migrations/loadContractCredentials');
-const blocktimestampPlusOne = require('../../scripts/migrations/blocktimestampPlusOne');
+const loadSeedData = require('../../scripts/migrations/loadSeedData')
+const loadContractCredentials = require('../../scripts/migrations/loadContractCredentials')
+const blocktimestampPlusOne = require('../../scripts/migrations/blocktimestampPlusOne')
 
 const ARTWORK = {
-  "ipfsPath": "loseva_art2",
-  "edition": "LOSSER01ART02DIG",
-  "costInEth": 0.061 //30 USD
-};
+  'ipfsPath': 'loseva_art2',
+  'edition': 'LOSSER01ART02DIG',
+  'costInEth': 0.061 //30 USD
+}
 
 const galleryData = {
-  "artists": [
+  'artists': [
     {
-      "name": "L O S E V A", // is this required?
-      "artworks": [ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK]
+      'name': 'L O S E V A', // is this required?
+      'artworks': [ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK]
     }
   ]
-};
+}
 
 module.exports = function (deployer, network, accounts) {
 
@@ -52,4 +52,4 @@ module.exports = function (deployer, network, accounts) {
       return instance;
     });
 
-};
+}

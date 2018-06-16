@@ -37,7 +37,7 @@ module.exports = {
       },
       network_id: 1,
       gas: 4075039, // default = 4712388
-      gasPrice: 5000000000 // default = 100 gwei = 100000000000
+      gasPrice: 3100000000 // default = 100 gwei = 100000000000
     },
     coverage: {
       host: "localhost",
