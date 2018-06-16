@@ -232,4 +232,5 @@ const artists = [
     ethAddress: '0x27b09d167d8ED88563d81ed766cBd280c8B434c5'
   }
 ];
+
 module.exports = artists;

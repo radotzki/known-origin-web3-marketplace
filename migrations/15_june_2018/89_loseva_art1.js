@@ -19,11 +19,15 @@ const galleryData = {
   ]
 };
 
-const artistAccount = "0x27b09d167d8ED88563d81ed766cBd280c8B434c5"; // use artist data
-
 module.exports = function (deployer, network, accounts) {
 
-  const {_curatorAccount, _developerAccount, _artistAccount} = loadContractCredentials(network, accounts, artistAccount);
+  // uses artist code to find ETH address
+  const {_curatorAccount, _developerAccount, _artistAccount} = loadContractCredentials(
+    network,
+    accounts,
+    null,
+    'LOS'
+  );
 
   deployer
     .then(() => KnownOriginDigitalAsset.deployed())

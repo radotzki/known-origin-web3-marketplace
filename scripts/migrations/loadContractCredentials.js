@@ -3,8 +3,9 @@ const _ = require('lodash');
 const HDWalletProvider = require('truffle-hdwallet-provider');
 const infuraApikey = 'nbCbdzC6IG9CF6hmvAVQ';
 let mnemonic = require('../../mnemonic');
+let artistData = require('../../src/store/artist-data');
 
-module.exports = (network, accounts, artistAccount) => {
+module.exports = (network, accounts, artistAccount = null, artistCode = null) => {
 
   let _developerAccount = accounts[0];
   let _curatorAccount = accounts[1];
@@ -25,6 +26,13 @@ module.exports = (network, accounts, artistAccount) => {
   // if supplied use as easier for us - and they get ETH direct!
   if (artistAccount) {
     _artistAccount = artistAccount;
+  }
+
+  if (artistCode) {
+    const artistMeta = _.find(artistData, (artist) => artist.artistCode === artistCode);
+    if (artistMeta && artistMeta.ethAddress) {
+      _artistAccount = artistMeta.ethAddress;
+    }
   }
 
   console.log(`_curatorAccount = ${_curatorAccount}`);
