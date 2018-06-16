@@ -12,7 +12,7 @@
     </a>
 
     <!-- Triggered -->
-    <a class="btn btn-success btn-block text-white"
+    <a class="btn btn-success btn-block text-white disabled"
        v-if="isHighResDownloadTriggered(asset.id) && !isHighResDownloadFailed(asset.id)"
        @click="noop">
       <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
