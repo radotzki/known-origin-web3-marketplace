@@ -56,7 +56,7 @@ const isHighRes = ({artistCode, attributes, edition}) => {
   let isFlaggedAsHighRes = _.some(tags, (element) => _.indexOf(['high res', 'vector', 'High res', 'Vector'], element) >= 0);
 
   // All artists which are enabled all editions as high-res - Aktiv, Tony Smith, Stina, L O S E V A
-  let isEnabledForArtist = _.includes(['AKP', 'TSM', 'STJ', 'LOS'], artistCode);
+  let isEnabledForArtist = _.includes(['AKP', 'TSM', 'STJ', 'LOS', 'STR'], artistCode);
 
   // Force the ones we didnt stamp in IPFS but have now been provided by artists
   let forcedEditions = _.includes(['STJHAPPYFOX00DIG'], edition);
