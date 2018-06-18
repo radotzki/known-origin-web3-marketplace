@@ -19,7 +19,7 @@ const galleryData = {
   "artists": [
     {
       'name': 'Lee Holland',
-      "artworks": [ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK]
+      "artworks": [/*ARTWORK, ARTWORK, ARTWORK, ARTWORK,*/ ARTWORK]
     }
   ]
 };
