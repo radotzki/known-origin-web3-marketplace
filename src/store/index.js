@@ -53,6 +53,9 @@ const store = new Vuex.Store({
       return state.artists.filter((a) => a.live);
     },
     isOnMainnet: (state) => {
+      if (!state.currentNetwork) {
+        return true; // assume on mainnet when loading to prevent a flash of the banner
+      }
       return state.currentNetwork === 'Main';
     },
   },
