@@ -5,7 +5,7 @@ const infuraApikey = 'nbCbdzC6IG9CF6hmvAVQ';
 let mnemonic = require('../../mnemonic');
 let artistData = require('../../src/store/artist-data');
 
-module.exports = (network, accounts, artistAccount = null, artistCode = null) => {
+module.exports = (network, accounts, artistAccount, artistCode) => {
 
   let _developerAccount = accounts[0];
   let _curatorAccount = accounts[1];

@@ -6,6 +6,7 @@ const blocktimestampPlusOne = require('../../scripts/migrations/blocktimestampPl
 
 const assetType = 'DIG'; // 3
 const artistCode = 'LHD'; // 3
+
 const artworkCode = 'BITOPIAN01'; // 10
 
 const ARTWORK = {
