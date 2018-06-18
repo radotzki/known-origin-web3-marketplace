@@ -7,14 +7,13 @@ const blocktimestampPlusOne = require('../../scripts/migrations/blocktimestampPl
 const assetType = 'DIG'; // 3
 const artistCode = 'LHD'; // 3
 
-const artworkCode = 'BITOPIAN01'; // 10
+const artworkCode = "ETHINSIDE1";
 
 const ARTWORK = {
-  "ipfsPath": "lee_holland_bitopian",
+  "ipfsPath": "lee_holland_ethereum_inside",
   "edition": `${artistCode}${artworkCode}${assetType}`,
   "costInEth": 0.06 // $30
 };
-
 
 const galleryData = {
   "artists": [
@@ -24,7 +23,6 @@ const galleryData = {
     }
   ]
 };
-
 
 module.exports = function (deployer, network, accounts) {
 

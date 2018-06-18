@@ -3,7 +3,7 @@ const artistData = require('../../src/store/artist-data.js');
 
 function validateEdition(edition) {
   if (edition.length !== 16) {
-    throw new Error(`Edition [${edition}] asset type [${assetType}] not 16 in length`);
+    throw new Error(`Edition [${edition}] not 16 in length`);
   }
 
   let assetType = edition.substring(13, 16);
