@@ -154,6 +154,8 @@
     padding-bottom: 20px;
   }
 
+  [v-cloak] {display: none}
+
   .navbar-brand {
     font-size: 1.25rem;
   }
