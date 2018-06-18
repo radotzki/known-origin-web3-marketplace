@@ -7,8 +7,8 @@ import {isHighRes} from '../../utils';
 import axios from 'axios';
 
 const featuredEditionCodes = [
-  // Arktiv
-  'AKPSTELLAR000DIG',
+  // L O S E V A
+  'LOSSER01ART02DIG',
 
   // obxium
   'OBXDDF5000000DIG',
