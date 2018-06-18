@@ -72,10 +72,10 @@
       },
       hasFinishedLoading: function () {
         // Use the lack of assets in the store to determine initial loading state
-        if (this.assets === null && this.assets.assets === null) {
+        if (this.assets === null) {
           return false;
         }
-        return this.assets.assets.length > 0;
+        return this.assets.length > 0;
       },
     },
     computed: {
