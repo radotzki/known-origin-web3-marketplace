@@ -1,7 +1,6 @@
 <template>
   <div>
 
-
     <modal name="no-web3-found" :clickToClose="true" :width="300">
       <div class="alert alert-light fade show" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close" @click="$modal.hide('no-web3-found')">
@@ -38,10 +37,10 @@
           </li>
           <li class="nav-item">
             <router-link :to="{ name: 'account' }" class="nav-link">Account <span class="badge badge-nav" v-if="assetsPurchasedByAccount.length > 0">{{ assetsPurchasedByAccount.length }}</span></router-link>
-
           </li>
         </ul>
       </nav>
+      <network-warning-banner></network-warning-banner>
     </header>
 
     <main role="main" class="container-fluid">
@@ -92,10 +91,12 @@
   import * as mutations from './store/mutation';
   import CurrentNetwork from './components/ui-controls/CurrentNetwork';
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
+  import NetworkWarningBanner from "./components/ui-controls/NetworkWarningBanner";
 
   export default {
     name: 'app',
     components: {
+      NetworkWarningBanner,
       FontAwesomeIcon,
       CurrentNetwork
     },
