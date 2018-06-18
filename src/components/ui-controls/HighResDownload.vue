@@ -31,7 +31,7 @@
     <!-- FIXME - should we display the error message here, it is available to us? -->
     <!-- Failure -->
     <span v-if="isHighResDownloadFailed(asset.id)">
-      <a class="btn btn-danger btn-block text-white"
+      <a class="btn btn-danger btn-block text-white disabled"
          @click="noop">
          <font-awesome-icon :icon="['fas', 'times']"></font-awesome-icon> Something went wrong
       </a>
