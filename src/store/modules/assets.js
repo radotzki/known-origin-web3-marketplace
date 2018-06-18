@@ -14,22 +14,19 @@ const featuredEditionCodes = [
   'OBXDDF5000000DIG',
 
   // Lee Holland
-  'LHDPRIESTESS0001',
+  'LHDBITOPIAN01DIG',
+
+  // Stina
+  'STJHPYFRIBIRDDIG',
+
+  // Stan regats
+  'STRAPPAIMLESSDIG',
 
   //Manolide
   'MNONEOPLA0001DIG',
 
   //Takahiro Okawa
   'TKOTAKACMNCOSDIG',
-
-  // obxium
-  'OBXDDF1000000DIG',
-
-  // Stina
-  'STJHPYFRIBIRDDIG',
-
-  // Stan regats
-  'STRGRASSROOTSDIG',
 
   // Franky anguliur
   'FKABUNNYBAGS0DIG',

@@ -52,6 +52,9 @@ const store = new Vuex.Store({
     liveArtists: (state) => {
       return state.artists.filter((a) => a.live);
     },
+    isOnMainnet: (state) => {
+      return state.currentNetwork === 'Main';
+    },
   },
   mutations: {
     [mutations.SET_ARTISTS](state, {artists}) {

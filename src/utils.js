@@ -4,6 +4,8 @@ const getNetIdString = () => {
   return window.web3.eth.net.getId()
     .then((id) => {
 
+      // N.B - be careful changing this as the warning banner uses this string
+
       console.log(`Running on network ID ${id}`);
 
       switch (id) {
