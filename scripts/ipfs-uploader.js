@@ -28,23 +28,23 @@ const uploadMetaData = ({ipfsPath, edition}) => {
   console.log(`Attempting to upload files in [${ipfsPath}]`);
 
   // Check cache as to not upload duplicates
-  let cachedTokenUri = getFromCache(ipfsPath);
-  if (cachedTokenUri) {
-    console.log(`Found cached version of [${ipfsPath}] - token URI ${cachedTokenUri}`);
-    return Promise.resolve(cachedTokenUri);
-  }
+  // let cachedTokenUri = getFromCache(ipfsPath);
+  // if (cachedTokenUri) {
+  //   console.log(`Found cached version of [${ipfsPath}] - token URI ${cachedTokenUri}`);
+  //   return Promise.resolve(cachedTokenUri);
+  // }
 
   let meta = require(`../config/data/ipfs_data/${ipfsPath}/meta.json`);
 
   // Load in either a gif or a jpeg
   let image;
-  if (fs.existsSync(`./config/data/ipfs_data/${ipfsPath}/low_res.gif`)) {
-    image = fs.createReadStream(`./config/data/ipfs_data/${ipfsPath}/low_res.gif`);
+  if (fs.existsSync(`./config/data/ipfs_data/${ipfsPath}/low_res.png`)) {
+    image = fs.createReadStream(`./config/data/ipfs_data/${ipfsPath}/low_res.png`);
   } else {
     image = fs.createReadStream(`./config/data/ipfs_data/${ipfsPath}/low_res.jpeg`);
   }
 
-  let {assetType, artistCode} = validateEdition(edition);
+  // let {assetType, artistCode} = validateEdition(edition);
 
   return ipfs.add([
       {
@@ -54,11 +54,11 @@ const uploadMetaData = ({ipfsPath, edition}) => {
       {
         path: `${ipfsPath}/description`,
         content: new streams.ReadableStream(`${meta.description}`).read(),
-      },
-      {
-        path: `${ipfsPath}/other`,
-        content: fs.createReadStream(`./config/data/ipfs_data/${ipfsPath}/meta.json`),
       }
+      // {
+      //   path: `${ipfsPath}/other`,
+      //   content: fs.createReadStream(`./config/data/ipfs_data/${ipfsPath}/meta.json`),
+      // }
     ], {recursive: false}
   )
     .then((res) => {
@@ -66,12 +66,12 @@ const uploadMetaData = ({ipfsPath, edition}) => {
       let metaPath = _.last(res);
 
       let ipfsData = {
-        name: `${meta.artworkName}`,
+        name: `ArtBlocks.io`,
         description: `${meta.description}`,
         attributes: meta.attributes,
-        external_uri: `https://knownorigin.io/artists/${artistCode}/editions/${edition}`,
-        image: `https://ipfs.infura.io/ipfs/${metaPath.hash}/image`,
-        meta: `https://ipfs.infura.io/ipfs/${metaPath.hash}/other`
+        external_uri: `https://www.artblocks.io/`,
+        image: `https://ipfs.infura.io/ipfs/${metaPath.hash}/image`
+        // meta: `https://ipfs.infura.io/ipfs/${metaPath.hash}/other`
       };
 
       return ipfs.add([
@@ -113,4 +113,4 @@ module.exports = {
 };
 
 // To manually upload fresh IPFS data use this and invoke it on the commandland e.g. node ./scripts/ipfs-uploader.js
-// uploadMetaData({ipfsPath: 'stina_jones_happy_fox'});
+uploadMetaData({ipfsPath: 'art-blocks'});
