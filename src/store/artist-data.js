@@ -230,6 +230,15 @@ const artists = [
     img: 'static/artists/Alina_LProfilePic@x2_preview.png',
     live: true,
     ethAddress: '0x27b09d167d8ED88563d81ed766cBd280c8B434c5'
+  },
+  {
+    artistCode: 'LEV',
+    name: 'Lev Polyakov',
+    bio: 'Creating Creations.',
+    strapline: 'Creating Creations.',
+    img: 'static/artists/LevP@x2.png',
+    live: true,
+    ethAddress: '0x39c040b50A13894e19DFbb0aF47ac9bade9926Da'
   }
 ];
 
