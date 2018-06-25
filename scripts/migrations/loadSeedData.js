@@ -69,7 +69,7 @@ module.exports = function (instance, _artistAccount, _openingTime, galleryData, 
     // insert each series before moving on the to the next one
     return Promise.map(insertsForEditionArray, function ({tokenUri, edition, costInWei, openingTime}) {
 
-      console.log(`Minting: T: ${tokenUri} E: ${edition} C: ${costInWei} O: ${openingTime}`);
+      console.log(`Minting: T: ${tokenUri} E: ${edition} C: ${costInWei} O: ${openingTime} A: ${_artistAccount}`);
 
       return instance.mint(
         tokenUri,
