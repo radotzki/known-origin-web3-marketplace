@@ -13,7 +13,7 @@ module.exports = function (web3) {
         .then((block) => {
           console.log(`block ${block}`);
 
-          const _openingTime = block.timestamp + 1; // one second in the future
+          const _openingTime = block.timestamp + 1; // 1 sec
           console.log(`opening time ${_openingTime}`);
 
           return _openingTime;

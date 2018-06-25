@@ -186,9 +186,9 @@ const artists = [
   {
     artistCode: 'TSM',
     name: 'Tony Smith',
-    bio: '',
-    strapline: '',
-    img: 'static/artists/TonySmith_Profile@x2.png',
+    bio: 'Independent digital artist',
+    strapline: 'Independent digital artist',
+    img: 'static/artists/TonyS_Profile@x2.png',
     live: true
   },
   {
@@ -239,6 +239,15 @@ const artists = [
     img: 'static/artists/LevP@x2.png',
     live: true,
     ethAddress: '0x39c040b50A13894e19DFbb0aF47ac9bade9926Da'
+  },
+  {
+    artistCode: 'MLO',
+    name: 'Martin Lukas Ostachowski',
+    bio: 'Geometric abstraction artist based in Sherbrooke, QC, Canada. My paper paintings combine traditional with modern arts and craft processes.',
+    strapline: 'Geometric abstraction artist based in Sherbrooke, QC, Canada. My paper paintings combine traditional with modern arts and craft processes.',
+    img: 'static/artists/MartinOk@x2.png',
+    live: true,
+    ethAddress: '0xe0F228070D8F7b5C25E9375Fa70FA418f8dfEDf8'
   }
 ];
 

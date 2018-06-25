@@ -7,6 +7,12 @@ import {isHighRes} from '../../utils';
 import axios from 'axios';
 
 const featuredEditionCodes = [
+  // Lev
+  'LEVHORNSBIN21DIG',
+
+  // MLO
+  'MLOTAMEDLNES1DIG',
+
   // L O S E V A
   'LOSSER01ART02DIG',
 
@@ -29,16 +35,7 @@ const featuredEditionCodes = [
   'TKOTAKACMNCOSDIG',
 
   // Franky anguliur
-  'FKABUNNYBAGS0DIG',
-
-  // 89-A
-  '89AKURUSHI001DIG',
-
-  // Katie O'Rourke
-  'KORMANCHESTERDIG',
-
-  // Laura Hawkins
-  'LHKBUZZ000001DIG'
+  'FKABUNNYBAGS0DIG'
 ];
 
 const contractStateModule = {
