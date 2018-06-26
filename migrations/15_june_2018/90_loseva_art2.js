@@ -1,6 +1,6 @@
 const KnownOriginDigitalAsset = artifacts.require('KnownOriginDigitalAsset')
 
-const loadSeedData = require('../../scripts/migrations/loadSeedData')
+const loadSeedData = require('../../scripts/migrations/load-seed-data-v1')
 const loadContractCredentials = require('../../scripts/migrations/loadContractCredentials')
 const blocktimestampPlusOne = require('../../scripts/migrations/blocktimestampPlusOne')
 

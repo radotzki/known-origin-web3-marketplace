@@ -1,42 +1,9 @@
 const _ = require('lodash');
-const Eth = require('ethjs');
-const ipfsUploader = require('../ipfs-uploader');
 const Promise = require('bluebird');
 
+const ipfsUploader = require('../ipfs/ipfs-uploader');
+const flattenArtistData = require('./flatten-seed-data');
 const flattenAttributesMetaData = require('./metadata-attributes-flattener');
-const {validateEdition} = require('./edition-utils');
-
-const flattenArtistData = (galleryData) => {
-  let flatInserts = [];
-
-  _.forEach(galleryData.artists, (artist) => {
-
-    const artistName = artist.name;
-
-    _.forEach(artist.artworks, (artwork) => {
-
-      let ipfsPath = artwork.ipfsPath;
-
-      let edition = artwork.edition;
-
-      // This validates the edition
-      validateEdition(edition);
-
-      let costInWei = Eth.toWei(artwork.costInEth, 'ether');
-
-      flatInserts.push({
-        costInWei,
-        ipfsPath,
-        edition,
-        artistName
-      });
-
-    });
-  });
-
-  return flatInserts;
-};
-
 
 module.exports = function (instance, _artistAccount, _openingTime, galleryData, _developerAccount) {
 

@@ -8,7 +8,7 @@ let mnemonic = require('../mnemonic');
 
 const KnownOriginDigitalAsset = artifacts.require('KnownOriginDigitalAsset');
 
-const ipfsUploader = require('../scripts/ipfs-uploader');
+const ipfsUploader = require('../scripts/ipfs/ipfs-uploader');
 
 const galleryData = require('../config/data/gallery.json');
 
