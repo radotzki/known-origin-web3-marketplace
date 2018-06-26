@@ -3,7 +3,7 @@ const fs = require('fs');
 const streams = require('memory-streams');
 const _ = require('lodash');
 
-const {validateEdition} = require('./migrations/edition-utils');
+const {validateEdition} = require('../migrations/edition-utils');
 
 const ipfs = IPFS('ipfs.infura.io', '5001', {protocol: 'https'});
 
@@ -34,7 +34,7 @@ const uploadMetaData = ({ipfsPath, edition}) => {
     return Promise.resolve(cachedTokenUri);
   }
 
-  let meta = require(`../config/data/ipfs_data/${ipfsPath}/meta.json`);
+  let meta = require(`../../config/data/ipfs_data/${ipfsPath}/meta.json`);
 
   // Load in either a gif or a jpeg
   let image;

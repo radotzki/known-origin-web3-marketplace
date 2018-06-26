@@ -8,7 +8,7 @@ const axios = require('axios');
  */
 const downloadIpfsData = () => {
 
-  const rawCache = require('../config/data/ipfs_data/cache.json');
+  const rawCache = require('../../config/data/ipfs_data/cache.json');
 
   _.map(rawCache, (value, key) => {
     console.log(`https://ipfs.infura.io/ipfs/${value}`);

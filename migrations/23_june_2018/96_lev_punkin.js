@@ -1,6 +1,6 @@
 const KnownOriginDigitalAsset = artifacts.require('KnownOriginDigitalAsset');
 
-const loadSeedData = require('../../scripts/migrations/loadSeedData');
+const loadSeedData = require('../../scripts/migrations/load-seed-data-v2');
 const loadContractCredentials = require('../../scripts/migrations/loadContractCredentials');
 const blocktimestampPlusOne = require('../../scripts/migrations/blocktimestampPlusOne');
 
@@ -48,7 +48,7 @@ module.exports = function (deployer, network, accounts) {
     .then(({instance, _openingTime}) => {
 
       if (network === 'ganache' || network === 'live' || network === 'ropsten' || network === 'rinkeby') {
-        return loadSeedData(instance, _artistAccount, _openingTime, galleryData, _developerAccount);
+        return loadSeedData({web3, instance, network, _artistAccount, _openingTime, galleryData, _developerAccount});
       } else {
         console.log(`SKIPPING loading seed data as running on ${network}`);
       }
