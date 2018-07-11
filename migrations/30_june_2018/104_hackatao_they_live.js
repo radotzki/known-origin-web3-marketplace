@@ -1,30 +1,29 @@
 const KnownOriginDigitalAsset = artifacts.require('KnownOriginDigitalAsset');
 
-const loadSeedData = require('../../scripts/migrations/load-seed-data-v1');
+const loadSeedData = require('../../scripts/migrations/load-seed-data-v2');
 const loadContractCredentials = require('../../scripts/migrations/loadContractCredentials');
 const blocktimestampPlusOne = require('../../scripts/migrations/blocktimestampPlusOne');
 
 const assetType = 'DIG'; // 3
-const artistCode = 'LEV'; // 3
+const artistCode = 'HKT'; // 3
 
-const artworkCode = 'ETHERMANF0';
+const artworkCode = 'THEYLIVE00'; // 10
 
 const ARTWORK = {
-  'ipfsPath': 'lev_ethermanf',
+  'ipfsPath': 'hackatao_they_live',
   'edition': `${artistCode}${artworkCode}${assetType}`,
-  'costInEth': 1.099 // $500
+  'costInEth': 0.168 // $80
 };
 
 const galleryData = {
   'artists': [
     {
-      'artworks': [ARTWORK]
+      'artworks': [ARTWORK, ARTWORK, ARTWORK, ARTWORK, ARTWORK]
     }
   ]
 };
 
 module.exports = function (deployer, network, accounts) {
-
 
   // uses artist code to find ETH address
   const {_curatorAccount, _developerAccount, _artistAccount} = loadContractCredentials(
@@ -49,7 +48,7 @@ module.exports = function (deployer, network, accounts) {
     .then(({instance, _openingTime}) => {
 
       if (network === 'ganache' || network === 'live' || network === 'ropsten' || network === 'rinkeby') {
-        return loadSeedData(instance, _artistAccount, _openingTime, galleryData, _developerAccount);
+        return loadSeedData({web3, instance, network, _artistAccount, _openingTime, galleryData, _developerAccount});
       } else {
         console.log(`SKIPPING loading seed data as running on ${network}`);
       }

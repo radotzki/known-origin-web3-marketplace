@@ -103,8 +103,9 @@
             let matchesDescription = item.description.toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
             let matchesArtist = item.otherMeta.artist.toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
             let matchesTokenId = `${item.id}`.indexOf(this.search.toLowerCase()) >= 0;
+            let matchesEdition = item.edition.toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
 
-            return matchesName || matchesDescription || matchesArtist || matchesTokenId;
+            return matchesName || matchesDescription || matchesArtist || matchesTokenId || matchesEdition;
           }.bind(this));
       }
     }

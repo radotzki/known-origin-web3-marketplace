@@ -952,8 +952,8 @@
           }
         ],
         "contractDependencies": [
-          36,
           56,
+          36,
           170
         ],
         "contractKind": "contract",
@@ -1592,8 +1592,8 @@
           }
         ],
         "contractDependencies": [
-          36,
           56,
+          36,
           170
         ],
         "contractKind": "contract",
@@ -1620,6 +1620,6 @@
     "version": "0.4.24+commit.e67f0147.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "2.0.0",
-  "updatedAt": "2018-06-25T09:47:22.756Z"
+  "schemaVersion": "2.0.1",
+  "updatedAt": "2018-07-10T05:22:26.324Z"
 }

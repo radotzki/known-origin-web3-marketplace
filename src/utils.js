@@ -70,8 +70,8 @@ const isHighRes = ({artistCode, attributes, edition}) => {
 
   // All artists which are enabled all editions as high-res
   let isEnabledForArtist = _.includes([
-    // Aktiv, Tony Smith, Stina, L O S E V A, Lev, Franky
-    'AKP', 'TSM', 'STJ', 'LOS', 'STR', 'LHD', 'LEV', 'FKA', 'OBX'
+    // Aktiv, Tony Smith, Stina, L O S E V A, Lev, Franky, Martin Lukas Ostachowski
+    'AKP', 'TSM', 'STJ', 'LOS', 'STR', 'LHD', 'LEV', 'FKA', 'OBX', 'MLO', 'DWW', 'HKT'
   ], artistCode) && isNotExclusedForArtist;
 
   // Force the ones we didnt stamp in IPFS but have now been provided by artists

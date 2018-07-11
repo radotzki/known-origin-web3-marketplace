@@ -1,10 +1,7 @@
-const IPFS = require('ipfs-api');
 const fs = require('fs');
 const _ = require('lodash');
 const fm = require('file-matcher');
 const fileMatcher = new fm.FileMatcher();
-
-const ipfs = IPFS('ipfs.infura.io', '5001', {protocol: 'https'});
 
 const isArray = (value) => value instanceof Array;
 
