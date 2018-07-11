@@ -6,10 +6,12 @@ import _ from 'lodash';
 import Web3 from 'web3';
 import axios from 'axios';
 import artistData from './artist-data';
-import createLogger from 'vuex/dist/logger';
 import {getNetIdString, getEtherscanAddress} from '../utils';
 import truffleContract from 'truffle-contract';
 import knownOriginDigitalAssetJson from '../../build/contracts/KnownOriginDigitalAsset.json';
+
+import createLogger from 'vuex/dist/logger';
+// import createPersistedState from "vuex-persistedstate";
 
 import purchase from './modules/purchase';
 import highres from './modules/highres';
@@ -20,8 +22,19 @@ const KnownOriginDigitalAsset = truffleContract(knownOriginDigitalAssetJson);
 
 Vue.use(Vuex);
 
+
+
 const store = new Vuex.Store({
-  plugins: [createLogger()],
+  plugins: [
+    // FIXME - disabled until we work out issue
+    // createPersistedState({
+    //   key: `${window.location.hostname}`,
+    //   paths: [
+    //     'assets' // Place assets in local storage to speed up load times when initially landing on the site
+    //   ]
+    // }),
+    createLogger()
+  ],
   modules: {
     purchase,
     highres,

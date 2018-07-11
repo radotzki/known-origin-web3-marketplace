@@ -111,8 +111,9 @@
             let matchesDescription = item.description.toLowerCase().indexOf(searchString) >= 0;
             let matchesArtist = item.otherMeta.artist.toLowerCase().indexOf(searchString) >= 0;
             let matchesTokenId = `${item.id}`.indexOf(searchString) >= 0;
+            let matchesEdition = item.edition.toLowerCase().indexOf(searchString) >= 0;
 
-            return matchesName || matchesDescription || matchesArtist || matchesTokenId;
+            return matchesName || matchesDescription || matchesArtist || matchesTokenId || matchesEdition;
           }.bind(this));
         this.finishedLoading = true;
         return results;

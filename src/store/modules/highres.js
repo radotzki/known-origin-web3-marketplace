@@ -64,7 +64,7 @@ const highResStateModule = {
               switch (window.location.hostname) {
                 case "localhost":
                 case "127.0.0.1":
-                  return highResConfig.local;
+                  // return highResConfig.local;
                 default:
                   // For now point all to live
                   return highResConfig.live;

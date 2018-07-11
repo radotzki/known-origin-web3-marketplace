@@ -7,11 +7,19 @@ import {isHighRes} from '../../utils';
 import axios from 'axios';
 
 const featuredEditionCodes = [
-  // Lev
-  'LEVHORNSBIN21DIG',
+  // Hackateo
+  'HKTTHEYLIVE00DIG',
+
+  //Drawingly Willingly
+  'DWWDEVILRUN00DIG',
 
   // MLO
-  'MLOTAMEDLNES1DIG',
+  'MLOEMERGESHP1DIG',
+  'MLOEMERGESHP2DIG',
+  'MLOEMERGESHP3DIG',
+
+  // Lev
+  'LEVHORNSBIN21DIG',
 
   // L O S E V A
   'LOSSER01ART02DIG',

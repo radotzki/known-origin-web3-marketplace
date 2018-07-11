@@ -1,11 +1,22 @@
 const artists = [
   {
+    artistCode: 'HKT',
+    name: 'Hackatao',
+    bio: 'Hackatao merges the cultured quotations from the past to bold and ultra-contemporary forms, standing out as an innovative exponent of the current artistic scenario. The artistic diptych Hackatao is formed by Sergio Scalet  and Nadia Squarci. “A dense visual texture that immediately catches the aesthetic sensibility of the beholder and expresses two complementary components of this successful artistic alliance.” Julie Kogler',
+    strapline: 'Hackatao merges the cultured quotations from the past to bold and ultra-contemporary forms, standing out as an innovative exponent of the current artistic scenario. The artistic diptych Hackatao is formed by Sergio Scalet  and Nadia Squarci. “A dense visual texture that immediately catches the aesthetic sensibility of the beholder and expresses two complementary components of this successful artistic alliance.” Julie Kogler',
+    img: 'static/artists/Hackatao_Profile@x2.png',
+    live: true,
+    twitter: '@Hackatao',
+    ethAddress: '0x21316E6A4F0Af45E5F1503984E83B10C53b177D8'
+  },
+  {
     artistCode: 'OBX',
     name: 'Obxium',
     bio: 'Coexisting and evolving with the algorithms while fighting for the user with digital art centered around cryptography and cryptocurrencies',
     strapline: 'Coexisting and evolving with the algorithms while fighting for the user with digital art centered around cryptography and cryptocurrencies',
     img: 'static/artists/Obxium_profile@x2.png',
     live: true,
+    twitter: '@obxium',
     ethAddress: '0xf65DB13b5ee031CB0ebBa525eF21aa6C586681b3'
   },
   {
@@ -43,6 +54,7 @@ const artists = [
     strapline: 'Creative coder and generative designer.',
     img: 'static/artists/Manoloide_Profile@x2.png',
     live: true,
+    twitter: '@manoloidee',
     ethAddress: '0x6fb7f9d87d2742baba47f61207d57ac3c0443482'
   },
   {
@@ -61,6 +73,7 @@ const artists = [
     strapline: 'Hi, I’m Lee Holland, a multi-disciplined designer and illustrator based in Sheffield, United Kingdom.',
     img: 'static/artists/LeeHolland_Profile@x2.png',
     live: true,
+    twitter: '@LeeDRHolland',
     ethAddress: '0xf397B52432fE7149Ce74849B15223f4502cdB1d3'
   },
   {
@@ -80,6 +93,7 @@ const artists = [
     strapline: 'I’m a freelance Illustrator & Graphic Designer based in Manchester, with 15 years industry experience ',
     img: 'static/artists/StinaJones1_Profile@x2.png',
     live: true,
+    twitter: '@stina_jones',
     ethAddress: '0x92baffdd6cfb11a4e57a58ffec4833b4d1abd25d'
   },
   {
@@ -181,7 +195,8 @@ const artists = [
     bio: 'Mike Lewis, (aka The Mighty Lark) began painting, drawing and illustrating professionally in the summer of 2003.',
     strapline: 'Mike Lewis, (aka The Mighty Lark,) began painting, drawing and illustrating professionally in the summer of 2003.',
     img: 'static/artists/MikeLewis_Profile@x2.png',
-    live: true
+    live: true,
+    twitter: '@Mighty_Lark'
   },
   {
     artistCode: 'TSM',
@@ -238,16 +253,28 @@ const artists = [
     strapline: 'Creating Creations.',
     img: 'static/artists/LevP@x2.png',
     live: true,
+    twitter: '@LevPo',
     ethAddress: '0x39c040b50A13894e19DFbb0aF47ac9bade9926Da'
   },
   {
     artistCode: 'MLO',
     name: 'Martin Lukas Ostachowski',
-    bio: 'Geometric abstraction artist based in Sherbrooke, QC, Canada. My paper paintings combine traditional with modern arts and craft processes.',
-    strapline: 'Geometric abstraction artist based in Sherbrooke, QC, Canada. My paper paintings combine traditional with modern arts and craft processes.',
+    bio: 'Geometric abstraction artist Martin Lukas Ostachowski lives and works in Sherbrooke, Quebec, Canada. His paintings combine traditional with modern arts and crafts processes such as weaving, hand-cutting and laser-cutting. Martin prefers paper over canvas as it allows him to manipulate the medium. Through his digital hand-painted studies, he explores geometric minimalism in preparation for his larger works.',
+    strapline: 'Geometric abstraction artist Martin Lukas Ostachowski lives and works in Sherbrooke, Quebec, Canada. His paintings combine traditional with modern arts and crafts processes such as weaving, hand-cutting and laser-cutting. Martin prefers paper over canvas as it allows him to manipulate the medium. Through his digital hand-painted studies, he explores geometric minimalism in preparation for his larger works.',
     img: 'static/artists/MartinOk@x2.png',
     live: true,
+    twitter: '@ArtByMLO',
     ethAddress: '0xe0F228070D8F7b5C25E9375Fa70FA418f8dfEDf8'
+  },
+  {
+    artistCode: 'DWW',
+    name: 'Drawingly Willingly',
+    bio: 'Crypto artist at times... Unicorn lover, always.',
+    strapline: 'Crypto artist at times... Unicorn lover, always.',
+    img: 'static/artists/Drawingly_Profile@x2.jpg',
+    live: false,
+    twitter: '@DrawinglyW',
+    ethAddress: '0x6c0ba5e435276621aa7a4a5de3c4e56a4092d782'
   }
 ];
 
