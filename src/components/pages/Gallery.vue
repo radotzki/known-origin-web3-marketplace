@@ -2,7 +2,6 @@
   <div class="container">
     <h1>Gallery</h1>
 
-    {{ }}
 
     <loading-spinner v-if="!hasFinishedLoading()"></loading-spinner>
 
@@ -34,6 +33,8 @@
       </div>
     </div>
 
+    <h4 class="text-primary pb-4 pt-2" v-if="hasFinishedLoading() && priceFilter === 'featured'">KnownOrigin.io x 0xCert Creative Challenge <br/>for Nifty Conference + Hackathon (July 24-26, 2018)</h4>
+
     <div class="card-columns" v-if="editions.length > 0">
       <galleryEdition
         v-for="edition in editions"
@@ -61,7 +62,7 @@
     data() {
       return {
         finishedLoading: false,
-        priceFilter: 'asc',
+        priceFilter: 'featured',
         artistFilter: 'all',
         search: ''
       };

@@ -17,7 +17,7 @@
         <rarity-indicator :assets-in-edition="assetsForEdition(edition.edition)"></rarity-indicator>
 
         <one-of-edition :assets-in-edition="assetsForEdition(edition.edition)"></one-of-edition>
-        
+
         <available :availableAssetsForEdition="availableAssetsForEdition(edition.edition)"></available>
 
         <metadata-attributes :attributes="edition.attributes"></metadata-attributes>
@@ -26,11 +26,18 @@
           <tweet-asset-button :edition="edition" v-if="purchase"></tweet-asset-button>
         </span>
 
+        <img src="../../static/nifty.png" style="height: 50px" class="float-right m-2" v-if="edition && edition.attributes && edition.attributes.tags.indexOf('nifty') !== -1"/>
       </p>
 
       <edition-name-by-artist :edition="edition" :purchase="purchase"></edition-name-by-artist>
 
-      <p class="card-text" v-if="purchase">{{ edition.description }}</p>
+      <p class="card-text" v-if="purchase">{{ edition.description  }}</p>
+
+      <small class="text-danger" v-if="isAuctionStartDateInFuture(edition)">
+        <span>Available {{ edition.auctionStartDate | moment("from") }}</span>
+      </small>
+
+      <span class="clearfix"></span>
     </div>
 
     <ul class="list-group list-group-flush">
@@ -46,7 +53,7 @@
       </router-link>
     </div>
 
-    <div class="card-footer text-center" v-if="purchase && availableAssetsForEdition(edition.edition).length > 0">
+    <div class="card-footer text-center" v-if="purchase && availableAssetsForEdition(edition.edition).length > 0 && !isAuctionStartDateInFuture(edition)">
       <confirm-purchase-button :edition="edition"></confirm-purchase-button>
     </div>
 
@@ -94,9 +101,15 @@
       ...mapGetters('assets', [
         'availableAssetsForEdition',
         'assetsForEdition',
+        'isAuctionStartDateInFuture'
       ]),
     },
     methods: {
+    },
+    data () {
+      return {
+        nowTimestamp: new Date().getTime()
+      };
     }
   };
 </script>

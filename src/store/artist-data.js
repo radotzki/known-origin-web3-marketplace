@@ -84,7 +84,7 @@ const artists = [
     strapline: 'CoinJournal is a Manchester based artist who collaborates with several different designers, incorporating the style of 1930s cartoons',
     img: 'static/artists/coinjournal_x2.png',
     live: true,
-    ethAddress: '0xb3Fb19f7D5caD1b7EB95ba29289D7BFFB65bE680'
+    ethAddress: '0x7EdAbC5d4a3E1870b157caB79fAF5731389b07cF'
   },
   {
     artistCode: 'STJ',
@@ -259,8 +259,8 @@ const artists = [
   {
     artistCode: 'MLO',
     name: 'Martin Lukas Ostachowski',
-    bio: 'Geometric abstraction artist Martin Lukas Ostachowski lives and works in Sherbrooke, Quebec, Canada. His paintings combine traditional with modern arts and crafts processes such as weaving, hand-cutting and laser-cutting. Martin prefers paper over canvas as it allows him to manipulate the medium. Through his digital hand-painted studies, he explores geometric minimalism in preparation for his larger works.',
-    strapline: 'Geometric abstraction artist Martin Lukas Ostachowski lives and works in Sherbrooke, Quebec, Canada. His paintings combine traditional with modern arts and crafts processes such as weaving, hand-cutting and laser-cutting. Martin prefers paper over canvas as it allows him to manipulate the medium. Through his digital hand-painted studies, he explores geometric minimalism in preparation for his larger works.',
+    bio: 'Geometric abstraction artist Martin Lukas Ostachowski is based in Sherbrooke, QC, Canada. His geometric abstraction paintings combine traditional with modern arts and crafts processes such as weaving, hand-cutting and laser-cutting. He prefers paper over canvas as it allows him to manipulate the medium. Fascinated by the socio-economic potential of blockchain technology, Martin explores the subject through geometric minimalism. His hand-drawn digital studies interpret the concept of blockchain architecture in preparation for his larger works on paper.',
+    strapline: 'Geometric abstraction artist Martin Lukas Ostachowski is based in Sherbrooke, QC, Canada. His geometric abstraction paintings combine traditional with modern arts and crafts processes such as weaving, hand-cutting and laser-cutting. He prefers paper over canvas as it allows him to manipulate the medium. Fascinated by the socio-economic potential of blockchain technology, Martin explores the subject through geometric minimalism. His hand-drawn digital studies interpret the concept of blockchain architecture in preparation for his larger works on paper.',
     img: 'static/artists/MartinOk@x2.png',
     live: true,
     twitter: '@ArtByMLO',
@@ -272,9 +272,27 @@ const artists = [
     bio: 'Crypto artist at times... Unicorn lover, always.',
     strapline: 'Crypto artist at times... Unicorn lover, always.',
     img: 'static/artists/Drawingly_Profile@x2.jpg',
-    live: false,
+    live: true,
     twitter: '@DrawinglyW',
     ethAddress: '0x6c0ba5e435276621aa7a4a5de3c4e56a4092d782'
+  },
+  {
+    artistCode: 'HEX',
+    name: 'HEX0x6C',
+    bio: 'HEX0x6C in my artistic nickname. It is the hexadecimal code for 108, which is the number of grains of the mala, which is a strand of grains that many Buddhists use when reciting mantras. In summary, HEX0x6C digests my dual nature: rational and spiritual.',
+    strapline: 'HEX0x6C in my artistic nickname. It is the hexadecimal code for 108, which is the number of grains of the mala, which is a strand of grains that many Buddhists use when reciting mantras. In summary, HEX0x6C digests my dual nature: rational and spiritual.',
+    img: 'static/artists/HEX0x6C_Profile@x2.png',
+    live: true,
+    ethAddress: '0x6F7fC56461F1Be9d430037f714AF67E641e5f6cF'
+  },
+  {
+    artistCode: 'OTK',
+    name: 'Oficinas TK',
+    bio: 'Porto based visual artist with a strong focus on geometry and hermetics. Trough historical photographic processes, traditional engraving techniques, digital media, sound experiments and micro-publishing, OTK is a constant process of meditation on the representations of reality.',
+    strapline: 'Porto based visual artist with a strong focus on geometry and hermetics. Trough historical photographic processes, traditional engraving techniques, digital media, sound experiments and micro-publishing, OTK is a constant process of meditation on the representations of reality.',
+    img: 'static/artists/OTK_Profile@x2.png',
+    live: true,
+    ethAddress: '0xa4aD045d62a493f0ED883b413866448AfB13087C'
   }
 ];
 
