@@ -27,11 +27,18 @@
           <tweet-asset-button :edition="asset" v-if="individual"></tweet-asset-button>
         </span>
 
+        <img src="../../static/nifty.png" style="height: 50px" class="float-right m-2" v-if="asset && asset.attributes && asset.attributes.tags.indexOf('nifty') !== -1"/>
       </p>
 
       <edition-name-by-artist :edition="asset"></edition-name-by-artist>
 
       <p class="card-text" v-if="individual">{{ asset.otherMeta.description }}</p>
+
+      <small class="text-danger" v-if="isAuctionStartDateInFuture(asset)">
+        <span>Available {{ asset.auctionStartDate | moment("from") }}</span>
+      </small>
+
+      <span class="clearfix"></span>
     </div>
 
     <ul class="list-group list-group-flush">
@@ -110,7 +117,8 @@
     computed: {
       ...mapGetters('assets', [
         'assetsForEdition',
-        'availableAssetsForEdition'
+        'availableAssetsForEdition',
+        'isAuctionStartDateInFuture'
       ]),
     }
   };

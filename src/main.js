@@ -21,6 +21,7 @@ Vue.use(VModal);
 Vue.use(AsyncComputed);
 Vue.use(ToggleButton);
 Vue.use(BootstrapVue);
+Vue.use(require('vue-moment'));
 
 Vue.config.productionTip = false;
 

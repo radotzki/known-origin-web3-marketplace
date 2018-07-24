@@ -16,6 +16,7 @@
       <div class="row" id="featured">
         <div class="col mt-4">
           <h5 class="text-center pb-4">Featured artwork</h5>
+          <h4 class="pb-4">KnownOrigin.io x 0xCert Creative Challenge <br/>for Nifty Conference + Hackathon (July 24-26, 2018)</h4>
           <div class="card-columns">
             <galleryEdition
               v-for="asset in featuredAssetsByEdition()"

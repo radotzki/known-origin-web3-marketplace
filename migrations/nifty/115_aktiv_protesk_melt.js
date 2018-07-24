@@ -1,30 +1,29 @@
 const KnownOriginDigitalAsset = artifacts.require('KnownOriginDigitalAsset');
 
-const loadSeedData = require('../scripts/migrations/load-seed-data-v2');
-const loadContractCredentials = require('../scripts/migrations/loadContractCredentials');
-const blocktimestampPlusOne = require('../scripts/migrations/blocktimestampPlusOne');
+const loadSeedData = require('../../scripts/migrations/load-seed-data-v2');
+const loadContractCredentials = require('../../scripts/migrations/loadContractCredentials');
+const blocktimestampPlusOne = require('../../scripts/migrations/blocktimestampPlusOne');
 
 const assetType = 'DIG'; // 3
-const artistCode = 'LEV'; // 3
+const artistCode = 'AKP'; // 3
 
-const artworkCode = 'ETHERMANF0';
+const artworkCode = 'MELT000000'; // 10
 
 const ARTWORK = {
-  'ipfsPath': 'lev_ethermanf',
+  'ipfsPath': 'aktiv_protesk_melt',
   'edition': `${artistCode}${artworkCode}${assetType}`,
-  'costInEth': 1.05 // $500
+  'costInEth': 0.022 // $10
 };
 
 const galleryData = {
   'artists': [
     {
-      'artworks': [ARTWORK]
+      'artworks': [ARTWORK, ARTWORK, ARTWORK]
     }
   ]
 };
 
 module.exports = function (deployer, network, accounts) {
-
 
   // uses artist code to find ETH address
   const {_curatorAccount, _developerAccount, _artistAccount} = loadContractCredentials(
@@ -39,17 +38,9 @@ module.exports = function (deployer, network, accounts) {
     .then((instance) => {
       console.log(`Deployed contract to address = [${instance.address}] to network [${network}]`);
 
-      return blocktimestampPlusOne(web3).then((_openingTime) => {
-        return {
-          instance,
-          _openingTime
-        };
-      });
-    })
-    .then(({instance, _openingTime}) => {
-
+      const startOf24thJulyInUK = 1532386800;
       if (network === 'ganache' || network === 'live' || network === 'ropsten' || network === 'rinkeby') {
-        return loadSeedData({web3, instance, network, _artistAccount, _openingTime, galleryData, _developerAccount});
+        return loadSeedData({web3, instance, network, _artistAccount, _openingTime: startOf24thJulyInUK, galleryData, _developerAccount});
       } else {
         console.log(`SKIPPING loading seed data as running on ${network}`);
       }

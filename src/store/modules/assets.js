@@ -6,44 +6,49 @@ import Web3 from 'web3';
 import {isHighRes} from '../../utils';
 import axios from 'axios';
 
+// const featuredEditionCodes = [
+//   // Hackateo
+//   'HKTTHEYLIVE00DIG',
+//
+//   //Drawingly Willingly
+//   'DWWDEVILRUN00DIG',
+//
+//   // MLO
+//   'MLOEMERGESHP1DIG',
+//   'MLOEMERGESHP2DIG',
+//   'MLOEMERGESHP3DIG',
+//
+//   // Lev
+//   'LEVHORNSBIN21DIG',
+//
+//   // L O S E V A
+//   'LOSSER01ART02DIG',
+//
+//   // obxium
+//   'OBXDDF5000000DIG',
+//
+//   // Lee Holland
+//   'LHDBITOPIAN01DIG',
+//
+//   // Stina
+//   'STJHPYFRIBIRDDIG',
+//
+//   // Stan regats
+//   'STRAPPAIMLESSDIG',
+//
+//   //Manolide
+//   'MNONEOPLA0001DIG',
+//
+//   //Takahiro Okawa
+//   'TKOTAKACMNCOSDIG',
+//
+//   // Franky anguliur
+//   'FKABUNNYBAGS0DIG'
+// ];
+
+// NIFTY takeover
 const featuredEditionCodes = [
-  // Hackateo
-  'HKTTHEYLIVE00DIG',
-
-  //Drawingly Willingly
-  'DWWDEVILRUN00DIG',
-
-  // MLO
-  'MLOEMERGESHP1DIG',
-  'MLOEMERGESHP2DIG',
-  'MLOEMERGESHP3DIG',
-
-  // Lev
-  'LEVHORNSBIN21DIG',
-
-  // L O S E V A
-  'LOSSER01ART02DIG',
-
-  // obxium
-  'OBXDDF5000000DIG',
-
-  // Lee Holland
-  'LHDBITOPIAN01DIG',
-
-  // Stina
-  'STJHPYFRIBIRDDIG',
-
-  // Stan regats
-  'STRAPPAIMLESSDIG',
-
-  //Manolide
-  'MNONEOPLA0001DIG',
-
-  //Takahiro Okawa
-  'TKOTAKACMNCOSDIG',
-
-  // Franky anguliur
-  'FKABUNNYBAGS0DIG'
+  'HKTOWNMEBLK00DIG', 'HKTHUMANTWO00DIG', 'HKTHUMANONE00DIG', 'AKPTEMPO00000DIG', 'AKPMELT000000DIG', 'OTKCELLS00000DIG', 'OTKPEBBLES000DIG', 'HEXNFT0000001DIG', 'CNJCOINZUKI00DIG'
 ];
 
 const contractStateModule = {
@@ -203,6 +208,9 @@ const contractStateModule = {
     cheapestPiece: (state, getters) => () => {
       return _.head(_.orderBy(state.assets, 'priceInEtherSortable', 'asc'));
     },
+    isAuctionStartDateInFuture: (state) => (edition) => {
+      return edition.auctionStartDate > (new Date().getTime() / 1000);
+    }
   },
   mutations: {
     [mutations.SET_ASSETS](state, {assets, assetsByEditions, assetsByArtistCode, editionSummary}) {
@@ -283,7 +291,7 @@ const contractStateModule = {
               priceInWei: assetInfo[3].toString(),
               priceInEther: Web3.utils.fromWei(assetInfo[3].toString(10), 'ether').valueOf(),
               priceInEtherSortable: Web3.utils.fromWei(assetInfo[3].toString(10), 'ether'),
-              auctionStartDate: assetInfo[4].toString(10),
+              auctionStartDate: assetInfo[4].toNumber(),
 
               edition: edition,
               // Last 3 chars of edition are type
