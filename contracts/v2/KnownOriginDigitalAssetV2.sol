@@ -79,7 +79,7 @@ Contactable {
   }
 
   modifier onlyUnsold(bytes16 _edition) {
-    require(editionToEditionDetails[_edition].totalAvailable < editionToEditionDetails[_edition].totalSold);
+    require(editionToEditionDetails[_edition].totalSold < editionToEditionDetails[_edition].totalAvailable);
     _;
   }
 
