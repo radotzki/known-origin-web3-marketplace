@@ -51,7 +51,7 @@ contract KnownOriginDigitalAsset is ERC721Token, ERC165 {
     bytes4(keccak256('safeTransferFrom(address,address,uint256,bytes)'));
     */
 
-  bytes4 public constant InterfaceSignature_ERC721Optional =- 0x4f558e79;
+  bytes4 public constant InterfaceSignature_ERC721Optional = 0x4f558e79;
     /*
     bytes4(keccak256('exists(uint256)'));
     */
