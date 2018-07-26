@@ -66,6 +66,8 @@ Contactable {
 
   mapping(bytes16 => EditionDetails) internal editionToEditionDetails;
 
+  mapping(uint256 => PurchaseState) internal tokenIdToPurchasedState;
+
   // A pointer to the next token to be minted
   uint256 public tokenIdPointer;
 
@@ -73,7 +75,7 @@ Contactable {
   // Modifiers //
   ///////////////
 
-  modifier onlyKo() {
+  modifier onlyKnownOrigin() {
     require(whitelist(msg.sender));
     _;
   }
@@ -99,18 +101,22 @@ Contactable {
   constructor (KnownOriginDigitalAssetV2 _kodaV1, uint256 _tokenIdPointer) {
     require(_kodaV1 != address(0));
     kodaV1 = _kodaV1;
-    tokenIdPointer = _tokenIdPointer; // FIXME this is KODA v1 max token minted + 1
+    tokenIdPointer = _tokenIdPointer;
+    // FIXME this is KODA v1 max token minted + 1
   }
 
-  // don't accept payment directly to contract
-  function() public payable {
-    revert();
+  // TODO extract to external contract
+  function tokenSwap(uint256 _tokenId, address _beneficiary) onlyKnownOrigin {
+    require(KnownOriginDigitalAssetV2.exist(_tokenId));
+    require(KnownOriginDigitalAssetV2.ownerOf(_tokenId) == _beneficiary);
+
   }
 
   // Called once per edition
   function createEdition(
     bytes16 _edition,
     uint32 _auctionStartDate,
+    uint32 _auctionEndDate,
     address _artistAccount,
     uint256 _priceInWei,
     bytes32 tokenURI,
@@ -123,6 +129,7 @@ Contactable {
     editionToEditionDetails[_edition] = EditionDetails({
       edition : _edition,
       auctionStartDate : _auctionStartDate,
+      auctionEndDate : _auctionEndDate, // TODO set ot max int
       artistAccount : _artistAccount,
       priceInWei : _priceInWei, // TODO handle overriding of price per token from edition price?
       tokenURI : _tokenURI,
@@ -144,9 +151,11 @@ Contactable {
 
     uint256 _tokenId = tokenIdPointer;
 
-
     super._mint(msg.sender, _tokenId);
     super._setTokenURI(_tokenId, _editionDetails.tokenURI);
+
+    // Update state
+    tokenIdToPurchasedState[_tokenId] = PurchaseState.EtherPurchase;
 
     tokenIdPointer = tokenIdPointer.add(1);
 
@@ -154,5 +163,39 @@ Contactable {
     // TODO handle money transfer
 
     return true;
+  }
+
+  /////////////////////
+  // Edition Updates //
+  /////////////////////
+
+  function updateTokenURI(uint256 _tokenId, string _uri) external onlyKnownOrigin {
+    require(exists(_tokenId));
+    _setTokenURI(_tokenId, _uri);
+  }
+
+  function updateEditionTokenURI(bytes16 _edition, string _uri) external onlyKnownOrigin {
+    // TODO validation
+    editionToEditionDetails[_edition].tokenURI = _uri;
+  }
+
+  function updatePriceInWei(bytes16 _edition, uint256 _priceInWei) external onlyKnownOrigin {
+    // TODO validation
+    editionToEditionDetails[_edition].priceInWei = _priceInWei;
+  }
+
+  function updateArtistsAccount(bytes16 _edition, address _artistAccount) external onlyKnownOrigin {
+    // TODO validation
+    editionToEditionDetails[_edition].artistAccount = _artistAccount;
+  }
+
+  function updateTotalAvailable(bytes16 _edition, uint8 _totalAvailable) external onlyKnownOrigin {
+    // TODO validation
+    editionToEditionDetails[_edition].totalAvailable = _totalAvailable;
+  }
+
+  function updateAuctionStartDate(bytes16 _edition, uint8 _auctionStartDate) external onlyKnownOrigin {
+    // TODO validation
+    editionToEditionDetails[_edition].auctionStartDate = _auctionStartDate;
   }
 }

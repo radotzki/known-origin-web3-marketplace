@@ -5,4 +5,7 @@ pragma solidity ^0.4.24;
  */
 contract IKnownOriginDigitalAssetV1 {
 
+  function exists(uint256 _tokenId) public view returns (bool);
+
+  function ownerOf(uint256 _tokenId) public view returns (address);
 }
