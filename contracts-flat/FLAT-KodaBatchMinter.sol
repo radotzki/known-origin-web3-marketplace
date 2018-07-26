@@ -1,87 +1,11 @@
-pragma solidity ^0.4.23;
-
-// File: contracts/IKodaMintable.sol
-
-interface IKodaMintable {
-  /**
-   * @dev Mint a new KODA token
-   * @dev Reverts if not called by management
-   * @param _tokenURI the IPFS or equivalent hash
-   * @param _edition the identifier of the edition - leading 3 bytes are the artist code, trailing 3 bytes are the asset type
-   * @param _priceInWei the price of the KODA token
-   * @param _auctionStartDate the date when the token is available for sale
-   */
-  function mint(string _tokenURI, bytes16 _edition, uint256 _priceInWei, uint32 _auctionStartDate, address _artistAccount) external;
-
-  /**
-   * @dev Burns a KODA token
-   * @dev Reverts if token is not unsold or not owned by management
-   * @param _tokenId the KODA token ID
-   */
-  function burn(uint256 _tokenId) external;
-}
-
-// File: contracts/KodaBatchMinter.sol
-
-/**
-* @title KODABatchMinter
-*
-* http://www.knownorigin.io/
-*
-* Utility contract for batch minting editions for KnownOrigin.io
-* BE ORIGINAL. BUY ORIGINAL.
-*/
-contract KodaBatchMinter {
-
-  IKodaMintable kodaMarketPlace;
-
-  address public developerAccount;
-  address public curatorAccount;
-
-  modifier onlyKnownOrigin() {
-    require(msg.sender == curatorAccount || msg.sender == developerAccount);
-    _;
-  }
-
-  constructor(address _curatorAccount, IKodaMintable _kodaMarketPlace) public {
-    // Assumption is developer is the person who creates contract
-    developerAccount = msg.sender;
-    curatorAccount = _curatorAccount;
-    kodaMarketPlace = _kodaMarketPlace;
-  }
-
-  // don't accept payment directly to contract
-  function() public payable {
-    revert();
-  }
-
-  /**
-   * @dev Mint a batch of new KODA tokens
-   *
-   * @dev Reverts if not called by KODA
-   *
-   * @param _tokenURI the IPFS or equivalent hash
-   * @param _edition the identifier of the edition - leading 3 bytes are the artist code, trailing 3 bytes are the asset type
-   * @param _priceInWei the price of the KODA token
-   * @param _auctionStartDate the date when the token is available for sale
-   * @param numberToMint the total number of editions to mint for this edition
-   */
-  function mintBatch(string _tokenURI, bytes16 _edition, uint256 _priceInWei, uint32 _auctionStartDate, address _artistAccount, uint8 numberToMint) external onlyKnownOrigin {
-    require(numberToMint > 0, "Must specify total amount to batch mint");
-    for (uint count = 0; count < numberToMint; count++) {
-      kodaMarketPlace.mint(_tokenURI, _edition, _priceInWei, _auctionStartDate, _artistAccount);
-    }
-  }
-
-  /**
-   * @dev Match burn a set of KODA tokens
-   *
-   * @dev Reverts if not called by KODA
-   * @param _tokenIds the KODA token IDs to burn
-   */
-  function burnBatch(uint256[] _tokenIds) public onlyKnownOrigin {
-    for (uint i = 0; i < _tokenIds.length; i++) {
-      kodaMarketPlace.burn(_tokenIds[i]);
-    }
-  }
-}
+Error: Could not find contracts/KodaBatchMinter.sol from any sources
+    at /Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/node_modules/truffle-resolver/index.js:76:23
+    at /Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/node_modules/async/internal/onlyOnce.js:12:16
+    at next (/Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/node_modules/async/whilst.js:68:18)
+    at /Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/node_modules/truffle-resolver/index.js:64:7
+    at /Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/node_modules/truffle-resolver/fs.js:85:5
+    at /Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/node_modules/async/internal/once.js:12:16
+    at replenish (/Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/node_modules/async/internal/eachOfLimit.js:59:25)
+    at iterateeCallback (/Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/node_modules/async/internal/eachOfLimit.js:49:17)
+    at /Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/node_modules/async/internal/onlyOnce.js:12:16
+    at ReadFileContext.callback (/Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/node_modules/truffle-resolver/fs.js:81:14) 'Error: Could not find contracts/KodaBatchMinter.sol from any sources\n    at /Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/node_modules/truffle-resolver/index.js:76:23\n    at /Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/node_modules/async/internal/onlyOnce.js:12:16\n    at next (/Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/node_modules/async/whilst.js:68:18)\n    at /Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/node_modules/truffle-resolver/index.js:64:7\n    at /Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/node_modules/truffle-resolver/fs.js:85:5\n    at /Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/node_modules/async/internal/once.js:12:16\n    at replenish (/Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/node_modules/async/internal/eachOfLimit.js:59:25)\n    at iterateeCallback (/Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/node_modules/async/internal/eachOfLimit.js:49:17)\n    at /Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/node_modules/async/internal/onlyOnce.js:12:16\n    at ReadFileContext.callback (/Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/node_modules/truffle-resolver/fs.js:81:14)'

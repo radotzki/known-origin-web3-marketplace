@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.24;
 
 // File: contracts/ERC165.sol
 
@@ -97,7 +97,7 @@ contract ERC721Receiver {
   function onERC721Received(address _from, uint256 _tokenId, bytes _data) public returns(bytes4);
 }
 
-// File: zeppelin-solidity/contracts/AddressUtils.sol
+// File: openzeppelin-solidity/contracts/AddressUtils.sol
 
 /**
  * Utility library of inline functions on addresses
@@ -105,21 +105,28 @@ contract ERC721Receiver {
 library AddressUtils {
 
   /**
-   * Returns whether there is code in the target address
+   * Returns whether the target address is a contract
    * @dev This function will return false if invoked during the constructor of a contract,
-   *  as the code is not actually created until after the constructor finishes.
-   * @param addr address address to check
-   * @return whether there is code in the target address
+   * as the code is not actually created until after the constructor finishes.
+   * @param addr address to check
+   * @return whether the target address is a contract
    */
   function isContract(address addr) internal view returns (bool) {
     uint256 size;
+    // XXX Currently there is no better way to check if there is a contract in an address
+    // than to check the size of the code at that address.
+    // See https://ethereum.stackexchange.com/a/14016/36603
+    // for more details about how this works.
+    // TODO Check this again before the Serenity release, because all addresses will be
+    // contracts then.
+    // solium-disable-next-line security/no-inline-assembly
     assembly { size := extcodesize(addr) }
     return size > 0;
   }
 
 }
 
-// File: zeppelin-solidity/contracts/math/SafeMath.sol
+// File: openzeppelin-solidity/contracts/math/SafeMath.sol
 
 /**
  * @title SafeMath
@@ -130,11 +137,15 @@ library SafeMath {
   /**
   * @dev Multiplies two numbers, throws on overflow.
   */
-  function mul(uint256 a, uint256 b) internal pure returns (uint256) {
+  function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
+    // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
     if (a == 0) {
       return 0;
     }
-    uint256 c = a * b;
+
+    c = a * b;
     assert(c / a == b);
     return c;
   }
@@ -144,9 +155,9 @@ library SafeMath {
   */
   function div(uint256 a, uint256 b) internal pure returns (uint256) {
     // assert(b > 0); // Solidity automatically throws when dividing by 0
-    uint256 c = a / b;
+    // uint256 c = a / b;
     // assert(a == b * c + a % b); // There is no case in which this doesn't hold
-    return c;
+    return a / b;
   }
 
   /**
@@ -160,8 +171,8 @@ library SafeMath {
   /**
   * @dev Adds two numbers, throws on overflow.
   */
-  function add(uint256 a, uint256 b) internal pure returns (uint256) {
-    uint256 c = a + b;
+  function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
+    c = a + b;
     assert(c >= a);
     return c;
   }
@@ -705,7 +716,7 @@ contract KnownOriginDigitalAsset is ERC721Token, ERC165 {
     bytes4(keccak256('safeTransferFrom(address,address,uint256,bytes)'));
     */
 
-  bytes4 public constant InterfaceSignature_ERC721Optional =- 0x4f558e79;
+  bytes4 public constant InterfaceSignature_ERC721Optional = 0x4f558e79;
     /*
     bytes4(keccak256('exists(uint256)'));
     */
@@ -1034,7 +1045,7 @@ contract KnownOriginDigitalAsset is ERC721Token, ERC165 {
    */
   function editionInfo(uint256 _tokenId) public view returns (
     uint256 _tokId,
-    bytes16 _edition0x0f48669b1681d41357eac232f516b77d0c10f0f1,
+    bytes16 _edition,
     uint256 _editionNumber,
     string _tokenURI,
     address _artistAccount
