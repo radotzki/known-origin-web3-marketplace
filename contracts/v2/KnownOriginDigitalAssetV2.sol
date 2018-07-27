@@ -18,7 +18,7 @@ import "../Strings.sol";
 // TODO consider Pausable - stop open purchases?
 
 contract KnownOriginDigitalAssetV2 is
-ERC721Token,
+ERC72gs1Token,
 Whitelist,
 HasNoEther
 {
