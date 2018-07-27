@@ -15,30 +15,37 @@ import "./IKnownOriginDigitalAssetV2.sol";
 contract KnownOriginV1TokenSwap is Ownable {
   using SafeMath for uint;
 
-  // Address for V1 contract
   IKnownOriginDigitalAssetV1 public kodaV1;
+
   IKnownOriginDigitalAssetV2 public kodaV2;
+
+  address public knownOriginArchiveAddress;
 
   /*
    * Constructor
    */
   constructor (
     IKnownOriginDigitalAssetV1 _kodaV1,
-    IKnownOriginDigitalAssetV2 _kodaV2
+    IKnownOriginDigitalAssetV2 _kodaV2,
+    address _knownOriginArchiveAddress
   ) public {
     require(_kodaV1 != address(0));
     require(_kodaV2 != address(0));
+    require(knownOriginArchiveAddress != address(0));
     kodaV1 = _kodaV1;
     kodaV2 = _kodaV2;
+    knownOriginArchiveAddress = _knownOriginArchiveAddress;
   }
 
-  // called by a user not KO - would require user to approve all for this contract and exchange one at a time (not ideal)
-  function directTokenSwap(uint256 _tokenId) public {
+  // Stage 1 : user approves all for this contract
+  // Stage 2 : KO setups up edition which needs to be migrated
+  // Stage 3 : KO invokes this method for the given token which takes ownership of asset, mints new one to the old owner
+  function tokenSwap(uint256 _tokenId) public onlyOwner {
     // check valid
     require(kodaV1.exists(_tokenId));
 
-    // check owner is the called
-    require(kodaV1.ownerOf(_tokenId) == msg.sender);
+    // Stage 1 : check this contract can take ownership
+    require(kodaV1.getApproved(_tokenId) == address(this));
 
     uint256 _tokenId1;
     address _owner;
@@ -56,10 +63,13 @@ contract KnownOriginV1TokenSwap is Ownable {
 
     (_tokenId2, _edition, _editionNumber, _tokenURI, _artistAccount) = kodaV1.editionInfo(_tokenId);
 
-    // take ownership of asset
-    kodaV1.transferFrom(msg.sender, address(this), _tokenId);
-
+    // Stage 2:
     // TODO mint new one - how?
+
+
+    // Stage 3 : take ownership of asset
+    kodaV1.transferFrom(kodaV1.ownerOf(_tokenId), knownOriginArchiveAddress, _tokenId);
+
   }
 
 }
