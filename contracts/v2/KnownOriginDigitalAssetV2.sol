@@ -15,22 +15,14 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 // allows for us to define KO/BR
 import "openzeppelin-solidity/contracts/ownership/Contactable.sol";
 
-// Allows this contract to receive erc721 tokens from KODA V1 0 FIXME is this needed?
-import "openzeppelin-solidity/contracts/token/ERC721/ERC721Holder.sol";
-
 // ERC721
 import "openzeppelin-solidity/contracts/token/ERC721/ERC721Token.sol";
 
 // Utils only
 import "../Strings.sol";
 
-// V1 migration interface
-import "./IKnownOriginDigitalAssetV1.sol";
-
-
 contract KnownOriginDigitalAssetV2 is
 ERC721Token,
-ERC721Receiver,
 Whitelist,
 HasNoEther,
 Pausable,
@@ -44,9 +36,6 @@ Contactable {
   event Purchase(uint256 indexed _tokenId, uint256 indexed _costInWei, address indexed _buyer);
 
   string internal tokenBaseURI = "https://ipfs.infura.io/ipfs/";
-
-  // Address for V1 contract
-  KnownOriginDigitalAssetV2 public kodaV1;
 
   // total wei been processed through the contract
   uint256 public totalPurchaseValueInWei;
@@ -103,17 +92,8 @@ Contactable {
   /*
    * Constructor
    */
-  constructor (KnownOriginDigitalAssetV2 _kodaV1) public {
-    require(_kodaV1 != address(0));
-    kodaV1 = _kodaV1;
-    // FIXME this is KODA v1 max token minted + 1
-  }
-
-  // TODO extract to external contract
-  function tokenSwap(uint256 _tokenId, address _beneficiary) onlyKnownOrigin {
-//    require(KnownOriginDigitalAssetV2.exist(_tokenId));
-//    require(KnownOriginDigitalAssetV2.ownerOf(_tokenId) == _beneficiary);
-
+  constructor () public ERC721Token("KnownOriginDigitalAsset", "KODA") {
+    setContactInformation("http://knownorigin.io");
   }
 
   // Called once per edition
