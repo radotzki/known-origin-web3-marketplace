@@ -1261,6 +1261,8 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
 // Utils only
 
 
+// TODO consider Pausable - stop open purchases?
+
 contract KnownOriginDigitalAssetV2 is
 ERC721Token,
 Whitelist,
@@ -1285,11 +1287,12 @@ HasNoEther
   uint256 public totalNumberOfPurchases;
 
   // TODO a method to delete edition data - only on unsold etc?
+  // TODO add burn method
 
   // Object for edition details
   struct EditionDetails {
     uint256 editionNumber; // the range e.g. 10000
-    bytes32 editionData; // some data about the editio
+    bytes32 editionData; // some data about the edition
     uint8 editionType; // e.g. 1 = KODA V1 physical, 2 = KODA V1 digital, 3 = KODA V2, 4 = KOTA
 
     // TODO method checking active (dates)
@@ -1316,6 +1319,12 @@ HasNoEther
 
   mapping(uint8 => uint256[]) internal editionTypeToEditionNumber;
 
+  // TODO master list of editions - on creation
+
+  // TODO master list of active editions - on creation and on toggle of active
+
+  // TODO master list of active by type
+
   ///////////////
   // Modifiers //
   ///////////////
@@ -1341,7 +1350,9 @@ HasNoEther
   }
 
   modifier onlyAfterPurchaseFromTime(uint256 _editionNumber) {
-    require(editionNumberToEditionDetails[_editionNumber].auctionStartDate <= block.timestamp);
+    bool afterStartDate = editionNumberToEditionDetails[_editionNumber].auctionStartDate >= block.timestamp;
+    bool beforeStartDate = editionNumberToEditionDetails[_editionNumber].auctionEndDate <= block.timestamp;
+    require(afterStartDate && beforeStartDate);
     _;
   }
 
@@ -1352,7 +1363,13 @@ HasNoEther
 
   }
 
+  // TODO partner whitelist
+
+  // TODO partner mint functions
+
   // TODO add create method for inactive types
+
+  // TODO how to handle double spends / accidental buys
 
   // Called once per edition
   function createEdition(
@@ -1368,6 +1385,7 @@ HasNoEther
   )
   public
   onlyKnownOrigin
+  returns (bool)
   {
     // TODO validation
 
@@ -1388,27 +1406,45 @@ HasNoEther
       sold : 0, // default to all available
       available : _available,
       active: true
+    // TODO add artist edition commission
     });
 
     // TODO how to handle an artists with multiple accounts i.e. CJ changed accounts between editions?
 
-    // Maintain two way mappings so we can query direct e.g. /tokenId, /artist, /type
+    // Maintain two way mappings so we can query direct
+    // e.g.
+    // /tokenId - DONE
+    // /artist - DONE
+    // /type - DONE
+    // /editionNumber
     artistToEditionNumbers[_artistAccount].push(_editionNumber);
     editionTypeToEditionNumber[_editionType].push(_editionNumber);
 
+    return true;
   }
 
-  // TODO add purchase for beneficiary
-
-  function purchase(uint256 _editionNumber)
+  // This is the main purchase method
+  function mint(uint256 _editionNumber)
   public
   payable
   onlyEditionNotSoldOut(_editionNumber)
   onlyValidEdition(_editionNumber)
   onlyActiveEdition(_editionNumber)
   onlyAfterPurchaseFromTime(_editionNumber)
-  returns (bool)
+  returns (uint256)
   {
+    return mint(msg.sender, _editionNumber);
+  }
+
+  // TODO should this only be allowed for KO whitelist?
+  function mint(address _to, uint256 _editionNumber)
+  public
+  payable // TODO is payable valid on this as we may want to mint to another contract which sets price?
+  onlyEditionNotSoldOut(_editionNumber)
+  onlyValidEdition(_editionNumber)
+  onlyActiveEdition(_editionNumber) // TODO is this correct to enforce this?
+  onlyAfterPurchaseFromTime(_editionNumber) // TODO is this correct to enforce this?
+  returns (uint256) {
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
 
     require(msg.value >= _editionDetails.priceInWei);
@@ -1420,7 +1456,7 @@ HasNoEther
     uint256 _tokenId = _editionDetails.editionNumber + _editionDetails.sold;
 
     // Mint new base token
-    super._mint(msg.sender, _tokenId);
+    super._mint(_to, _tokenId);
     super._setTokenURI(_tokenId, _editionDetails.tokenURI);
 
     // Maintain mapping for tokenId to edition for lookup
@@ -1436,12 +1472,40 @@ HasNoEther
     totalNumberOfPurchases = totalNumberOfPurchases.add(1);
 
     // TODO handle commission
+    // TODO KO to absorb overspend
     // TODO handle money transfer
 
     // Broadcast purpose
-    emit Purchase(_tokenId, msg.value, msg.sender);
+    Purchase(_tokenId, msg.value, msg.sender);
 
-    return true;
+    return _tokenId;
+  }
+
+// TODO add method where KO can mint to address but without paying, promos and games etc
+//  function knownOriginMint(address _to, uint256 _editionNumber)
+//  public
+//  onlyKnownOrigin
+//  onlyEditionNotSoldOut(_editionNumber)
+//  onlyValidEdition(_editionNumber)
+//  returns (bool) {
+//
+//  }
+
+  function burn(uint256 _tokenId) public {
+    // TODO validation
+
+    require(exists(_tokenId));
+    require(ownerOf(_tokenId) == msg.sender);
+
+    uint256 editionNumber = tokenIdToEditionNumber[_tokenId];
+    EditionDetails memory _editionDetails = editionNumberToEditionDetails[editionNumber];
+
+    // TODO ensure we can burn from other accounts/contracts?
+    super._burn(msg.sender, _tokenId);
+
+    // TODO deprecate sold from edition
+    // TODO deprecate available? - if someone sells from can we re-mint another?
+    // TODO delete any token mappings
   }
 
   /////////////////////
@@ -1495,7 +1559,7 @@ HasNoEther
     artistToEditionNumbers[_artistAccount] = editionNumbersForArtist;
   }
 
-  function updateavailable(uint256 _editionNumber, uint8 _available)
+  function updateAvailable(uint256 _editionNumber, uint8 _available)
   external
   onlyKnownOrigin
   onlyValidEdition(_editionNumber) {
@@ -1509,7 +1573,7 @@ HasNoEther
     editionNumberToEditionDetails[_editionNumber].auctionStartDate = _auctionStartDate;
   }
 
-  function updateAuctionStartEnd(uint256 _editionNumber, uint8 _auctionEndDate)
+  function updateAuctionEndDate(uint256 _editionNumber, uint8 _auctionEndDate)
   external
   onlyKnownOrigin
   onlyValidEdition(_editionNumber) {
@@ -1519,6 +1583,35 @@ HasNoEther
   ///////////////////
   // Query Methods //
   ///////////////////
+
+  function getRawEditionData(uint256 _editionNumber) public view returns (
+    uint256 _editionNumber,
+    uint256 _editionData,
+    uint8 _editionType,
+    uint32 _auctionStartDate,
+    uint32 _auctionEndDate,
+    address _artistAccount,
+    uint256 _priceInWei,
+    string _tokenURI,
+    uint8 _sold,
+    uint8 _available,
+    bool _active
+  ) {
+    EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
+    return (
+      _editionDetails.editionNumber,
+      _editionDetails.editionData,
+      _editionDetails.editionType,
+      _editionDetails.auctionStartDate,
+      _editionDetails.auctionEndDate,
+      _editionDetails.artistAccount,
+      _editionDetails.priceInWei,
+      _editionDetails.tokenURI,
+      _editionDetails.sold,
+      _editionDetails.available,
+      _editionDetails.active
+    );
+  }
 
   // TODO rejig read only methods so they are grouped in a sensible order
 
