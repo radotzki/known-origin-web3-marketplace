@@ -1,5 +1,66 @@
 pragma solidity ^0.4.24;
 
+// File: contracts/Strings.sol
+
+library Strings {
+  // via https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI_0.5.sol
+  function strConcat(string _a, string _b, string _c, string _d, string _e) internal pure returns (string) {
+    bytes memory _ba = bytes(_a);
+    bytes memory _bb = bytes(_b);
+    bytes memory _bc = bytes(_c);
+    bytes memory _bd = bytes(_d);
+    bytes memory _be = bytes(_e);
+    string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
+    bytes memory babcde = bytes(abcde);
+    uint k = 0;
+    for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+    for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+    for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
+    for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
+    for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
+    return string(babcde);
+  }
+
+  function strConcat(string _a, string _b, string _c, string _d) internal pure returns (string) {
+    return strConcat(_a, _b, _c, _d, "");
+  }
+
+  function strConcat(string _a, string _b, string _c) internal pure returns (string) {
+    return strConcat(_a, _b, _c, "", "");
+  }
+
+  function strConcat(string _a, string _b) internal pure returns (string) {
+    return strConcat(_a, _b, "", "", "");
+  }
+
+  function bytes16ToStr(bytes16 _bytes16, uint8 _start, uint8 _end) internal pure returns (string) {
+    bytes memory bytesArray = new bytes(_end - _start);
+    uint8 pos = 0;
+    for (uint8 i = _start; i < _end; i++) {
+      bytesArray[pos] = _bytes16[i];
+      pos++;
+    }
+    return string(bytesArray);
+  }
+
+  function compare(string memory _a, string memory _b) pure internal returns (bool) {
+    bytes memory a = bytes(_a);
+    bytes memory b = bytes(_b);
+
+    // Compare two strings quickly by length to try to avoid detailed loop comparison
+    if (a.length != b.length)
+      return false;
+
+    // Compare two strings in detail Bit-by-Bit
+    for (uint i = 0; i < a.length; i++)
+      if (a[i] != b[i])
+        return false;
+
+    // Byte values of string are the same
+    return true;
+  }
+}
+
 // File: contracts/v2/IKnownOriginDigitalAssetV1.sol
 
 // Copied over so does not clash with other ERC721Basic contracts
@@ -41,6 +102,8 @@ contract IKnownOriginDigitalAssetV1 is ERC721BasicOld {
     string _tokenURI,
     address _artistAccount
   );
+
+  function getTypeFromEdition(bytes16 _edition) public pure returns (string);
 }
 
 // File: openzeppelin-solidity/contracts/introspection/ERC165.sol
@@ -249,6 +312,9 @@ contract Ownable {
 // V2 interface
 
 
+// V2 interface
+
+
 contract KnownOriginV1TokenSwap is Ownable {
   using SafeMath for uint;
 
@@ -274,15 +340,13 @@ contract KnownOriginV1TokenSwap is Ownable {
     knownOriginArchiveAddress = _knownOriginArchiveAddress;
   }
 
-  // Stage 1 : user approves all for this contract
-  // Stage 2 : KO setups up edition which needs to be migrated
-  // Stage 3 : KO invokes this method for the given token which takes ownership of asset, mints new one to the old owner
-  function tokenSwap(uint256 _tokenId) public onlyOwner {
-    // check valid
-    require(kodaV1.exists(_tokenId));
+  // Stage 1 : user approves all for token swap contract - KODA V1 - setApprovalForAll() (form user)
+  // Stage 2 : KO setups up edition which needs to be migrated - setupNewEdition()
+  // Stage 3 : KO takes ownership of asset, assigns new one to old owner - takeOwnershipAndSwap()
 
-    // Stage 1 : check this contract can take ownership
-    require(kodaV1.getApproved(_tokenId) == this);
+  // Stage 2
+  function setupNewEdition(uint256 _tokenId) public onlyOwner {
+    require(kodaV1.exists(_tokenId));
 
     uint256 _tokenId1;
     address _owner;
@@ -292,21 +356,62 @@ contract KnownOriginV1TokenSwap is Ownable {
 
     (_tokenId1, _owner, _purchaseState, _priceInWei, _purchaseFromTime) = kodaV1.assetInfo(_tokenId);
 
-    uint256 _tokenId2;
     bytes16 _edition;
     uint256 _editionNumber;
     string memory _tokenURI;
     address _artistAccount;
 
-    (_tokenId2, _edition, _editionNumber, _tokenURI, _artistAccount) = kodaV1.editionInfo(_tokenId);
+    (_tokenId1, _edition, _editionNumber, _tokenURI, _artistAccount) = kodaV1.editionInfo(_tokenId);
 
     // Stage 2:
-    // TODO mint new one - how?
 
+    // build up new properties for minting?
+    // TODO what to set this to?
+    uint256 _assetNumber = 0;
 
-    // Stage 3 : take ownership of asset
+    uint32 _auctionStartDate = _purchaseFromTime;
+    uint32 _auctionEndDate = 0;
+    uint8 _available = convert(_editionNumber);
+    bytes32 _editionNew = _editionNew;
+    uint8 _editionType = convertOldToNewType(_edition);
+
+    // TODO check not already created set for old edition
+    // TODO expose mint and transfer method on V2
+  }
+
+  // Stage 3
+  function takeOwnershipAndSwap(uint256 _tokenId) public {
+    // check valid
+    require(kodaV1.exists(_tokenId));
+
+    // Check this contract can move asset
+    require(kodaV1.getApproved(_tokenId) == address(this));
+
+    // Transfer to achieve address
     kodaV1.transferFrom(kodaV1.ownerOf(_tokenId), knownOriginArchiveAddress, _tokenId);
+  }
 
+  function convertOldToNewType(bytes16 _edition) internal returns (uint8) {
+    string memory typeForEdition = kodaV1.getTypeFromEdition(_edition);
+
+    uint8 _editionType;
+
+    // Match old types to new ones
+    if (Strings.compare(typeForEdition, "DIG") || Strings.compare(typeForEdition, "001") || Strings.compare(typeForEdition, "D01")) {
+      _editionType = 1;
+    } else if (Strings.compare(typeForEdition, "PHY")) {
+      _editionType = 2;
+    }
+
+    // Fail on miss match?
+    require(_editionType != 0);
+
+    return _editionType;
+  }
+
+  function convert(uint256 _a) returns (uint8)
+  {
+    return uint8(_a);
   }
 
 }

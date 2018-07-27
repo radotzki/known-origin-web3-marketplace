@@ -39,4 +39,6 @@ contract IKnownOriginDigitalAssetV1 is ERC721BasicOld {
     string _tokenURI,
     address _artistAccount
   );
+
+  function getTypeFromEdition(bytes16 _edition) public pure returns (string);
 }

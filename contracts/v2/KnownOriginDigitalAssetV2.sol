@@ -22,6 +22,8 @@ HasNoEther
 {
   using SafeMath for uint;
 
+  uint32 constant internal MAX_UINT32 = ~uint32(0);
+
   ////////////////
   // Properties //
   ////////////////
@@ -119,12 +121,17 @@ HasNoEther
   {
     // TODO validation
 
+    uint32 auctionEndDate = MAX_UINT32;
+    if(_auctionEndDate != 0){
+      auctionEndDate = _auctionEndDate;
+    }
+
     editionToEditionDetails[_edition] = EditionDetails({
       assetNumber : _assetNumber,
       editionType : _editionType,
       edition : _edition,
       auctionStartDate : _auctionStartDate,
-      auctionEndDate : _auctionEndDate, // TODO set ot max int if not set
+      auctionEndDate : auctionEndDate,
       artistAccount : _artistAccount,
       priceInWei : _priceInWei, // TODO handle overriding of price per token from edition price?
       tokenURI : _tokenURI,

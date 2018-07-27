@@ -42,6 +42,23 @@ library Strings {
     }
     return string(bytesArray);
   }
+
+  function compare(string memory _a, string memory _b) pure internal returns (bool) {
+    bytes memory a = bytes(_a);
+    bytes memory b = bytes(_b);
+
+    // Compare two strings quickly by length to try to avoid detailed loop comparison
+    if (a.length != b.length)
+      return false;
+
+    // Compare two strings in detail Bit-by-Bit
+    for (uint i = 0; i < a.length; i++)
+      if (a[i] != b[i])
+        return false;
+
+    // Byte values of string are the same
+    return true;
+  }
 }
 
 // File: openzeppelin-solidity/contracts/ownership/Ownable.sol
@@ -1251,6 +1268,8 @@ HasNoEther
 {
   using SafeMath for uint;
 
+  uint32 constant internal MAX_UINT32 = ~uint32(0);
+
   ////////////////
   // Properties //
   ////////////////
@@ -1348,12 +1367,17 @@ HasNoEther
   {
     // TODO validation
 
+    uint32 auctionEndDate = MAX_UINT32;
+    if(_auctionEndDate != 0){
+      auctionEndDate = _auctionEndDate;
+    }
+
     editionToEditionDetails[_edition] = EditionDetails({
       assetNumber : _assetNumber,
       editionType : _editionType,
       edition : _edition,
       auctionStartDate : _auctionStartDate,
-      auctionEndDate : _auctionEndDate, // TODO set ot max int if not set
+      auctionEndDate : auctionEndDate,
       artistAccount : _artistAccount,
       priceInWei : _priceInWei, // TODO handle overriding of price per token from edition price?
       tokenURI : _tokenURI,

@@ -40,4 +40,21 @@ library Strings {
     }
     return string(bytesArray);
   }
+
+  function compare(string memory _a, string memory _b) pure internal returns (bool) {
+    bytes memory a = bytes(_a);
+    bytes memory b = bytes(_b);
+
+    // Compare two strings quickly by length to try to avoid detailed loop comparison
+    if (a.length != b.length)
+      return false;
+
+    // Compare two strings in detail Bit-by-Bit
+    for (uint i = 0; i < a.length; i++)
+      if (a[i] != b[i])
+        return false;
+
+    // Byte values of string are the same
+    return true;
+  }
 }

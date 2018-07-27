@@ -12,6 +12,9 @@ import "./IKnownOriginDigitalAssetV1.sol";
 // V2 interface
 import "./IKnownOriginDigitalAssetV2.sol";
 
+// V2 interface
+import "../Strings.sol";
+
 contract KnownOriginV1TokenSwap is Ownable {
   using SafeMath for uint;
 
@@ -37,15 +40,13 @@ contract KnownOriginV1TokenSwap is Ownable {
     knownOriginArchiveAddress = _knownOriginArchiveAddress;
   }
 
-  // Stage 1 : user approves all for this contract
-  // Stage 2 : KO setups up edition which needs to be migrated
-  // Stage 3 : KO invokes this method for the given token which takes ownership of asset, mints new one to the old owner
-  function tokenSwap(uint256 _tokenId) public onlyOwner {
-    // check valid
-    require(kodaV1.exists(_tokenId));
+  // Stage 1 : user approves all for token swap contract - KODA V1 - setApprovalForAll() (form user)
+  // Stage 2 : KO setups up edition which needs to be migrated - setupNewEdition()
+  // Stage 3 : KO takes ownership of asset, assigns new one to old owner - takeOwnershipAndSwap()
 
-    // Stage 1 : check this contract can take ownership
-    require(kodaV1.getApproved(_tokenId) == address(this));
+  // Stage 2
+  function setupNewEdition(uint256 _tokenId) public onlyOwner {
+    require(kodaV1.exists(_tokenId));
 
     uint256 _tokenId1;
     address _owner;
@@ -55,21 +56,64 @@ contract KnownOriginV1TokenSwap is Ownable {
 
     (_tokenId1, _owner, _purchaseState, _priceInWei, _purchaseFromTime) = kodaV1.assetInfo(_tokenId);
 
-    uint256 _tokenId2;
     bytes16 _edition;
     uint256 _editionNumber;
     string memory _tokenURI;
     address _artistAccount;
 
-    (_tokenId2, _edition, _editionNumber, _tokenURI, _artistAccount) = kodaV1.editionInfo(_tokenId);
+    (_tokenId1, _edition, _editionNumber, _tokenURI, _artistAccount) = kodaV1.editionInfo(_tokenId);
 
-    // Stage 2:
-    // TODO mint new one - how?
+//    // Stage 2:
+//
+//    // build up new properties for minting?
+//    // TODO what to set this to?
+//    uint256 _assetNumber = 0;
+//
+//    uint32 _auctionStartDate = _purchaseFromTime;
+//    uint32 _auctionEndDate = 0;
+//    uint8 _available = convert(_editionNumber);
+//    bytes32 _editionNew = _editionNew;
+//    uint8 _editionType = convertOldToNewType(_edition);
+//
+//    // TODO check not already created set for old edition
+//    // TODO expose mint and transfer method on V2
+  }
 
+  // Stage 3
+  function takeOwnershipAndSwap(uint256 _tokenId) public {
+    // check valid
+    require(kodaV1.exists(_tokenId));
 
-    // Stage 3 : take ownership of asset
+    // Check this contract can move asset
+    require(kodaV1.getApproved(_tokenId) == address(this));
+
+    // Transfer to achieve address
     kodaV1.transferFrom(kodaV1.ownerOf(_tokenId), knownOriginArchiveAddress, _tokenId);
 
+    // TODO emit event?
+  }
+
+  function convertOldToNewType(bytes16 _edition) internal returns (uint8) {
+    string memory typeForEdition = kodaV1.getTypeFromEdition(_edition);
+
+    uint8 _editionType;
+
+    // Match old types to new ones
+    if (Strings.compare(typeForEdition, "DIG") || Strings.compare(typeForEdition, "001") || Strings.compare(typeForEdition, "D01")) {
+      _editionType = 1;
+    } else if (Strings.compare(typeForEdition, "PHY")) {
+      _editionType = 2;
+    }
+
+    // Fail on miss match?
+    require(_editionType != 0);
+
+    return _editionType;
+  }
+
+  function convert(uint256 _a) returns (uint8)
+  {
+    return uint8(_a);
   }
 
 }
