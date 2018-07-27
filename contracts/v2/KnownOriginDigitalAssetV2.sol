@@ -3,10 +3,6 @@ pragma solidity ^0.4.24;
 // allows for muti-address access
 import "openzeppelin-solidity/contracts/access/Whitelist.sol";
 
-// TODO do we need this
-// allows for master pause switch for upgrades/issues
-import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
-
 // prevents stuck ether for
 import "openzeppelin-solidity/contracts/ownership/HasNoEther.sol";
 
@@ -22,8 +18,8 @@ import "../Strings.sol";
 contract KnownOriginDigitalAssetV2 is
 ERC721Token,
 Whitelist,
-HasNoEther,
-Pausable {
+HasNoEther
+{
   using SafeMath for uint;
 
   ////////////////
@@ -50,8 +46,9 @@ Pausable {
     address artistAccount;
     uint256 priceInWei;
     string tokenURI;
-    uint8 totalSold;
-    uint8 totalAvailable;
+    uint8 sold;
+    uint8 available;
+    bool active;
   }
 
   mapping(bytes32 => EditionDetails) internal editionToEditionDetails;
@@ -72,7 +69,12 @@ Pausable {
   }
 
   modifier onlyEditionNotSoldOut(bytes32 _edition) {
-    require(editionToEditionDetails[_edition].totalSold < editionToEditionDetails[_edition].totalAvailable);
+    require(editionToEditionDetails[_edition].sold < editionToEditionDetails[_edition].available);
+    _;
+  }
+
+  modifier onlyActiveEdition(bytes32 _edition) {
+    require(editionToEditionDetails[_edition].active);
     _;
   }
 
@@ -93,6 +95,8 @@ Pausable {
 
   }
 
+  // TODO add create method for inactive types
+
   // Called once per edition
   function createEdition(
   //  TODO Decide on keying structure i.e. is edition or assetNumber the nighest order of abstraction for an edition
@@ -103,7 +107,7 @@ Pausable {
     address _artistAccount, // TODO duplicated in map, is this needed?
     uint256 _priceInWei,
     string _tokenURI,
-    uint8 _totalAvailable
+    uint8 _available
   )
   public
   onlyKnownOrigin
@@ -118,8 +122,9 @@ Pausable {
       artistAccount : _artistAccount,
       priceInWei : _priceInWei, // TODO handle overriding of price per token from edition price?
       tokenURI : _tokenURI,
-      totalSold : 0,
-      totalAvailable : _totalAvailable
+      sold : 0, // default to all available
+      available : _available,
+      active: true
     });
 
     // Maintain two way mapping so we can query on artist
@@ -133,6 +138,7 @@ Pausable {
   payable
   onlyEditionNotSoldOut(_edition)
   onlyValidEdition(_edition)
+  onlyActiveEdition(_edition)
   onlyAfterPurchaseFromTime(_edition)
   returns (bool)
   {
@@ -141,10 +147,10 @@ Pausable {
     require(msg.value >= _editionDetails.priceInWei);
 
     // Bump number sold
-    _editionDetails.totalSold = _editionDetails.totalSold + 1;
+    _editionDetails.sold = _editionDetails.sold + 1;
 
     // Construct next token ID
-    uint256 _tokenId = _editionDetails.assetNumber + _editionDetails.totalSold;
+    uint256 _tokenId = _editionDetails.assetNumber + _editionDetails.sold;
 
     // Mint new base token
     super._mint(msg.sender, _tokenId);
@@ -222,11 +228,11 @@ Pausable {
     artistToEditions[_artistAccount] = editionsForArtist;
   }
 
-  function updateTotalAvailable(bytes32 _edition, uint8 _totalAvailable)
+  function updateavailable(bytes32 _edition, uint8 _available)
   external
   onlyKnownOrigin
   onlyValidEdition(_edition) {
-    editionToEditionDetails[_edition].totalAvailable = _totalAvailable;
+    editionToEditionDetails[_edition].available = _available;
   }
 
   function updateAuctionStartDate(bytes32 _edition, uint8 _auctionStartDate)
@@ -260,12 +266,12 @@ Pausable {
     bytes32 edition = tokenIdToEdition[_tokenId];
     EditionDetails memory _editionDetails = editionToEditionDetails[edition];
     return (
-      edition,
-      ownerOf(_tokenId),
-      _editionDetails.priceInWei,
-      _editionDetails.auctionStartDate,
-      _editionDetails.auctionEndDate,
-      tokenURI(edition)
+    edition,
+    ownerOf(_tokenId),
+    _editionDetails.priceInWei,
+    _editionDetails.auctionStartDate,
+    _editionDetails.auctionEndDate,
+    tokenURI(edition)
     );
   }
 
@@ -289,8 +295,8 @@ Pausable {
   function editionInfo(uint256 _tokenId) public view returns (
     bytes32 _edition,
     uint256 _assetNumber,
-    uint256 _totalAvailable,
-    uint256 _totalSold,
+    uint256 _available,
+    uint256 _sold,
     address _artistAccount
   ) {
     bytes32 edition = tokenIdToEdition[_tokenId];
@@ -300,16 +306,16 @@ Pausable {
   function editionInfo(bytes32 edition) public view returns (
     bytes32 _edition,
     uint256 _assetNumber,
-    uint256 _totalAvailable,
-    uint256 _totalSold,
+    uint256 _available,
+    uint256 _sold,
     address _artistAccount
   ) {
     EditionDetails memory _editionDetails = editionToEditionDetails[edition];
     return (
     edition,
     _editionDetails.assetNumber,
-    _editionDetails.totalAvailable,
-    _editionDetails.totalSold,
+    _editionDetails.available,
+    _editionDetails.sold,
     _editionDetails.artistAccount
     );
   }
@@ -329,17 +335,17 @@ Pausable {
 
   function editionTotal(bytes32 _edition) public view returns (uint256) {
     EditionDetails memory _editionDetails = editionToEditionDetails[_edition];
-    return _editionDetails.totalAvailable;
+    return _editionDetails.available;
   }
 
-  function totalSold(bytes32 _edition) public view returns (uint256) {
+  function sold(bytes32 _edition) public view returns (uint256) {
     EditionDetails memory _editionDetails = editionToEditionDetails[_edition];
-    return _editionDetails.totalSold;
+    return _editionDetails.sold;
   }
 
   function totalRemaining(bytes32 _edition) public view returns (uint256) {
     EditionDetails memory _editionDetails = editionToEditionDetails[_edition];
-    return _editionDetails.totalAvailable - _editionDetails.totalSold;
+    return _editionDetails.available - _editionDetails.sold;
   }
 
   function tokensOfEdition(bytes32 _edition) public view returns (uint256[] _tokenIds) {
