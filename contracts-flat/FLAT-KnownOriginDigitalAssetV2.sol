@@ -1265,10 +1265,12 @@ HasNoEther
   // number of assets sold of any type
   uint256 public totalNumberOfPurchases;
 
-  // TODO some additional data field - bytes _data?
+  // TODO a method to delete edition data - only on unsold etc?
+
   // Object for edition details
   struct EditionDetails {
     uint256 assetNumber;
+    uint8 editionType; // e.g. 1 = KODA V1 physical, 2 = KODA V1 digital, 3 = KODA V2, 4 = KOTA
     bytes32 edition;
     uint32 auctionStartDate; // TODO method checking active (dates)
     uint32 auctionEndDate;
@@ -1287,6 +1289,8 @@ HasNoEther
   mapping(bytes32 => uint256[]) internal editionToTokenIds;
 
   mapping(address => bytes32[]) internal artistToEditions;
+
+  mapping(uint8 => bytes32[]) internal editionTypeToEdition;
 
   ///////////////
   // Modifiers //
@@ -1330,6 +1334,7 @@ HasNoEther
   function createEdition(
   //  TODO Decide on keying structure i.e. is edition or assetNumber the nighest order of abstraction for an edition
     uint256 _assetNumber,
+    uint8 _editionType,
     bytes32 _edition,
     uint32 _auctionStartDate,
     uint32 _auctionEndDate,
@@ -1345,6 +1350,7 @@ HasNoEther
 
     editionToEditionDetails[_edition] = EditionDetails({
       assetNumber : _assetNumber,
+      editionType : _editionType,
       edition : _edition,
       auctionStartDate : _auctionStartDate,
       auctionEndDate : _auctionEndDate, // TODO set ot max int if not set
@@ -1356,8 +1362,10 @@ HasNoEther
       active: true
     });
 
-    // Maintain two way mapping so we can query on artist
+    // Maintain two way mappings so we can query direct e.g. /tokenId, /artist, /type
     artistToEditions[_artistAccount].push(_edition);
+    editionTypeToEdition[_editionType].push(_edition);
+
   }
 
   // TODO add purchase for beneficiary

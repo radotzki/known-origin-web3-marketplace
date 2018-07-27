@@ -196,9 +196,9 @@ contract KnownOriginV1TokenSwap is Ownable {
     kodaV1 = _kodaV1;
   }
 
-  function tokenSwap(uint256 _tokenId, address _beneficiary) onlyOwner {
-    require(kodaV1.exists(_tokenId));
-    require(kodaV1.ownerOf(_tokenId) == _beneficiary);
+  function tokenSwap(uint256 _tokenId, address _beneficiary) {
+    require(kodaV1.exists(_tokenId)); // check valid
+    require(kodaV1.ownerOf(_tokenId) == _msg.sender); // check owner is the called
 
   }
 
