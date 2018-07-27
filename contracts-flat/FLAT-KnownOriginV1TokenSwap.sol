@@ -363,20 +363,20 @@ contract KnownOriginV1TokenSwap is Ownable {
 
     (_tokenId1, _edition, _editionNumber, _tokenURI, _artistAccount) = kodaV1.editionInfo(_tokenId);
 
-    // Stage 2:
-
-    // build up new properties for minting?
-    // TODO what to set this to?
-    uint256 _assetNumber = 0;
-
-    uint32 _auctionStartDate = _purchaseFromTime;
-    uint32 _auctionEndDate = 0;
-    uint8 _available = convert(_editionNumber);
-    bytes32 _editionNew = _editionNew;
-    uint8 _editionType = convertOldToNewType(_edition);
-
-    // TODO check not already created set for old edition
-    // TODO expose mint and transfer method on V2
+//    // Stage 2:
+//
+//    // build up new properties for minting?
+//    // TODO what to set this to?
+//    uint256 _assetNumber = 0;
+//
+//    uint32 _auctionStartDate = _purchaseFromTime;
+//    uint32 _auctionEndDate = 0;
+//    uint8 _available = convert(_editionNumber);
+//    bytes32 _editionNew = _editionNew;
+//    uint8 _editionType = convertOldToNewType(_edition);
+//
+//    // TODO check not already created set for old edition
+//    // TODO expose mint and transfer method on V2
   }
 
   // Stage 3
@@ -389,6 +389,8 @@ contract KnownOriginV1TokenSwap is Ownable {
 
     // Transfer to achieve address
     kodaV1.transferFrom(kodaV1.ownerOf(_tokenId), knownOriginArchiveAddress, _tokenId);
+
+    // TODO emit event?
   }
 
   function convertOldToNewType(bytes16 _edition) internal returns (uint8) {
