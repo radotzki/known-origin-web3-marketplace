@@ -20,6 +20,7 @@
           <option value="high-res">High-res</option>
           <option value="sold">Sold</option>
           <option value="featured">Featured artwork</option>
+          <option value="nifty">0xCert & Nifty Collaboration</option>
         </select>
       </div>
       <div class="col d-none d-md-block">
@@ -62,7 +63,7 @@
     data() {
       return {
         finishedLoading: false,
-        priceFilter: 'featured',
+        priceFilter: 'asc',
         artistFilter: 'all',
         search: ''
       };

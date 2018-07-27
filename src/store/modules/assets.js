@@ -6,48 +6,49 @@ import Web3 from 'web3';
 import {isHighRes} from '../../utils';
 import axios from 'axios';
 
-// const featuredEditionCodes = [
-//   // Hackateo
-//   'HKTTHEYLIVE00DIG',
-//
-//   //Drawingly Willingly
-//   'DWWDEVILRUN00DIG',
-//
-//   // MLO
-//   'MLOEMERGESHP1DIG',
-//   'MLOEMERGESHP2DIG',
-//   'MLOEMERGESHP3DIG',
-//
-//   // Lev
-//   'LEVHORNSBIN21DIG',
-//
-//   // L O S E V A
-//   'LOSSER01ART02DIG',
-//
-//   // obxium
-//   'OBXDDF5000000DIG',
-//
-//   // Lee Holland
-//   'LHDBITOPIAN01DIG',
-//
-//   // Stina
-//   'STJHPYFRIBIRDDIG',
-//
-//   // Stan regats
-//   'STRAPPAIMLESSDIG',
-//
-//   //Manolide
-//   'MNONEOPLA0001DIG',
-//
-//   //Takahiro Okawa
-//   'TKOTAKACMNCOSDIG',
-//
-//   // Franky anguliur
-//   'FKABUNNYBAGS0DIG'
-// ];
+const featuredEditionCodes = [
+  // Oficinas TK
+  'OTKNR41800000DIG',
+
+  // Hackateo
+  'HKTTHEYLIVE00DIG',
+
+  //Drawingly Willingly
+  'DWWDEVILRUN00DIG',
+
+  // MLO
+  'MLOEMERGESHP1DIG',
+
+  // Lev
+  'LEVHORNSBIN21DIG',
+
+  // L O S E V A
+  'LOSSER01ART02DIG',
+
+  // obxium
+  'OBXDDF5000000DIG',
+
+  // Lee Holland
+  'LHDBITOPIAN01DIG',
+
+  // Stina
+  'STJHPYFRIBIRDDIG',
+
+  // Stan regats
+  'STRAPPAIMLESSDIG',
+
+  //Manolide
+  'MNONEOPLA0001DIG',
+
+  //Takahiro Okawa
+  'TKOTAKACMNCOSDIG',
+
+  // Franky anguliur
+  'FKABUNNYBAGS0DIG'
+];
 
 // NIFTY takeover
-const featuredEditionCodes = [
+const nifftyEditionCodes = [
   'HKTOWNMEBLK00DIG', 'HKTHUMANTWO00DIG', 'HKTHUMANONE00DIG', 'AKPTEMPO00000DIG', 'AKPMELT000000DIG', 'OTKCELLS00000DIG', 'OTKPEBBLES000DIG', 'HEXNFT0000001DIG', 'CNJCOINZUKI00DIG'
 ];
 
@@ -136,6 +137,10 @@ const contractStateModule = {
         return featuredEditionCodes.indexOf(edition.edition) !== -1;
       };
 
+      const nifftyArtwork = (edition) => {
+        return nifftyEditionCodes.indexOf(edition.edition) !== -1;
+      };
+
       const artistCodeFilter = (edition) => {
         if (artistFilter === 'all') {
           return true;
@@ -154,6 +159,10 @@ const contractStateModule = {
 
       if (priceFilter === 'high-res') {
         filtered = filtered.filter(highResEditions);
+      }
+
+      if (priceFilter === 'nifty') {
+        filtered = filtered.filter(nifftyArtwork);
       }
 
       if (priceFilter === 'featured') {

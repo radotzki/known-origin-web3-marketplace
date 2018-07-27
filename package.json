@@ -8,6 +8,7 @@
     "dev": "node scripts/dev-server.js",
     "clean": "node ./node_modules/.bin/cleandir ./build",
     "start": "npm run dev",
+    "download-ipfsdata": "node ./scripts/ipfs/download-all-ipfs-data.js",
     "build": "node scripts/build.js",
     "unit": "cross-env BABEL_ENV=test karma start test/unit/karma.conf.js --single-run",
     "e2e": "node test/e2e/runner.js",
