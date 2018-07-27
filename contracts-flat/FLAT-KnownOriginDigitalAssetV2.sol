@@ -1288,28 +1288,33 @@ HasNoEther
 
   // Object for edition details
   struct EditionDetails {
-    uint256 editionNumber;
-    bytes32 editionData;
+    uint256 editionNumber; // the range e.g. 10000
+    bytes32 editionData; // some data about the editio
     uint8 editionType; // e.g. 1 = KODA V1 physical, 2 = KODA V1 digital, 3 = KODA V2, 4 = KOTA
-    uint32 auctionStartDate; // TODO method checking active (dates)
+
+    // TODO method checking active (dates)
+    uint32 auctionStartDate;
     uint32 auctionEndDate;
-    address artistAccount;
+
+    address artistAccount; // TODO duplicated between editions
     uint256 priceInWei;
     string tokenURI;
+
+    // Counters
     uint8 sold;
     uint8 available;
     bool active;
   }
 
-  mapping(bytes32 => EditionDetails) internal editionToEditionDetails;
+  mapping(uint256 => EditionDetails) internal editionNumberToEditionDetails;
 
-  mapping(uint256 => bytes32) internal tokenIdToEdition;
+  mapping(uint256 => uint256) internal tokenIdToEditionNumber;
 
-  mapping(bytes32 => uint256[]) internal editionToTokenIds;
+  mapping(uint256 => uint256[]) internal editionNumberToTokenIds;
 
-  mapping(address => bytes32[]) internal artistToEditions;
+  mapping(address => uint256[]) internal artistToEditionNumbers;
 
-  mapping(uint8 => bytes32[]) internal editionTypeToEdition;
+  mapping(uint8 => uint256[]) internal editionTypeToEditionNumber;
 
   ///////////////
   // Modifiers //
@@ -1320,23 +1325,23 @@ HasNoEther
     _;
   }
 
-  modifier onlyEditionNotSoldOut(bytes32 _editionData) {
-    require(editionToEditionDetails[_editionData].sold < editionToEditionDetails[_editionData].available);
+  modifier onlyEditionNotSoldOut(uint256 _editionNumber) {
+    require(editionNumberToEditionDetails[_editionNumber].sold < editionNumberToEditionDetails[_editionNumber].available);
     _;
   }
 
-  modifier onlyActiveEdition(bytes32 _editionData) {
-    require(editionToEditionDetails[_editionData].active);
+  modifier onlyActiveEdition(uint256 _editionNumber) {
+    require(editionNumberToEditionDetails[_editionNumber].active);
     _;
   }
 
-  modifier onlyValidEdition(bytes32 _editionData) {
-    require(editionToEditionDetails[_edition].editionData == _editionData);
+  modifier onlyValidEdition(uint256 _editionNumber) {
+    require(editionNumberToEditionDetails[_editionNumber].editionNumber == _editionNumber);
     _;
   }
 
-  modifier onlyAfterPurchaseFromTime(bytes32 _edition) {
-    require(editionToEditionDetails[_edition].auctionStartDate <= block.timestamp);
+  modifier onlyAfterPurchaseFromTime(uint256 _editionNumber) {
+    require(editionNumberToEditionDetails[_editionNumber].auctionStartDate <= block.timestamp);
     _;
   }
 
@@ -1356,7 +1361,7 @@ HasNoEther
     uint8 _editionType,
     uint32 _auctionStartDate,
     uint32 _auctionEndDate,
-    address _artistAccount, // TODO duplicated between editions, is this needed?
+    address _artistAccount,
     uint256 _priceInWei,
     string _tokenURI,
     uint8 _available
@@ -1371,7 +1376,7 @@ HasNoEther
       auctionEndDate = _auctionEndDate;
     }
 
-    editionToEditionDetails[_editionData] = EditionDetails({
+    editionNumberToEditionDetails[_editionNumber] = EditionDetails({
       editionNumber : _editionNumber,
       editionData : _editionData,
       editionType : _editionType,
@@ -1386,25 +1391,25 @@ HasNoEther
     });
 
     // TODO how to handle an artists with multiple accounts i.e. CJ changed accounts between editions?
-    
+
     // Maintain two way mappings so we can query direct e.g. /tokenId, /artist, /type
-    artistToEditions[_artistAccount].push(_editionData);
-    editionTypeToEdition[_editionType].push(_editionData);
+    artistToEditionNumbers[_artistAccount].push(_editionNumber);
+    editionTypeToEditionNumber[_editionType].push(_editionNumber);
 
   }
 
   // TODO add purchase for beneficiary
 
-  function purchase(bytes16 _editionData)
+  function purchase(uint256 _editionNumber)
   public
   payable
-  onlyEditionNotSoldOut(_editionData)
-  onlyValidEdition(_editionData)
-  onlyActiveEdition(_editionData)
-  onlyAfterPurchaseFromTime(_editionData)
+  onlyEditionNotSoldOut(_editionNumber)
+  onlyValidEdition(_editionNumber)
+  onlyActiveEdition(_editionNumber)
+  onlyAfterPurchaseFromTime(_editionNumber)
   returns (bool)
   {
-    EditionDetails storage _editionDetails = editionToEditionDetails[_editionData];
+    EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
 
     require(msg.value >= _editionDetails.priceInWei);
 
@@ -1419,10 +1424,10 @@ HasNoEther
     super._setTokenURI(_tokenId, _editionDetails.tokenURI);
 
     // Maintain mapping for tokenId to edition for lookup
-    tokenIdToEdition[_tokenId] = _editionDetails.editionData;
+    tokenIdToEditionNumber[_tokenId] = _editionDetails.editionNumber;
 
     // Maintain mapping of edition to token array for "edition sold tokens"
-    editionToTokenIds[_editionData].push(_tokenId);
+    editionNumberToTokenIds[_editionNumber].push(_tokenId);
 
     // Record wei sale value
     totalPurchaseValueInWei = totalPurchaseValueInWei.add(msg.value);
@@ -1456,59 +1461,59 @@ HasNoEther
     _setTokenURI(_tokenId, _uri);
   }
 
-  function updateEditionTokenURI(bytes32 _editionData, string _uri)
+  function updateEditionTokenURI(uint256 _editionNumber, string _uri)
   external
   onlyKnownOrigin
-  onlyValidEdition(_editionData) {
-    editionToEditionDetails[_editionData].tokenURI = _uri;
+  onlyValidEdition(_editionNumber) {
+    editionNumberToEditionDetails[_editionNumber].tokenURI = _uri;
   }
 
-  function updatePriceInWei(bytes32 _editionData, uint256 _priceInWei)
+  function updatePriceInWei(uint256 _editionNumber, uint256 _priceInWei)
   external
   onlyKnownOrigin
-  onlyValidEdition(_editionData) {
-    editionToEditionDetails[_editionData].priceInWei = _priceInWei;
+  onlyValidEdition(_editionNumber) {
+    editionNumberToEditionDetails[_editionNumber].priceInWei = _priceInWei;
   }
 
-  function updateArtistsAccount(bytes32 _editionData, address _artistAccount)
+  function updateArtistsAccount(uint256 _editionNumber, address _artistAccount)
   external
   onlyKnownOrigin
-  onlyValidEdition(_editionData) {
+  onlyValidEdition(_editionNumber) {
 
-    EditionDetails storage _originalEditionDetails = editionToEditionDetails[_editionData];
+    EditionDetails storage _originalEditionDetails = editionNumberToEditionDetails[_editionNumber];
 
     // Maintain existing editions for artists
-    bytes32[] memory editionsForArtist = artistToEditions[_artistAccount];
+    uint256[] storage editionNumbersForArtist = artistToEditionNumbers[_artistAccount];
 
     // Delete old mapping
-    delete artistToEditions[_originalEditionDetails.artistAccount];
+    delete artistToEditionNumbers[_originalEditionDetails.artistAccount];
 
     // Update edition
-    editionToEditionDetails[_editionData].artistAccount = _artistAccount;
+    editionNumberToEditionDetails[_editionNumber].artistAccount = _artistAccount;
 
     // Reset editions
-    artistToEditions[_artistAccount] = editionsForArtist;
+    artistToEditionNumbers[_artistAccount] = editionNumbersForArtist;
   }
 
-  function updateavailable(bytes32 _editionData, uint8 _available)
+  function updateavailable(uint256 _editionNumber, uint8 _available)
   external
   onlyKnownOrigin
-  onlyValidEdition(_editionData) {
-    editionToEditionDetails[_editionData].available = _available;
+  onlyValidEdition(_editionNumber) {
+    editionNumberToEditionDetails[_editionNumber].available = _available;
   }
 
-  function updateAuctionStartDate(bytes32 _editionData, uint8 _auctionStartDate)
+  function updateAuctionStartDate(uint256 _editionNumber, uint8 _auctionStartDate)
   external
   onlyKnownOrigin
-  onlyValidEdition(_editionData) {
-    editionToEditionDetails[_editionData].auctionStartDate = _auctionStartDate;
+  onlyValidEdition(_editionNumber) {
+    editionNumberToEditionDetails[_editionNumber].auctionStartDate = _auctionStartDate;
   }
 
-  function updateAuctionStartEnd(bytes32 _editionData, uint8 _auctionEndDate)
+  function updateAuctionStartEnd(uint256 _editionNumber, uint8 _auctionEndDate)
   external
   onlyKnownOrigin
-  onlyValidEdition(_editionData) {
-    editionToEditionDetails[_editionData].auctionEndDate = _auctionEndDate;
+  onlyValidEdition(_editionNumber) {
+    editionNumberToEditionDetails[_editionNumber].auctionEndDate = _auctionEndDate;
   }
 
   ///////////////////
@@ -1517,65 +1522,65 @@ HasNoEther
 
   // TODO rejig read only methods so they are grouped in a sensible order
 
-  function assetInfo(uint256 _tokenId) public view returns (
-    bytes32 _editionData,
+  function assetInfoToken(uint256 _tokenId) public view returns (
+    uint256 _editionNumber,
     address _owner, // TODO owner seems odd here
     uint256 _priceInWei,
     uint32 _auctionStartDate,
     uint32 _auctionEndDate,
     string _tokenURI
   ) {
-    bytes32 editionData = tokenIdToEdition[_tokenId];
-    EditionDetails memory _editionDetails = editionToEditionDetails[editionData];
+    uint256 editionNumber = tokenIdToEditionNumber[_tokenId];
+    EditionDetails memory _editionDetails = editionNumberToEditionDetails[editionNumber];
     return (
-    editionData,
+    editionNumber,
     ownerOf(_tokenId),
     _editionDetails.priceInWei,
     _editionDetails.auctionStartDate,
     _editionDetails.auctionEndDate,
-    tokenURI(editionData)
+    tokenURI(_tokenId)
     );
   }
 
-  function assetInfo(bytes32 editionData) public view returns (
-    bytes32 _editionData,
+  function assetInfoEdition(uint256 editionNumber) public view returns (
+    uint256 _editionNumber,
     uint256 _priceInWei,
     uint32 _auctionStartDate,
     uint32 _auctionEndDate,
     string _tokenURI
   ) {
-    EditionDetails memory editionDetails = editionToEditionDetails[editionData];
+    EditionDetails memory editionDetails = editionNumberToEditionDetails[editionNumber];
     return (
-    editionData,
+    editionNumber,
     editionDetails.priceInWei,
     editionDetails.auctionStartDate,
     editionDetails.auctionEndDate,
-    tokenURI(editionData)
+    tokenURIEdition(editionNumber)
     );
   }
 
-  function editionInfo(uint256 _tokenId) public view returns (
+  function editionInfoToken(uint256 _tokenId) public view returns (
+    uint256 _editionNumber,
     bytes32 _editionData,
-    uint256 _assetNumber,
     uint256 _available,
     uint256 _sold,
     address _artistAccount
   ) {
-    bytes32 editionData = tokenIdToEdition[_tokenId];
-    return editionInfo(editionData);
+    uint256 editionNumber = tokenIdToEditionNumber[_tokenId];
+    return editionInfoEdition(editionNumber);
   }
 
-  function editionInfo(bytes32 editionData) public view returns (
+  function editionInfoEdition(uint256 editionNumber) public view returns (
+    uint256 _editionNumber,
     bytes32 _editionData,
-    uint256 _assetNumber,
     uint256 _available,
     uint256 _sold,
     address _artistAccount
   ) {
-    EditionDetails memory _editionDetails = editionToEditionDetails[editionData];
+    EditionDetails memory _editionDetails = editionNumberToEditionDetails[editionNumber];
     return (
-    editionData,
-    _editionDetails.editionNumber,
+    editionNumber,
+    _editionDetails.editionData,
     _editionDetails.available,
     _editionDetails.sold,
     _editionDetails.artistAccount
@@ -1586,8 +1591,8 @@ HasNoEther
     return Strings.strConcat(tokenBaseURI, tokenURIs[_tokenId]);
   }
 
-  function tokenURI(bytes32 _editionData) public view returns (string) {
-    EditionDetails memory _editionDetails = editionToEditionDetails[_editionData];
+  function tokenURIEdition(uint256 _editionNumber) public view returns (string) {
+    EditionDetails memory _editionDetails = editionNumberToEditionDetails[_editionNumber];
     return Strings.strConcat(tokenBaseURI, _editionDetails.tokenURI);
   }
 
@@ -1595,53 +1600,53 @@ HasNoEther
     return ownedTokens[_owner];
   }
 
-  function editionTotal(bytes32 _editionData) public view returns (uint256) {
-    EditionDetails memory _editionDetails = editionToEditionDetails[_editionData];
+  function editionTotal(uint256 _editionNumber) public view returns (uint256) {
+    EditionDetails memory _editionDetails = editionNumberToEditionDetails[_editionNumber];
     return _editionDetails.available;
   }
 
-  function sold(bytes32 _editionData) public view returns (uint256) {
-    EditionDetails memory _editionDetails = editionToEditionDetails[_editionData];
+  function sold(uint256 _editionNumber) public view returns (uint256) {
+    EditionDetails memory _editionDetails = editionNumberToEditionDetails[_editionNumber];
     return _editionDetails.sold;
   }
 
-  function totalRemaining(bytes32 _editionData) public view returns (uint256) {
-    EditionDetails memory _editionDetails = editionToEditionDetails[_editionData];
+  function totalRemaining(uint256 _editionNumber) public view returns (uint256) {
+    EditionDetails memory _editionDetails = editionNumberToEditionDetails[_editionNumber];
     return _editionDetails.available - _editionDetails.sold;
   }
 
-  function tokensOfEdition(bytes32 _editionData) public view returns (uint256[] _tokenIds) {
-    return editionToTokenIds[_editionData];
+  function tokensOfEdition(uint256 _editionNumber) public view returns (uint256[] _tokenIds) {
+    return editionNumberToTokenIds[_editionNumber];
   }
 
-  function editionOfToken(uint256 _tokenId) public view returns (bytes32 _editionData) {
-    return tokenIdToEdition[_tokenId];
+  function editionNumberOfToken(uint256 _tokenId) public view returns (uint256 _editionNumber) {
+    return tokenIdToEditionNumber[_tokenId];
   }
 
-  function editionsOfArtists(address _artistAddress) public view returns (bytes32[] _editions) {
-    return artistToEditions[_artistAddress];
+  function editionsOfArtists(address _artistAddress) public view returns (uint256[] _editionNumbers) {
+    return artistToEditionNumbers[_artistAddress];
   }
 
-  function purchaseDates(uint256 _tokenId) public view returns (uint32 _auctionStartDate, uint32 _auctionEndDate) {
-    bytes32 _editionData = tokenIdToEdition[_tokenId];
-    return purchaseDates(_editionData);
+  function purchaseDatesToken(uint256 _tokenId) public view returns (uint32 _auctionStartDate, uint32 _auctionEndDate) {
+    uint256 _editionNumber = tokenIdToEditionNumber[_tokenId];
+    return purchaseDatesEdition(_editionNumber);
   }
 
-  function purchaseDates(bytes32 _editionData) public view returns (uint32 _auctionStartDate, uint32 _auctionEndDate) {
-    EditionDetails memory _editionDetails = editionToEditionDetails[_editionData];
+  function purchaseDatesEdition(uint256 _editionNumber) public view returns (uint32 _auctionStartDate, uint32 _auctionEndDate) {
+    EditionDetails memory _editionDetails = editionNumberToEditionDetails[_editionNumber];
     return (
     _editionDetails.auctionStartDate,
     _editionDetails.auctionEndDate
     );
   }
 
-  function priceInWei(uint256 _tokenId) public view returns (uint256 _priceInWei) {
-    bytes32 _editionData  = tokenIdToEdition[_tokenId];
-    return priceInWei(_editionData);
+  function priceInWeiToken(uint256 _tokenId) public view returns (uint256 _priceInWei) {
+    uint256 _editionNumber  = tokenIdToEditionNumber[_tokenId];
+    return priceInWeiEdition(_editionNumber);
   }
 
-  function priceInWei(bytes32 _editionData) public view returns (uint256 _priceInWei) {
-    EditionDetails storage _editionDetails = editionToEditionDetails[_editionData];
+  function priceInWeiEdition(uint256 _editionNumber) public view returns (uint256 _priceInWei) {
+    EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
     return _editionDetails.priceInWei;
   }
 }
