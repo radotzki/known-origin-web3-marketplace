@@ -2,16 +2,29 @@ pragma solidity ^0.4.24;
 
 // File: contracts/v2/IKnownOriginDigitalAssetV1.sol
 
+// Copied over so does not clash with other ERC721Basic contracts
+contract ERC721BasicOld {
+  function balanceOf(address _owner) public view returns (uint256 _balance);
+  function ownerOf(uint256 _tokenId) public view returns (address _owner);
+  function exists(uint256 _tokenId) public view returns (bool _exists);
+
+  function approve(address _to, uint256 _tokenId) public;
+  function getApproved(uint256 _tokenId) public view returns (address _operator);
+
+  function setApprovalForAll(address _operator, bool _approved) public;
+  function isApprovedForAll(address _owner, address _operator) public view returns (bool);
+
+  function transferFrom(address _from, address _to, uint256 _tokenId) public;
+  function safeTransferFrom(address _from, address _to, uint256 _tokenId) public;
+  function safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes _data) public;
+}
+
 /*
  * Defines what functions are needed from the KODA V1 contract to allow for the migration of tokens from V1 to V2
  */
-contract IKnownOriginDigitalAssetV1 {
+contract IKnownOriginDigitalAssetV1 is ERC721BasicOld {
 
   enum PurchaseState {Unsold, EtherPurchase, FiatPurchase}
-
-  function exists(uint256 _tokenId) public view returns (bool);
-
-  function ownerOf(uint256 _tokenId) public view returns (address);
 
   function assetInfo(uint _tokenId) public view returns (
     uint256 _tokId,
@@ -28,6 +41,85 @@ contract IKnownOriginDigitalAssetV1 {
     string _tokenURI,
     address _artistAccount
   );
+}
+
+// File: openzeppelin-solidity/contracts/introspection/ERC165.sol
+
+/**
+ * @title ERC165
+ * @dev https://github.com/ethereum/EIPs/blob/master/EIPS/eip-165.md
+ */
+interface ERC165 {
+
+  /**
+   * @notice Query if a contract implements an interface
+   * @param _interfaceId The interface identifier, as specified in ERC-165
+   * @dev Interface identification is specified in ERC-165. This function
+   * uses less than 30,000 gas.
+   */
+  function supportsInterface(bytes4 _interfaceId)
+    external
+    view
+    returns (bool);
+}
+
+// File: openzeppelin-solidity/contracts/token/ERC721/ERC721Basic.sol
+
+/**
+ * @title ERC721 Non-Fungible Token Standard basic interface
+ * @dev see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
+ */
+contract ERC721Basic is ERC165 {
+  event Transfer(
+    address indexed _from,
+    address indexed _to,
+    uint256 indexed _tokenId
+  );
+  event Approval(
+    address indexed _owner,
+    address indexed _approved,
+    uint256 indexed _tokenId
+  );
+  event ApprovalForAll(
+    address indexed _owner,
+    address indexed _operator,
+    bool _approved
+  );
+
+  function balanceOf(address _owner) public view returns (uint256 _balance);
+  function ownerOf(uint256 _tokenId) public view returns (address _owner);
+  function exists(uint256 _tokenId) public view returns (bool _exists);
+
+  function approve(address _to, uint256 _tokenId) public;
+  function getApproved(uint256 _tokenId)
+    public view returns (address _operator);
+
+  function setApprovalForAll(address _operator, bool _approved) public;
+  function isApprovedForAll(address _owner, address _operator)
+    public view returns (bool);
+
+  function transferFrom(address _from, address _to, uint256 _tokenId) public;
+  function safeTransferFrom(address _from, address _to, uint256 _tokenId)
+    public;
+
+  function safeTransferFrom(
+    address _from,
+    address _to,
+    uint256 _tokenId,
+    bytes _data
+  )
+    public;
+}
+
+// File: contracts/v2/IKnownOriginDigitalAssetV2.sol
+
+/*
+ * Defines what functions are needed from the KODA V1 contract to allow for the migration of tokens from V1 to V2
+ */
+contract IKnownOriginDigitalAssetV2
+is
+ERC721Basic {
+
 }
 
 // File: openzeppelin-solidity/contracts/math/SafeMath.sol
@@ -146,58 +238,15 @@ contract Ownable {
   }
 }
 
-// File: openzeppelin-solidity/contracts/token/ERC721/ERC721Receiver.sol
-
-/**
- * @title ERC721 token receiver interface
- * @dev Interface for any contract that wants to support safeTransfers
- * from ERC721 asset contracts.
- */
-contract ERC721Receiver {
-  /**
-   * @dev Magic value to be returned upon successful reception of an NFT
-   *  Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`,
-   *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
-   */
-  bytes4 internal constant ERC721_RECEIVED = 0x150b7a02;
-
-  /**
-   * @notice Handle the receipt of an NFT
-   * @dev The ERC721 smart contract calls this function on the recipient
-   * after a `safetransfer`. This function MAY throw to revert and reject the
-   * transfer. Return of other than the magic value MUST result in the 
-   * transaction being reverted.
-   * Note: the contract address is always the message sender.
-   * @param _operator The address which called `safeTransferFrom` function
-   * @param _from The address which previously owned the token
-   * @param _tokenId The NFT identifier which is being transfered
-   * @param _data Additional data with no specified format
-   * @return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
-   */
-  function onERC721Received(
-    address _operator,
-    address _from,
-    uint256 _tokenId,
-    bytes _data
-  )
-    public
-    returns(bytes4);
-}
-
-// File: openzeppelin-solidity/contracts/token/ERC721/ERC721Holder.sol
-
-contract ERC721Holder is ERC721Receiver {
-  function onERC721Received(address, address, uint256, bytes) public returns(bytes4) {
-    return ERC721_RECEIVED;
-  }
-}
-
 // File: contracts/v2/KnownOriginV1TokenSwap.sol
 
 // Allows this contract to receive erc721 tokens from KODA V1 0 FIXME is this needed?
-
+//import "openzeppelin-solidity/contracts/token/ERC721/ERC721Holder.sol";
 
 // V1 migration interface
+
+
+// V2 interface
 
 
 contract KnownOriginV1TokenSwap is Ownable {
@@ -205,16 +254,23 @@ contract KnownOriginV1TokenSwap is Ownable {
 
   // Address for V1 contract
   IKnownOriginDigitalAssetV1 public kodaV1;
+  IKnownOriginDigitalAssetV2 public kodaV2;
 
   /*
    * Constructor
    */
-  constructor (IKnownOriginDigitalAssetV1 _kodaV1) public {
+  constructor (
+    IKnownOriginDigitalAssetV1 _kodaV1,
+    IKnownOriginDigitalAssetV2 _kodaV2
+  ) public {
     require(_kodaV1 != address(0));
+    require(_kodaV2 != address(0));
     kodaV1 = _kodaV1;
+    kodaV2 = _kodaV2;
   }
 
-  function tokenSwap(uint256 _tokenId, address _beneficiary) {
+  // called by a user not KO - would require user to approve all for this contract and exchange one at a time (not ideal)
+  function directTokenSwap(uint256 _tokenId, address _beneficiary) {
     // check valid
     require(kodaV1.exists(_tokenId));
 
@@ -237,6 +293,10 @@ contract KnownOriginV1TokenSwap is Ownable {
 
     (_tokenId2, _edition, _editionNumber, _tokenURI, _artistAccount) = kodaV1.editionInfo(_tokenId);
 
+    // take ownership of asset
+    kodaV1.transferFrom(msg.sender, address(this), _tokenId);
+
+    // TODO mint new one - how?
   }
 
 }
