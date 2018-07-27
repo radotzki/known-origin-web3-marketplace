@@ -3,6 +3,7 @@ pragma solidity ^0.4.24;
 // allows for muti-address access
 import "openzeppelin-solidity/contracts/access/Whitelist.sol";
 
+// TODO do we need this
 // allows for master pause switch for upgrades/issues
 import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 
@@ -11,9 +12,6 @@ import "openzeppelin-solidity/contracts/ownership/HasNoEther.sol";
 
 // For safe maths operations
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-
-// allows for us to define KO/BR
-import "openzeppelin-solidity/contracts/ownership/Contactable.sol";
 
 // ERC721
 import "openzeppelin-solidity/contracts/token/ERC721/ERC721Token.sol";
@@ -25,8 +23,7 @@ contract KnownOriginDigitalAssetV2 is
 ERC721Token,
 Whitelist,
 HasNoEther,
-Pausable,
-Contactable {
+Pausable {
   using SafeMath for uint;
 
   ////////////////
@@ -93,7 +90,7 @@ Contactable {
    * Constructor
    */
   constructor () public ERC721Token("KnownOriginDigitalAsset", "KODA") {
-    setContactInformation("http://knownorigin.io");
+
   }
 
   // Called once per edition
@@ -143,11 +140,8 @@ Contactable {
 
     require(msg.value >= _editionDetails.priceInWei);
 
-    uint8 totalSold = _editionDetails.totalSold;
-
     // Bump number sold
-    // TODO why does this not work...?
-    //_editionDetails.totalSold = _editionDetails.totalSold.add(1);
+    _editionDetails.totalSold = _editionDetails.totalSold + 1;
 
     // Construct next token ID
     uint256 _tokenId = _editionDetails.assetNumber + _editionDetails.totalSold;
@@ -252,6 +246,8 @@ Contactable {
   ///////////////////
   // Query Methods //
   ///////////////////
+
+  // TODO rejig read only methods so they are grouped in a sensible order
 
   function assetInfo(uint256 _tokenId) public view returns (
     bytes32 _edition,

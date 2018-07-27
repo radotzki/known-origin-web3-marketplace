@@ -454,26 +454,6 @@ library SafeMath {
   }
 }
 
-// File: openzeppelin-solidity/contracts/ownership/Contactable.sol
-
-/**
- * @title Contactable token
- * @dev Basic version of a contactable contract, allowing the owner to provide a string with their
- * contact information.
- */
-contract Contactable is Ownable {
-
-  string public contactInformation;
-
-  /**
-    * @dev Allows the owner to set a string with their contact information.
-    * @param info The contact information to attach to the contract.
-    */
-  function setContactInformation(string info) onlyOwner public {
-    contactInformation = info;
-  }
-}
-
 // File: openzeppelin-solidity/contracts/ownership/HasNoEther.sol
 
 /**
@@ -1298,6 +1278,7 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
 // allows for muti-address access
 
 
+// TODO do we need this
 // allows for master pause switch for upgrades/issues
 
 
@@ -1305,9 +1286,6 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
 
 
 // For safe maths operations
-
-
-// allows for us to define KO/BR
 
 
 // ERC721
@@ -1320,8 +1298,7 @@ contract KnownOriginDigitalAssetV2 is
 ERC721Token,
 Whitelist,
 HasNoEther,
-Pausable,
-Contactable {
+Pausable {
   using SafeMath for uint;
 
   ////////////////
@@ -1388,7 +1365,7 @@ Contactable {
    * Constructor
    */
   constructor () public ERC721Token("KnownOriginDigitalAsset", "KODA") {
-    setContactInformation("http://knownorigin.io");
+
   }
 
   // Called once per edition
@@ -1438,11 +1415,8 @@ Contactable {
 
     require(msg.value >= _editionDetails.priceInWei);
 
-    uint8 totalSold = _editionDetails.totalSold;
-
     // Bump number sold
-    // TODO why does this not work...?
-    //_editionDetails.totalSold = _editionDetails.totalSold.add(1);
+    _editionDetails.totalSold = _editionDetails.totalSold + 1;
 
     // Construct next token ID
     uint256 _tokenId = _editionDetails.assetNumber + _editionDetails.totalSold;
@@ -1547,6 +1521,8 @@ Contactable {
   ///////////////////
   // Query Methods //
   ///////////////////
+
+  // TODO rejig read only methods so they are grouped in a sensible order
 
   function assetInfo(uint256 _tokenId) public view returns (
     bytes32 _edition,
