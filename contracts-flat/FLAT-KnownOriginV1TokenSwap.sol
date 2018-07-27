@@ -7,9 +7,27 @@ pragma solidity ^0.4.24;
  */
 contract IKnownOriginDigitalAssetV1 {
 
+  enum PurchaseState {Unsold, EtherPurchase, FiatPurchase}
+
   function exists(uint256 _tokenId) public view returns (bool);
 
   function ownerOf(uint256 _tokenId) public view returns (address);
+
+  function assetInfo(uint _tokenId) public view returns (
+    uint256 _tokId,
+    address _owner,
+    PurchaseState _purchaseState,
+    uint256 _priceInWei,
+    uint32 _purchaseFromTime
+  );
+
+  function editionInfo(uint256 _tokenId) public view returns (
+    uint256 _tokId,
+    bytes16 _edition,
+    uint256 _editionNumber,
+    string _tokenURI,
+    address _artistAccount
+  );
 }
 
 // File: openzeppelin-solidity/contracts/math/SafeMath.sol
@@ -197,8 +215,27 @@ contract KnownOriginV1TokenSwap is Ownable {
   }
 
   function tokenSwap(uint256 _tokenId, address _beneficiary) {
-    require(kodaV1.exists(_tokenId)); // check valid
-    require(kodaV1.ownerOf(_tokenId) == _msg.sender); // check owner is the called
+    // check valid
+    require(kodaV1.exists(_tokenId));
+
+    // check owner is the called
+    require(kodaV1.ownerOf(_tokenId) == msg.sender);
+
+    uint256 _tokenId1;
+    address _owner;
+    IKnownOriginDigitalAssetV1.PurchaseState _purchaseState;
+    uint256 _priceInWei;
+    uint32 _purchaseFromTime;
+
+    (_tokenId1, _owner, _purchaseState, _priceInWei, _purchaseFromTime) = kodaV1.assetInfo(_tokenId);
+
+    uint256 _tokenId2;
+    bytes16 _edition;
+    uint256 _editionNumber;
+    string memory _tokenURI;
+    address _artistAccount;
+
+    (_tokenId2, _edition, _editionNumber, _tokenURI, _artistAccount) = kodaV1.editionInfo(_tokenId);
 
   }
 
