@@ -669,7 +669,7 @@ contract ERC721Receiver {
    * @notice Handle the receipt of an NFT
    * @dev The ERC721 smart contract calls this function on the recipient
    * after a `safetransfer`. This function MAY throw to revert and reject the
-   * transfer. Return of other than the magic value MUST result in the 
+   * transfer. Return of other than the magic value MUST result in the
    * transaction being reverted.
    * Note: the contract address is always the message sender.
    * @param _operator The address which called `safeTransferFrom` function
@@ -1335,7 +1335,7 @@ HasNoEther
   }
 
   modifier onlyEditionNotSoldOut(uint256 _editionNumber) {
-    require(editionNumberToEditionDetails[_editionNumber].sold < editionNumberToEditionDetails[_editionNumber].available);
+    require(editionNumberToEditionDetails[_editionNumber].minted < editionNumberToEditionDetails[_editionNumber].available);
     _;
   }
 

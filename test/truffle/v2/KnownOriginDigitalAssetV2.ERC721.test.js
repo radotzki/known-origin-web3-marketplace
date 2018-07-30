@@ -33,13 +33,13 @@ contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
 
   const editionNumber1 = 100000;
   const editionData1 = "";
-  const editionTokenUri1 = '/edtion1';
-  const edition1Price =  etherToWei(0.1);
+  const editionTokenUri1 = "edtion1";
+  const edition1Price = etherToWei(0.1);
 
   const editionNumber2 = 200000;
   const editionData2 = "";
-  const editionTokenUri2 = '/edtion2';
-  const edition2Price =  etherToWei(0.1);
+  const editionTokenUri2 = "edtion2";
+  const edition2Price = etherToWei(0.1);
 
   before(async function () {
     // Advance to the next block to correctly read time in the solidity "now" function interpreted by testrpc
@@ -47,6 +47,7 @@ contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
   });
 
   beforeEach(async function () {
+
     this.token = await KnownOriginDigitalAssetV2.new({from: _owner});
   });
 
@@ -56,21 +57,21 @@ contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
   });
 
   // TODO expand on this, just checking the data goes up
-  describe.only('validate created edition content', async function() {
+  describe.only('validate created edition content', async function () {
 
-    it('edition 1', async function (){
+    it('edition 1', async function () {
       let data = await this.token.getRawEditionData(editionNumber1);
       console.log(data);
     });
 
-    it('edition 2', async function (){
+    it('edition 2', async function () {
       let data = await this.token.getRawEditionData(editionNumber2);
       console.log(data);
     });
 
   });
 
-  describe('like a full ERC721', function () {
+  describe.only('like a full ERC721', function () {
     const firstTokenId = 100001;
     const secondTokenId = 200001;
 
@@ -89,12 +90,11 @@ contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
       newToken.toNumber().should.be.equal(secondTokenId);
     });
 
-    // TODO the before hook throws [Invalid number of arguments to Solidity function]
-    describe.skip('mint', function () {
+    describe('mint', function () {
       const thirdTokenId = 100002;
 
       beforeEach(async function () {
-        await this.token.mint(account2, editionNumber1, {from: account2, value: edition1Price});
+        await this.token.mintTo(account2, editionNumber1, {from: account2, value: edition1Price});
       });
 
       it('adjusts owner tokens by index', async function () {
@@ -108,32 +108,33 @@ contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
       });
     });
 
-    // describe.skip('burn', function () {
-    //   const sender = account1;
-    //
-    //   beforeEach(async function () {
-    //     await this.token.burn(tokenId, {from: sender});
-    //   });
-    //
-    //   it('removes that token from the token list of the owner', async function () {
-    //     const token = await this.token.tokenOfOwnerByIndex(sender, 0);
-    //     token.toNumber().should.be.equal(secondTokenId);
-    //   });
-    //
-    //   it('adjusts all tokens list', async function () {
-    //     const token = await this.token.tokenByIndex(0);
-    //     token.toNumber().should.be.equal(secondTokenId);
-    //   });
-    //
-    //   it('burns all tokens', async function () {
-    //     await this.token.burn(secondTokenId, {from: sender});
-    //     const total = await this.token.totalSupply();
-    //     total.toNumber().should.be.equal(0);
-    //     await assertRevert(this.token.tokenByIndex(0));
-    //   });
-    // });
+    describe('burn', function () {
+      const sender = account1;
 
-    // describe('removeTokenFrom', function () {
+      beforeEach(async function () {
+        await this.token.burn(firstTokenId, {from: sender});
+      });
+
+      it('removes that token from the token list of the owner', async function () {
+        const token = await this.token.tokenOfOwnerByIndex(sender, 0);
+        token.toNumber().should.be.equal(secondTokenId);
+      });
+
+      it('adjusts all tokens list', async function () {
+        const token = await this.token.tokenByIndex(0);
+        token.toNumber().should.be.equal(secondTokenId);
+      });
+
+      it('burns all tokens', async function () {
+        await this.token.burn(secondTokenId, {from: sender});
+        const total = await this.token.totalSupply();
+        total.toNumber().should.be.equal(0);
+        await assertRevert(this.token.tokenByIndex(0));
+      });
+    });
+
+    // TODO do we need to include some on these in burn() ?
+    // describe.skip('removeTokenFrom', function () {
     //   beforeEach(async function () {
     //     await this.token._removeTokenFrom(account1, firstTokenId, {from: account1});
     //   });
@@ -158,125 +159,133 @@ contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
     //   });
     // });
 
-    // describe('metadata', function () {
-    //   const sampleUri = 'mock://mytoken';
-    //
-    //   it('has a name', async function () {
-    //     const tokenName = await this.token.name();
-    //     tokenName.should.be.equal(name);
-    //   });
-    //
-    //   it('has a symbol', async function () {
-    //     const tokenSymbol = await this.token.symbol();
-    //     tokenSymbol.should.be.equal(symbol);
-    //   });
-    //
-    //   it('sets and returns metadata for a token id', async function () {
-    //     await this.token.setTokenURI(firstTokenId, sampleUri);
-    //     const uri = await this.token.tokenURI(firstTokenId);
-    //     uri.should.be.equal(sampleUri);
-    //   });
-    //
-    //   it('can burn token with metadata', async function () {
-    //     await this.token.setTokenURI(firstTokenId, sampleUri);
-    //     await this.token.burn(firstTokenId);
-    //     const exists = await this.token.exists(firstTokenId);
-    //     exists.should.be.false;
-    //   });
-    //
-    //   it('returns empty metadata for token', async function () {
-    //     const uri = await this.token.tokenURI(firstTokenId);
-    //     uri.should.be.equal('');
-    //   });
-    //
-    //   it('reverts when querying metadata for non existant token id', async function () {
-    //     await assertRevert(this.token.tokenURI(500));
-    //   });
-    // });
+    describe('metadata', function () {
+      const sampleUri = 'updatedTokenMetadata';
 
-    // describe('totalSupply', function () {
-    //   it('returns total token supply', async function () {
-    //     const totalSupply = await this.token.totalSupply();
-    //     totalSupply.should.be.bignumber.equal(2);
-    //   });
-    // });
+      it('has a name', async function () {
+        const tokenName = await this.token.name();
+        tokenName.should.be.equal(name);
+      });
 
-    // describe('tokenOfOwnerByIndex', function () {
-    //   const owner = account1;
-    //   const another = accounts[1];
-    //
-    //   describe('when the given index is lower than the amount of tokens owned by the given address', function () {
-    //     it('returns the token ID placed at the given index', async function () {
-    //       const tokenId = await this.token.tokenOfOwnerByIndex(owner, 0);
-    //       tokenId.should.be.bignumber.equal(firstTokenId);
-    //     });
-    //   });
-    //
-    //   describe('when the index is greater than or equal to the total tokens owned by the given address', function () {
-    //     it('reverts', async function () {
-    //       await assertRevert(this.token.tokenOfOwnerByIndex(owner, 2));
-    //     });
-    //   });
-    //
-    //   describe('when the given address does not own any token', function () {
-    //     it('reverts', async function () {
-    //       await assertRevert(this.token.tokenOfOwnerByIndex(another, 0));
-    //     });
-    //   });
-    //
-    //   describe('after transferring all tokens to another user', function () {
-    //     beforeEach(async function () {
-    //       await this.token.transferFrom(owner, another, firstTokenId, {from: owner});
-    //       await this.token.transferFrom(owner, another, secondTokenId, {from: owner});
-    //     });
-    //
-    //     it('returns correct token IDs for target', async function () {
-    //       const count = await this.token.balanceOf(another);
-    //       count.toNumber().should.be.equal(2);
-    //       const tokensListed = await Promise.all(_.range(2).map(i => this.token.tokenOfOwnerByIndex(another, i)));
-    //       tokensListed.map(t => t.toNumber()).should.have.members([firstTokenId, secondTokenId]);
-    //     });
-    //
-    //     it('returns empty collection for original owner', async function () {
-    //       const count = await this.token.balanceOf(owner);
-    //       count.toNumber().should.be.equal(0);
-    //       await assertRevert(this.token.tokenOfOwnerByIndex(owner, 0));
-    //     });
-    //   });
-    // });
+      it('has a symbol', async function () {
+        const tokenSymbol = await this.token.symbol();
+        tokenSymbol.should.be.equal(symbol);
+      });
 
-    // describe('tokenByIndex', function () {
-    //   it('should return all tokens', async function () {
-    //     const tokensListed = await Promise.all(_.range(2).map(i => this.token.tokenByIndex(i)));
-    //     tokensListed.map(t => t.toNumber()).should.have.members([firstTokenId, secondTokenId]);
-    //   });
-    //
-    //   it('should revert if index is greater than supply', async function () {
-    //     await assertRevert(this.token.tokenByIndex(2));
-    //   });
-    //
-    //   [firstTokenId, secondTokenId].forEach(function (tokenId) {
-    //     it(`should return all tokens after burning token ${tokenId} and minting new tokens`, async function () {
-    //       const owner = accounts[0];
-    //       const newTokenId = 300;
-    //       const anotherNewTokenId = 400;
-    //
-    //       await this.token.burn(tokenId, {from: owner});
-    //       await this.token.mint(owner, newTokenId, {from: owner});
-    //       await this.token.mint(owner, anotherNewTokenId, {from: owner});
-    //
-    //       const count = await this.token.totalSupply();
-    //       count.toNumber().should.be.equal(3);
-    //
-    //       const tokensListed = await Promise.all(_.range(3).map(i => this.token.tokenByIndex(i)));
-    //       const expectedTokens = _.filter(
-    //         [firstTokenId, secondTokenId, newTokenId, anotherNewTokenId],
-    //         x => (x !== tokenId)
-    //       );
-    //       tokensListed.map(t => t.toNumber()).should.have.members(expectedTokens);
-    //     });
-    //   });
-    // });
+      it('sets and returns metadata for a token id', async function () {
+        await this.token.setTokenURI(firstTokenId, sampleUri);
+        const uri = await this.token.tokenURI(firstTokenId);
+        uri.should.be.equal(`https://ipfs.infura.io/ipfs/${sampleUri}`);
+      });
+
+      it('can burn token with metadata', async function () {
+        await this.token.setTokenURI(firstTokenId, sampleUri);
+        await this.token.burn(firstTokenId, {from: account1});
+        const exists = await this.token.exists(firstTokenId);
+        exists.should.be.false;
+      });
+
+      it('returns setup metadata for token', async function () {
+        const uri = await this.token.tokenURI(firstTokenId);
+        uri.should.be.equal(`https://ipfs.infura.io/ipfs/edtion1`);
+      });
+
+      it('reverts when querying metadata for non existent token id', async function () {
+        await assertRevert(this.token.tokenURI(500));
+      });
+    });
+
+    describe('totalSupply', function () {
+      it('returns total token supply', async function () {
+        const totalSupply = await this.token.totalSupply();
+        totalSupply.should.be.bignumber.equal(2);
+      });
+    });
+
+    describe('tokenOfOwnerByIndex', function () {
+      const owner = account1;
+      const another = account2;
+
+      describe('when the given index is lower than the amount of tokens owned by the given address', function () {
+        it('returns the token ID placed at the given index', async function () {
+          const tokenId = await this.token.tokenOfOwnerByIndex(owner, 0);
+          tokenId.should.be.bignumber.equal(firstTokenId);
+        });
+      });
+
+      describe('when the index is greater than or equal to the total tokens owned by the given address', function () {
+        it('reverts', async function () {
+          await assertRevert(this.token.tokenOfOwnerByIndex(owner, 2));
+        });
+      });
+
+      describe('when the given address does not own any token', function () {
+        it('reverts', async function () {
+          await assertRevert(this.token.tokenOfOwnerByIndex(another, 0));
+        });
+      });
+
+      describe('after transferring all tokens to another user', function () {
+        beforeEach(async function () {
+          await this.token.transferFrom(owner, another, firstTokenId, {from: owner});
+          await this.token.transferFrom(owner, another, secondTokenId, {from: owner});
+        });
+
+        it('returns correct token IDs for target', async function () {
+          const count = await this.token.balanceOf(another);
+          count.toNumber().should.be.equal(2);
+          const tokensListed = await Promise.all(_.range(2).map(i => this.token.tokenOfOwnerByIndex(another, i)));
+          tokensListed.map(t => t.toNumber()).should.have.members([firstTokenId, secondTokenId]);
+        });
+
+        it('returns empty collection for original owner', async function () {
+          const count = await this.token.balanceOf(owner);
+          count.toNumber().should.be.equal(0);
+          await assertRevert(this.token.tokenOfOwnerByIndex(owner, 0));
+        });
+      });
+    });
+
+    describe.skip('tokenByIndex', function () {
+      it('should return all tokens', async function () {
+        const tokensListed = await Promise.all(_.range(2).map(i => this.token.tokenByIndex(i)));
+        tokensListed.map(t => t.toNumber()).should.have.members([firstTokenId, secondTokenId]);
+      });
+
+      it('should revert if index is greater than supply', async function () {
+        await assertRevert(this.token.tokenByIndex(2));
+      });
+
+      [{
+        tokenId: firstTokenId,
+        edition: editionNumber1
+      }, {
+        tokenId: secondTokenId,
+        edition: editionNumber2
+      }].forEach(function ({tokenId, edition}) {
+        it(`should return all tokens after burning token ${tokenId} and minting new tokens in edition ${edition}`, async function () {
+
+          const owner = account1;
+
+          await this.token.burn(tokenId, {from: owner});
+          const newTokenId = await this.token.mint(edition, {from: owner});
+          console.log(newTokenId);
+
+          const anotherNewTokenId = await this.token.mint(edition, {from: owner});
+          console.log(anotherNewTokenId);
+
+          const count = await this.token.totalSupply();
+          count.toNumber().should.be.equal(3);
+
+          const tokensListed = await Promise.all(_.range(3).map(i => this.token.tokenByIndex(i)));
+          const expectedTokens = _.filter(
+            [firstTokenId, secondTokenId, newTokenId, anotherNewTokenId],
+            x => (x !== tokenId)
+          );
+          tokensListed.map(t => t.toNumber()).should.have.members(expectedTokens);
+        });
+      });
+    });
   });
 
 });

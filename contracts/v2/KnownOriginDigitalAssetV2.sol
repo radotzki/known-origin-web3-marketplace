@@ -8,6 +8,9 @@ import "openzeppelin-solidity/contracts/ownership/HasNoEther.sol";
 
 // For safe maths operations
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "../libs/SafeMath32.sol";
+import "../libs/SafeMath16.sol";
+import "../libs/SafeMath8.sol";
 
 // ERC721
 import "openzeppelin-solidity/contracts/token/ERC721/ERC721Token.sol";
@@ -22,7 +25,12 @@ ERC721Token,
 Whitelist,
 HasNoEther
 {
-  using SafeMath for uint;
+  using SafeMath for uint256;
+
+  // TODO is there a better way of doing this and is it correct?
+  using SafeMath32 for uint32;
+  using SafeMath16 for uint16;
+  using SafeMath8 for uint8;
 
   uint32 constant internal MAX_UINT32 = ~uint32(0);
 
@@ -38,10 +46,13 @@ HasNoEther
   uint256 public totalPurchaseValueInWei;
 
   // number of assets sold of any type
-  uint256 public totalNumberOfPurchases;
+  uint256 public totalNumberMinted;
 
   // TODO a method to delete edition data - only on unsold etc?
   // TODO add burn method
+
+  // TODO how does total supply work when its mint on demand?
+  // TODO how does enumeration work when its mint on demand?
 
   // Object for edition details
   struct EditionDetails {
@@ -58,7 +69,7 @@ HasNoEther
     string tokenURI;
 
     // Counters
-    uint8 sold;
+    uint8 minted;
     uint8 available;
     bool active;
   }
@@ -88,8 +99,8 @@ HasNoEther
     _;
   }
 
-  modifier onlyEditionNotSoldOut(uint256 _editionNumber) {
-    require(editionNumberToEditionDetails[_editionNumber].sold < editionNumberToEditionDetails[_editionNumber].available);
+  modifier onlyAvailableEdition(uint256 _editionNumber) {
+    require(editionNumberToEditionDetails[_editionNumber].minted < editionNumberToEditionDetails[_editionNumber].available);
     _;
   }
 
@@ -157,7 +168,7 @@ HasNoEther
       artistAccount : _artistAccount,
       priceInWei : _priceInWei, // TODO handle overriding of price per token from edition price?
       tokenURI : _tokenURI,
-      sold : 0, // default to all available
+      minted : 0, // default to all available
       available : _available,
       active: true
     // TODO add artist edition commission
@@ -181,20 +192,20 @@ HasNoEther
   function mint(uint256 _editionNumber)
   public
   payable
-//  onlyEditionNotSoldOut(_editionNumber)
+//  onlyAvailableEdition(_editionNumber)
 //  onlyValidEdition(_editionNumber)
 //  onlyActiveEdition(_editionNumber)
 //  onlyAfterPurchaseFromTime(_editionNumber)
   returns (uint256)
   {
-    return mint(msg.sender, _editionNumber);
+    return mintTo(msg.sender, _editionNumber);
   }
 
   // TODO should this only be allowed for KO whitelist?
-  function mint(address _to, uint256 _editionNumber)
+  function mintTo(address _to, uint256 _editionNumber)
   public
   payable // TODO is payable valid on this as we may want to mint to another contract which sets price?
-//  onlyEditionNotSoldOut(_editionNumber)
+//  onlyAvailableEdition(_editionNumber)
 //  onlyValidEdition(_editionNumber)
 //  onlyActiveEdition(_editionNumber) // TODO is this correct to enforce this?
 //  onlyAfterPurchaseFromTime(_editionNumber) // TODO is this correct to enforce this?
@@ -204,11 +215,11 @@ HasNoEther
 
     require(msg.value >= _editionDetails.priceInWei);
 
-    // Bump number sold
-    _editionDetails.sold = _editionDetails.sold + 1;
+    // Bump number minted
+    _editionDetails.minted = _editionDetails.minted.add(1);
 
-    // Construct next token ID
-    uint256 _tokenId = _editionDetails.editionNumber + _editionDetails.sold;
+    // Construct next token ID e.g. 100000 + 1 = ID of 100001 (this first in the edition set)
+    uint256 _tokenId = _editionDetails.editionNumber.add(_editionDetails.minted);
 
     // Mint new base token
     super._mint(_to, _tokenId);
@@ -217,14 +228,14 @@ HasNoEther
     // Maintain mapping for tokenId to edition for lookup
     tokenIdToEditionNumber[_tokenId] = _editionDetails.editionNumber;
 
-    // Maintain mapping of edition to token array for "edition sold tokens"
+    // Maintain mapping of edition to token array for "edition minted tokens"
     editionNumberToTokenIds[_editionNumber].push(_tokenId);
 
     // Record wei sale value
     totalPurchaseValueInWei = totalPurchaseValueInWei.add(msg.value);
 
     // Record sale volume
-    totalNumberOfPurchases = totalNumberOfPurchases.add(1);
+    totalNumberMinted = totalNumberMinted.add(1);
 
     // TODO handle commission
     // TODO KO to absorb overspend
@@ -240,7 +251,7 @@ HasNoEther
 //  function knownOriginMint(address _to, uint256 _editionNumber)
 //  public
 //  onlyKnownOrigin
-//  onlyEditionNotSoldOut(_editionNumber)
+//  onlyAvailableEdition(_editionNumber)
 //  onlyValidEdition(_editionNumber)
 //  returns (bool) {
 //
@@ -263,9 +274,9 @@ HasNoEther
     // TODO delete any token mappings
   }
 
-  /////////////////////
-  // Edition Updates //
-  /////////////////////
+  ///////////////////////////
+  // Edition/Token Updates //
+  ///////////////////////////
 
   function setTokenBaseURI(string _newBaseURI)
   external
@@ -276,9 +287,12 @@ HasNoEther
   function setTokenURI(uint256 _tokenId, string _uri)
   external
   onlyKnownOrigin {
+    // TODO validation - only unsold?
     require(exists(_tokenId));
     _setTokenURI(_tokenId, _uri);
   }
+
+  // TODO update URI method for edition not token ID setEditionTokenURI()
 
   function updateEditionTokenURI(uint256 _editionNumber, string _uri)
   external
@@ -348,7 +362,7 @@ HasNoEther
     address _artistAccount,
     uint256 _priceInWei,
     string _tokenURI,
-    uint8 _sold,
+    uint8 _minted,
     uint8 _available,
     bool _active
   ) {
@@ -362,7 +376,7 @@ HasNoEther
       _editionDetails.artistAccount,
       _editionDetails.priceInWei,
       _editionDetails.tokenURI,
-      _editionDetails.sold,
+      _editionDetails.minted,
       _editionDetails.available,
       _editionDetails.active
     );
@@ -386,7 +400,7 @@ HasNoEther
     _editionDetails.priceInWei,
     _editionDetails.auctionStartDate,
     _editionDetails.auctionEndDate,
-    tokenURI(_tokenId)
+    tokenURISafe(_tokenId)
     );
   }
 
@@ -422,7 +436,7 @@ HasNoEther
     uint256 _editionNumber,
     bytes32 _editionData,
     uint256 _available,
-    uint256 _sold,
+    uint256 _minted,
     address _artistAccount
   ) {
     EditionDetails memory _editionDetails = editionNumberToEditionDetails[editionNumber];
@@ -430,12 +444,19 @@ HasNoEther
     editionNumber,
     _editionDetails.editionData,
     _editionDetails.available,
-    _editionDetails.sold,
+    _editionDetails.minted,
     _editionDetails.artistAccount
     );
   }
 
+  // Throws
   function tokenURI(uint256 _tokenId) public view returns (string) {
+    require(exists(_tokenId));
+    return Strings.strConcat(tokenBaseURI, tokenURIs[_tokenId]);
+  }
+
+  // no throws...? is this required
+  function tokenURISafe(uint256 _tokenId) public view returns (string) {
     return Strings.strConcat(tokenBaseURI, tokenURIs[_tokenId]);
   }
 
@@ -448,19 +469,19 @@ HasNoEther
     return ownedTokens[_owner];
   }
 
-  function editionTotal(uint256 _editionNumber) public view returns (uint256) {
+  function numberAvailable(uint256 _editionNumber) public view returns (uint256) {
     EditionDetails memory _editionDetails = editionNumberToEditionDetails[_editionNumber];
     return _editionDetails.available;
   }
 
-  function sold(uint256 _editionNumber) public view returns (uint256) {
+  function numberMinted(uint256 _editionNumber) public view returns (uint256) {
     EditionDetails memory _editionDetails = editionNumberToEditionDetails[_editionNumber];
-    return _editionDetails.sold;
+    return _editionDetails.minted;
   }
 
   function totalRemaining(uint256 _editionNumber) public view returns (uint256) {
     EditionDetails memory _editionDetails = editionNumberToEditionDetails[_editionNumber];
-    return _editionDetails.available - _editionDetails.sold;
+    return _editionDetails.available.sub(_editionDetails.minted);
   }
 
   function tokensOfEdition(uint256 _editionNumber) public view returns (uint256[] _tokenIds) {
