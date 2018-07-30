@@ -1,8 +1,8 @@
 const KnownOriginDigitalAsset = artifacts.require('KnownOriginDigitalAsset');
 
-const loadSeedData = require('../scripts/migrations/load-seed-data-v2');
-const loadContractCredentials = require('../scripts/migrations/loadContractCredentials');
-const blocktimestampPlusOne = require('../scripts/migrations/blocktimestampPlusOne');
+const loadSeedData = require('../../scripts/migrations/load-seed-data-v2');
+const loadContractCredentials = require('../../scripts/migrations/loadContractCredentials');
+const blocktimestampPlusOne = require('../../scripts/migrations/blocktimestampPlusOne');
 
 const assetType = 'DIG'; // 3
 const artistCode = 'DWW'; // 3
