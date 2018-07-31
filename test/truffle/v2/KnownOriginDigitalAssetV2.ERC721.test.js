@@ -1,6 +1,7 @@
 const assertRevert = require('../../helpers/assertRevert');
-const sendTransaction = require('../../helpers/sendTransaction').sendTransaction;
+const {sendTransaction} = require('../../helpers/sendTransaction');
 const etherToWei = require('../../helpers/etherToWei');
+const {shouldSupportInterfaces} = require('./SupportsInterface.behavior');
 
 const advanceBlock = require('../../helpers/advanceToBlock');
 
@@ -26,18 +27,15 @@ contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
   const name = 'KnownOriginDigitalAsset';
   const symbol = 'KODA';
 
-  const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
-  const RECEIVER_MAGIC_VALUE = '0x150b7a02';
-
   const editionType = 1;
 
   const editionNumber1 = 100000;
-  const editionData1 = "";
+  const editionData1 = "editionData1";
   const editionTokenUri1 = "edtion1";
   const edition1Price = etherToWei(0.1);
 
   const editionNumber2 = 200000;
-  const editionData2 = "";
+  const editionData2 = "editionData2";
   const editionTokenUri2 = "edtion2";
   const edition2Price = etherToWei(0.1);
 
@@ -57,7 +55,7 @@ contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
   });
 
   // TODO expand on this, just checking the data goes up
-  describe.only('validate created edition content', async function () {
+  describe('validate created edition content', async function () {
 
     it('edition 1', async function () {
       let data = await this.token.getRawEditionData(editionNumber1);
@@ -71,7 +69,7 @@ contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
 
   });
 
-  describe('like a full ERC721', function () {
+  describe.only('like a full ERC721', function () {
     const firstTokenId = 100001;
     const secondTokenId = 200001;
 
@@ -253,7 +251,6 @@ contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
           count.toNumber().should.be.equal(3);
 
           const tokensListed = await Promise.all(_.range(3).map(i => this.token.tokenByIndex(i)));
-          console.log("tokensListed", tokensListed);
 
           const expectedTokens = _.filter(
             [firstTokenId, secondTokenId, ...newIds],
@@ -264,6 +261,15 @@ contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
         });
       });
     });
+
+    shouldSupportInterfaces([
+      'ERC165',
+      'ERC721',
+      'ERC721Exists',
+      'ERC721Enumerable',
+      'ERC721Metadata',
+    ]);
+
   });
 
 });

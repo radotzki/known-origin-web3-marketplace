@@ -124,7 +124,8 @@
     "webpack-dev-middleware": "^1.10.0",
     "webpack-hot-middleware": "^2.18.0",
     "webpack-merge": "^4.1.0",
-    "ganache-cli": "^6.1.0"
+    "ganache-cli": "^6.1.0",
+    "web3-utils": "^1.0.0-beta.34"
   },
   "engines": {
     "node": ">= 8.0.0",
