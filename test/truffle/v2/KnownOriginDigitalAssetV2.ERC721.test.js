@@ -45,7 +45,6 @@ contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
   });
 
   beforeEach(async function () {
-
     this.token = await KnownOriginDigitalAssetV2.new({from: _owner});
   });
 
@@ -69,7 +68,7 @@ contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
 
   });
 
-  describe.only('like a full ERC721', function () {
+  describe('like a full ERC721', function () {
     const firstTokenId = 100001;
     const secondTokenId = 200001;
 
@@ -261,15 +260,117 @@ contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
         });
       });
     });
-
-    shouldSupportInterfaces([
-      'ERC165',
-      'ERC721',
-      'ERC721Exists',
-      'ERC721Enumerable',
-      'ERC721Metadata',
-    ]);
-
   });
+
+  describe('like a mintable and burnable ERC721Token', function () {
+    const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+    const firstTokenId = 100001;
+    const secondTokenId = 200001;
+    const thirdTokenId = 100002;
+    const unknownTokenId = 99;
+    const unknownEdition = 300000;
+    const creator = account1;
+
+    beforeEach(async function () {
+      await this.token.mintTo(creator, editionNumber1, {from: creator, value: edition1Price});
+      await this.token.mintTo(creator, editionNumber2, {from: creator, value: edition2Price});
+    });
+
+    describe('mint', function () {
+      const to = account1;
+      let logs = null;
+
+      describe('when successful', function () {
+        beforeEach(async function () {
+          const result = await this.token.mintTo(to, editionNumber1, {value: edition1Price});
+          logs = result.logs;
+        });
+
+        it('assigns the token to the new owner', async function () {
+          const owner = await this.token.ownerOf(thirdTokenId);
+          owner.should.be.equal(to);
+        });
+
+        it('increases the balance of its owner', async function () {
+          const balance = await this.token.balanceOf(to);
+          balance.should.be.bignumber.equal(3);
+        });
+
+        it('emits a transfer event', async function () {
+          logs.length.should.be.equal(2);
+          logs[0].event.should.be.eq('Transfer');
+          logs[0].args._from.should.be.equal(ZERO_ADDRESS);
+          logs[0].args._to.should.be.equal(to);
+          logs[0].args._tokenId.should.be.bignumber.equal(thirdTokenId);
+        });
+      });
+
+      describe('when the given owner address is the zero address', function () {
+        it('reverts', async function () {
+          await assertRevert(this.token.mintTo(ZERO_ADDRESS, editionNumber1, {value: edition1Price}));
+        });
+      });
+
+      describe('when the given token ID was NOT tracked by this contract', function () {
+        it('reverts', async function () {
+          await assertRevert(this.token.mintTo(account1, unknownEdition, {value: edition1Price}));
+        });
+      });
+    });
+
+    describe('burn', function () {
+      const tokenId = firstTokenId;
+      const sender = creator;
+      let logs = null;
+
+      describe('when successful', function () {
+        beforeEach(async function () {
+          const result = await this.token.burn(tokenId, {from: sender});
+          logs = result.logs;
+        });
+
+        it('burns the given token ID and adjusts the balance of the owner', async function () {
+          await assertRevert(this.token.ownerOf(tokenId));
+          const balance = await this.token.balanceOf(sender);
+          balance.should.be.bignumber.equal(1);
+        });
+
+        it('emits a burn event', async function () {
+          logs.length.should.be.equal(1);
+          logs[0].event.should.be.eq('Transfer');
+          logs[0].args._from.should.be.equal(sender);
+          logs[0].args._to.should.be.equal(ZERO_ADDRESS);
+          logs[0].args._tokenId.should.be.bignumber.equal(tokenId);
+        });
+      });
+
+      describe('when there is a previous approval', function () {
+        beforeEach(async function () {
+          await this.token.approve(account2, tokenId, {from: sender});
+          const result = await this.token.burn(tokenId, {from: sender});
+          logs = result.logs;
+        });
+
+        it('clears the approval', async function () {
+          const approvedAccount = await this.token.getApproved(tokenId);
+          approvedAccount.should.be.equal(ZERO_ADDRESS);
+        });
+      });
+
+      describe('when the given token ID was not tracked by this contract', function () {
+        it('reverts', async function () {
+          await assertRevert(this.token.burn(unknownTokenId, {from: creator}));
+        });
+      });
+    });
+  });
+
+  shouldSupportInterfaces([
+    'ERC165',
+    'ERC721',
+    'ERC721Exists',
+    'ERC721Enumerable',
+    'ERC721Metadata',
+  ]);
 
 });

@@ -188,6 +188,9 @@ HasNoEther
     return true;
   }
 
+  // TODO rename mint to purchase, leave mint as KO protected and specific
+  // TODO should this only be allowed for KO whitelist?
+
   // This is the main purchase method
   function mint(uint256 _editionNumber)
   public
@@ -201,12 +204,11 @@ HasNoEther
     return mintTo(msg.sender, _editionNumber);
   }
 
-  // TODO should this only be allowed for KO whitelist?
   function mintTo(address _to, uint256 _editionNumber)
   public
   payable // TODO is payable valid on this as we may want to mint to another contract which sets price?
 //  onlyAvailableEdition(_editionNumber)
-//  onlyValidEdition(_editionNumber)
+  onlyValidEdition(_editionNumber)
 //  onlyActiveEdition(_editionNumber) // TODO is this correct to enforce this?
 //  onlyAfterPurchaseFromTime(_editionNumber) // TODO is this correct to enforce this?
   returns (uint256) {
@@ -259,6 +261,9 @@ HasNoEther
 
   function burn(uint256 _tokenId) public {
     // TODO validation
+
+    require(exists(_tokenId));
+    require(ownerOf(_tokenId) == msg.sender);
 
     // TODO ensure we can burn from other accounts/contracts?
     super._burn(msg.sender, _tokenId);
