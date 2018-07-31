@@ -8,7 +8,7 @@ require('chai')
 describe('testing gallery and metatdata', function () {
 
   beforeEach(function (done) {
-    this.artistsData = require('../../../src/store/artist-data.js');
+    this.artistsData = require('../../src/store/artist-data.js');
     this.galleryData = JSON.parse(fs.readFileSync('./config/data/gallery.json'));
 
     this.artistCodes = _.map(this.artistsData, function (data) {

@@ -17,7 +17,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-contract('KnownOriginDigitalAsset', function (accounts) {
+contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
   const _developmentAccount = accounts[0];
   const _curatorAccount = accounts[1];
   const _artist = accounts[2];

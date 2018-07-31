@@ -12,7 +12,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-contract('KnownOriginDigitalAsset', function (accounts) {
+contract('KnownOriginDigitalAssetV1 erc165', function (accounts) {
   const _developmentAccount = accounts[0];
   const _curatorAccount = accounts[1];
 

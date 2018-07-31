@@ -3,7 +3,7 @@ pragma solidity ^0.4.21;
 
 import "./ERC721Token.sol";
 
-import "./Strings.sol";
+import "../Strings.sol";
 
 import "./ERC165.sol";
 
