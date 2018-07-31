@@ -16,12 +16,14 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
+contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
   const _owner = accounts[0];
 
   const account1 = accounts[1];
 
   const account2 = accounts[2];
+
+  const account3 = accounts[4];
 
   const artistAccount = accounts[8];
 
@@ -32,12 +34,12 @@ contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
 
   const editionNumber1 = 100000;
   const editionData1 = "editionData1";
-  const editionTokenUri1 = "edtion1";
+  const editionTokenUri1 = "edition1";
   const edition1Price = etherToWei(0.1);
 
   const editionNumber2 = 200000;
   const editionData2 = "editionData2";
-  const editionTokenUri2 = "edtion2";
+  const editionTokenUri2 = "edition2";
   const edition2Price = etherToWei(0.1);
 
   before(async function () {
@@ -159,7 +161,7 @@ contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
 
       it('returns setup metadata for token', async function () {
         const uri = await this.token.tokenURI(firstTokenId);
-        uri.should.be.equal(`https://ipfs.infura.io/ipfs/edtion1`);
+        uri.should.be.equal(`https://ipfs.infura.io/ipfs/${editionTokenUri1}`);
       });
 
       it('reverts when querying metadata for non existent token id', async function () {
@@ -440,7 +442,7 @@ contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
       });
     });
 
-    describe.only('transfers', function () {
+    describe('transfers', function () {
       const owner = account1;
       const approved = account2;
       const operator = accounts[3];
@@ -699,8 +701,8 @@ contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
 
     describe('approve', function () {
       const tokenId = firstTokenId;
-      const sender = creator;
-      const to = accounts[1];
+      const sender = account1;
+      const to = account3;
 
       let logs = null;
 
@@ -818,10 +820,10 @@ contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
     });
 
     describe('setApprovalForAll', function () {
-      const sender = creator;
+      const sender = account1;
 
       context('when the operator willing to approve is not the owner', function () {
-        const operator = accounts[1];
+        const operator = account2;
 
         context('when there is no operator approval set by the sender', function () {
           it('approves the operator', async function () {

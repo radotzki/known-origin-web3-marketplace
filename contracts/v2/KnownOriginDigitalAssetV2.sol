@@ -34,6 +34,8 @@ HasNoEther
 
   uint32 constant internal MAX_UINT32 = ~uint32(0);
 
+  string public constant ROLE_PARTNER = "partner";
+
   ////////////////
   // Properties //
   ////////////////
@@ -99,6 +101,12 @@ HasNoEther
     _;
   }
 
+  modifier onlyIfPartnerOrKnownOrigin() {
+    require(whitelist(msg.sender));
+    checkRole(msg.sender, ROLE_PARTNER);
+    _;
+  }
+
   modifier onlyAvailableEdition(uint256 _editionNumber) {
     require(editionNumberToEditionDetails[_editionNumber].minted < editionNumberToEditionDetails[_editionNumber].available);
     _;
@@ -110,7 +118,7 @@ HasNoEther
   }
 
   modifier onlyValidEdition(uint256 _editionNumber) {
-    require(editionNumberToEditionDetails[_editionNumber].editionNumber == _editionNumber);
+    require(editionNumberToEditionDetails[_editionNumber].available > 0);
     _;
   }
 
@@ -125,12 +133,11 @@ HasNoEther
    * Constructor
    */
   constructor () public ERC721Token("KnownOriginDigitalAsset", "KODA") {
-    addAddressToWhitelist(msg.sender); // whitelist owner
+    addAddressToWhitelist(msg.sender);
+    // Whitelist owner
+    addRole(msg.sender, ROLE_PARTNER);
+    // Add owner as partner as well
   }
-
-  // TODO partner whitelist
-
-  // TODO partner mint functions
 
   // TODO add create method for inactive types
 
@@ -138,24 +145,41 @@ HasNoEther
 
   // Called once per edition
   function createEdition(
-    uint256 _editionNumber,
-    bytes32 _editionData,
-    uint8 _editionType,
-    uint32 _auctionStartDate,
-    uint32 _auctionEndDate,
-    address _artistAccount,
-    uint256 _priceInWei,
-    string _tokenURI,
-    uint8 _available
+    uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
+    uint32 _auctionStartDate, uint32 _auctionEndDate,
+    address _artistAccount, uint256 _priceInWei, string _tokenURI, uint8 _available
   )
   public
   onlyKnownOrigin
   returns (bool)
   {
+    return _createEdition(_editionNumber, _editionData, _editionType, _auctionStartDate, _auctionEndDate, _artistAccount, _priceInWei, _tokenURI, _available, true);
+  }
+
+  function createDisabledEdition(
+    uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
+    uint32 _auctionStartDate, uint32 _auctionEndDate,
+    address _artistAccount, uint256 _priceInWei, string _tokenURI, uint8 _available
+  )
+  public
+  onlyIfPartnerOrKnownOrigin
+  returns (bool)
+  {
+    return _createEdition(_editionNumber, _editionData, _editionType, _auctionStartDate, _auctionEndDate, _artistAccount, _priceInWei, _tokenURI, _available, false);
+  }
+
+  function _createEdition(
+    uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
+    uint32 _auctionStartDate, uint32 _auctionEndDate,
+    address _artistAccount, uint256 _priceInWei, string _tokenURI, uint8 _available, bool active
+  )
+  internal
+  returns (bool)
+  {
     // TODO validation
 
     uint32 auctionEndDate = MAX_UINT32;
-    if(_auctionEndDate != 0){
+    if (_auctionEndDate != 0) {
       auctionEndDate = _auctionEndDate;
     }
 
@@ -170,9 +194,9 @@ HasNoEther
       tokenURI : _tokenURI,
       minted : 0, // default to all available
       available : _available,
-      active: true
-    // TODO add artist edition commission
-    });
+      active : active
+      // TODO add artist edition commission
+      });
 
     // TODO how to handle an artists with multiple accounts i.e. CJ changed accounts between editions?
 
@@ -188,6 +212,7 @@ HasNoEther
     return true;
   }
 
+
   // TODO rename mint to purchase, leave mint as KO protected and specific
   // TODO should this only be allowed for KO whitelist?
 
@@ -195,10 +220,10 @@ HasNoEther
   function mint(uint256 _editionNumber)
   public
   payable
-//  onlyAvailableEdition(_editionNumber)
-//  onlyValidEdition(_editionNumber)
-//  onlyActiveEdition(_editionNumber)
-//  onlyAfterPurchaseFromTime(_editionNumber)
+  onlyAvailableEdition(_editionNumber)
+  onlyValidEdition(_editionNumber)
+  onlyActiveEdition(_editionNumber)
+    //  onlyAfterPurchaseFromTime(_editionNumber)
   returns (uint256)
   {
     return mintTo(msg.sender, _editionNumber);
@@ -206,11 +231,11 @@ HasNoEther
 
   function mintTo(address _to, uint256 _editionNumber)
   public
-  payable // TODO is payable valid on this as we may want to mint to another contract which sets price?
-//  onlyAvailableEdition(_editionNumber)
+  payable
+  onlyAvailableEdition(_editionNumber)
   onlyValidEdition(_editionNumber)
-//  onlyActiveEdition(_editionNumber) // TODO is this correct to enforce this?
-//  onlyAfterPurchaseFromTime(_editionNumber) // TODO is this correct to enforce this?
+  onlyActiveEdition(_editionNumber)
+    //  onlyAfterPurchaseFromTime(_editionNumber)
   returns (uint256) {
 
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
@@ -249,15 +274,15 @@ HasNoEther
     return _tokenId;
   }
 
-// TODO add method where KO can mint to address but without paying, promos and games etc
-//  function knownOriginMint(address _to, uint256 _editionNumber)
-//  public
-//  onlyKnownOrigin
-//  onlyAvailableEdition(_editionNumber)
-//  onlyValidEdition(_editionNumber)
-//  returns (bool) {
-//
-//  }
+  // TODO add method where KO can mint to address but without paying, promos and games etc
+  //  function knownOriginMint(address _to, uint256 _editionNumber)
+  //  public
+  //  onlyKnownOrigin
+  //  onlyAvailableEdition(_editionNumber)
+  //  onlyValidEdition(_editionNumber)
+  //  returns (bool) {
+  //
+  //  }
 
   function burn(uint256 _tokenId) public {
     // TODO validation
@@ -291,9 +316,7 @@ HasNoEther
     _setTokenURI(_tokenId, _uri);
   }
 
-  // TODO update URI method for edition not token ID setEditionTokenURI()
-
-  function updateEditionTokenURI(uint256 _editionNumber, string _uri)
+  function setEditionTokenURI(uint256 _editionNumber, string _uri)
   external
   onlyKnownOrigin
   onlyValidEdition(_editionNumber) {
@@ -367,17 +390,17 @@ HasNoEther
   ) {
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[editionNumber];
     return (
-      _editionDetails.editionNumber,
-      _editionDetails.editionData,
-      _editionDetails.editionType,
-      _editionDetails.auctionStartDate,
-      _editionDetails.auctionEndDate,
-      _editionDetails.artistAccount,
-      _editionDetails.priceInWei,
-      _editionDetails.tokenURI,
-      _editionDetails.minted,
-      _editionDetails.available,
-      _editionDetails.active
+    _editionDetails.editionNumber,
+    _editionDetails.editionData,
+    _editionDetails.editionType,
+    _editionDetails.auctionStartDate,
+    _editionDetails.auctionEndDate,
+    _editionDetails.artistAccount,
+    _editionDetails.priceInWei,
+    _editionDetails.tokenURI,
+    _editionDetails.minted,
+    _editionDetails.available,
+    _editionDetails.active
     );
   }
 
@@ -509,7 +532,7 @@ HasNoEther
   }
 
   function priceInWeiToken(uint256 _tokenId) public view returns (uint256 _priceInWei) {
-    uint256 _editionNumber  = tokenIdToEditionNumber[_tokenId];
+    uint256 _editionNumber = tokenIdToEditionNumber[_tokenId];
     return priceInWeiEdition(_editionNumber);
   }
 
