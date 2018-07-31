@@ -71,7 +71,7 @@ contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
 
   });
 
-  describe.only('like a full ERC721', function () {
+  describe('like a full ERC721', function () {
     const firstTokenId = 100001;
     const secondTokenId = 200001;
 
@@ -80,21 +80,21 @@ contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
       await this.token.mint(editionNumber2, {from: account1, value: edition2Price}); // tokenId 200001
     });
 
-    it('adjusts owner tokens by index', async function () {
-      const token = await this.token.tokenOfOwnerByIndex(account1, 0);
-      token.toNumber().should.be.equal(firstTokenId);
-    });
-
-    it('adjusts all tokens list', async function () {
-      const newToken = await this.token.tokenByIndex(1);
-      newToken.toNumber().should.be.equal(secondTokenId);
-    });
-
     describe('mint', function () {
       const thirdTokenId = 100002;
 
       beforeEach(async function () {
         await this.token.mintTo(account2, editionNumber1, {from: account2, value: edition1Price});
+      });
+
+      it(`adjusts owner tokens by index - [${firstTokenId}]`, async function () {
+        const token = await this.token.tokenOfOwnerByIndex(account1, 0);
+        token.toNumber().should.be.equal(firstTokenId);
+      });
+
+      it(`adjusts all tokens list - [${secondTokenId}]`, async function () {
+        const newToken = await this.token.tokenByIndex(1);
+        newToken.toNumber().should.be.equal(secondTokenId);
       });
 
       it('adjusts owner tokens by index', async function () {
@@ -132,32 +132,6 @@ contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
         await assertRevert(this.token.tokenByIndex(0));
       });
     });
-
-    // TODO do we need to include some on these in burn() ?
-    // describe.skip('removeTokenFrom', function () {
-    //   beforeEach(async function () {
-    //     await this.token._removeTokenFrom(account1, firstTokenId, {from: account1});
-    //   });
-    //
-    //   it('has been removed', async function () {
-    //     await assertRevert(this.token.tokenOfOwnerByIndex(account1, 1));
-    //   });
-    //
-    //   it('adjusts token list', async function () {
-    //     const token = await this.token.tokenOfOwnerByIndex(account1, 0);
-    //     token.toNumber().should.be.equal(secondTokenId);
-    //   });
-    //
-    //   it('adjusts owner count', async function () {
-    //     const count = await this.token.balanceOf(account1);
-    //     count.toNumber().should.be.equal(1);
-    //   });
-    //
-    //   it('does not adjust supply', async function () {
-    //     const total = await this.token.totalSupply();
-    //     total.toNumber().should.be.equal(2);
-    //   });
-    // });
 
     describe('metadata', function () {
       const sampleUri = 'updatedTokenMetadata';
@@ -246,7 +220,7 @@ contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
       });
     });
 
-    describe.skip('tokenByIndex', function () {
+    describe('tokenByIndex', function () {
       it('should return all tokens', async function () {
         const tokensListed = await Promise.all(_.range(2).map(i => this.token.tokenByIndex(i)));
         tokensListed.map(t => t.toNumber()).should.have.members([firstTokenId, secondTokenId]);
@@ -258,31 +232,35 @@ contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
 
       [{
         tokenId: firstTokenId,
-        edition: editionNumber1
+        edition: editionNumber1,
+        value: edition1Price,
+        newIds: [100002, 100003]
       }, {
         tokenId: secondTokenId,
-        edition: editionNumber2
-      }].forEach(function ({tokenId, edition}) {
+        edition: editionNumber2,
+        value: edition1Price,
+        newIds: [200002, 200003]
+      }].forEach(function ({tokenId, edition, value, newIds}) {
         it(`should return all tokens after burning token ${tokenId} and minting new tokens in edition ${edition}`, async function () {
+          const from = account1;
 
-          const owner = account1;
+          await this.token.burn(tokenId, {from});
 
-          await this.token.burn(tokenId, {from: owner});
-          const newTokenId = await this.token.mint(edition, {from: owner});
-          console.log(newTokenId);
-
-          const anotherNewTokenId = await this.token.mint(edition, {from: owner});
-          console.log(anotherNewTokenId);
+          await this.token.mint(edition, {from, value});
+          await this.token.mint(edition, {from, value});
 
           const count = await this.token.totalSupply();
           count.toNumber().should.be.equal(3);
 
           const tokensListed = await Promise.all(_.range(3).map(i => this.token.tokenByIndex(i)));
+          console.log("tokensListed", tokensListed);
+
           const expectedTokens = _.filter(
-            [firstTokenId, secondTokenId, newTokenId, anotherNewTokenId],
+            [firstTokenId, secondTokenId, ...newIds],
             x => (x !== tokenId)
           );
-          tokensListed.map(t => t.toNumber()).should.have.members(expectedTokens);
+          const toNumberTokens = tokensListed.map(t => t.toNumber());
+          toNumberTokens.should.have.members(expectedTokens);
         });
       });
     });

@@ -260,12 +260,6 @@ HasNoEther
   function burn(uint256 _tokenId) public {
     // TODO validation
 
-    require(exists(_tokenId));
-    require(ownerOf(_tokenId) == msg.sender);
-
-    uint256 editionNumber = tokenIdToEditionNumber[_tokenId];
-    EditionDetails memory _editionDetails = editionNumberToEditionDetails[editionNumber];
-
     // TODO ensure we can burn from other accounts/contracts?
     super._burn(msg.sender, _tokenId);
 

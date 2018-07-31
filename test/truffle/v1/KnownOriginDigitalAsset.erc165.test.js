@@ -1,7 +1,7 @@
-const advanceBlock = require('../helpers/advanceToBlock');
-const increaseTimeTo = require('../helpers/increaseTime').increaseTimeTo;
-const duration = require('../helpers/increaseTime').duration;
-const latestTime = require('../helpers/latestTime');
+const advanceBlock = require('../../helpers/advanceToBlock');
+const increaseTimeTo = require('../../helpers/increaseTime').increaseTimeTo;
+const duration = require('../../helpers/increaseTime').duration;
+const latestTime = require('../../helpers/latestTime');
 
 const BigNumber = web3.BigNumber;
 

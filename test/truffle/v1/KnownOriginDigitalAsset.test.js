@@ -1,10 +1,10 @@
-const assertRevert = require('../helpers/assertRevert');
-const etherToWei = require('../helpers/etherToWei');
+const assertRevert = require('../../helpers/assertRevert');
+const etherToWei = require('../../helpers/etherToWei');
 
-const advanceBlock = require('../helpers/advanceToBlock');
-const increaseTimeTo = require('../helpers/increaseTime').increaseTimeTo;
-const duration = require('../helpers/increaseTime').duration;
-const latestTime = require('../helpers/latestTime');
+const advanceBlock = require('../../helpers/advanceToBlock');
+const increaseTimeTo = require('../../helpers/increaseTime').increaseTimeTo;
+const duration = require('../../helpers/increaseTime').duration;
+const latestTime = require('../../helpers/latestTime');
 
 const _ = require('lodash');
 
