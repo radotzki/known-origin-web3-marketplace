@@ -171,7 +171,8 @@ HasNoEther
   function _createEdition(
     uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
     uint32 _auctionStartDate, uint32 _auctionEndDate,
-    address _artistAccount, uint256 _priceInWei, string _tokenURI, uint8 _available, bool active
+    address _artistAccount, uint256 _priceInWei, string _tokenURI,
+    uint8 _available, bool active
   )
   internal
   returns (bool)
@@ -374,6 +375,22 @@ HasNoEther
   ///////////////////
   // Query Methods //
   ///////////////////
+
+  function getAllEditionsForType(uint8 _type) public view returns (uint256[] _editionNumbers) {
+    return editionTypeToEditionNumber[_type];
+  }
+
+  function getEditionOfTokenId(uint256 _tokenId) public view returns (uint256 _editionNumber) {
+    return tokenIdToEditionNumber[_tokenId];
+  }
+
+  function getEditionOfTokenId(uint256 _editionNumber) public view returns (uint256[] _tokenIds) {
+    return editionNumberToTokenIds[_editionNumber];
+  }
+
+  function getEditionOfTokenId(address _artistsAccount) public view returns (uint256[] _editionNumbers) {
+    return artistToEditionNumbers[_artistsAccount];
+  }
 
   function getRawEditionData(uint256 editionNumber) public view returns (
     uint256 _editionNumber,
