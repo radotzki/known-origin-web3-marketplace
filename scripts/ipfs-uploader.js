@@ -66,10 +66,10 @@ const uploadMetaData = ({ipfsPath, edition}) => {
       let metaPath = _.last(res);
 
       let ipfsData = {
-        name: `ArtBlocks.io`,
+        name: `INTERFACE TOKEN`,
         description: `${meta.description}`,
         attributes: meta.attributes,
-        external_uri: `https://www.artblocks.io/`,
+        external_uri: `https://www.interfacetoken.com/`,
         image: `https://ipfs.infura.io/ipfs/${metaPath.hash}/image`
         // meta: `https://ipfs.infura.io/ipfs/${metaPath.hash}/other`
       };

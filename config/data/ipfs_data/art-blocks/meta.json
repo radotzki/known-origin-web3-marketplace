@@ -1,12 +1,13 @@
 {
-  "artist": "Art Blocks",
-  "description": "Decentralized Art Blocks",
+  "artist": "Interface Token",
+  "description": "Interface Tokens provide a transparent mechanism for a decentralized, transferrable, cross-platform blockchain identity.",
   "attributes": {
     "tags": [
       "digital",
-      "art",
-      "blocks"
+      "interface",
+      "token",
+      "TOKN"
     ]
   },
-  "external_uri": "https://www.artblocks.io/"
+  "external_uri": "https://www.interfacetoken.com/"
 }
