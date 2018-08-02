@@ -50,30 +50,22 @@ HasNoEther
   // number of assets sold of any type
   uint256 public totalNumberMinted;
 
-  // TODO a method to delete edition data - only on unsold etc?
-  // TODO add burn method
-
-  // TODO how does total supply work when its mint on demand?
-  // TODO how does enumeration work when its mint on demand?
-
   // Object for edition details
   struct EditionDetails {
-    uint256 editionNumber; // the range e.g. 10000
-    bytes32 editionData; // some data about the edition
-    uint8 editionType; // e.g. 1 = KODA V1 physical, 2 = KODA V1 digital, 3 = KODA V2, 4 = KOTA
-
-    // TODO method checking active (dates)
+    // Identifiers
+    uint256 editionNumber;    // the range e.g. 10000
+    bytes32 editionData;      // some data about the edition
+    uint8 editionType;        // e.g. 1 = KODA V1 physical, 2 = KODA V1 digital, 3 = KODA V2, 4 = KOTA
+    // Config
     uint32 auctionStartDate;
     uint32 auctionEndDate;
-
     address artistAccount; // TODO duplicated between editions
     uint256 priceInWei;
-    string tokenURI;
-
+    string tokenURI;          // IPFS Hash only
     // Counters
-    uint8 minted;
-    uint8 available;
-    bool active;
+    uint8 minted;             // Total purchases/minted
+    uint8 available;          // Number with edition
+    bool active;              // root on/off edition control
   }
 
   mapping(uint256 => EditionDetails) internal editionNumberToEditionDetails;
@@ -85,6 +77,8 @@ HasNoEther
   mapping(address => uint256[]) internal artistToEditionNumbers;
 
   mapping(uint8 => uint256[]) internal editionTypeToEditionNumber;
+
+  // TODO Add index to track the position in the array
 
   // TODO master list of editions - on creation
 
@@ -299,6 +293,23 @@ HasNoEther
     // TODO delete any token mappings
   }
 
+  function burnEdition(uint256 _editionNumber)
+  onlyKnownOrigin
+  onlyValidEdition(_editionNumber)
+  public
+  {
+    // TODO a method to delete edition data - only on unsold etc?
+    EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
+
+    // Check edition not already had editions minted
+    // If this is the case - disable edition OR lower available to 0
+    require(_editionDetails.minted == 0);
+
+    // TODO delete all edition refs
+
+    delete editionNumberToEditionDetails[_editionNumber];
+  }
+
   ///////////////////////////
   // Edition/Token Updates //
   ///////////////////////////
@@ -384,11 +395,11 @@ HasNoEther
     return tokenIdToEditionNumber[_tokenId];
   }
 
-  function getEditionOfTokenId(uint256 _editionNumber) public view returns (uint256[] _tokenIds) {
+  function getTokenIdsFromEdition(uint256 _editionNumber) public view returns (uint256[] _tokenIds) {
     return editionNumberToTokenIds[_editionNumber];
   }
 
-  function getEditionOfTokenId(address _artistsAccount) public view returns (uint256[] _editionNumbers) {
+  function getEditionsOfArtistAccount(address _artistsAccount) public view returns (uint256[] _editionNumbers) {
     return artistToEditionNumbers[_artistsAccount];
   }
 
