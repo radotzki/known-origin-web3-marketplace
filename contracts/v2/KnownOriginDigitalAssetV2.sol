@@ -82,8 +82,10 @@ HasNoEther
   // TODO should we allow edition data to be burnt vs setting inactive or lowering available?
 
   mapping(address => uint256[]) internal artistToEditionNumbers;
+  mapping(uint256 => uint256) internal editionNumberToArtistIndex;
 
   mapping(uint8 => uint256[]) internal editionTypeToEditionNumber;
+  mapping(uint256 => uint256) internal editionNumberToTypeIndex;
 
   // TODO master list of editions - on creation
   // TODO master list of active editions - on creation and on toggle of active
@@ -98,6 +100,7 @@ HasNoEther
     _;
   }
 
+  // TODO is this over kill?
   modifier onlyIfPartnerOrKnownOrigin() {
     require(whitelist(msg.sender));
     checkRole(msg.sender, ROLE_PARTNER);
@@ -220,11 +223,24 @@ HasNoEther
     // /tokenId - DONE
     // /artist - DONE
     // /type - DONE
-    // /editionNumber
-    artistToEditionNumbers[_artistAccount].push(_editionNumber);
-    editionTypeToEditionNumber[_editionType].push(_editionNumber);
+    // /editionNumber- DONE
+
+    _updateArtistLookData(_artistAccount, _editionNumber);
+    _updateEditionTypeLookData(_editionType, _editionNumber);
 
     return true;
+  }
+
+  function _updateEditionTypeLookData(uint8 _editionType, uint256 _editionNumber) internal {
+    uint256 typeEditionIndex = editionTypeToEditionNumber[_editionType].length;
+    editionTypeToEditionNumber[_editionType].push(_editionNumber);
+    editionNumberToTypeIndex[_editionNumber] = typeEditionIndex;
+  }
+
+  function _updateArtistLookData(address _artistAccount, uint256 _editionNumber) internal {
+    uint256 artistEditionIndex = artistToEditionNumbers[_artistAccount].length;
+    artistToEditionNumbers[_artistAccount].push(_editionNumber);
+    editionNumberToArtistIndex[_editionNumber] = artistEditionIndex;
   }
 
   // This is the main purchase method
@@ -362,7 +378,6 @@ HasNoEther
   function setTokenURI(uint256 _tokenId, string _uri)
   external
   onlyKnownOrigin {
-    // TODO validation - only unsold?
     require(exists(_tokenId));
     _setTokenURI(_tokenId, _uri);
   }
@@ -388,17 +403,45 @@ HasNoEther
 
     EditionDetails storage _originalEditionDetails = editionNumberToEditionDetails[_editionNumber];
 
-    // Maintain existing editions for artists
-    uint256[] storage editionNumbersForArtist = artistToEditionNumbers[_artistAccount];
+    uint256 editionArtistIndex = editionNumberToArtistIndex[_editionNumber];
 
-    // Delete old mapping
-    delete artistToEditionNumbers[_originalEditionDetails.artistAccount];
+    // Get list of editions old artist works with
+    uint256[] storage editionNumbersForArtist = artistToEditionNumbers[_originalEditionDetails.artistAccount];
 
-    // Update edition
+    // Remove edition from artists lists
+    delete editionNumbersForArtist[editionArtistIndex];
+
+    // Add new artists to the list
+    uint256 newArtistsEditionIndex = artistToEditionNumbers[_artistAccount].length;
+    artistToEditionNumbers[_artistAccount].push(_editionNumber);
+    editionNumberToArtistIndex[_editionNumber] = newArtistsEditionIndex;
+
+    // Update the edition
     editionNumberToEditionDetails[_editionNumber].artistAccount = _artistAccount;
+  }
 
-    // Reset editions
-    artistToEditionNumbers[_artistAccount] = editionNumbersForArtist;
+  function updateEditionType(uint256 _editionNumber, uint8 _editionType)
+  external
+  onlyKnownOrigin
+  onlyValidEdition(_editionNumber) {
+
+    EditionDetails storage _originalEditionDetails = editionNumberToEditionDetails[_editionNumber];
+
+    uint256 editionTypeIndex = editionNumberToTypeIndex[_editionNumber];
+
+    // Get list of editions for old type
+    uint256[] storage editionNumbersForType = editionTypeToEditionNumber[_originalEditionDetails.editionType];
+
+    // Remove edition from old type list
+    delete editionNumbersForType[editionTypeIndex];
+
+    // Add new type to the list
+    uint256 newTypeEditionIndex = editionTypeToEditionNumber[_editionType].length;
+    editionTypeToEditionNumber[_editionType].push(_editionNumber);
+    editionNumberToTypeIndex[_editionNumber] = newTypeEditionIndex;
+
+    // Update the edition
+    editionNumberToEditionDetails[_editionNumber].editionType = _editionType;
   }
 
   function updateActive(uint256 _editionNumber, bool _active)
@@ -416,34 +459,37 @@ HasNoEther
     editionNumberToEditionDetails[_editionNumber].available = _available;
   }
 
-  function updateAuctionStartDate(uint256 _editionNumber, uint8 _auctionStartDate)
+  function updateAuctionStartDate(uint256 _editionNumber, uint32 _auctionStartDate)
   external
   onlyKnownOrigin
   onlyValidEdition(_editionNumber) {
     editionNumberToEditionDetails[_editionNumber].auctionStartDate = _auctionStartDate;
   }
 
-  function updateAuctionEndDate(uint256 _editionNumber, uint8 _auctionEndDate)
+  function updateAuctionEndDate(uint256 _editionNumber, uint32 _auctionEndDate)
   external
   onlyKnownOrigin
   onlyValidEdition(_editionNumber) {
     editionNumberToEditionDetails[_editionNumber].auctionEndDate = _auctionEndDate;
   }
 
+  function updateKoCommissionAccount(address _koCommissionAccount)
+  external
+  onlyKnownOrigin {
+    require(_koCommissionAccount != address(0), "Invalid address");
+    koCommissionAccount = _koCommissionAccount;
+  }
+
   ///////////////////
   // Query Methods //
   ///////////////////
 
-  function getAllEditionsForType(uint8 _type) public view returns (uint256[] _editionNumbers) {
+  function editionsForType(uint8 _type) public view returns (uint256[] _editionNumbers) {
     return editionTypeToEditionNumber[_type];
   }
 
   function getEditionOfTokenId(uint256 _tokenId) public view returns (uint256 _editionNumber) {
     return tokenIdToEditionNumber[_tokenId];
-  }
-
-  function getTokenIdsFromEdition(uint256 _editionNumber) public view returns (uint256[] _tokenIds) {
-    return editionNumberToTokenIds[_editionNumber];
   }
 
   function getEditionsOfArtistAccount(address _artistsAccount) public view returns (uint256[] _editionNumbers) {
@@ -457,6 +503,7 @@ HasNoEther
     uint32 _auctionStartDate,
     uint32 _auctionEndDate,
     address _artistAccount,
+    address _artistCommission,
     uint256 _priceInWei,
     string _tokenURI,
     uint8 _minted,
@@ -471,8 +518,9 @@ HasNoEther
     _editionDetails.auctionStartDate,
     _editionDetails.auctionEndDate,
     _editionDetails.artistAccount,
+    _editionDetails.artistCommission,
     _editionDetails.priceInWei,
-    _editionDetails.tokenURI,
+    _editionDetails.tokenURI, // TODO should this return full or hash
     _editionDetails.minted,
     _editionDetails.available,
     _editionDetails.active
@@ -579,6 +627,11 @@ HasNoEther
   function totalRemaining(uint256 _editionNumber) public view returns (uint256) {
     EditionDetails memory _editionDetails = editionNumberToEditionDetails[_editionNumber];
     return _editionDetails.available.sub(_editionDetails.minted);
+  }
+
+  function editionActive(uint256 _editionNumber) public view returns (bool) {
+    EditionDetails memory _editionDetails = editionNumberToEditionDetails[_editionNumber];
+    return _editionDetails.active;
   }
 
   function tokensOfEdition(uint256 _editionNumber) public view returns (uint256[] _tokenIds) {

@@ -16,7 +16,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
+contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
   const _owner = accounts[0];
 
   const account1 = accounts[1];
@@ -55,21 +55,6 @@ contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
   beforeEach(async function () {
     await this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner});
     await this.token.createEdition(editionNumber2, editionData2, editionType, 0, 0, artistAccount, artistCommission, edition2Price, editionTokenUri2, 3, {from: _owner});
-  });
-
-  // TODO expand on this, just checking the data goes up
-  describe('validate created edition content', async function () {
-
-    it('edition 1', async function () {
-      let data = await this.token.getRawEditionData(editionNumber1);
-      console.log(data);
-    });
-
-    it('edition 2', async function () {
-      let data = await this.token.getRawEditionData(editionNumber2);
-      console.log(data);
-    });
-
   });
 
   describe('like a full ERC721', function () {
