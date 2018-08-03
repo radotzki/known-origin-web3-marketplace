@@ -42,7 +42,7 @@ HasNoEther
 
   event Purchase(uint256 indexed _tokenId, uint256 indexed _costInWei, address indexed _buyer);
 
-  string internal tokenBaseURI = "https://ipfs.infura.io/ipfs/";
+  string public tokenBaseURI = "https://ipfs.infura.io/ipfs/";
 
   // the KO account which can receive commission
   address public koCommissionAccount;
@@ -372,6 +372,7 @@ HasNoEther
   function updateTokenBaseURI(string _newBaseURI)
   external
   onlyKnownOrigin {
+    require(bytes(_newBaseURI).length != 0, "Base URI invalid");
     tokenBaseURI = _newBaseURI;
   }
 

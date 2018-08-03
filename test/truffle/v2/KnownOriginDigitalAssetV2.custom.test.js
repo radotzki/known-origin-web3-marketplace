@@ -49,7 +49,7 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
     this.token = await KnownOriginDigitalAssetV2.new({from: _owner});
   });
 
-  describe('ko developer account set correctly', async function () {
+  describe('updateKoCommissionAccount', async function () {
     it('is set on creation', async function () {
       let koCommissionAccount = await this.token.koCommissionAccount();
       koCommissionAccount.should.be.equal(_owner);
@@ -72,7 +72,25 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
   });
 
   describe('updateTokenBaseURI', function () {
+    it('is set on creation', async function () {
+      let tokenBaseURI = await this.token.tokenBaseURI();
+      tokenBaseURI.should.be.equal('https://ipfs.infura.io/ipfs/');
+    });
 
+    it('can be changed', async function () {
+      await this.token.updateTokenBaseURI("http://a-new-ipfs.com");
+
+      let tokenBaseURI = await this.token.tokenBaseURI();
+      tokenBaseURI.should.be.equal("http://a-new-ipfs.com");
+    });
+
+    it('only invokable from KO', async function () {
+      await assertRevert(this.token.updateTokenBaseURI("http://a-new-ipfs.com", {from: account1}));
+    });
+
+    it('cannot set invalid address', async function () {
+      await assertRevert(this.token.updateTokenBaseURI(""));
+    });
   });
 
   describe('edition setup and control', async function () {
