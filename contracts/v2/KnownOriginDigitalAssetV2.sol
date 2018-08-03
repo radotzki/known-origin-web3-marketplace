@@ -254,10 +254,10 @@ HasNoEther
     uint256 _tokenId = _mintToken(_to, _editionNumber);
 
     // Splice funds and handle commissions
-    _handleFunds(_tokenId, _editionNumber);
+    _handleFunds(_editionNumber);
 
     // Broadcast purchase
-    Purchase(_tokenId, msg.value, _to);
+    emit Purchase(_tokenId, msg.value, _to);
 
     return _tokenId;
   }
@@ -266,7 +266,7 @@ HasNoEther
     return _mintToken(_to, _editionNumber);
   }
 
-  function _handleFunds(uint256 _tokenId, uint256 _editionNumber) internal {
+  function _handleFunds(uint256 _editionNumber) internal {
 
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
 
@@ -342,7 +342,7 @@ HasNoEther
     delete tokenIdToEditionNumber[_tokenId];
 
     // Delete tokens associated to the edition
-    uint256[] tokenIdsForEdition = editionNumberToTokenIds[editionNumber];
+    uint256[] storage tokenIdsForEdition = editionNumberToTokenIds[editionNumber];
     uint256 editionTokenIdIndex = editionNumberToTokenIdIndex[_tokenId];
 
     // this will leave a gap of ID zero which we can handle client side
@@ -405,8 +405,8 @@ HasNoEther
   external
   onlyKnownOrigin
   onlyValidEdition(_editionNumber) {
-    EditionDetails storage _originalEditionDetails = editionNumberToEditionDetails[_editionNumber];
-    editionNumberToEditionDetails[_editionNumber].active = _active;
+    EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
+    _editionDetails.active = _active;
   }
 
   function updateAvailable(uint256 _editionNumber, uint8 _available)
