@@ -73,17 +73,16 @@ HasNoEther
   mapping(uint256 => uint256) internal tokenIdToEditionNumber;
 
   mapping(uint256 => uint256[]) internal editionNumberToTokenIds;
+  mapping(uint256 => uint256) internal editionNumberToTokenIdIndex;
+
+  // TODO should we allow edition data to be burnt vs setting inactive or lowering available?
 
   mapping(address => uint256[]) internal artistToEditionNumbers;
 
   mapping(uint8 => uint256[]) internal editionTypeToEditionNumber;
 
-  // TODO Add index to track the position in the array
-
   // TODO master list of editions - on creation
-
   // TODO master list of active editions - on creation and on toggle of active
-
   // TODO master list of active by type
 
   ///////////////
@@ -102,24 +101,23 @@ HasNoEther
   }
 
   modifier onlyAvailableEdition(uint256 _editionNumber) {
-    require(editionNumberToEditionDetails[_editionNumber].minted < editionNumberToEditionDetails[_editionNumber].available);
+    require(editionNumberToEditionDetails[_editionNumber].minted < editionNumberToEditionDetails[_editionNumber].available, "No more editions left to purchase");
     _;
   }
 
   modifier onlyActiveEdition(uint256 _editionNumber) {
-    require(editionNumberToEditionDetails[_editionNumber].active);
+    require(editionNumberToEditionDetails[_editionNumber].active, "Edition not active");
     _;
   }
 
   modifier onlyValidEdition(uint256 _editionNumber) {
-    require(editionNumberToEditionDetails[_editionNumber].available > 0);
+    require(editionNumberToEditionDetails[_editionNumber].available > 0, "No more editions available to purchase");
     _;
   }
 
   modifier onlyAfterPurchaseFromTime(uint256 _editionNumber) {
-    bool afterStartDate = editionNumberToEditionDetails[_editionNumber].auctionStartDate >= block.timestamp;
-    bool beforeStartDate = editionNumberToEditionDetails[_editionNumber].auctionEndDate <= block.timestamp;
-    require(afterStartDate && beforeStartDate);
+    require(editionNumberToEditionDetails[_editionNumber].auctionStartDate >= block.timestamp, "Edition auction not started");
+    require(editionNumberToEditionDetails[_editionNumber].auctionEndDate <= block.timestamp, "Edition auction finished");
     _;
   }
 
@@ -127,15 +125,11 @@ HasNoEther
    * Constructor
    */
   constructor () public ERC721Token("KnownOriginDigitalAsset", "KODA") {
-    addAddressToWhitelist(msg.sender);
     // Whitelist owner
-    addRole(msg.sender, ROLE_PARTNER);
+    addAddressToWhitelist(msg.sender);
     // Add owner as partner as well
+    addRole(msg.sender, ROLE_PARTNER);
   }
-
-  // TODO add create method for inactive types
-
-  // TODO how to handle double spends / accidental buys
 
   // Called once per edition
   function createEdition(
@@ -171,11 +165,25 @@ HasNoEther
   internal
   returns (bool)
   {
-    // TODO validation
+    // Prevent missing edition number
+    require(_editionNumber != 0, "Edition number not provided");
 
-    uint32 auctionEndDate = MAX_UINT32;
-    if (_auctionEndDate != 0) {
-      auctionEndDate = _auctionEndDate;
+    // Prevent missing types
+    require(_editionType != 0, "Edition type not provided");
+
+    // prevent missing token URI
+    require(bytes(_tokenURI).length != 0, "Token URI is missing");
+
+    // prevent empty artists address
+    require(_artistAccount != address(0), "Artist account not provided");
+
+    // prevent duplicate editions
+    require(editionNumberToEditionDetails[_editionNumber].editionNumber == 0, "Edition already in existence");
+
+    // Default end date to max uint32
+    uint32 auctionEndDate = _auctionEndDate;
+    if (_auctionEndDate == 0) {
+      auctionEndDate = MAX_UINT32;
     }
 
     editionNumberToEditionDetails[_editionNumber] = EditionDetails({
@@ -207,35 +215,59 @@ HasNoEther
     return true;
   }
 
-
-  // TODO rename mint to purchase, leave mint as KO protected and specific
-  // TODO should this only be allowed for KO whitelist?
-
   // This is the main purchase method
   function mint(uint256 _editionNumber)
-  public
-  payable
+  public payable
   onlyAvailableEdition(_editionNumber)
   onlyValidEdition(_editionNumber)
   onlyActiveEdition(_editionNumber)
-    //  onlyAfterPurchaseFromTime(_editionNumber)
+    //  onlyAfterPurchaseFromTime(_editionNumber) // TODO this doesnt work
   returns (uint256)
   {
     return mintTo(msg.sender, _editionNumber);
   }
 
   function mintTo(address _to, uint256 _editionNumber)
-  public
-  payable
+  public payable
   onlyAvailableEdition(_editionNumber)
   onlyValidEdition(_editionNumber)
   onlyActiveEdition(_editionNumber)
-    //  onlyAfterPurchaseFromTime(_editionNumber)
+    //  onlyAfterPurchaseFromTime(_editionNumber) // TODO this doesnt work
   returns (uint256) {
 
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
-
     require(msg.value >= _editionDetails.priceInWei);
+
+    // Create the token
+    uint256 _tokenId = _mintToken(_to, _editionNumber);
+
+    // Splice funds and handle commissions
+    _handleFunds(_tokenId, _editionNumber);
+
+    // Broadcast purchase
+    Purchase(_tokenId, msg.value, _to);
+
+    return _tokenId;
+  }
+
+  function koMint(address _to, uint256 _editionNumber) public onlyKnownOrigin onlyValidEdition(_editionNumber) returns (uint256) {
+    return _mintToken(_to, _editionNumber);
+  }
+
+  function _handleFunds(uint256 _tokenId, uint256 _editionNumber) internal {
+
+    // TODO how to handle double spends / accidental buys
+    // TODO handle commission
+    // TODO KO to absorb overspend
+    // TODO handle money transfer
+
+    // Record wei sale value
+    totalPurchaseValueInWei = totalPurchaseValueInWei.add(msg.value);
+  }
+
+  function _mintToken(address _to, uint256 _editionNumber) internal returns (uint256) {
+
+    EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
 
     // Bump number minted
     _editionDetails.minted = _editionDetails.minted.add(1);
@@ -250,34 +282,20 @@ HasNoEther
     // Maintain mapping for tokenId to edition for lookup
     tokenIdToEditionNumber[_tokenId] = _editionDetails.editionNumber;
 
+    // Get next insert position for edition to token Id mapping
+    uint256 currentIndexOfTokenId = editionNumberToTokenIds[_editionNumber].length;
+
     // Maintain mapping of edition to token array for "edition minted tokens"
     editionNumberToTokenIds[_editionNumber].push(_tokenId);
 
-    // Record wei sale value
-    totalPurchaseValueInWei = totalPurchaseValueInWei.add(msg.value);
+    // Maintain a position index for the tokenId within the edition number mapping array, used for clean up token burn
+    editionNumberToTokenIdIndex[_tokenId] = currentIndexOfTokenId;
 
     // Record sale volume
     totalNumberMinted = totalNumberMinted.add(1);
 
-    // TODO handle commission
-    // TODO KO to absorb overspend
-    // TODO handle money transfer
-
-    // Broadcast purpose
-    Purchase(_tokenId, msg.value, _to);
-
     return _tokenId;
   }
-
-  // TODO add method where KO can mint to address but without paying, promos and games etc
-  //  function knownOriginMint(address _to, uint256 _editionNumber)
-  //  public
-  //  onlyKnownOrigin
-  //  onlyAvailableEdition(_editionNumber)
-  //  onlyValidEdition(_editionNumber)
-  //  returns (bool) {
-  //
-  //  }
 
   function burn(uint256 _tokenId) public {
     // TODO validation
@@ -288,26 +306,26 @@ HasNoEther
     // TODO ensure we can burn from other accounts/contracts?
     super._burn(msg.sender, _tokenId);
 
-    // TODO deprecate sold from edition
-    // TODO deprecate available? - if someone sells from can we re-mint another?
     // TODO delete any token mappings
-  }
 
-  function burnEdition(uint256 _editionNumber)
-  onlyKnownOrigin
-  onlyValidEdition(_editionNumber)
-  public
-  {
-    // TODO a method to delete edition data - only on unsold etc?
-    EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
+    uint256 editionNumber = tokenIdToEditionNumber[_tokenId];
+    EditionDetails storage _editionDetails = editionNumberToEditionDetails[editionNumber];
 
-    // Check edition not already had editions minted
-    // If this is the case - disable edition OR lower available to 0
-    require(_editionDetails.minted == 0);
+    // TODO if someone sells from can we re-mint another?
+    // Remove one from the available count
+    _editionDetails.available.sub(1);
 
-    // TODO delete all edition refs
+    // Remove one from the minted list
+    _editionDetails.minted.sub(1);
 
-    delete editionNumberToEditionDetails[_editionNumber];
+    // Delete token ID mapping
+    delete tokenIdToEditionNumber[_tokenId];
+
+    // Delete tokens associated to the edition
+    uint256[] tokenIdsForEdition = editionNumberToTokenIds[editionNumber];
+    uint256 editionTokenIdIndex = editionNumberToTokenIdIndex[_tokenId];
+    delete tokenIdsForEdition[editionTokenIdIndex];
+    // this will leave a gap of ID zero which we can handle client side
   }
 
   ///////////////////////////
