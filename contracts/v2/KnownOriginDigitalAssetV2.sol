@@ -44,6 +44,9 @@ HasNoEther
 
   string internal tokenBaseURI = "https://ipfs.infura.io/ipfs/";
 
+  // the KO account which can receive commission
+  address public koCommissionAccount;
+
   // total wei been processed through the contract
   uint256 public totalPurchaseValueInWei;
 
@@ -59,7 +62,8 @@ HasNoEther
     // Config
     uint32 auctionStartDate;
     uint32 auctionEndDate;
-    address artistAccount; // TODO duplicated between editions
+    address artistAccount;
+    uint8 artistCommission;
     uint256 priceInWei;
     string tokenURI;          // IPFS Hash only
     // Counters
@@ -125,6 +129,8 @@ HasNoEther
    * Constructor
    */
   constructor () public ERC721Token("KnownOriginDigitalAsset", "KODA") {
+    // Assume the commission account is the creator for now
+    koCommissionAccount = msg.sender;
     // Whitelist owner
     addAddressToWhitelist(msg.sender);
     // Add owner as partner as well
@@ -135,31 +141,34 @@ HasNoEther
   function createEdition(
     uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
     uint32 _auctionStartDate, uint32 _auctionEndDate,
-    address _artistAccount, uint256 _priceInWei, string _tokenURI, uint8 _available
+    address _artistAccount, uint8 _artistCommission,
+    uint256 _priceInWei, string _tokenURI, uint8 _available
   )
   public
   onlyKnownOrigin
   returns (bool)
   {
-    return _createEdition(_editionNumber, _editionData, _editionType, _auctionStartDate, _auctionEndDate, _artistAccount, _priceInWei, _tokenURI, _available, true);
+    return _createEdition(_editionNumber, _editionData, _editionType, _auctionStartDate, _auctionEndDate, _artistAccount, _artistCommission, _priceInWei, _tokenURI, _available, true);
   }
 
   function createDisabledEdition(
     uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
     uint32 _auctionStartDate, uint32 _auctionEndDate,
-    address _artistAccount, uint256 _priceInWei, string _tokenURI, uint8 _available
+    address _artistAccount, uint8 _artistCommission,
+    uint256 _priceInWei, string _tokenURI, uint8 _available
   )
   public
   onlyIfPartnerOrKnownOrigin
   returns (bool)
   {
-    return _createEdition(_editionNumber, _editionData, _editionType, _auctionStartDate, _auctionEndDate, _artistAccount, _priceInWei, _tokenURI, _available, false);
+    return _createEdition(_editionNumber, _editionData, _editionType, _auctionStartDate, _auctionEndDate, _artistAccount, _artistCommission, _priceInWei, _tokenURI, _available, false);
   }
 
   function _createEdition(
     uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
     uint32 _auctionStartDate, uint32 _auctionEndDate,
-    address _artistAccount, uint256 _priceInWei, string _tokenURI,
+    address _artistAccount, uint8 _artistCommission,
+    uint256 _priceInWei, string _tokenURI,
     uint8 _available, bool active
   )
   internal
@@ -177,6 +186,9 @@ HasNoEther
     // prevent empty artists address
     require(_artistAccount != address(0), "Artist account not provided");
 
+    // Prevent commission of greater than 100%
+    require(_artistCommission < 100, "Artist commission cannot be greater than 100");
+
     // prevent duplicate editions
     require(editionNumberToEditionDetails[_editionNumber].editionNumber == 0, "Edition already in existence");
 
@@ -193,12 +205,12 @@ HasNoEther
       auctionStartDate : _auctionStartDate,
       auctionEndDate : auctionEndDate,
       artistAccount : _artistAccount,
+      artistCommission : _artistCommission,
       priceInWei : _priceInWei, // TODO handle overriding of price per token from edition price?
       tokenURI : _tokenURI,
       minted : 0, // default to all available
       available : _available,
       active : active
-      // TODO add artist edition commission
       });
 
     // TODO how to handle an artists with multiple accounts i.e. CJ changed accounts between editions?
@@ -256,13 +268,21 @@ HasNoEther
 
   function _handleFunds(uint256 _tokenId, uint256 _editionNumber) internal {
 
-    // TODO how to handle double spends / accidental buys
-    // TODO handle commission
-    // TODO KO to absorb overspend
-    // TODO handle money transfer
+    EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
 
     // Record wei sale value
     totalPurchaseValueInWei = totalPurchaseValueInWei.add(msg.value);
+
+    // Extract the artists commission and send them it
+    uint256 artistCommission = msg.value / 100 * _editionDetails.artistCommission;
+    _editionDetails.artistAccount.transfer(artistCommission);
+
+    // TODO how to handle double spends / accidental buys
+    // TODO handle over spends, do we send it back?
+
+    // Send remaining eth to KO
+    uint256 remainingCommission = msg.value - artistCommission;
+    koCommissionAccount.transfer(remainingCommission);
   }
 
   function _mintToken(address _to, uint256 _editionNumber) internal returns (uint256) {
@@ -324,15 +344,16 @@ HasNoEther
     // Delete tokens associated to the edition
     uint256[] tokenIdsForEdition = editionNumberToTokenIds[editionNumber];
     uint256 editionTokenIdIndex = editionNumberToTokenIdIndex[_tokenId];
-    delete tokenIdsForEdition[editionTokenIdIndex];
+
     // this will leave a gap of ID zero which we can handle client side
+    delete tokenIdsForEdition[editionTokenIdIndex];
   }
 
   ///////////////////////////
   // Edition/Token Updates //
   ///////////////////////////
 
-  function setTokenBaseURI(string _newBaseURI)
+  function updateTokenBaseURI(string _newBaseURI)
   external
   onlyKnownOrigin {
     tokenBaseURI = _newBaseURI;
@@ -346,7 +367,7 @@ HasNoEther
     _setTokenURI(_tokenId, _uri);
   }
 
-  function setEditionTokenURI(uint256 _editionNumber, string _uri)
+  function updateEditionTokenURI(uint256 _editionNumber, string _uri)
   external
   onlyKnownOrigin
   onlyValidEdition(_editionNumber) {
@@ -378,6 +399,14 @@ HasNoEther
 
     // Reset editions
     artistToEditionNumbers[_artistAccount] = editionNumbersForArtist;
+  }
+
+  function updateActive(uint256 _editionNumber, bool _active)
+  external
+  onlyKnownOrigin
+  onlyValidEdition(_editionNumber) {
+    EditionDetails storage _originalEditionDetails = editionNumberToEditionDetails[_editionNumber];
+    editionNumberToEditionDetails[_editionNumber].active = _active;
   }
 
   function updateAvailable(uint256 _editionNumber, uint8 _available)

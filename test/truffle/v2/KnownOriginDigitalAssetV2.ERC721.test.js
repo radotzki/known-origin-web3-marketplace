@@ -26,6 +26,7 @@ contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
   const account3 = accounts[4];
 
   const artistAccount = accounts[8];
+  const artistCommission = 76;
 
   const name = 'KnownOriginDigitalAsset';
   const symbol = 'KODA';
@@ -52,8 +53,8 @@ contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
   });
 
   beforeEach(async function () {
-    await this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, edition1Price, editionTokenUri1, 3, {from: _owner});
-    await this.token.createEdition(editionNumber2, editionData2, editionType, 0, 0, artistAccount, edition2Price, editionTokenUri2, 3, {from: _owner});
+    await this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner});
+    await this.token.createEdition(editionNumber2, editionData2, editionType, 0, 0, artistAccount, artistCommission, edition2Price, editionTokenUri2, 3, {from: _owner});
   });
 
   // TODO expand on this, just checking the data goes up
