@@ -442,10 +442,6 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
           );
         });
       });
-
-      describe('artistsEditions', async function () {
-        // TODO artistsEditions
-      });
     });
   });
 
@@ -608,6 +604,16 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
       });
 
     });
+
+    describe('artistsEditions', async function () {
+
+      it('will return the correct data ', async function () {
+        let editions = await this.token.artistsEditions(artistAccount);
+        editions.map(e => e.toNumber())
+          .should.be.deep.equal([editionNumber1, editionNumber2]);
+      });
+
+    });
   });
 
   describe('mint', async function () {
@@ -675,12 +681,16 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         await this.token.mint(editionNumber2, {from: account3, value: edition2Price});
       });
 
-      it('constructs tokenId', async function () {
-
-      });
-
       it('sets token Uri', async function () {
+        [tokenId1_1, tokenId1_2, tokenId1_3].forEach(async (id) => {
+          let result = await this.token.tokenURI(id);
+          result.should.be.equal(`${BASE_URI}${editionTokenUri1}`);
+        });
 
+        [tokenId2_1, tokenId2_2, tokenId2_3].forEach(async (id) => {
+          let result = await this.token.tokenURI(id);
+          result.should.be.equal(`${BASE_URI}${editionTokenUri2}`);
+        });
       });
 
       it('adds to the number minted counter', async function () {
