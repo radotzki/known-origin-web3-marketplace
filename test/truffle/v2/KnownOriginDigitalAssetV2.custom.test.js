@@ -225,6 +225,14 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         it('should fail when not whitelisted', async function () {
           await assertRevert(this.token.updateAvailable(editionNumber1, 100, {from: account1}));
         });
+
+        it('reverts if updating available to below the minted amount', async function () {
+          // Sell one
+          await this.token.mint(editionNumber1, {from: account1, value: edition1Price});
+
+          // attempt to update available to less than minted amount
+          await assertRevert(this.token.updateAvailable(editionNumber1, 0, {from: _owner}));
+        });
       });
 
       describe('updateActive', function () {
@@ -601,4 +609,155 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
 
     });
   });
+
+  describe.only('mint', async function () {
+
+    beforeEach(async function () {
+      await this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner});
+      await this.token.createEdition(editionNumber2, editionData2, editionType, 0, 0, artistAccount, artistCommission, edition2Price, editionTokenUri2, 4, {from: _owner});
+    });
+
+    describe('validation', async function () {
+      it('reverts if edition sold out', async function () {
+        await this.token.mint(editionNumber1, {from: account1, value: edition1Price});
+        await this.token.mint(editionNumber1, {from: account1, value: edition1Price});
+        await this.token.mint(editionNumber1, {from: account1, value: edition1Price});
+
+        // Reverts on 4 mint as sold out
+        await assertRevert(this.token.mint(editionNumber1, {from: account1, value: edition1Price}));
+      });
+
+      it('reverts if edition not active', async function () {
+        await this.token.updateActive(editionNumber1, false, {from: _owner});
+
+        // reverts as inactive
+        await assertRevert(this.token.mint(editionNumber1, {from: account1, value: edition1Price}));
+      });
+
+      it('reverts if edition invalid', async function () {
+        await this.token.updateAvailable(editionNumber1, 0, {from: _owner});
+
+        // reverts as edition sat to zero available
+        await assertRevert(this.token.mint(editionNumber1, {from: account1, value: edition1Price}));
+      });
+
+      it('reverts if edition auction not started', async function () {
+        // TODO
+      });
+
+      it('reverts if edition auction closed', async function () {
+        // TODO
+      });
+
+      it('reverts if purchase price not provided', async function () {
+        await assertRevert(this.token.mint(editionNumber1, {from: account1, value: 0}));
+      });
+    });
+
+    describe.only('purchase successful', async function () {
+      const tokenId1_1 = 100001;
+      const tokenId1_2 = 100002;
+      const tokenId1_3 = 100003;
+
+      const tokenId2_1 = 200001;
+      const tokenId2_2 = 200002;
+      const tokenId2_3 = 200003;
+
+      beforeEach(async function () {
+        // 3 from edition 2
+        await this.token.mint(editionNumber1, {from: account1, value: edition1Price});
+        await this.token.mint(editionNumber1, {from: account2, value: edition1Price});
+        await this.token.mint(editionNumber1, {from: account3, value: edition1Price});
+
+        // 3 from edition 1
+        await this.token.mint(editionNumber2, {from: account1, value: edition2Price});
+        await this.token.mint(editionNumber2, {from: account2, value: edition2Price});
+        await this.token.mint(editionNumber2, {from: account3, value: edition2Price});
+      });
+
+      it('mints correctly', async function () {
+
+      });
+
+      it('constructs tokenId', async function () {
+
+      });
+
+      it('sets token Uri', async function () {
+
+      });
+
+      it('adds to the number minted counter', async function () {
+
+      });
+
+      it('adds to edition <-> tokenId[] mappings', async function () {
+        let edition1Tokens = await this.token.tokensOfEdition(editionNumber1);
+        edition1Tokens
+          .map(e => e.toNumber())
+          .should.be.deep.equal([tokenId1_1, tokenId1_2, tokenId1_3]);
+
+        let edition2Tokens = await this.token.tokensOfEdition(editionNumber2);
+        edition2Tokens
+          .map(e => e.toNumber())
+          .should.be.deep.equal([tokenId2_1, tokenId2_2, tokenId2_3]);
+      });
+
+      it('adds to tokenId <-> edition mappings', async function () {
+        [tokenId1_1, tokenId1_2, tokenId1_3].forEach(async (id) => {
+          let result = await this.token.getEditionOfTokenId(id);
+          result.should.be.bignumber.equal(editionNumber1);
+        });
+
+        [tokenId2_1, tokenId2_2, tokenId2_3].forEach(async (id) => {
+          let result = await this.token.getEditionOfTokenId(id);
+          result.should.be.bignumber.equal(editionNumber2);
+        });
+      });
+
+      it('tokensOf', async function () {
+        let account1Results = await this.token.tokensOf(account1);
+        account1Results
+          .map(e => e.toNumber())
+          .should.be.deep.equal([tokenId1_1, tokenId2_1]);
+
+        let account2Results = await this.token.tokensOf(account2);
+        account2Results
+          .map(e => e.toNumber())
+          .should.be.deep.equal([tokenId1_2, tokenId2_2]);
+
+        let account3Results = await this.token.tokensOf(account3);
+        account3Results
+          .map(e => e.toNumber())
+          .should.be.deep.equal([tokenId1_3, tokenId2_3]);
+      });
+
+      it('splits funds between artist and KO account', async function () {
+
+      });
+
+      it('Purchase event emitted', async function () {
+
+      });
+
+      it('Minted event emitted', async function () {
+
+      });
+
+    });
+
+  });
+
+  describe('mintTo', async function () {
+
+  });
+
+  describe('koMint', async function () {
+
+  });
+
+  describe('burn', async function () {
+
+  });
+
 });

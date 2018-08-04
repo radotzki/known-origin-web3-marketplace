@@ -41,6 +41,7 @@ HasNoEther
   ////////////////
 
   event Purchase(uint256 indexed _tokenId, uint256 indexed _costInWei, address indexed _buyer);
+  event Minted(uint256 indexed _tokenId, uint256 indexed _editionNumber, address indexed _buyer);
 
   string public tokenBaseURI = "https://ipfs.infura.io/ipfs/";
 
@@ -273,6 +274,7 @@ HasNoEther
     // Splice funds and handle commissions
     _handleFunds(_editionNumber);
 
+    // TODO should this event also be emitted for koMint() ?
     // Broadcast purchase
     emit Purchase(_tokenId, msg.value, _to);
 
@@ -281,25 +283,6 @@ HasNoEther
 
   function koMint(address _to, uint256 _editionNumber) public onlyKnownOrigin onlyValidEdition(_editionNumber) returns (uint256) {
     return _mintToken(_to, _editionNumber);
-  }
-
-  function _handleFunds(uint256 _editionNumber) internal {
-
-    EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
-
-    // Record wei sale value
-    totalPurchaseValueInWei = totalPurchaseValueInWei.add(msg.value);
-
-    // Extract the artists commission and send them it
-    uint256 artistCommission = msg.value / 100 * _editionDetails.artistCommission;
-    _editionDetails.artistAccount.transfer(artistCommission);
-
-    // TODO how to handle double spends / accidental buys
-    // TODO handle over spends, do we send it back?
-
-    // Send remaining eth to KO
-    uint256 remainingCommission = msg.value - artistCommission;
-    koCommissionAccount.transfer(remainingCommission);
   }
 
   function _mintToken(address _to, uint256 _editionNumber) internal returns (uint256) {
@@ -331,7 +314,29 @@ HasNoEther
     // Record sale volume
     totalNumberMinted = totalNumberMinted.add(1);
 
+    // Emit minted event
+    emit Minted(_tokenId, _editionNumber, _to);
+
     return _tokenId;
+  }
+
+  function _handleFunds(uint256 _editionNumber) internal {
+
+    EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
+
+    // Record wei sale value
+    totalPurchaseValueInWei = totalPurchaseValueInWei.add(msg.value);
+
+    // Extract the artists commission and send them it
+    uint256 artistCommission = msg.value / 100 * _editionDetails.artistCommission;
+    _editionDetails.artistAccount.transfer(artistCommission);
+
+    // TODO how to handle double spends / accidental buys
+    // TODO handle over spends, do we send it back?
+
+    // Send remaining eth to KO
+    uint256 remainingCommission = msg.value - artistCommission;
+    koCommissionAccount.transfer(remainingCommission);
   }
 
   function burn(uint256 _tokenId) public {
@@ -458,6 +463,7 @@ HasNoEther
   external
   onlyKnownOrigin
   onlyValidEdition(_editionNumber) {
+    require(editionNumberToEditionDetails[_editionNumber].minted <= _available, "Unable to reduce available amount to the below the number minted");
     editionNumberToEditionDetails[_editionNumber].available = _available;
   }
 
