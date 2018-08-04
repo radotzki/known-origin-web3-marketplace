@@ -189,8 +189,9 @@ HasNoEther
     // prevent empty artists address
     require(_artistAccount != address(0), "Artist account not provided");
 
-    // Prevent commission of greater than 100%
+    // Prevent commission of greater than 100% and less than 0%
     require(_artistCommission < 100, "Artist commission cannot be greater than 100");
+    require(_artistCommission >= 0, "Artist commission cannot be less than zero");
 
     // prevent duplicate editions
     require(editionNumberToEditionDetails[_editionNumber].editionNumber == 0, "Edition already in existence");
@@ -637,10 +638,6 @@ HasNoEther
 
   function tokensOfEdition(uint256 _editionNumber) public view returns (uint256[] _tokenIds) {
     return editionNumberToTokenIds[_editionNumber];
-  }
-
-  function editionNumberOfToken(uint256 _tokenId) public view returns (uint256 _editionNumber) {
-    return tokenIdToEditionNumber[_tokenId];
   }
 
   function editionsOfArtists(address _artistAddress) public view returns (uint256[] _editionNumbers) {

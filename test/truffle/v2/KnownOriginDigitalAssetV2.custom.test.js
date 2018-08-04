@@ -40,6 +40,9 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
   const editionTokenUri2 = "edition2";
   const edition2Price = etherToWei(0.2);
 
+  const BASE_URI = "https://ipfs.infura.io/ipfs/";
+  const MAX_UINT32 = 4294967295;
+
   before(async function () {
     // Advance to the next block to correctly read time in the solidity "now" function interpreted by testrpc
     await advanceBlock();
@@ -109,7 +112,7 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         web3.toAscii(edition[1]).replace(/\0/g, '').should.be.equal(editionData1); //_editionData
         edition[2].should.be.bignumber.equal(editionType); //_editionType
         edition[3].should.be.bignumber.equal(0); // _auctionStartDate
-        edition[4].should.be.bignumber.equal(4294967295); // _auctionEndDate
+        edition[4].should.be.bignumber.equal(MAX_UINT32); // _auctionEndDate
         edition[5].should.be.equal(artistAccount); // _artistAccount
         edition[6].should.be.bignumber.equal(artistCommission); // _artistCommission
         edition[7].should.be.bignumber.equal(edition1Price); // _priceInWei
@@ -126,7 +129,7 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         web3.toAscii(edition[1]).replace(/\0/g, '').should.be.equal(editionData2); //_editionData
         edition[2].should.be.bignumber.equal(editionType); //_editionType
         edition[3].should.be.bignumber.equal(0); // _auctionStartDate
-        edition[4].should.be.bignumber.equal(4294967295); // _auctionEndDate
+        edition[4].should.be.bignumber.equal(MAX_UINT32); // _auctionEndDate
         edition[5].should.be.equal(artistAccount); // _artistAccount
         edition[6].should.be.bignumber.equal(artistCommission); // _artistCommission
         edition[7].should.be.bignumber.equal(edition2Price); // _priceInWei
@@ -146,7 +149,7 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         it('purchaseDatesEdition', async function () {
           let dates = await this.token.purchaseDatesEdition(editionNumber1);
           dates[0].should.be.bignumber.equal(0);
-          dates[1].should.be.bignumber.equal(4294967295);
+          dates[1].should.be.bignumber.equal(MAX_UINT32);
         });
 
         it('priceInWeiEdition', async function () {
@@ -191,7 +194,7 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
           await this.token.updateAuctionStartDate(editionNumber1, 123456);
           let dates = await this.token.purchaseDatesEdition(editionNumber1);
           dates[0].should.be.bignumber.equal(123456);
-          dates[1].should.be.bignumber.equal(4294967295);
+          dates[1].should.be.bignumber.equal(MAX_UINT32);
         });
 
         it('should fail when not whitelisted', async function () {
@@ -325,7 +328,7 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         web3.toAscii(edition[1]).replace(/\0/g, '').should.be.equal(editionData3); //_editionData
         edition[2].should.be.bignumber.equal(editionType); //_editionType
         edition[3].should.be.bignumber.equal(0); // _auctionStartDate
-        edition[4].should.be.bignumber.equal(4294967295); // _auctionEndDate
+        edition[4].should.be.bignumber.equal(MAX_UINT32); // _auctionEndDate
         edition[5].should.be.equal(artistAccount); // _artistAccount
         edition[6].should.be.bignumber.equal(artistCommission); // _artistCommission
         edition[7].should.be.bignumber.equal(edition3Price); // _priceInWei
@@ -340,8 +343,262 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         active.should.be.equal(false);
       });
 
+      it('can be created by partners', async function () {
+        // TODO decide on if this feature is needed?
+      });
     });
 
+    describe('edition creation validation', async function () {
+
+      describe('createEdition', async function () {
+        it('reverts if editionNumber zero', async function () {
+          await assertRevert(
+            this.token.createEdition(0, editionData1, editionType, 0, 0, artistAccount, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner})
+          );
+        });
+
+        it('reverts if editionType zero', async function () {
+          await assertRevert(
+            this.token.createEdition(editionNumber1, editionData1, 0, 0, 0, artistAccount, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner})
+          );
+        });
+
+        it('reverts if tokenURI is not provided', async function () {
+          await assertRevert(
+            this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistCommission, edition1Price, "", 3, {from: _owner})
+          );
+        });
+
+        it('reverts if artistAccount is not valid', async function () {
+          await assertRevert(
+            this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, ZERO_ADDRESS, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner})
+          );
+        });
+
+        it('reverts if artistCommission is greater than 100%', async function () {
+          await assertRevert(
+            this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, 101, edition1Price, editionTokenUri1, 3, {from: _owner})
+          );
+        });
+
+        it('reverts if artistCommission is less than 0%', async function () {
+          await assertRevert(
+            this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, -1, edition1Price, editionTokenUri1, 3, {from: _owner})
+          );
+        });
+
+        it('reverts if editionNumber already defined', async function () {
+          await assertRevert(
+            this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner})
+          );
+        });
+      });
+
+      describe('createDisabledEdition', async function () {
+        it('reverts if editionNumber zero', async function () {
+          await assertRevert(
+            this.token.createDisabledEdition(0, editionData1, editionType, 0, 0, artistAccount, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner})
+          );
+        });
+
+        it('reverts if editionType zero', async function () {
+          await assertRevert(
+            this.token.createDisabledEdition(editionNumber1, editionData1, 0, 0, 0, artistAccount, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner})
+          );
+        });
+
+        it('reverts if tokenURI is not provided', async function () {
+          await assertRevert(
+            this.token.createDisabledEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistCommission, edition1Price, "", 3, {from: _owner})
+          );
+        });
+
+        it('reverts if artistAccount is not valid', async function () {
+          await assertRevert(
+            this.token.createDisabledEdition(editionNumber1, editionData1, editionType, 0, 0, ZERO_ADDRESS, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner})
+          );
+        });
+
+        it('reverts if artistCommission is greater than 100%', async function () {
+          await assertRevert(
+            this.token.createDisabledEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, 101, edition1Price, editionTokenUri1, 3, {from: _owner})
+          );
+        });
+
+        it('reverts if artistCommission is less than 0%', async function () {
+          await assertRevert(
+            this.token.createDisabledEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, -1, edition1Price, editionTokenUri1, 3, {from: _owner})
+          );
+        });
+
+        it('reverts if editionNumber already defined', async function () {
+          await assertRevert(
+            this.token.createDisabledEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner})
+          );
+        });
+      });
+
+    });
   });
 
+  describe('token setup and controls', async function () {
+
+    const tokenId1 = 100001;
+    const tokenId2 = 200001;
+    const tokenId3 = 100002;
+    const tokenId4 = 200002;
+
+    beforeEach(async function () {
+      await this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner});
+      await this.token.createEdition(editionNumber2, editionData2, editionType, 0, 0, artistAccount, artistCommission, edition2Price, editionTokenUri2, 4, {from: _owner});
+    });
+
+    beforeEach(async function () {
+      await this.token.mint(editionNumber1, {from: account1, value: edition1Price}); // tokenId 100001
+      await this.token.mint(editionNumber2, {from: account2, value: edition2Price}); // tokenId 200001
+      await this.token.mint(editionNumber1, {from: account2, value: edition1Price}); // tokenId 100002
+      await this.token.mint(editionNumber2, {from: account3, value: edition2Price}); // tokenId 200002
+    });
+
+    describe('setTokenURI', async function () {
+      it('can be changed by KO', async function () {
+        let tokenURI = await this.token.tokenURI(tokenId1);
+        tokenURI.should.be.equal(`${BASE_URI}${editionTokenUri1}`);
+
+        const newTokenUri = "my-new-token-uri";
+        await this.token.setTokenURI(tokenId1, newTokenUri);
+
+        tokenURI = await this.token.tokenURI(tokenId1);
+        tokenURI.should.be.equal(`${BASE_URI}${newTokenUri}`);
+      });
+
+      it('is rejected unless whitelisted', async function () {
+        await assertRevert(this.token.setTokenURI(tokenId1, "new-uri", {from: account3}));
+      });
+    });
+
+    describe('getEditionOfTokenId', async function () {
+
+      it('will return the correct edition ', async function () {
+        let result1 = await this.token.getEditionOfTokenId(tokenId1);
+        result1.should.be.bignumber.equal(editionNumber1);
+
+        let result2 = await this.token.getEditionOfTokenId(tokenId2);
+        result2.should.be.bignumber.equal(editionNumber2);
+
+        let result3 = await this.token.getEditionOfTokenId(tokenId3);
+        result3.should.be.bignumber.equal(editionNumber1);
+
+        let result4 = await this.token.getEditionOfTokenId(tokenId4);
+        result4.should.be.bignumber.equal(editionNumber2);
+      });
+
+      // TODO test this after a burn
+
+    });
+
+    describe('tokenURI', async function () {
+
+      it('will return the correct edition ', async function () {
+        let result1 = await this.token.tokenURI(tokenId1);
+        result1.should.be.equal(`${BASE_URI}${editionTokenUri1}`);
+
+        let result2 = await this.token.tokenURI(tokenId2);
+        result2.should.be.equal(`${BASE_URI}${editionTokenUri2}`);
+
+        let result3 = await this.token.tokenURI(tokenId3);
+        result3.should.be.equal(`${BASE_URI}${editionTokenUri1}`);
+
+        let result4 = await this.token.tokenURI(tokenId4);
+        result4.should.be.equal(`${BASE_URI}${editionTokenUri2}`);
+      });
+
+      it('will revert when invalid token ID', async function () {
+        await assertRevert(this.token.tokenURI(99));
+      });
+
+      // TODO test this after a burn
+
+    });
+
+    describe('tokenURISafe', async function () {
+
+      it('will return the correct edition ', async function () {
+        let result1 = await this.token.tokenURISafe(tokenId1);
+        result1.should.be.equal(`${BASE_URI}${editionTokenUri1}`);
+
+        let result2 = await this.token.tokenURISafe(tokenId2);
+        result2.should.be.equal(`${BASE_URI}${editionTokenUri2}`);
+
+        let result3 = await this.token.tokenURISafe(tokenId3);
+        result3.should.be.equal(`${BASE_URI}${editionTokenUri1}`);
+
+        let result4 = await this.token.tokenURISafe(tokenId4);
+        result4.should.be.equal(`${BASE_URI}${editionTokenUri2}`);
+      });
+
+      it('will NOT revert when invalid token ID', async function () {
+        let result = await this.token.tokenURISafe(99);
+        result.should.be.equal(`${BASE_URI}`);
+      });
+
+      // TODO test this after a burn
+
+    });
+
+    describe('tokensOfEdition', async function () {
+
+      it('will return the correct edition ', async function () {
+        let result1 = await this.token.tokensOfEdition(editionNumber1);
+        result1.map(e => e.toNumber()).should.be.deep.equal([tokenId1, tokenId3]);
+
+        let result2 = await this.token.tokensOfEdition(editionNumber2);
+        result2.map(e => e.toNumber()).should.be.deep.equal([tokenId2, tokenId4]);
+      });
+    });
+
+    describe('purchaseDatesToken', async function () {
+
+      it('will return the correct edition ', async function () {
+        let result1 = await this.token.purchaseDatesToken(tokenId1);
+        result1
+          .map(e => e.toNumber())
+          .should.be.deep.equal([0, MAX_UINT32]);
+
+        let result2 = await this.token.purchaseDatesToken(tokenId2);
+        result2
+          .map(e => e.toNumber())
+          .should.be.deep.equal([0, MAX_UINT32]);
+
+        let result3 = await this.token.purchaseDatesToken(tokenId3);
+        result3
+          .map(e => e.toNumber())
+          .should.be.deep.equal([0, MAX_UINT32]);
+
+        let result4 = await this.token.purchaseDatesToken(tokenId4);
+        result4
+          .map(e => e.toNumber())
+          .should.be.deep.equal([0, MAX_UINT32]);
+      });
+
+    });
+
+    describe('priceInWeiToken', async function () {
+
+      it('will return the correct edition ', async function () {
+        let result1 = await this.token.priceInWeiToken(tokenId1);
+        result1.should.be.bignumber.equal(edition1Price);
+
+        let result2 = await this.token.priceInWeiToken(tokenId2);
+        result2.should.be.bignumber.equal(edition2Price);
+
+        let result3 = await this.token.priceInWeiToken(tokenId3);
+        result3.should.be.bignumber.equal(edition1Price);
+
+        let result4 = await this.token.priceInWeiToken(tokenId4);
+        result4.should.be.bignumber.equal(edition2Price);
+      });
+
+    });
+  });
 });
