@@ -106,37 +106,35 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
     describe('checking raw edition data on creation', function () {
 
       it('edition 1 setup correctly', async function () {
-        let edition = await this.token.getRawEditionData(editionNumber1);
+        let edition = await this.token.allEditionData(editionNumber1);
 
-        edition[0].should.be.bignumber.equal(editionNumber1); //_editionNumber
-        web3.toAscii(edition[1]).replace(/\0/g, '').should.be.equal(editionData1); //_editionData
-        edition[2].should.be.bignumber.equal(editionType); //_editionType
-        edition[3].should.be.bignumber.equal(0); // _auctionStartDate
-        edition[4].should.be.bignumber.equal(MAX_UINT32); // _auctionEndDate
-        edition[5].should.be.equal(artistAccount); // _artistAccount
-        edition[6].should.be.bignumber.equal(artistCommission); // _artistCommission
-        edition[7].should.be.bignumber.equal(edition1Price); // _priceInWei
-        edition[8].should.be.equal(editionTokenUri1); // _tokenURI
-        edition[9].should.be.bignumber.equal(0); // _minted
-        edition[10].should.be.bignumber.equal(3); // _available
-        edition[11].should.be.equal(true); // _active
+        web3.toAscii(edition[0]).replace(/\0/g, '').should.be.equal(editionData1); //_editionData
+        edition[1].should.be.bignumber.equal(editionType); //_editionType
+        edition[2].should.be.bignumber.equal(0); // _auctionStartDate
+        edition[3].should.be.bignumber.equal(MAX_UINT32); // _auctionEndDate
+        edition[4].should.be.equal(artistAccount); // _artistAccount
+        edition[5].should.be.bignumber.equal(artistCommission); // _artistCommission
+        edition[6].should.be.bignumber.equal(edition1Price); // _priceInWei
+        edition[7].should.be.equal(`${BASE_URI}${editionTokenUri1}`); // _tokenURI
+        edition[8].should.be.bignumber.equal(0); // _minted
+        edition[9].should.be.bignumber.equal(3); // _available
+        edition[10].should.be.equal(true); // _active
       });
 
       it('edition 2 setup correctly', async function () {
-        let edition = await this.token.getRawEditionData(editionNumber2);
+        let edition = await this.token.allEditionData(editionNumber2);
 
-        edition[0].should.be.bignumber.equal(editionNumber2); //_editionNumber
-        web3.toAscii(edition[1]).replace(/\0/g, '').should.be.equal(editionData2); //_editionData
-        edition[2].should.be.bignumber.equal(editionType); //_editionType
-        edition[3].should.be.bignumber.equal(0); // _auctionStartDate
-        edition[4].should.be.bignumber.equal(MAX_UINT32); // _auctionEndDate
-        edition[5].should.be.equal(artistAccount); // _artistAccount
-        edition[6].should.be.bignumber.equal(artistCommission); // _artistCommission
-        edition[7].should.be.bignumber.equal(edition2Price); // _priceInWei
-        edition[8].should.be.equal(editionTokenUri2); // _tokenURI
-        edition[9].should.be.bignumber.equal(0); // _minted
-        edition[10].should.be.bignumber.equal(4); // _available
-        edition[11].should.be.equal(true); // _active
+        web3.toAscii(edition[0]).replace(/\0/g, '').should.be.equal(editionData2); //_editionData
+        edition[1].should.be.bignumber.equal(editionType); //_editionType
+        edition[2].should.be.bignumber.equal(0); // _auctionStartDate
+        edition[3].should.be.bignumber.equal(MAX_UINT32); // _auctionEndDate
+        edition[4].should.be.equal(artistAccount); // _artistAccount
+        edition[5].should.be.bignumber.equal(artistCommission); // _artistCommission
+        edition[6].should.be.bignumber.equal(edition2Price); // _priceInWei
+        edition[7].should.be.equal(`${BASE_URI}${editionTokenUri2}`); // _tokenURI
+        edition[8].should.be.bignumber.equal(0); // _minted
+        edition[9].should.be.bignumber.equal(4); // _available
+        edition[10].should.be.equal(true); // _active
       });
 
       it('editionsForType', async function () {
@@ -330,20 +328,19 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
       });
 
       it('edition 3 setup correctly', async function () {
-        let edition = await this.token.getRawEditionData(editionNumber3);
+        let edition = await this.token.allEditionData(editionNumber3);
 
-        edition[0].should.be.bignumber.equal(editionNumber3); //_editionNumber
-        web3.toAscii(edition[1]).replace(/\0/g, '').should.be.equal(editionData3); //_editionData
-        edition[2].should.be.bignumber.equal(editionType); //_editionType
-        edition[3].should.be.bignumber.equal(0); // _auctionStartDate
-        edition[4].should.be.bignumber.equal(MAX_UINT32); // _auctionEndDate
-        edition[5].should.be.equal(artistAccount); // _artistAccount
-        edition[6].should.be.bignumber.equal(artistCommission); // _artistCommission
-        edition[7].should.be.bignumber.equal(edition3Price); // _priceInWei
-        edition[8].should.be.equal(editionTokenUri3); // _tokenURI
-        edition[9].should.be.bignumber.equal(0); // _minted
-        edition[10].should.be.bignumber.equal(1); // _available
-        edition[11].should.be.equal(false); // _active
+        web3.toAscii(edition[0]).replace(/\0/g, '').should.be.equal(editionData3); //_editionData
+        edition[1].should.be.bignumber.equal(editionType); //_editionType
+        edition[2].should.be.bignumber.equal(0); // _auctionStartDate
+        edition[3].should.be.bignumber.equal(MAX_UINT32); // _auctionEndDate
+        edition[4].should.be.equal(artistAccount); // _artistAccount
+        edition[5].should.be.bignumber.equal(artistCommission); // _artistCommission
+        edition[6].should.be.bignumber.equal(edition3Price); // _priceInWei
+        edition[7].should.be.equal(`${BASE_URI}${editionTokenUri3}`); // _tokenURI
+        edition[8].should.be.bignumber.equal(0); // _minted
+        edition[9].should.be.bignumber.equal(1); // _available
+        edition[10].should.be.equal(false); // _active
       });
 
       it('editionActive', async function () {
@@ -446,6 +443,9 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         });
       });
 
+      describe('artistsEditions', async function () {
+        // TODO artistsEditions
+      });
     });
   });
 
@@ -485,19 +485,19 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
       });
     });
 
-    describe('getEditionOfTokenId', async function () {
+    describe('tokenIdEditionNumber', async function () {
 
       it('will return the correct edition ', async function () {
-        let result1 = await this.token.getEditionOfTokenId(tokenId1);
+        let result1 = await this.token.tokenIdEditionNumber(tokenId1);
         result1.should.be.bignumber.equal(editionNumber1);
 
-        let result2 = await this.token.getEditionOfTokenId(tokenId2);
+        let result2 = await this.token.tokenIdEditionNumber(tokenId2);
         result2.should.be.bignumber.equal(editionNumber2);
 
-        let result3 = await this.token.getEditionOfTokenId(tokenId3);
+        let result3 = await this.token.tokenIdEditionNumber(tokenId3);
         result3.should.be.bignumber.equal(editionNumber1);
 
-        let result4 = await this.token.getEditionOfTokenId(tokenId4);
+        let result4 = await this.token.tokenIdEditionNumber(tokenId4);
         result4.should.be.bignumber.equal(editionNumber2);
       });
 
@@ -610,7 +610,7 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
     });
   });
 
-  describe.only('mint', async function () {
+  describe('mint', async function () {
 
     beforeEach(async function () {
       await this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner});
@@ -654,7 +654,7 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
       });
     });
 
-    describe.only('purchase successful', async function () {
+    describe('purchase successful', async function () {
       const tokenId1_1 = 100001;
       const tokenId1_2 = 100002;
       const tokenId1_3 = 100003;
@@ -675,10 +675,6 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         await this.token.mint(editionNumber2, {from: account3, value: edition2Price});
       });
 
-      it('mints correctly', async function () {
-
-      });
-
       it('constructs tokenId', async function () {
 
       });
@@ -688,7 +684,15 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
       });
 
       it('adds to the number minted counter', async function () {
+        let totalNumberMinted = await this.token.totalNumberMinted();
+        totalNumberMinted.should.be.bignumber.equal(6);
+      });
 
+      it('adds to the number of wei collected', async function () {
+        let expect = (edition1Price * 3) + (edition2Price * 3);
+
+        let totalPurchaseValueInWei = await this.token.totalPurchaseValueInWei();
+        totalPurchaseValueInWei.should.be.bignumber.equal(expect);
       });
 
       it('adds to edition <-> tokenId[] mappings', async function () {
@@ -705,12 +709,12 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
 
       it('adds to tokenId <-> edition mappings', async function () {
         [tokenId1_1, tokenId1_2, tokenId1_3].forEach(async (id) => {
-          let result = await this.token.getEditionOfTokenId(id);
+          let result = await this.token.tokenIdEditionNumber(id);
           result.should.be.bignumber.equal(editionNumber1);
         });
 
         [tokenId2_1, tokenId2_2, tokenId2_3].forEach(async (id) => {
-          let result = await this.token.getEditionOfTokenId(id);
+          let result = await this.token.tokenIdEditionNumber(id);
           result.should.be.bignumber.equal(editionNumber2);
         });
       });

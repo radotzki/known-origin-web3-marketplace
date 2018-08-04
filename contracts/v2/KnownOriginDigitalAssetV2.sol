@@ -25,9 +25,8 @@ ERC721Token,
 Whitelist,
 HasNoEther
 {
-  using SafeMath for uint256;
-
   // TODO is there a better way of doing this and is it correct?
+  using SafeMath for uint256;
   using SafeMath32 for uint32;
   using SafeMath16 for uint16;
   using SafeMath8 for uint8;
@@ -496,16 +495,26 @@ HasNoEther
     return editionTypeToEditionNumber[_type];
   }
 
-  function getEditionOfTokenId(uint256 _tokenId) public view returns (uint256 _editionNumber) {
+  function tokenIdEditionNumber(uint256 _tokenId) public view returns (uint256 _editionNumber) {
     return tokenIdToEditionNumber[_tokenId];
   }
 
-  function getEditionsOfArtistAccount(address _artistsAccount) public view returns (uint256[] _editionNumbers) {
+  function artistsEditions(address _artistsAccount) public view returns (uint256[] _editionNumbers) {
     return artistToEditionNumbers[_artistsAccount];
   }
 
-  function getRawEditionData(uint256 editionNumber) public view returns (
-    uint256 _editionNumber,
+  function tokensOfEdition(uint256 _editionNumber) public view returns (uint256[] _tokenIds) {
+    return editionNumberToTokenIds[_editionNumber];
+  }
+
+  function editionsOfArtists(address _artistAddress) public view returns (uint256[] _editionNumbers) {
+    return artistToEditionNumbers[_artistAddress];
+  }
+
+  function allEditionData(uint256 editionNumber)
+  public view
+  onlyValidEdition(editionNumber)
+  returns (
     bytes32 _editionData,
     uint8 _editionType,
     uint32 _auctionStartDate,
@@ -520,7 +529,6 @@ HasNoEther
   ) {
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[editionNumber];
     return (
-    _editionDetails.editionNumber,
     _editionDetails.editionData,
     _editionDetails.editionType,
     _editionDetails.auctionStartDate,
@@ -528,77 +536,73 @@ HasNoEther
     _editionDetails.artistAccount,
     _editionDetails.artistCommission,
     _editionDetails.priceInWei,
-    _editionDetails.tokenURI, // TODO should this return full or hash
+    Strings.strConcat(tokenBaseURI, _editionDetails.tokenURI), // TODO should this return full or hash
     _editionDetails.minted,
     _editionDetails.available,
     _editionDetails.active
     );
   }
 
-  // TODO rejig read only methods so they are grouped in a sensible order
-
-  function assetInfoToken(uint256 _tokenId) public view returns (
+  function tokenIdentificationData(uint256 _tokenId) public view returns (
     uint256 _editionNumber,
-    address _owner, // TODO owner seems odd here
-    uint256 _priceInWei,
-    uint32 _auctionStartDate,
-    uint32 _auctionEndDate,
-    string _tokenURI
+    uint8 _editionType,
+    bytes32 _editionData,
+    string _tokenURI,
+    address _owner
   ) {
+    require(exists(_tokenId));
     uint256 editionNumber = tokenIdToEditionNumber[_tokenId];
-    EditionDetails memory _editionDetails = editionNumberToEditionDetails[editionNumber];
+    EditionDetails memory editionDetails = editionNumberToEditionDetails[editionNumber];
     return (
     editionNumber,
-    ownerOf(_tokenId),
-    _editionDetails.priceInWei,
-    _editionDetails.auctionStartDate,
-    _editionDetails.auctionEndDate,
-    tokenURISafe(_tokenId)
+    editionDetails.editionType,
+    editionDetails.editionData,
+    tokenURI(_tokenId),
+    ownerOf(_tokenId)
     );
   }
 
-  function assetInfoEdition(uint256 editionNumber) public view returns (
+  function tokenEditionData(uint256 _tokenId) public view returns (
     uint256 _editionNumber,
-    uint256 _priceInWei,
+    uint8 _editionType,
     uint32 _auctionStartDate,
     uint32 _auctionEndDate,
-    string _tokenURI
+    address _artistAccount,
+    address _artistCommission,
+    uint256 _priceInWei,
+    uint256 _available,
+    uint256 _minted
+  ) {
+    require(exists(_tokenId));
+    uint256 editionNumber = tokenIdToEditionNumber[_tokenId];
+    return editionData(editionNumber);
+  }
+
+  function editionData(uint256 editionNumber)
+  public view
+  onlyValidEdition(_editionNumber)
+  returns (
+    uint256 _editionNumber,
+    uint8 _editionType,
+    uint32 _auctionStartDate,
+    uint32 _auctionEndDate,
+    address _artistAccount,
+    address _artistCommission,
+    uint256 _priceInWei,
+    uint256 _available,
+    uint256 _minted
   ) {
     EditionDetails memory editionDetails = editionNumberToEditionDetails[editionNumber];
     return (
     editionNumber,
-    editionDetails.priceInWei,
+    editionDetails.editionType,
     editionDetails.auctionStartDate,
     editionDetails.auctionEndDate,
-    tokenURIEdition(editionNumber)
-    );
-  }
-
-  function editionInfoToken(uint256 _tokenId) public view returns (
-    uint256 _editionNumber,
-    bytes32 _editionData,
-    uint256 _available,
-    uint256 _sold,
-    address _artistAccount
-  ) {
-    uint256 editionNumber = tokenIdToEditionNumber[_tokenId];
-    return editionInfoEdition(editionNumber);
-  }
-
-  function editionInfoEdition(uint256 editionNumber) public view returns (
-    uint256 _editionNumber,
-    bytes32 _editionData,
-    uint256 _available,
-    uint256 _minted,
-    address _artistAccount
-  ) {
-    EditionDetails memory _editionDetails = editionNumberToEditionDetails[editionNumber];
-    return (
-    editionNumber,
-    _editionDetails.editionData,
-    _editionDetails.available,
-    _editionDetails.minted,
-    _editionDetails.artistAccount
+    editionDetails.artistAccount,
+    editionDetails.artistCommission,
+    editionDetails.priceInWei,
+    editionDetails.available,
+    editionDetails.minted
     );
   }
 
@@ -608,7 +612,7 @@ HasNoEther
     return Strings.strConcat(tokenBaseURI, tokenURIs[_tokenId]);
   }
 
-  // no throws...? is this required
+  // no throws...
   function tokenURISafe(uint256 _tokenId) public view returns (string) {
     return Strings.strConcat(tokenBaseURI, tokenURIs[_tokenId]);
   }
@@ -640,14 +644,6 @@ HasNoEther
   function editionActive(uint256 _editionNumber) public view returns (bool) {
     EditionDetails memory _editionDetails = editionNumberToEditionDetails[_editionNumber];
     return _editionDetails.active;
-  }
-
-  function tokensOfEdition(uint256 _editionNumber) public view returns (uint256[] _tokenIds) {
-    return editionNumberToTokenIds[_editionNumber];
-  }
-
-  function editionsOfArtists(address _artistAddress) public view returns (uint256[] _editionNumbers) {
-    return artistToEditionNumbers[_artistAddress];
   }
 
   function purchaseDatesToken(uint256 _tokenId) public view returns (uint32 _auctionStartDate, uint32 _auctionEndDate) {
