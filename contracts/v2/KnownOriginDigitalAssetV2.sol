@@ -320,22 +320,22 @@ HasNoEther
   }
 
   function _handleFunds(uint256 _editionNumber) internal {
-
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
 
-    // Record wei sale value
-    totalPurchaseValueInWei = totalPurchaseValueInWei.add(msg.value);
+    address artistsAccount = _editionDetails.artistAccount;
 
     // Extract the artists commission and send them it
     uint256 artistCommission = msg.value / 100 * _editionDetails.artistCommission;
-    _editionDetails.artistAccount.transfer(artistCommission);
-
-    // TODO how to handle double spends / accidental buys
-    // TODO handle over spends, do we send it back?
+    artistsAccount.transfer(artistCommission);
 
     // Send remaining eth to KO
     uint256 remainingCommission = msg.value - artistCommission;
     koCommissionAccount.transfer(remainingCommission);
+
+    // Record wei sale value
+    totalPurchaseValueInWei = totalPurchaseValueInWei.add(msg.value);
+
+    // TODO Send overspend back to caller or absorb?
   }
 
   function burn(uint256 _tokenId) public {

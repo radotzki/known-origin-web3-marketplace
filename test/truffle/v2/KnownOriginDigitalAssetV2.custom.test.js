@@ -1,15 +1,11 @@
 const assertRevert = require('../../helpers/assertRevert');
-const {sendTransaction} = require('../../helpers/sendTransaction');
 const etherToWei = require('../../helpers/etherToWei');
-const {shouldSupportInterfaces} = require('./SupportsInterface.behavior');
-
 const advanceBlock = require('../../helpers/advanceToBlock');
 
 const _ = require('lodash');
 
 const BigNumber = web3.BigNumber;
 const KnownOriginDigitalAssetV2 = artifacts.require('KnownOriginDigitalAssetV2');
-const ERC721Receiver = artifacts.require('ERC721ReceiverMockV2.sol');
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -746,16 +742,141 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
           .should.be.deep.equal([tokenId1_3, tokenId2_3]);
       });
 
-      it('splits funds between artist and KO account', async function () {
+    });
 
+    describe('handling of funds', async function () {
+      let originalAccount1Balance;
+      let originalAccount2Balance;
+      let originalKoAccountBalance;
+      let originalArtistAccountBalance;
+
+      let postAccount1Balance;
+      let postAccount2Balance;
+      let postKoAccountBalance;
+      let postArtistAccountBalance;
+
+      let receiptAccount1;
+      let receiptAccount2;
+
+      let account1GasFees;
+      let account2GasFees;
+
+      beforeEach(async function () {
+        // pre balances
+        originalAccount1Balance = await web3.eth.getBalance(account1);
+        originalAccount2Balance = await web3.eth.getBalance(account2);
+        originalKoAccountBalance = await web3.eth.getBalance(await this.token.koCommissionAccount());
+        originalArtistAccountBalance = await web3.eth.getBalance(artistAccount);
+
+        // account 1 purchases edition 1
+        receiptAccount1 = await this.token.mint(editionNumber1, {from: account1, value: edition1Price});
+        account1GasFees = await getGasCosts(receiptAccount1);
+
+        // account 2 purchases another from edition 1
+        receiptAccount2 = await this.token.mint(editionNumber1, {from: account2, value: edition1Price});
+        account2GasFees = await getGasCosts(receiptAccount2);
+
+        // post balances
+        postAccount1Balance = await web3.eth.getBalance(account1);
+        postAccount2Balance = await web3.eth.getBalance(account2);
+        postKoAccountBalance = await web3.eth.getBalance(await this.token.koCommissionAccount());
+        postArtistAccountBalance = await web3.eth.getBalance(artistAccount);
       });
 
-      it('Purchase event emitted', async function () {
+      // beforeEach(() => {
+      //   console.log("originalAccount1Balance", originalAccount1Balance.toString("10"));
+      //   console.log("postAccount1Balance", postAccount1Balance.toString("10"));
+      //
+      //   console.log("originalAccount2Balance", originalAccount2Balance.toString("10"));
+      //   console.log("postAccount2Balance", postAccount2Balance.toString("10"));
+      //
+      //   console.log("originalKoAccountBalance", originalKoAccountBalance.toString("10"));
+      //   console.log("postKoAccountBalance", postKoAccountBalance.toString("10"));
+      //
+      //   console.log("originalArtistAccountBalance", originalArtistAccountBalance.toString("10"));
+      //   console.log("postArtistAccountBalance", postArtistAccountBalance.toString("10"));
+      // });
 
+      async function getGasCosts(receipt) {
+        let tx = await web3.eth.getTransaction(receipt.tx);
+        let gasPrice = tx.gasPrice;
+        return gasPrice.mul(receipt.receipt.gasUsed);
+      }
+
+      it('splits funds between artist and KO account', async function () {
+        console.log(`GasUsed Account 1: ${account1GasFees}`);
+        console.log(`GasUsed Account 2: ${account2GasFees}`);
+
+        // account 1 should be equal the cost of transaction, minus the edition cost
+        postAccount1Balance.should.be.bignumber.equal(
+          originalAccount1Balance.sub(
+            account1GasFees.add(edition1Price)
+          )
+        );
+
+        // account 2 should be equal the cost of transaction, minus the edition cost
+        postAccount2Balance.should.be.bignumber.equal(
+          originalAccount2Balance.sub(
+            account2GasFees.add(edition1Price)
+          )
+        );
+
+        // ensure KO gets a the correct cut
+        postKoAccountBalance.should.be.bignumber.equal(
+          originalKoAccountBalance.add(
+            edition1Price.dividedBy(100)
+              .times(24) // 24% goes to KO
+              .times(2) // 2 x sales for edition 1
+          )
+        );
+
+        // ensure artists get the correct 76% commission
+        postArtistAccountBalance.should.be.bignumber.equal(
+          originalArtistAccountBalance.add(
+            edition1Price.dividedBy(100)
+              .times(76) // 24% goes to KO
+              .times(2) // 2 x sales for edition 1
+          )
+        );
+      });
+
+      it('Transfer event emitted', async function () {
+        let {logs} = receiptAccount1;
+
+        let transferEvent = logs[0];
+
+        transferEvent.event.should.be.equal('Transfer');
+
+        let {_from, _to, _tokenId} = transferEvent.args;
+        _from.should.be.equal('0x0000000000000000000000000000000000000000');
+        _to.should.be.equal('0x6704fbfcd5ef766b287262fa2281c105d57246a6');
+        _tokenId.should.be.bignumber.equal(editionNumber1 + 1);
       });
 
       it('Minted event emitted', async function () {
+        let {logs} = receiptAccount1;
 
+        let mintedEvent = logs[1];
+
+        mintedEvent.event.should.be.equal('Minted');
+
+        let {_buyer, _editionNumber, _tokenId} = mintedEvent.args;
+        _buyer.should.be.equal(account1);
+        _editionNumber.should.be.bignumber.equal(editionNumber1);
+        _tokenId.should.be.bignumber.equal(editionNumber1 + 1);
+      });
+
+      it('Purchase event emitted', async function () {
+        let {logs} = receiptAccount1;
+
+        let purchasedEvent = logs[2];
+
+        purchasedEvent.event.should.be.equal('Purchase');
+
+        let {_buyer, _costInWei, _tokenId} = purchasedEvent.args;
+        _buyer.should.be.equal(account1);
+        _costInWei.should.be.bignumber.equal(edition1Price);
+        _tokenId.should.be.bignumber.equal(editionNumber1 + 1);
       });
 
     });
