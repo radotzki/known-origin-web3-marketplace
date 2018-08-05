@@ -16,7 +16,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
+contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
   const _owner = accounts[0];
 
   const account1 = accounts[1];
@@ -286,7 +286,7 @@ contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
         });
 
         it('emits a transfer event', async function () {
-          logs.length.should.be.equal(2);
+          logs.length.should.be.equal(3);
           logs[0].event.should.be.eq('Transfer');
           logs[0].args._from.should.be.equal(ZERO_ADDRESS);
           logs[0].args._to.should.be.equal(to);

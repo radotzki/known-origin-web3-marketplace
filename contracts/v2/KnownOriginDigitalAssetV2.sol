@@ -39,7 +39,10 @@ HasNoEther
   // Properties //
   ////////////////
 
+  // Purchase events fire when publicly bought through mint/mintTo
   event Purchase(uint256 indexed _tokenId, uint256 indexed _costInWei, address indexed _buyer);
+
+  // Mint always emitted even by koMint
   event Minted(uint256 indexed _tokenId, uint256 indexed _editionNumber, address indexed _buyer);
 
   string public tokenBaseURI = "https://ipfs.infura.io/ipfs/";
@@ -87,7 +90,7 @@ HasNoEther
   mapping(uint8 => uint256[]) internal editionTypeToEditionNumber;
   mapping(uint256 => uint256) internal editionNumberToTypeIndex;
 
-  // TODO master list of editions - on creation
+  // TODO master list of editions - on creation? - how to handle edition burns/inactive?
   // TODO master list of active editions - on creation and on toggle of active
   // TODO master list of active by type
 
@@ -118,6 +121,7 @@ HasNoEther
   }
 
   modifier onlyValidEdition(uint256 _editionNumber) {
+    // TODO this needs to change as we could set the available to zero - replace with better check
     require(editionNumberToEditionDetails[_editionNumber].available > 0, "No more editions available to purchase");
     _;
   }
@@ -190,7 +194,7 @@ HasNoEther
     require(_artistAccount != address(0), "Artist account not provided");
 
     // Prevent commission of greater than 100% and less than 0%
-    require(_artistCommission < 100, "Artist commission cannot be greater than 100");
+    require(_artistCommission <= 100, "Artist commission cannot be greater than 100");
     require(_artistCommission >= 0, "Artist commission cannot be less than zero");
 
     // prevent duplicate editions
@@ -353,6 +357,7 @@ HasNoEther
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[editionNumber];
 
     // TODO if someone sells from can we re-mint another?
+    // TODO we could keep a burnt counter but this would be off if sent to zero address unless handled specially
     // Remove one from the available count
     _editionDetails.available.sub(1);
 
