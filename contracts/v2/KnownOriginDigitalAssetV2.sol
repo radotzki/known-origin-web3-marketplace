@@ -569,7 +569,7 @@ HasNoEther
     uint32 _auctionStartDate,
     uint32 _auctionEndDate,
     address _artistAccount,
-    address _artistCommission,
+    uint8 _artistCommission,
     uint256 _priceInWei,
     uint256 _available,
     uint256 _minted
@@ -581,14 +581,14 @@ HasNoEther
 
   function editionData(uint256 editionNumber)
   public view
-  onlyValidEdition(_editionNumber)
+  onlyValidEdition(editionNumber)
   returns (
     uint256 _editionNumber,
     uint8 _editionType,
     uint32 _auctionStartDate,
     uint32 _auctionEndDate,
     address _artistAccount,
-    address _artistCommission,
+    uint8 _artistCommission,
     uint256 _priceInWei,
     uint256 _available,
     uint256 _minted

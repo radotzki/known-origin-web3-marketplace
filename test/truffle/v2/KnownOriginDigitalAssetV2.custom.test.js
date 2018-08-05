@@ -881,6 +881,83 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
 
     });
 
+    describe('tokenIdentificationData', async function () {
+      const tokenId1 = editionNumber1 + 1;
+      const tokenId2 = editionNumber2 + 1;
+      const tokenIdInvalid = 999;
+
+      beforeEach(async function () {
+        await this.token.mint(editionNumber1, {from: account1, value: edition1Price});
+        await this.token.mint(editionNumber2, {from: account2, value: edition2Price});
+      });
+
+      it('should revert is token ID not valid', async function () {
+        await assertRevert(this.token.tokenIdentificationData(tokenIdInvalid));
+      });
+
+      it(`token id [${tokenId1}]`, async function () {
+        let results = await this.token.tokenIdentificationData(tokenId1);
+
+        results[0].should.be.bignumber.equal(editionNumber1);
+        results[1].should.be.bignumber.equal(editionType);
+        web3.toAscii(results[2]).replace(/\0/g, '').should.be.equal(editionData1);
+        results[3].should.be.equal(`https://ipfs.infura.io/ipfs/edition1`);
+        results[4].should.be.equal(account1);
+      });
+
+      it(`token id [${tokenId2}]`, async function () {
+        let results = await this.token.tokenIdentificationData(tokenId2);
+
+        results[0].should.be.bignumber.equal(editionNumber2);
+        results[1].should.be.bignumber.equal(editionType);
+        web3.toAscii(results[2]).replace(/\0/g, '').should.be.equal(editionData2);
+        results[3].should.be.equal(`https://ipfs.infura.io/ipfs/edition2`);
+        results[4].should.be.equal(account2);
+      });
+    });
+
+    describe('tokenEditionData', async function () {
+      const tokenId1 = editionNumber1 + 1;
+      const tokenId2 = editionNumber2 + 1;
+      const tokenIdInvalid = 999;
+
+      beforeEach(async function () {
+        await this.token.mint(editionNumber1, {from: account1, value: edition1Price});
+        await this.token.mint(editionNumber2, {from: account2, value: edition2Price});
+      });
+
+      it('should revert is token ID not valid', async function () {
+        await assertRevert(this.token.tokenEditionData(tokenIdInvalid));
+      });
+
+      it(`token id [${tokenId1}]`, async function () {
+        let results = await this.token.tokenEditionData(tokenId1);
+
+        results[0].should.be.bignumber.equal(editionNumber1);
+        results[1].should.be.bignumber.equal(editionType);
+        results[2].should.be.bignumber.equal(0);
+        results[3].should.be.bignumber.equal(MAX_UINT32);
+        results[4].should.be.equal(artistAccount);
+        results[5].should.be.bignumber.equal(artistCommission);
+        results[6].should.be.bignumber.equal(edition1Price);
+        results[7].should.be.bignumber.equal(3);
+        results[8].should.be.bignumber.equal(1);
+      });
+
+      it(`token id [${tokenId2}]`, async function () {
+        let results = await this.token.tokenEditionData(tokenId2);
+
+        results[0].should.be.bignumber.equal(editionNumber2);
+        results[1].should.be.bignumber.equal(editionType);
+        results[2].should.be.bignumber.equal(0);
+        results[3].should.be.bignumber.equal(MAX_UINT32);
+        results[4].should.be.equal(artistAccount);
+        results[5].should.be.bignumber.equal(artistCommission);
+        results[6].should.be.bignumber.equal(edition2Price);
+        results[7].should.be.bignumber.equal(4);
+        results[8].should.be.bignumber.equal(1);
+      });
+    });
   });
 
   describe('mintTo', async function () {
