@@ -243,18 +243,18 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
 
       describe('updateArtistsAccount', function () {
         it('can be updated by whitelist', async function () {
-          let currentArtistEditions = await this.token.editionsOfArtists(artistAccount);
+          let currentArtistEditions = await this.token.artistsEditions(artistAccount);
           currentArtistEditions.map(e => e.toNumber()).should.be.deep.equal([editionNumber1, editionNumber2]);
 
-          let newArtistEditions = await this.token.editionsOfArtists(account3);
+          let newArtistEditions = await this.token.artistsEditions(account3);
           newArtistEditions.map(e => e.toNumber()).should.be.deep.equal([]);
 
           await this.token.updateArtistsAccount(editionNumber1, account3);
 
-          currentArtistEditions = await this.token.editionsOfArtists(artistAccount);
+          currentArtistEditions = await this.token.artistsEditions(artistAccount);
           currentArtistEditions.map(e => e.toNumber()).should.be.deep.equal([0, editionNumber2]);
 
-          newArtistEditions = await this.token.editionsOfArtists(account3);
+          newArtistEditions = await this.token.artistsEditions(account3);
           newArtistEditions.map(e => e.toNumber()).should.be.deep.equal([editionNumber1]);
         });
 

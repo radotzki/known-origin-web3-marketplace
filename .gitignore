@@ -18,3 +18,7 @@ selenium-debug.log
 /test/unit/coverage/
 /mnemonic_live.js
 build/contracts/
+/coverage.json
+/coverage/
+/coverageEnv/
+scTopics

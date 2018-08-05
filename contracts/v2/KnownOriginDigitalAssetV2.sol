@@ -512,10 +512,6 @@ HasNoEther
     return editionNumberToTokenIds[_editionNumber];
   }
 
-  function editionsOfArtists(address _artistAddress) public view returns (uint256[] _editionNumbers) {
-    return artistToEditionNumbers[_artistAddress];
-  }
-
   function allEditionData(uint256 editionNumber)
   public view
   onlyValidEdition(editionNumber)

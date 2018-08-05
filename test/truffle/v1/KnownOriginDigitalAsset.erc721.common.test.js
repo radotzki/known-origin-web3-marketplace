@@ -12,7 +12,7 @@ const _ = require('lodash');
 const BigNumber = web3.BigNumber;
 
 const KnownOriginDigitalAsset = artifacts.require('KnownOriginDigitalAsset');
-const ERC721Receiver = artifacts.require('ERC721ReceiverMock');
+const ERC721Receiver = artifacts.require('ERC721ReceiverMockV1');
 
 require('chai')
   .use(require('chai-as-promised'))
