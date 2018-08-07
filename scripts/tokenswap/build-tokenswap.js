@@ -12,10 +12,10 @@ const fs = require('fs');
   // build token swap per edition
 
   let network = `mainnet`;
-  let RAW_PATH = `./scripts/tokenswap/${network}-data.json`;
-  let PROCESSED_PATH = `./scripts/tokenswap/${network}-processed.json`;
-  let TO_MINT_PATH = `./scripts/tokenswap/${network}-to-mint.json`;
-  let UNSOLD_MINT_PATH = `./scripts/tokenswap/${network}-unsold-edition.json`;
+  let RAW_PATH = `./scripts/tokenswap/${network}/data.json`;
+  let PROCESSED_PATH = `./scripts/tokenswap/${network}/processed.json`;
+  let TO_MINT_PATH = `./scripts/tokenswap/${network}/to-mint.json`;
+  let UNSOLD_MINT_PATH = `./scripts/tokenswap/${network}/unsold-edition.json`;
 
   // Connect to the contract
   let contract = new Eth(new Eth.HttpProvider(`https://${network}.infura.io/nbCbdzC6IG9CF6hmvAVQ`))
