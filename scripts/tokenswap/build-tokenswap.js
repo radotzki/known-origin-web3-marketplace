@@ -4,7 +4,10 @@
 // download IPFS data
 // build token swap per edition
 
-const web3 = require('web3');
+const Eth = require('ethjs');
+const Web3 = require('web3');
+const Promise = require('bluebird');
+const _ = require('lodash');
 
 
 (async function () {
@@ -19,12 +22,49 @@ const web3 = require('web3');
 
   let supply = _.range(0, tokenIdPointer[0]);
 
-  _.map(supply, async (index) => {
+  _.forEach(supply, async (tokenId) => {
 
-    let edition = await this.token.editionOf(index);
+    let exists = await contract.exists(tokenId);
 
-    let owner = await this.token.ownerOf(index);
-
+    if (exists) {
+      Promise.props({
+        assetInfo: assetInfo(contract, tokenId),
+        editionInfo: editionInfo(contract, tokenId)
+      })
+        .then(({assetInfo, editionInfo}) => {
+          console.log(assetInfo, editionInfo);
+        });
+    }
   });
+
+  function assetInfo(contract, tokenId) {
+    return contract.assetInfo(tokenId)
+      .then((data) => {
+        const priceInWei = data._priceInWei.toString(10);
+        return {
+          tokenId,
+          owner: data._owner,
+          purchaseState: data._purchaseState.toNumber(),
+          priceInWei: priceInWei,
+          priceInEther: Web3.utils.fromWei(priceInWei, 'ether').valueOf(),
+          purchaseFromTime: data._purchaseFromTime.toString(10)
+        };
+      }).catch((e) => console.log(e));
+  }
+
+  function editionInfo(contract, tokenId) {
+    return contract.editionInfo(tokenId)
+      .then((data) => {
+        let edition = Web3.utils.toAscii(data._edition);
+        return {
+          tokenId,
+          edition,
+          rawEdition: data._edition,
+          editionNumber: data._editionNumber.toNumber(),
+          tokenURI: data._tokenURI.toString(),
+          artistAccount: data._artistAccount
+        };
+      }).catch((e) => console.log(e));
+  }
 
 })();
