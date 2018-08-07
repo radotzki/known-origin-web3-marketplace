@@ -14,6 +14,8 @@ const fs = require('fs');
   let network = `mainnet`;
   let RAW_PATH = `./scripts/tokenswap/${network}-data.json`;
   let PROCESSED_PATH = `./scripts/tokenswap/${network}-processed.json`;
+  let TO_MINT_PATH = `./scripts/tokenswap/${network}-to-mint.json`;
+  let UNSOLD_MINT_PATH = `./scripts/tokenswap/${network}-unsold-edition.json`;
 
   // Connect to the contract
   let contract = new Eth(new Eth.HttpProvider(`https://${network}.infura.io/nbCbdzC6IG9CF6hmvAVQ`))
@@ -48,7 +50,7 @@ const fs = require('fs');
   });
 
   Promise.all(promises).then(() => {
-    return fs.writeFileSync(RAW_PATH, JSON.stringify(allData, null, 4));
+    return fs.writeFileSync(RAW_PATH, JSON.stringify(_.orderBy(allData, 'tokenId'), null, 4));
   })
     .then(() => {
 
@@ -62,14 +64,16 @@ const fs = require('fs');
             editionType: 1,
             auctionStartDate: 0,
             auctionEndDate: 0,
-            artistAccount: data.artistAccount,
+            artistAccount: data.artistAccount, // TODO lookup artists account from JSON data
             artistCommission: 76,
             priceInWei: data.priceInWei,
             tokenURI: data.tokenURI.replace('https://ipfs.infura.io/ipfs/', ''),
             minted: 0,
             available: 0,
             active: true,
-            tokenIds: []
+            tokenIds: [],
+            purchasedTokens: [],
+            unsoldTokens: []
           };
         }
 
@@ -79,13 +83,33 @@ const fs = require('fs');
 
           if (data.owner !== '0x3f8c962eb167ad2f80c72b5f933511ccdf0719d4') {
             editionsToMigrate[data.edition].minted++;
+            editionsToMigrate[data.edition].purchasedTokens.push(data.tokenId);
+          } else {
+            editionsToMigrate[data.edition].unsoldTokens.push(data.tokenId);
           }
 
           editionsToMigrate[data.edition].tokenIds.push(data.tokenId);
         }
       });
 
-      return fs.writeFileSync(PROCESSED_PATH, JSON.stringify(editionsToMigrate, null, 4));
+      fs.writeFileSync(PROCESSED_PATH, JSON.stringify(editionsToMigrate, null, 4));
+
+
+      const newEditionsToMint = [];
+      const unsoldEditionsToMint = [];
+
+      _.forEach(editionsToMigrate, (data, edition) => {
+        if (data.minted !== data.available) {
+          newEditionsToMint.push(data);
+        }
+        if (data.tokenIds.length === data.unsoldTokens.length) {
+          unsoldEditionsToMint.push(data);
+        }
+      });
+
+      fs.writeFileSync(TO_MINT_PATH, JSON.stringify(newEditionsToMint, null, 4));
+      fs.writeFileSync(UNSOLD_MINT_PATH, JSON.stringify(unsoldEditionsToMint, null, 4));
+
     });
 
   function assetInfo(contract, tokenId) {

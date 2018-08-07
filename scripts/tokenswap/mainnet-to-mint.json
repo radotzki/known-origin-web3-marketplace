@@ -1,5 +1,5 @@
-{
-    "PDALNDMEHD300DIG": {
+[
+    {
         "editionData": "PDALNDMEHD300DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -37,7 +37,7 @@
             17
         ]
     },
-    "CNJCINFSTNG1HDIG": {
+    {
         "editionData": "CNJCINFSTNG1HDIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -88,7 +88,7 @@
             44
         ]
     },
-    "CNJCINFSTNG1HPHY": {
+    {
         "editionData": "CNJCINFSTNG1HPHY",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -111,7 +111,7 @@
             6
         ]
     },
-    "CNJDISRPTFIN1PHY": {
+    {
         "editionData": "CNJDISRPTFIN1PHY",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -131,7 +131,7 @@
             0
         ]
     },
-    "STJHAPPYFOX00DIG": {
+    {
         "editionData": "STJHAPPYFOX00DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -160,7 +160,7 @@
             110
         ]
     },
-    "LHKPEEP000001DIG": {
+    {
         "editionData": "LHKPEEP000001DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -185,7 +185,7 @@
             60
         ]
     },
-    "89AUP&DOWN001DIG": {
+    {
         "editionData": "89AUP&DOWN001DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -209,7 +209,7 @@
             46
         ]
     },
-    "KORLEEDS00001DIG": {
+    {
         "editionData": "KORLEEDS00001DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -233,27 +233,7 @@
             78
         ]
     },
-    "KORMANCHESTERPHY": {
-        "editionData": "KORMANCHESTERPHY",
-        "editionType": 1,
-        "auctionStartDate": 0,
-        "auctionEndDate": 0,
-        "artistAccount": "0x5bfff3cb3231cf81487e80358b644f1a670fd98b",
-        "artistCommission": 76,
-        "priceInWei": "380000000000000000",
-        "tokenURI": "QmZsEYjbPw3tiTPpce41FUJKTmPxRcrnb9EMrZ1BUCTZ5J",
-        "minted": 1,
-        "available": 1,
-        "active": true,
-        "tokenIds": [
-            71
-        ],
-        "purchasedTokens": [
-            71
-        ],
-        "unsoldTokens": []
-    },
-    "LHKBUZZ000001DIG": {
+    {
         "editionData": "LHKBUZZ000001DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -277,7 +257,7 @@
             55
         ]
     },
-    "PDALNDMEHD200DIG": {
+    {
         "editionData": "PDALNDMEHD200DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -305,7 +285,7 @@
             22
         ]
     },
-    "FKAHYPDTHSTY0DIG": {
+    {
         "editionData": "FKAHYPDTHSTY0DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -340,7 +320,7 @@
             178
         ]
     },
-    "OBXDDF3000000DIG": {
+    {
         "editionData": "OBXDDF3000000DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -360,7 +340,7 @@
             284
         ]
     },
-    "JOCPACOFLF001DIG": {
+    {
         "editionData": "JOCPACOFLF001DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -384,7 +364,7 @@
             35
         ]
     },
-    "HKTTHEYLIVE00DIG": {
+    {
         "editionData": "HKTTHEYLIVE00DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -413,7 +393,7 @@
             281
         ]
     },
-    "STJBEE0000000DIG": {
+    {
         "editionData": "STJBEE0000000DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -448,7 +428,7 @@
             288
         ]
     },
-    "MLOEMERGESHP3DIG": {
+    {
         "editionData": "MLOEMERGESHP3DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -468,7 +448,7 @@
             296
         ]
     },
-    "JOCFORGRLBOY1DIG": {
+    {
         "editionData": "JOCFORGRLBOY1DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -492,7 +472,7 @@
             32
         ]
     },
-    "LEVPUNKINCARDDIG": {
+    {
         "editionData": "LEVPUNKINCARDDIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -520,7 +500,7 @@
             241
         ]
     },
-    "PSPRED0000000DIG": {
+    {
         "editionData": "PSPRED0000000DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -542,7 +522,7 @@
             111
         ]
     },
-    "KORBERLIN0001DIG": {
+    {
         "editionData": "KORBERLIN0001DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -566,31 +546,7 @@
             80
         ]
     },
-    "HKTOWNMEBLK00DIG": {
-        "editionData": "HKTOWNMEBLK00DIG",
-        "editionType": 1,
-        "auctionStartDate": 0,
-        "auctionEndDate": 0,
-        "artistAccount": "0x21316e6a4f0af45e5f1503984e83b10c53b177d8",
-        "artistCommission": 76,
-        "priceInWei": "22000000000000000",
-        "tokenURI": "QmXCWEWE4FggifgUfqWgN2DZCPm8DV26gQvLzwSqvafzPL",
-        "minted": 3,
-        "available": 3,
-        "active": true,
-        "tokenIds": [
-            300,
-            298,
-            299
-        ],
-        "purchasedTokens": [
-            300,
-            298,
-            299
-        ],
-        "unsoldTokens": []
-    },
-    "MNONEOPLA0001DIG": {
+    {
         "editionData": "MNONEOPLA0001DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -625,7 +581,7 @@
             213
         ]
     },
-    "CNJCOINZUKI00DIG": {
+    {
         "editionData": "CNJCOINZUKI00DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -650,7 +606,7 @@
             315
         ]
     },
-    "LEVHORNSBEE66DIG": {
+    {
         "editionData": "LEVHORNSBEE66DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -684,7 +640,7 @@
             248
         ]
     },
-    "KORMANCHESTERDIG": {
+    {
         "editionData": "KORMANCHESTERDIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -708,7 +664,7 @@
             74
         ]
     },
-    "89AKURUSHI001DIG": {
+    {
         "editionData": "89AKURUSHI001DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -732,59 +688,7 @@
             52
         ]
     },
-    "KORLISBON0001DIG": {
-        "editionData": "KORLISBON0001DIG",
-        "editionType": 1,
-        "auctionStartDate": 0,
-        "auctionEndDate": 0,
-        "artistAccount": "0x5bfff3cb3231cf81487e80358b644f1a670fd98b",
-        "artistCommission": 76,
-        "priceInWei": "80000000000000000",
-        "tokenURI": "QmczAcafyGNWMVkr9DMCDRCDBEnx1h6FncAGZpgR8KQoau",
-        "minted": 3,
-        "available": 3,
-        "active": true,
-        "tokenIds": [
-            86,
-            84,
-            85
-        ],
-        "purchasedTokens": [
-            86,
-            84,
-            85
-        ],
-        "unsoldTokens": []
-    },
-    "LHDPRIESTESS0001": {
-        "editionData": "LHDPRIESTESS0001",
-        "editionType": 1,
-        "auctionStartDate": 0,
-        "auctionEndDate": 0,
-        "artistAccount": "0x109ab2d5d70229bebfb4961821feafc66fa90150",
-        "artistCommission": 76,
-        "priceInWei": "90000000000000000",
-        "tokenURI": "QmaRLAyMpNkpPVw75zgZVGSQq6Y7hEKpFNpANW34uTsCrH",
-        "minted": 5,
-        "available": 5,
-        "active": true,
-        "tokenIds": [
-            153,
-            152,
-            150,
-            149,
-            151
-        ],
-        "purchasedTokens": [
-            153,
-            152,
-            150,
-            149,
-            151
-        ],
-        "unsoldTokens": []
-    },
-    "OTKNR41800000DIG": {
+    {
         "editionData": "OTKNR41800000DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -812,7 +716,7 @@
             338
         ]
     },
-    "89AWAKE000001DIG": {
+    {
         "editionData": "89AWAKE000001DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -837,65 +741,7 @@
             49
         ]
     },
-    "HEXNFT0000001DIG": {
-        "editionData": "HEXNFT0000001DIG",
-        "editionType": 1,
-        "auctionStartDate": 0,
-        "auctionEndDate": 0,
-        "artistAccount": "0x6f7fc56461f1be9d430037f714af67e641e5f6cf",
-        "artistCommission": 76,
-        "priceInWei": "22000000000000000",
-        "tokenURI": "QmPGucBRhFTVzP7nEdnmbh6654bLF5AnXtBLRBZvKhqCUV",
-        "minted": 3,
-        "available": 3,
-        "active": true,
-        "tokenIds": [
-            322,
-            320,
-            321
-        ],
-        "purchasedTokens": [
-            322,
-            320,
-            321
-        ],
-        "unsoldTokens": []
-    },
-    "AKPVOID000000DIG": {
-        "editionData": "AKPVOID000000DIG",
-        "editionType": 1,
-        "auctionStartDate": 0,
-        "auctionEndDate": 0,
-        "artistAccount": "0x7dec37c03ea5ca2c47ad2509be6abaf8c63cdb39",
-        "artistCommission": 76,
-        "priceInWei": "8000000000000000",
-        "tokenURI": "QmdH4J3vhRE7qEJZWFvLaFmvo5WDoczcjndJGkFf4xnutp",
-        "minted": 8,
-        "available": 8,
-        "active": true,
-        "tokenIds": [
-            118,
-            117,
-            120,
-            124,
-            122,
-            119,
-            123,
-            121
-        ],
-        "purchasedTokens": [
-            118,
-            117,
-            120,
-            124,
-            122,
-            119,
-            123,
-            121
-        ],
-        "unsoldTokens": []
-    },
-    "STJRUNRIOT001DIG": {
+    {
         "editionData": "STJRUNRIOT001DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -919,31 +765,7 @@
             168
         ]
     },
-    "OTKPEBBLES000DIG": {
-        "editionData": "OTKPEBBLES000DIG",
-        "editionType": 1,
-        "auctionStartDate": 0,
-        "auctionEndDate": 0,
-        "artistAccount": "0xa4ad045d62a493f0ed883b413866448afb13087c",
-        "artistCommission": 76,
-        "priceInWei": "22000000000000000",
-        "tokenURI": "QmSskGXFG4MtHhbmeX9i1ukBmRiNJTeV3nG5em4FpmWDFj",
-        "minted": 3,
-        "available": 3,
-        "active": true,
-        "tokenIds": [
-            327,
-            328,
-            326
-        ],
-        "purchasedTokens": [
-            327,
-            328,
-            326
-        ],
-        "unsoldTokens": []
-    },
-    "OTKCELLS00000DIG": {
+    {
         "editionData": "OTKCELLS00000DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -968,7 +790,7 @@
             325
         ]
     },
-    "AKPMELT000000DIG": {
+    {
         "editionData": "AKPMELT000000DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -993,7 +815,7 @@
             308
         ]
     },
-    "TSMPOPEVENING001": {
+    {
         "editionData": "TSMPOPEVENING001",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1013,7 +835,7 @@
             158
         ]
     },
-    "PSPBLUE000000DIG": {
+    {
         "editionData": "PSPBLUE000000DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1035,7 +857,7 @@
             113
         ]
     },
-    "MKLSTYMLKCAPMD01": {
+    {
         "editionData": "MKLSTYMLKCAPMD01",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1059,27 +881,7 @@
             154
         ]
     },
-    "STRTAMINGLIONDIG": {
-        "editionData": "STRTAMINGLIONDIG",
-        "editionType": 1,
-        "auctionStartDate": 0,
-        "auctionEndDate": 0,
-        "artistAccount": "0x96dead6149f580884410c873f6da8d3dde16f13c",
-        "artistCommission": 76,
-        "priceInWei": "70000000000000000",
-        "tokenURI": "QmPNHQ66BQTUWpbhb4vUZjpsuZ4HCXAC96UcbDnmNiQvoR",
-        "minted": 1,
-        "available": 1,
-        "active": true,
-        "tokenIds": [
-            175
-        ],
-        "purchasedTokens": [
-            175
-        ],
-        "unsoldTokens": []
-    },
-    "FKAINSTATWEETDIG": {
+    {
         "editionData": "FKAINSTATWEETDIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1099,41 +901,7 @@
             189
         ]
     },
-    "AKPPEBBLE0000DIG": {
-        "editionData": "AKPPEBBLE0000DIG",
-        "editionType": 1,
-        "auctionStartDate": 0,
-        "auctionEndDate": 0,
-        "artistAccount": "0x7dec37c03ea5ca2c47ad2509be6abaf8c63cdb39",
-        "artistCommission": 76,
-        "priceInWei": "8000000000000000",
-        "tokenURI": "QmQwHSwu2iTPF5FVBHNL7TNmg2birznkTg4sFRiF8Wd9Vo",
-        "minted": 8,
-        "available": 8,
-        "active": true,
-        "tokenIds": [
-            142,
-            143,
-            144,
-            147,
-            146,
-            145,
-            148,
-            141
-        ],
-        "purchasedTokens": [
-            142,
-            143,
-            144,
-            147,
-            146,
-            145,
-            148,
-            141
-        ],
-        "unsoldTokens": []
-    },
-    "STJHPYFRIBIRDDIG": {
+    {
         "editionData": "STJHPYFRIBIRDDIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1158,7 +926,7 @@
             164
         ]
     },
-    "FKADAFFY0RAINDIG": {
+    {
         "editionData": "FKADAFFY0RAINDIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1178,7 +946,7 @@
             185
         ]
     },
-    "OBXDDF5000000DIG": {
+    {
         "editionData": "OBXDDF5000000DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1212,7 +980,7 @@
             193
         ]
     },
-    "TSMTHEYWATCH0001": {
+    {
         "editionData": "TSMTHEYWATCH0001",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1232,7 +1000,7 @@
             160
         ]
     },
-    "STREMOJI10000DIG": {
+    {
         "editionData": "STREMOJI10000DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1256,51 +1024,7 @@
             172
         ]
     },
-    "JOCBOO0000001DIG": {
-        "editionData": "JOCBOO0000001DIG",
-        "editionType": 1,
-        "auctionStartDate": 0,
-        "auctionEndDate": 0,
-        "artistAccount": "0x5bfff3cb3231cf81487e80358b644f1a670fd98b",
-        "artistCommission": 76,
-        "priceInWei": "27500000000000000",
-        "tokenURI": "QmdU2jFym9padrzCBrH1ADz277qkug4gXRXhZAHVREzJKY",
-        "minted": 3,
-        "available": 3,
-        "active": true,
-        "tokenIds": [
-            40,
-            39,
-            41
-        ],
-        "purchasedTokens": [
-            40,
-            39,
-            41
-        ],
-        "unsoldTokens": []
-    },
-    "STRTOOMNYNOONDIG": {
-        "editionData": "STRTOOMNYNOONDIG",
-        "editionType": 1,
-        "auctionStartDate": 0,
-        "auctionEndDate": 0,
-        "artistAccount": "0x96dead6149f580884410c873f6da8d3dde16f13c",
-        "artistCommission": 76,
-        "priceInWei": "130000000000000000",
-        "tokenURI": "QmUuQmqpqZv9vyhy8HpAB14odZaRifteJ5zrJ4makq4sLH",
-        "minted": 1,
-        "available": 1,
-        "active": true,
-        "tokenIds": [
-            186
-        ],
-        "purchasedTokens": [
-            186
-        ],
-        "unsoldTokens": []
-    },
-    "JOCFAMTREE001DIG": {
+    {
         "editionData": "JOCFAMTREE001DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1325,7 +1049,7 @@
             37
         ]
     },
-    "PSPGREEN00000DIG": {
+    {
         "editionData": "PSPGREEN00000DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1348,7 +1072,7 @@
             116
         ]
     },
-    "AKPSTELLAR000DIG": {
+    {
         "editionData": "AKPSTELLAR000DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1383,7 +1107,7 @@
             138
         ]
     },
-    "STRTRTSYM0001DIG": {
+    {
         "editionData": "STRTRTSYM0001DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1403,7 +1127,7 @@
             176
         ]
     },
-    "TSMDEPRESSED0001": {
+    {
         "editionData": "TSMDEPRESSED0001",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1423,7 +1147,7 @@
             159
         ]
     },
-    "AKPTEMPO00000DIG": {
+    {
         "editionData": "AKPTEMPO00000DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1448,7 +1172,7 @@
             312
         ]
     },
-    "STJSPGMRN0001DIG": {
+    {
         "editionData": "STJSPGMRN0001DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1472,27 +1196,7 @@
             165
         ]
     },
-    "STRLIQUIFY001DIG": {
-        "editionData": "STRLIQUIFY001DIG",
-        "editionType": 1,
-        "auctionStartDate": 0,
-        "auctionEndDate": 0,
-        "artistAccount": "0x96dead6149f580884410c873f6da8d3dde16f13c",
-        "artistCommission": 76,
-        "priceInWei": "125000000000000000",
-        "tokenURI": "QmSBN8zqqoZvknF5PZjTqgS8mTQeXquNM9mFR4Z3mgx434",
-        "minted": 1,
-        "available": 1,
-        "active": true,
-        "tokenIds": [
-            174
-        ],
-        "purchasedTokens": [
-            174
-        ],
-        "unsoldTokens": []
-    },
-    "FKAMARTIANBNGDIG": {
+    {
         "editionData": "FKAMARTIANBNGDIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1512,7 +1216,7 @@
             190
         ]
     },
-    "LHDBITOPIAN01DIG": {
+    {
         "editionData": "LHDBITOPIAN01DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1541,7 +1245,7 @@
             234
         ]
     },
-    "DWWDEVILRUN00DIG": {
+    {
         "editionData": "DWWDEVILRUN00DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1569,7 +1273,7 @@
             332
         ]
     },
-    "LOSSER01ART01DIG": {
+    {
         "editionData": "LOSSER01ART01DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1597,41 +1301,7 @@
             214
         ]
     },
-    "AKPFILAMENT00DIG": {
-        "editionData": "AKPFILAMENT00DIG",
-        "editionType": 1,
-        "auctionStartDate": 0,
-        "auctionEndDate": 0,
-        "artistAccount": "0x7dec37c03ea5ca2c47ad2509be6abaf8c63cdb39",
-        "artistCommission": 76,
-        "priceInWei": "8000000000000000",
-        "tokenURI": "QmRgRG5LCfAbFLxg8e6TZLDK9kBGTpRopJRxrG2ex1rqCo",
-        "minted": 8,
-        "available": 8,
-        "active": true,
-        "tokenIds": [
-            131,
-            129,
-            132,
-            127,
-            130,
-            128,
-            125,
-            126
-        ],
-        "purchasedTokens": [
-            131,
-            129,
-            132,
-            127,
-            130,
-            128,
-            125,
-            126
-        ],
-        "unsoldTokens": []
-    },
-    "LEVHORNSBIN21DIG": {
+    {
         "editionData": "LEVHORNSBIN21DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1669,7 +1339,7 @@
             262
         ]
     },
-    "MLOTAMEDLNES2DIG": {
+    {
         "editionData": "MLOTAMEDLNES2DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1689,7 +1359,7 @@
             270
         ]
     },
-    "HKTHUMANONE00DIG": {
+    {
         "editionData": "HKTHUMANONE00DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1714,7 +1384,7 @@
             303
         ]
     },
-    "LOSSER01ART03DIG": {
+    {
         "editionData": "LOSSER01ART03DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1742,7 +1412,7 @@
             228
         ]
     },
-    "LEVTRIGALOW05DIG": {
+    {
         "editionData": "LEVTRIGALOW05DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1776,27 +1446,7 @@
             274
         ]
     },
-    "OBXDDF1000000DIG": {
-        "editionData": "OBXDDF1000000DIG",
-        "editionType": 1,
-        "auctionStartDate": 0,
-        "auctionEndDate": 0,
-        "artistAccount": "0xf65db13b5ee031cb0ebba525ef21aa6c586681b3",
-        "artistCommission": 76,
-        "priceInWei": "70000000000000000",
-        "tokenURI": "QmSKFZiGYupMWj34pP2DNM6QwAi328hegSY1EdvKRXdaPs",
-        "minted": 1,
-        "available": 1,
-        "active": true,
-        "tokenIds": [
-            161
-        ],
-        "purchasedTokens": [
-            161
-        ],
-        "unsoldTokens": []
-    },
-    "OBXDDF2000000DIG": {
+    {
         "editionData": "OBXDDF2000000DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1816,79 +1466,7 @@
             285
         ]
     },
-    "STRSOFTFACE01DIG": {
-        "editionData": "STRSOFTFACE01DIG",
-        "editionType": 1,
-        "auctionStartDate": 0,
-        "auctionEndDate": 0,
-        "artistAccount": "0x96dead6149f580884410c873f6da8d3dde16f13c",
-        "artistCommission": 76,
-        "priceInWei": "130000000000000000",
-        "tokenURI": "Qmbgc7xgU5bDDwkJfEEyRW1EdsHHwt7sq6AbadL95huWhS",
-        "minted": 1,
-        "available": 1,
-        "active": true,
-        "tokenIds": [
-            188
-        ],
-        "purchasedTokens": [
-            188
-        ],
-        "unsoldTokens": []
-    },
-    "HKTHUMANTWO00DIG": {
-        "editionData": "HKTHUMANTWO00DIG",
-        "editionType": 1,
-        "auctionStartDate": 0,
-        "auctionEndDate": 0,
-        "artistAccount": "0x21316e6a4f0af45e5f1503984e83b10c53b177d8",
-        "artistCommission": 76,
-        "priceInWei": "22000000000000000",
-        "tokenURI": "Qma6FKEFYTpdHWpMJHe3QWMKzE67YiochhjZMKL9hzPCi1",
-        "minted": 3,
-        "available": 3,
-        "active": true,
-        "tokenIds": [
-            304,
-            305,
-            306
-        ],
-        "purchasedTokens": [
-            304,
-            305,
-            306
-        ],
-        "unsoldTokens": []
-    },
-    "TKOTAKACMNCOSDIG": {
-        "editionData": "TKOTAKACMNCOSDIG",
-        "editionType": 1,
-        "auctionStartDate": 0,
-        "auctionEndDate": 0,
-        "artistAccount": "0x81918c90424235902b0330e4870d2267544421b0",
-        "artistCommission": 76,
-        "priceInWei": "17500000000000000",
-        "tokenURI": "QmT5ATCMKrXu3KTafuoJGYvC4vBQfVt3PuFVGQxTEoxYav",
-        "minted": 5,
-        "available": 5,
-        "active": true,
-        "tokenIds": [
-            205,
-            200,
-            198,
-            201,
-            199
-        ],
-        "purchasedTokens": [
-            205,
-            200,
-            198,
-            201,
-            199
-        ],
-        "unsoldTokens": []
-    },
-    "STRMIRACLE001DIG": {
+    {
         "editionData": "STRMIRACLE001DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1908,27 +1486,7 @@
             229
         ]
     },
-    "FKABURNINFIATDIG": {
-        "editionData": "FKABURNINFIATDIG",
-        "editionType": 1,
-        "auctionStartDate": 0,
-        "auctionEndDate": 0,
-        "artistAccount": "0x2eb9b439ffb7dc587198e1534e465a6242192b24",
-        "artistCommission": 76,
-        "priceInWei": "407000000000000000",
-        "tokenURI": "QmPQ7WcYJeDXbRJDTyhVYV3SZKLLpgoeqLid4mxYPXQ3zY",
-        "minted": 1,
-        "available": 1,
-        "active": true,
-        "tokenIds": [
-            192
-        ],
-        "purchasedTokens": [
-            192
-        ],
-        "unsoldTokens": []
-    },
-    "LHDETHINSIDE1DIG": {
+    {
         "editionData": "LHDETHINSIDE1DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1956,7 +1514,7 @@
             236
         ]
     },
-    "MLOEMERGESHP1DIG": {
+    {
         "editionData": "MLOEMERGESHP1DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -1976,7 +1534,7 @@
             294
         ]
     },
-    "LOSSER01ART02DIG": {
+    {
         "editionData": "LOSSER01ART02DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -2004,7 +1562,7 @@
             222
         ]
     },
-    "MLOTAMEDLNES1DIG": {
+    {
         "editionData": "MLOTAMEDLNES1DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -2024,7 +1582,7 @@
             269
         ]
     },
-    "MLOEMERGESHP2DIG": {
+    {
         "editionData": "MLOEMERGESHP2DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -2044,7 +1602,7 @@
             295
         ]
     },
-    "STRAPPAIMLESSDIG": {
+    {
         "editionData": "STRAPPAIMLESSDIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -2064,7 +1622,7 @@
             230
         ]
     },
-    "FKABUNNYBAGS0DIG": {
+    {
         "editionData": "FKABUNNYBAGS0DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -2084,7 +1642,7 @@
             191
         ]
     },
-    "STRGRASSROOTSDIG": {
+    {
         "editionData": "STRGRASSROOTSDIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -2104,7 +1662,7 @@
             187
         ]
     },
-    "LEVPIGALOW032DIG": {
+    {
         "editionData": "LEVPIGALOW032DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -2132,7 +1690,7 @@
             256
         ]
     },
-    "LEVETHERMANF0DIG": {
+    {
         "editionData": "LEVETHERMANF0DIG",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -2152,7 +1710,7 @@
             297
         ]
     },
-    "TSMFACEFLAMES001": {
+    {
         "editionData": "TSMFACEFLAMES001",
         "editionType": 1,
         "auctionStartDate": 0,
@@ -2172,4 +1730,4 @@
             157
         ]
     }
-}
+]

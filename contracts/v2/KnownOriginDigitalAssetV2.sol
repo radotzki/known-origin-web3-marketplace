@@ -281,6 +281,8 @@ HasNoEther
     return _tokenId;
   }
 
+  // TODO do we need a mint with specific token ID?
+
   function koMint(address _to, uint256 _editionNumber) public onlyKnownOrigin onlyValidEdition(_editionNumber) returns (uint256) {
     return _mintToken(_to, _editionNumber);
   }
@@ -501,10 +503,12 @@ HasNoEther
   // Query Methods //
   ///////////////////
 
+  // TODO rename
   function editionsForType(uint8 _type) public view returns (uint256[] _editionNumbers) {
     return editionTypeToEditionNumber[_type];
   }
 
+  // TODO rename
   function tokenIdEditionNumber(uint256 _tokenId) public view returns (uint256 _editionNumber) {
     return tokenIdToEditionNumber[_tokenId];
   }
