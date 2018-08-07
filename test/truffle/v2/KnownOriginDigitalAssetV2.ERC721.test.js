@@ -43,6 +43,8 @@ contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
   const editionTokenUri2 = "edition2";
   const edition2Price = etherToWei(0.1);
 
+  const BASE_URI = "https://ipfs.infura.io/ipfs/";
+
   before(async function () {
     // Advance to the next block to correctly read time in the solidity "now" function interpreted by testrpc
     await advanceBlock();
@@ -135,7 +137,7 @@ contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
       it('sets and returns metadata for a token id', async function () {
         await this.token.setTokenURI(firstTokenId, sampleUri);
         const uri = await this.token.tokenURI(firstTokenId);
-        uri.should.be.equal(`https://ipfs.infura.io/ipfs/${sampleUri}`);
+        uri.should.be.equal(`${BASE_URI}${sampleUri}`);
       });
 
       it('can burn token with metadata', async function () {
@@ -147,7 +149,7 @@ contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
 
       it('returns setup metadata for token', async function () {
         const uri = await this.token.tokenURI(firstTokenId);
-        uri.should.be.equal(`https://ipfs.infura.io/ipfs/${editionTokenUri1}`);
+        uri.should.be.equal(`${BASE_URI}${editionTokenUri1}`);
       });
 
       it('reverts when querying metadata for non existent token id', async function () {
@@ -619,6 +621,7 @@ contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
             it('should call onERC721Received', async function () {
               const result = await transferFun.call(this, owner, this.to, tokenId, {from: owner});
               result.receipt.logs.length.should.be.equal(2);
+              // FIXME - work out how to bring back decodeLogs()
               // const [log] = decodeLogs([result.receipt.logs[1]], ERC721Receiver, this.receiver.address);
               // log.event.should.be.eq('Received');
               // log.args._operator.should.be.equal(owner);
@@ -630,6 +633,7 @@ contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
             it('should call onERC721Received from approved', async function () {
               const result = await transferFun.call(this, owner, this.to, tokenId, {from: approved});
               result.receipt.logs.length.should.be.equal(2);
+              // FIXME - work out how to bring back decodeLogs()
               // const [log] = decodeLogs([result.receipt.logs[1]], ERC721Receiver, this.receiver.address);
               // log.event.should.be.eq('Received');
               // log.args._operator.should.be.equal(approved);

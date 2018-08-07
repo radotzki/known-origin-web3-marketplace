@@ -23,7 +23,7 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
   const artistAccount = accounts[8];
-  const artistCommission = 76;
+  const artistShare = 76;
 
   const editionType = 1;
 
@@ -96,8 +96,8 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
   describe('edition setup and control', async function () {
 
     beforeEach(async function () {
-      await this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner});
-      await this.token.createEdition(editionNumber2, editionData2, editionType, 0, 0, artistAccount, artistCommission, edition2Price, editionTokenUri2, 4, {from: _owner});
+      await this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistShare, edition1Price, editionTokenUri1, 3, {from: _owner});
+      await this.token.createEdition(editionNumber2, editionData2, editionType, 0, 0, artistAccount, artistShare, edition2Price, editionTokenUri2, 4, {from: _owner});
     });
 
     describe('checking raw edition data on creation', function () {
@@ -110,7 +110,7 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         edition[2].should.be.bignumber.equal(0); // _auctionStartDate
         edition[3].should.be.bignumber.equal(MAX_UINT32); // _auctionEndDate
         edition[4].should.be.equal(artistAccount); // _artistAccount
-        edition[5].should.be.bignumber.equal(artistCommission); // _artistCommission
+        edition[5].should.be.bignumber.equal(artistShare); // _artistCommission
         edition[6].should.be.bignumber.equal(edition1Price); // _priceInWei
         edition[7].should.be.equal(`${BASE_URI}${editionTokenUri1}`); // _tokenURI
         edition[8].should.be.bignumber.equal(0); // _minted
@@ -126,7 +126,7 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         edition[2].should.be.bignumber.equal(0); // _auctionStartDate
         edition[3].should.be.bignumber.equal(MAX_UINT32); // _auctionEndDate
         edition[4].should.be.equal(artistAccount); // _artistAccount
-        edition[5].should.be.bignumber.equal(artistCommission); // _artistCommission
+        edition[5].should.be.bignumber.equal(artistShare); // _artistCommission
         edition[6].should.be.bignumber.equal(edition2Price); // _priceInWei
         edition[7].should.be.equal(`${BASE_URI}${editionTokenUri2}`); // _tokenURI
         edition[8].should.be.bignumber.equal(0); // _minted
@@ -321,7 +321,7 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
       const edition3Price = etherToWei(0.3);
 
       beforeEach(async function () {
-        await this.token.createDisabledEdition(editionNumber3, editionData3, editionType, 0, 0, artistAccount, artistCommission, edition3Price, editionTokenUri3, 1, {from: _owner});
+        await this.token.createDisabledEdition(editionNumber3, editionData3, editionType, 0, 0, artistAccount, artistShare, edition3Price, editionTokenUri3, 1, {from: _owner});
       });
 
       it('edition 3 setup correctly', async function () {
@@ -332,7 +332,7 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         edition[2].should.be.bignumber.equal(0); // _auctionStartDate
         edition[3].should.be.bignumber.equal(MAX_UINT32); // _auctionEndDate
         edition[4].should.be.equal(artistAccount); // _artistAccount
-        edition[5].should.be.bignumber.equal(artistCommission); // _artistCommission
+        edition[5].should.be.bignumber.equal(artistShare); // _artistCommission
         edition[6].should.be.bignumber.equal(edition3Price); // _priceInWei
         edition[7].should.be.equal(`${BASE_URI}${editionTokenUri3}`); // _tokenURI
         edition[8].should.be.bignumber.equal(0); // _minted
@@ -345,9 +345,6 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         active.should.be.equal(false);
       });
 
-      it('can be created by partners', async function () {
-        // TODO decide on if this feature is needed?
-      });
     });
 
     describe('edition creation validation', async function () {
@@ -355,35 +352,35 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
       describe('createEdition', async function () {
         it('reverts if editionNumber zero', async function () {
           await assertRevert(
-            this.token.createEdition(0, editionData1, editionType, 0, 0, artistAccount, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner})
+            this.token.createEdition(0, editionData1, editionType, 0, 0, artistAccount, artistShare, edition1Price, editionTokenUri1, 3, {from: _owner})
           );
         });
 
         it('reverts if editionType zero', async function () {
           await assertRevert(
-            this.token.createEdition(editionNumber1, editionData1, 0, 0, 0, artistAccount, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner})
+            this.token.createEdition(editionNumber1, editionData1, 0, 0, 0, artistAccount, artistShare, edition1Price, editionTokenUri1, 3, {from: _owner})
           );
         });
 
         it('reverts if tokenURI is not provided', async function () {
           await assertRevert(
-            this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistCommission, edition1Price, "", 3, {from: _owner})
+            this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistShare, edition1Price, "", 3, {from: _owner})
           );
         });
 
         it('reverts if artistAccount is not valid', async function () {
           await assertRevert(
-            this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, ZERO_ADDRESS, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner})
+            this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, ZERO_ADDRESS, artistShare, edition1Price, editionTokenUri1, 3, {from: _owner})
           );
         });
 
-        it('reverts if artistCommission is greater than 100%', async function () {
+        it('reverts if artistShare is greater than 100%', async function () {
           await assertRevert(
             this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, 101, edition1Price, editionTokenUri1, 3, {from: _owner})
           );
         });
 
-        it('reverts if artistCommission is less than 0%', async function () {
+        it('reverts if artistShare is less than 0%', async function () {
           await assertRevert(
             this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, -1, edition1Price, editionTokenUri1, 3, {from: _owner})
           );
@@ -391,7 +388,7 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
 
         it('reverts if editionNumber already defined', async function () {
           await assertRevert(
-            this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner})
+            this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistShare, edition1Price, editionTokenUri1, 3, {from: _owner})
           );
         });
       });
@@ -399,35 +396,35 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
       describe('createDisabledEdition', async function () {
         it('reverts if editionNumber zero', async function () {
           await assertRevert(
-            this.token.createDisabledEdition(0, editionData1, editionType, 0, 0, artistAccount, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner})
+            this.token.createDisabledEdition(0, editionData1, editionType, 0, 0, artistAccount, artistShare, edition1Price, editionTokenUri1, 3, {from: _owner})
           );
         });
 
         it('reverts if editionType zero', async function () {
           await assertRevert(
-            this.token.createDisabledEdition(editionNumber1, editionData1, 0, 0, 0, artistAccount, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner})
+            this.token.createDisabledEdition(editionNumber1, editionData1, 0, 0, 0, artistAccount, artistShare, edition1Price, editionTokenUri1, 3, {from: _owner})
           );
         });
 
         it('reverts if tokenURI is not provided', async function () {
           await assertRevert(
-            this.token.createDisabledEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistCommission, edition1Price, "", 3, {from: _owner})
+            this.token.createDisabledEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistShare, edition1Price, "", 3, {from: _owner})
           );
         });
 
         it('reverts if artistAccount is not valid', async function () {
           await assertRevert(
-            this.token.createDisabledEdition(editionNumber1, editionData1, editionType, 0, 0, ZERO_ADDRESS, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner})
+            this.token.createDisabledEdition(editionNumber1, editionData1, editionType, 0, 0, ZERO_ADDRESS, artistShare, edition1Price, editionTokenUri1, 3, {from: _owner})
           );
         });
 
-        it('reverts if artistCommission is greater than 100%', async function () {
+        it('reverts if artistShare is greater than 100%', async function () {
           await assertRevert(
             this.token.createDisabledEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, 101, edition1Price, editionTokenUri1, 3, {from: _owner})
           );
         });
 
-        it('reverts if artistCommission is less than 0%', async function () {
+        it('reverts if artistShare is less than 0%', async function () {
           await assertRevert(
             this.token.createDisabledEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, -1, edition1Price, editionTokenUri1, 3, {from: _owner})
           );
@@ -435,7 +432,7 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
 
         it('reverts if editionNumber already defined', async function () {
           await assertRevert(
-            this.token.createDisabledEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner})
+            this.token.createDisabledEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistShare, edition1Price, editionTokenUri1, 3, {from: _owner})
           );
         });
       });
@@ -450,8 +447,8 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
     const tokenId4 = 200002;
 
     beforeEach(async function () {
-      await this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner});
-      await this.token.createEdition(editionNumber2, editionData2, editionType, 0, 0, artistAccount, artistCommission, edition2Price, editionTokenUri2, 4, {from: _owner});
+      await this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistShare, edition1Price, editionTokenUri1, 3, {from: _owner});
+      await this.token.createEdition(editionNumber2, editionData2, editionType, 0, 0, artistAccount, artistShare, edition2Price, editionTokenUri2, 4, {from: _owner});
     });
 
     beforeEach(async function () {
@@ -616,8 +613,8 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
   describe('mint', async function () {
 
     beforeEach(async function () {
-      await this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner});
-      await this.token.createEdition(editionNumber2, editionData2, editionType, 0, 0, artistAccount, artistCommission, edition2Price, editionTokenUri2, 4, {from: _owner});
+      await this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistShare, edition1Price, editionTokenUri1, 3, {from: _owner});
+      await this.token.createEdition(editionNumber2, editionData2, editionType, 0, 0, artistAccount, artistShare, edition2Price, editionTokenUri2, 4, {from: _owner});
     });
 
     describe('validation', async function () {
@@ -784,20 +781,6 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         postArtistAccountBalance = await web3.eth.getBalance(artistAccount);
       });
 
-      // beforeEach(() => {
-      //   console.log("originalAccount1Balance", originalAccount1Balance.toString("10"));
-      //   console.log("postAccount1Balance", postAccount1Balance.toString("10"));
-      //
-      //   console.log("originalAccount2Balance", originalAccount2Balance.toString("10"));
-      //   console.log("postAccount2Balance", postAccount2Balance.toString("10"));
-      //
-      //   console.log("originalKoAccountBalance", originalKoAccountBalance.toString("10"));
-      //   console.log("postKoAccountBalance", postKoAccountBalance.toString("10"));
-      //
-      //   console.log("originalArtistAccountBalance", originalArtistAccountBalance.toString("10"));
-      //   console.log("postArtistAccountBalance", postArtistAccountBalance.toString("10"));
-      // });
-
       async function getGasCosts(receipt) {
         let tx = await web3.eth.getTransaction(receipt.tx);
         let gasPrice = tx.gasPrice;
@@ -939,7 +922,7 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         results[2].should.be.bignumber.equal(0);
         results[3].should.be.bignumber.equal(MAX_UINT32);
         results[4].should.be.equal(artistAccount);
-        results[5].should.be.bignumber.equal(artistCommission);
+        results[5].should.be.bignumber.equal(artistShare);
         results[6].should.be.bignumber.equal(edition1Price);
         results[7].should.be.bignumber.equal(3);
         results[8].should.be.bignumber.equal(1);
@@ -953,7 +936,7 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         results[2].should.be.bignumber.equal(0);
         results[3].should.be.bignumber.equal(MAX_UINT32);
         results[4].should.be.equal(artistAccount);
-        results[5].should.be.bignumber.equal(artistCommission);
+        results[5].should.be.bignumber.equal(artistShare);
         results[6].should.be.bignumber.equal(edition2Price);
         results[7].should.be.bignumber.equal(4);
         results[8].should.be.bignumber.equal(1);
@@ -964,8 +947,8 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
   describe('koMint', async function () {
 
     beforeEach(async function () {
-      await this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner});
-      await this.token.createEdition(editionNumber2, editionData2, editionType, 0, 0, artistAccount, artistCommission, edition2Price, editionTokenUri2, 4, {from: _owner});
+      await this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistShare, edition1Price, editionTokenUri1, 3, {from: _owner});
+      await this.token.createEdition(editionNumber2, editionData2, editionType, 0, 0, artistAccount, artistShare, edition2Price, editionTokenUri2, 4, {from: _owner});
     });
 
     it('will revert if not called by whitelist', async function () {
@@ -1033,7 +1016,7 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
           results[2].should.be.bignumber.equal(0);
           results[3].should.be.bignumber.equal(MAX_UINT32);
           results[4].should.be.equal(artistAccount);
-          results[5].should.be.bignumber.equal(artistCommission);
+          results[5].should.be.bignumber.equal(artistShare);
           results[6].should.be.bignumber.equal(edition1Price);
           results[7].should.be.bignumber.equal(3);
           results[8].should.be.bignumber.equal(1);
@@ -1047,7 +1030,7 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
           results[2].should.be.bignumber.equal(0);
           results[3].should.be.bignumber.equal(MAX_UINT32);
           results[4].should.be.equal(artistAccount);
-          results[5].should.be.bignumber.equal(artistCommission);
+          results[5].should.be.bignumber.equal(artistShare);
           results[6].should.be.bignumber.equal(edition2Price);
           results[7].should.be.bignumber.equal(4);
           results[8].should.be.bignumber.equal(1);

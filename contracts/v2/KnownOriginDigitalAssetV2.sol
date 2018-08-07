@@ -33,8 +33,6 @@ HasNoEther
 
   uint32 constant internal MAX_UINT32 = ~uint32(0);
 
-  string public constant ROLE_PARTNER = "partner";
-
   ////////////////
   // Properties //
   ////////////////
@@ -56,6 +54,10 @@ HasNoEther
   // number of assets sold of any type
   uint256 public totalNumberMinted;
 
+  // TODO add test for totalNumberAvailable
+  // number of assets available of any type
+  uint256 public totalNumberAvailable;
+
   // Object for edition details
   struct EditionDetails {
     // Identifiers
@@ -73,6 +75,7 @@ HasNoEther
     uint8 minted;             // Total purchases/minted
     uint8 available;          // Number with edition
     bool active;              // root on/off edition control
+    // TODO add a new flag for active but not publicly on sale?
   }
 
   mapping(uint256 => EditionDetails) internal editionNumberToEditionDetails;
@@ -100,13 +103,6 @@ HasNoEther
 
   modifier onlyKnownOrigin() {
     require(whitelist(msg.sender));
-    _;
-  }
-
-  // TODO is this over kill?
-  modifier onlyIfPartnerOrKnownOrigin() {
-    require(whitelist(msg.sender));
-    checkRole(msg.sender, ROLE_PARTNER);
     _;
   }
 
@@ -140,8 +136,6 @@ HasNoEther
     koCommissionAccount = msg.sender;
     // Whitelist owner
     addAddressToWhitelist(msg.sender);
-    // Add owner as partner as well
-    addRole(msg.sender, ROLE_PARTNER);
   }
 
   // Called once per edition
@@ -165,7 +159,7 @@ HasNoEther
     uint256 _priceInWei, string _tokenURI, uint8 _available
   )
   public
-  onlyIfPartnerOrKnownOrigin
+  onlyKnownOrigin
   returns (bool)
   {
     return _createEdition(_editionNumber, _editionData, _editionType, _auctionStartDate, _auctionEndDate, _artistAccount, _artistCommission, _priceInWei, _tokenURI, _available, false);
@@ -214,7 +208,7 @@ HasNoEther
       auctionEndDate : auctionEndDate,
       artistAccount : _artistAccount,
       artistCommission : _artistCommission,
-      priceInWei : _priceInWei, // TODO handle overriding of price per token from edition price?
+      priceInWei : _priceInWei,
       tokenURI : _tokenURI,
       minted : 0, // default to all available
       available : _available,
@@ -222,6 +216,9 @@ HasNoEther
       });
 
     // TODO how to handle an artists with multiple accounts i.e. CJ changed accounts between editions?
+
+    // Add to total available count
+    totalNumberAvailable = totalNumberAvailable.add(_available);
 
     // Maintain two way mappings so we can query direct
     // e.g.
@@ -364,6 +361,9 @@ HasNoEther
     // Remove one from the minted list
     _editionDetails.minted.sub(1);
 
+    // Lower available count
+    totalNumberAvailable = totalNumberAvailable.sub(1);
+
     // Delete token ID mapping
     delete tokenIdToEditionNumber[_tokenId];
 
@@ -468,7 +468,12 @@ HasNoEther
   onlyKnownOrigin
   onlyValidEdition(_editionNumber) {
     require(editionNumberToEditionDetails[_editionNumber].minted <= _available, "Unable to reduce available amount to the below the number minted");
+
+    uint256 originalAvailability = editionNumberToEditionDetails[_editionNumber].available;
+
     editionNumberToEditionDetails[_editionNumber].available = _available;
+
+    totalNumberAvailable = totalNumberAvailable.sub(originalAvailability).add(_available);
   }
 
   function updateAuctionStartDate(uint256 _editionNumber, uint32 _auctionStartDate)
@@ -537,7 +542,7 @@ HasNoEther
     _editionDetails.artistAccount,
     _editionDetails.artistCommission,
     _editionDetails.priceInWei,
-    Strings.strConcat(tokenBaseURI, _editionDetails.tokenURI), // TODO should this return full or hash
+    Strings.strConcat(tokenBaseURI, _editionDetails.tokenURI),
     _editionDetails.minted,
     _editionDetails.available,
     _editionDetails.active
