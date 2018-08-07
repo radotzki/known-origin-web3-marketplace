@@ -11,8 +11,9 @@ const fs = require('fs');
   // download IPFS data
   // build token swap per edition
 
-  let network = `rinkeby`;
-  let path = `./scripts/tokenswap/${network}-data.json`;
+  let network = `mainnet`;
+  let RAW_PATH = `./scripts/tokenswap/${network}-data.json`;
+  let PROCESSED_PATH = `./scripts/tokenswap/${network}-processed.json`;
 
   // Connect to the contract
   let contract = new Eth(new Eth.HttpProvider(`https://${network}.infura.io/nbCbdzC6IG9CF6hmvAVQ`))
@@ -32,7 +33,7 @@ const fs = require('fs');
     console.log(`exists [${exists[0]}] tokenId [${tokenId}]`);
 
     if (exists[0]) {
-      Promise.props({
+      return Promise.props({
         assetInfo: assetInfo(contract, tokenId),
         editionInfo: editionInfo(contract, tokenId)
       })
@@ -47,8 +48,45 @@ const fs = require('fs');
   });
 
   Promise.all(promises).then(() => {
-    fs.writeFileSync(path, JSON.stringify(allData, null, 4));
-  });
+    return fs.writeFileSync(RAW_PATH, JSON.stringify(allData, null, 4));
+  })
+    .then(() => {
+
+      const editionsToMigrate = {};
+
+      _.forEach(allData, (data) => {
+
+        if (!editionsToMigrate[data.edition]) {
+          editionsToMigrate[data.edition] = {
+            editionData: data.edition,
+            editionType: 1,
+            auctionStartDate: 0,
+            auctionEndDate: 0,
+            artistAccount: data.artistAccount,
+            artistCommission: 76,
+            priceInWei: data.priceInWei,
+            tokenURI: data.tokenURI.replace('https://ipfs.infura.io/ipfs/', ''),
+            minted: 0,
+            available: 0,
+            active: true,
+            tokenIds: []
+          };
+        }
+
+        let tokenAlreadyHandled = _.find(editionsToMigrate[data.edition].tokenIds, data.tokenId);
+        if (!tokenAlreadyHandled) {
+          editionsToMigrate[data.edition].available++;
+
+          if (data.owner !== '0x3f8c962eb167ad2f80c72b5f933511ccdf0719d4') {
+            editionsToMigrate[data.edition].minted++;
+          }
+
+          editionsToMigrate[data.edition].tokenIds.push(data.tokenId);
+        }
+      });
+
+      return fs.writeFileSync(PROCESSED_PATH, JSON.stringify(editionsToMigrate, null, 4));
+    });
 
   function assetInfo(contract, tokenId) {
     return contract.assetInfo(tokenId)
