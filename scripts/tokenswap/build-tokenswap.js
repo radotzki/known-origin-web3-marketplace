@@ -61,6 +61,7 @@ const fs = require('fs');
         if (!editionsToMigrate[data.edition]) {
           editionsToMigrate[data.edition] = {
             editionData: data.edition,
+            rawEdition: data.rawEdition,
             editionType: 1,
             auctionStartDate: 0,
             auctionEndDate: 0,
@@ -98,8 +99,12 @@ const fs = require('fs');
       const newEditionsToMint = [];
       const unsoldEditionsToMint = [];
 
+      let migrationEditionCounter = 100;
+
       _.forEach(editionsToMigrate, (data, edition) => {
         if (data.minted !== data.available) {
+          console.log(`oldToNewEditionMappings[${data.rawEdition}] = ${migrationEditionCounter}; // ${edition}`);
+          migrationEditionCounter = migrationEditionCounter + 100;
           newEditionsToMint.push(data);
         }
         if (data.tokenIds.length === data.unsoldTokens.length) {
@@ -108,7 +113,9 @@ const fs = require('fs');
       });
 
       fs.writeFileSync(TO_MINT_PATH, JSON.stringify(newEditionsToMint, null, 4));
+
       fs.writeFileSync(UNSOLD_MINT_PATH, JSON.stringify(unsoldEditionsToMint, null, 4));
+
 
     });
 

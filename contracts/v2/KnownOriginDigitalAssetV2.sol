@@ -282,6 +282,7 @@ HasNoEther
   }
 
   // TODO do we need a mint with specific token ID?
+  // TODO do we need a mint but not up the minted number when doing the token swap?
 
   function koMint(address _to, uint256 _editionNumber) public onlyKnownOrigin onlyValidEdition(_editionNumber) returns (uint256) {
     return _mintToken(_to, _editionNumber);
