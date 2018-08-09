@@ -1947,6 +1947,11 @@ HasNoEther
     );
   }
 
+  function editionExists(uint256 _editionNumber) returns (bool) {
+    EditionDetails memory editionNumber = editionNumberToEditionDetails[_editionNumber];
+    return editionNumber.editionNumber == _editionNumber;
+  }
+
   // Throws
   function tokenURI(uint256 _tokenId) public view returns (string) {
     require(exists(_tokenId));

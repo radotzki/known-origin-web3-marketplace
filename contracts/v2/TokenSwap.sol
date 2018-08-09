@@ -12,15 +12,19 @@ contract KODAV1 {
 
   function isApprovedForAll(address _owner, address _operator) public view returns (bool);
 
-  function safeTransferFrom(address _from, address _to, uint256 _tokenId) public;
+  function transferFrom(address _from, address _to, uint256 _tokenId);
 }
 
 contract KODAV2 {
-  function koMint(address _to, uint256 _editionNumber);
+  function koMint(address _to, uint256 _editionNumber) returns (uint256);
+
+  function editionExists(uint256 _editionNumber) returns (bool);
 }
 
 contract KnownOriginV1TokenSwap is Ownable {
   using SafeMath for uint;
+
+  event TokenSwapped(uint256 _oldTokenId, uint256 _newTokenId, bytes32 _oldEdition, uint256 _newEditionNumber);
 
   KODAV1 public kodaV1;
 
@@ -116,24 +120,29 @@ contract KnownOriginV1TokenSwap is Ownable {
     oldToNewEditionMappings[0x464b414d41525449414e424e47444947] = 6800; // FKAMARTIANBNGDIG
   }
 
-  // TODO check caller
-  // TODO check token Id exists and is not burnt/taken
-
-  function tokenSwap(uint256 _tokenId) {
+  function tokenSwap(uint256 _oldTokenId) {
     // lookup edition from V2
-    bytes16 oldEdition = kodaV1.editionOf(_tokenId);
+    bytes16 oldEdition = kodaV1.editionOf(_oldTokenId);
 
     // Get owner from old contract
-    address owner = kodaV1.ownerOf(_tokenId);
+    address owner = kodaV1.ownerOf(_oldTokenId);
+
+    // Ensure the contract can actually to the swap
+    require(kodaV1.isApprovedForAll(owner, address(this)), "Token swap contract not approved for transfer");
 
     // match edition in new contract
     uint256 newEdition = oldToNewEditionMappings[oldEdition];
 
+    // Ensure edition matched
+    require(kodaV2.editionExists(newEdition), "Edition number is not valid");
+
     // call mint to old token owner
-    kodaV2.koMint(owner, newEdition);
+    uint256 _newTokenId = kodaV2.koMint(owner, newEdition);
 
     // transfer ownerShip of old token to archiveAddress
-    kodaV1.safeTransferFrom(owner, archiveAddress, _tokenId);
+    kodaV1.safeTransferFrom(owner, archiveAddress, _oldTokenId);
+
+    emit TokenSwapped(_oldTokenId, _newTokenId, oldEdition, newEdition);
   }
 
   function oldToNewEdition(bytes16 oldEdition) public view returns (uint256 newEdition) {
