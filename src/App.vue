@@ -1,6 +1,5 @@
 <template>
   <div>
-
     <modal name="no-web3-found" :clickToClose="true" :width="300">
       <div class="alert alert-light fade show" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close" @click="$modal.hide('no-web3-found')">
@@ -23,12 +22,14 @@
     </modal>
 
     <header>
-      <nav class="navbar navbar-expand-md navbar-dark bg-primary fixed-top">
+      <nav class="navbar navbar-expand-md navbar-light bg-white text-primary fixed-top">
         <router-link :to="{ name: 'home' }" class="navbar-brand">
           KnownOrigin.io
         </router-link>
 
-        <ul class="navbar-nav justify-content-end">
+        <ul class="navbar-nav mr-auto">
+        </ul>
+        <ul class="navbar-nav">
           <li class="nav-item d-none d-md-block">
             <router-link :to="{ name: 'gallery' }" class="nav-link">Gallery</router-link>
           </li>
@@ -132,7 +133,8 @@
 
   $body-bg: #f2f5fb;
   $body-color: #545454;
-  $primary: #3e27d9;
+  $primary: #132cc4;
+  $secondary: #545454;
   $enable-rounded: false;
 
   $font-family-base: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;
@@ -149,15 +151,19 @@
 
   body {
     margin-bottom: 60px;
-    margin-top: 10px;
-    padding-top: 70px;
+    padding-top: 50px;
     padding-bottom: 20px;
   }
 
   [v-cloak] {display: none}
 
-  .navbar-brand {
+  .navbar-light .navbar-brand {
     font-size: 1.25rem;
+    color: $primary;
+  }
+
+  .navbar-light .navbar-nav .nav-link {
+    color: $primary;
   }
 
   /* mobile only */
