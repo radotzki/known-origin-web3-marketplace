@@ -7,7 +7,7 @@
     </div>
     <div class="row bg-white full-banner-secondary">
       <div class="col text-center mt-3">
-        <p>Filters</p>
+        <p>&nbsp;</p>
       </div>
     </div>
 
@@ -22,39 +22,8 @@
         </div>
       </div>
 
-      <!--<div class="form-row mb-4" v-if="hasFinishedLoading()">-->
-      <!--<div class="col">-->
-      <!--<select class="form-control" title="price filter" v-model="priceFilter">-->
-      <!--<option value="asc">Low to high</option>-->
-      <!--<option value="desc">High to low</option>-->
-      <!--<option value="high-res">High-res</option>-->
-      <!--<option value="sold">Sold</option>-->
-      <!--<option value="featured">Featured artwork</option>-->
-      <!--<option value="nifty">0xCert & Nifty Collaboration</option>-->
-      <!--</select>-->
-      <!--</div>-->
-      <!---->
-      <!--<div class="col d-none d-md-block">-->
-      <!--<select class="form-control" title="artist filter" v-model="artistFilter">-->
-      <!--<option value="all">Artists...</option>-->
-      <!--<option v-for="{artistCode, name} in orderedArtists" :value="artistCode">{{name}}</option>-->
-      <!--</select>-->
-      <!--</div>-->
-      <!--<div class="col">-->
-      <!--<input type="text" class="form-control" v-model="search" placeholder="Search assets..."/>-->
-      <!--</div>-->
-      <!--</div>-->
-
       <h4 class="text-primary pb-4 pt-2" v-if="hasFinishedLoading() && priceFilter === 'featured'">KnownOrigin.io x 0xCert Creative Challenge <br/>for Nifty Conference + Hackathon (July 24-26, 2018)
       </h4>
-
-      <!--<div class="card-columns" v-if="editions.length > 0">-->
-      <!--<galleryEdition-->
-      <!--v-for="edition in editions"-->
-      <!--:edition="edition"-->
-      <!--:key="edition.edition">-->
-      <!--</galleryEdition>-->
-      <!--</div>-->
 
       <div class="row justify-content-sm-center" v-if="editions.length > 0">
         <div class="col-auto mb-3" v-for="edition in editions">
@@ -62,7 +31,6 @@
             <!--<router-link :to="{ name: 'mycard', params: { tokenId: tokenId} }">-->
             <img class="card-img-top" :src="edition.lowResImg"/>
             <!--</router-link>-->
-            <!--<div class="card-body" :style="{ backgroundImage: `url('${edition.lowResImg}')` }"></div>-->
             <div class="card-body">
               <p class="card-title">{{ edition.otherMeta.artworkName }}</p>
             </div>
@@ -74,16 +42,12 @@
             </div>
             <div class="card-footer">
               <div class="row">
-                <div class="col d-none d-md-block">x Available</div>
-                <div class="col text-right font-weight-bold">0.0X ETH</div>
+                <div class="col d-none d-md-block" v-if="availableAssetsForEdition(edition.edition)">
+                  {{ availableAssetsForEdition(edition.edition).length }} available
+                </div>
+                <div class="col text-right font-weight-bold">{{ edition.priceInEther }} ETH</div>
               </div>
-
-              <!--<available :availableAssetsForEdition="availableAssetsForEdition(edition.edition)"></available>-->
-              <!--<router-link :to="{ name: 'mycard', params: { tokenId: tokenId} }">-->
-              <!--#{{ cardSetNumberFromTokenId(tokenId) }}-->
-              <!--</router-link>-->
             </div>
-            <!--</div>-->
           </div>
         </div>
       </div>
@@ -188,7 +152,11 @@
 
   .card {
     width: 12rem;
-    height: 25rem;
+    height: 24rem;
+  }
+
+  .card-title {
+    font-size: 0.9rem;
   }
 
   .card-body {
@@ -196,6 +164,7 @@
   }
 
   .card-footer {
+    padding: 0.5rem;
     font-size: 0.7rem;
     border-top: 0px;
   }
