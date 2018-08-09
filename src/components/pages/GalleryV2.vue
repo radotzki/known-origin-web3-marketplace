@@ -1,0 +1,221 @@
+<template>
+  <div>
+    <div class="row bg-secondary text-white full-banner">
+      <div class="col text-center m-5">
+        <p>Showcase and Discover Rare Digital Art</p>
+      </div>
+    </div>
+    <div class="row bg-white full-banner-secondary">
+      <div class="col text-center mt-3">
+        <p>Filters</p>
+      </div>
+    </div>
+
+    <div class="container mt-4">
+
+      <loading-spinner v-if="!hasFinishedLoading()"></loading-spinner>
+
+      <div class="row justify-content-sm-center" v-if="!hasFinishedLoading()">
+        <div class="col text-center mt-5">
+          <p>We are loading assets from the Blockchain.</p>
+          <p>Please be patient as we are fully decentralised.</p>
+        </div>
+      </div>
+
+      <!--<div class="form-row mb-4" v-if="hasFinishedLoading()">-->
+      <!--<div class="col">-->
+      <!--<select class="form-control" title="price filter" v-model="priceFilter">-->
+      <!--<option value="asc">Low to high</option>-->
+      <!--<option value="desc">High to low</option>-->
+      <!--<option value="high-res">High-res</option>-->
+      <!--<option value="sold">Sold</option>-->
+      <!--<option value="featured">Featured artwork</option>-->
+      <!--<option value="nifty">0xCert & Nifty Collaboration</option>-->
+      <!--</select>-->
+      <!--</div>-->
+      <!---->
+      <!--<div class="col d-none d-md-block">-->
+      <!--<select class="form-control" title="artist filter" v-model="artistFilter">-->
+      <!--<option value="all">Artists...</option>-->
+      <!--<option v-for="{artistCode, name} in orderedArtists" :value="artistCode">{{name}}</option>-->
+      <!--</select>-->
+      <!--</div>-->
+      <!--<div class="col">-->
+      <!--<input type="text" class="form-control" v-model="search" placeholder="Search assets..."/>-->
+      <!--</div>-->
+      <!--</div>-->
+
+      <h4 class="text-primary pb-4 pt-2" v-if="hasFinishedLoading() && priceFilter === 'featured'">KnownOrigin.io x 0xCert Creative Challenge <br/>for Nifty Conference + Hackathon (July 24-26, 2018)
+      </h4>
+
+      <!--<div class="card-columns" v-if="editions.length > 0">-->
+      <!--<galleryEdition-->
+      <!--v-for="edition in editions"-->
+      <!--:edition="edition"-->
+      <!--:key="edition.edition">-->
+      <!--</galleryEdition>-->
+      <!--</div>-->
+
+      <div class="row justify-content-sm-center" v-if="editions.length > 0">
+        <div class="col-auto mb-3" v-for="edition in editions">
+          <div class="card mb-3">
+            <!--<router-link :to="{ name: 'mycard', params: { tokenId: tokenId} }">-->
+            <img class="card-img-top" :src="edition.lowResImg"/>
+            <!--</router-link>-->
+            <!--<div class="card-body" :style="{ backgroundImage: `url('${edition.lowResImg}')` }"></div>-->
+            <div class="card-body">
+              <p class="card-title">{{ edition.otherMeta.artworkName }}</p>
+            </div>
+            <div class="card-footer bg-white">
+              <!--<router-link :to="{ name: 'artist', params: { artistCode: edition.artistCode} }">-->
+              <img :src="findArtist(edition.artistCode).img" class="artist-avatar"/>
+              <span class="pl-1 artist-name">{{ edition.otherMeta.artist }}</span>
+              <!--</router-link>-->
+            </div>
+            <div class="card-footer">
+              <div class="row">
+                <div class="col d-none d-md-block">x Available</div>
+                <div class="col text-right font-weight-bold">0.0X ETH</div>
+              </div>
+
+              <!--<available :availableAssetsForEdition="availableAssetsForEdition(edition.edition)"></available>-->
+              <!--<router-link :to="{ name: 'mycard', params: { tokenId: tokenId} }">-->
+              <!--#{{ cardSetNumberFromTokenId(tokenId) }}-->
+              <!--</router-link>-->
+            </div>
+            <!--</div>-->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+
+  import { mapGetters, mapState } from 'vuex';
+  import GalleryEdition from '../GalleryEdition';
+  import LoadingSpinner from '../ui-controls/LoadingSpinner.vue';
+  import _ from 'lodash';
+  import Available from '../ui-controls/Available.vue';
+
+  export default {
+    name: 'gallery',
+    components: {
+      LoadingSpinner,
+      GalleryEdition,
+      Available
+    },
+    data () {
+      return {
+        finishedLoading: false,
+        priceFilter: 'asc',
+        artistFilter: 'all',
+        search: ''
+      };
+    },
+    methods: {
+      onSoldToggleChanged: function ({value}) {
+        this.showSold = value;
+      },
+      hasFinishedLoading: function () {
+        // Use the lack of assets in the store to determine initial loading state
+        if (!this.assets || this.assets.length === 0) {
+          return false;
+        }
+        return this.editions.length > 0 || this.finishedLoading === true;
+      },
+    },
+    computed: {
+      ...mapState([
+        'artists',
+      ]),
+      ...mapState('assets', [
+        'assets',
+        'editionSummary',
+      ]),
+      ...mapGetters([
+        'liveArtists',
+        'findArtist'
+      ]),
+      ...mapGetters('assets', [
+        'editionSummaryFilter',
+        'availableAssetsForEdition'
+      ]),
+      orderedArtists: function () {
+        return _.orderBy(this.liveArtists, 'name');
+      },
+      editions: function () {
+        this.finishedLoading = false;
+
+        let results = this.editionSummaryFilter(this.priceFilter, this.artistFilter)
+          .filter(function (item) {
+
+            if (this.search.length === 0) {
+              return true;
+            }
+
+            const searchString = this.search.toLowerCase();
+
+            let matchesName = item.artworkName.toLowerCase().indexOf(searchString) >= 0;
+            let matchesDescription = item.description.toLowerCase().indexOf(searchString) >= 0;
+            let matchesArtist = item.otherMeta.artist.toLowerCase().indexOf(searchString) >= 0;
+            let matchesTokenId = `${item.id}`.indexOf(searchString) >= 0;
+            let matchesEdition = item.edition.toLowerCase().indexOf(searchString) >= 0;
+
+            return matchesName || matchesDescription || matchesArtist || matchesTokenId || matchesEdition;
+          }.bind(this));
+        this.finishedLoading = true;
+        return results;
+      }
+    }
+  };
+</script>
+
+<style scoped lang="scss">
+  .full-banner {
+    font-size: 3rem;
+  }
+
+  .full-banner-secondary {
+
+  }
+
+  .card-img-top {
+    object-fit: cover;
+    height: 12rem;
+  }
+
+  .card {
+    width: 12rem;
+    height: 25rem;
+  }
+
+  .card-body {
+
+  }
+
+  .card-footer {
+    font-size: 0.7rem;
+    border-top: 0px;
+  }
+
+  /* mobile only */
+  @media screen and (max-width: 767px) {
+    .card {
+      width: 8rem;
+    }
+
+    .full-banner {
+      font-size: 1.5rem;
+    }
+  }
+
+  .artist-name {
+    font-size: 0.65rem;
+  }
+
+  .artist-avatar {
+    max-width: 30px;
+  }
+</style>

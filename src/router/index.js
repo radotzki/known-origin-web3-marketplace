@@ -3,6 +3,7 @@ import Router from 'vue-router';
 import Artists from '@/components/pages/Artists';
 import ContractDetails from '@/components/pages/ContractDetails';
 import Gallery from '@/components/pages/Gallery';
+import GalleryV2 from '@/components/pages/GalleryV2';
 import Account from '@/components/pages/Account';
 import License from '@/components/pages/License';
 import Assets from '@/components/pages/Assets';
@@ -44,7 +45,7 @@ export default new Router({
     {
       path: '/gallery',
       name: 'gallery',
-      component: Gallery
+      component: GalleryV2
     },
     {
       path: '/editions',
