@@ -281,7 +281,6 @@ HasNoEther
     return _tokenId;
   }
 
-  // TODO do we need a mint with specific token ID?
   // TODO do we need a mint but not up the minted number when doing the token swap?
 
   function koMint(address _to, uint256 _editionNumber) public onlyKnownOrigin onlyValidEdition(_editionNumber) returns (uint256) {
@@ -297,6 +296,29 @@ HasNoEther
 
     // Construct next token ID e.g. 100000 + 1 = ID of 100001 (this first in the edition set)
     uint256 _tokenId = _editionDetails.editionNumber.add(_editionDetails.minted);
+
+    //////////////////////////////////////////////////////////////
+    // Start: Special case handling for under minting V1 assets //
+    //////////////////////////////////////////////////////////////
+
+    // If we are dealing with KODA V1 assets which are being minted or transfer
+    if (_editionDetails.editionNumber < 10000) {
+
+      // For old editions start the counter as edition + 1
+      _tokenId = _editionDetails.editionNumber.add(1);
+
+      // Work your way up until you find a free token based on the new _tokenIdd
+      while (exists(_tokenId)) {
+        _tokenId = _tokenId.add(1);
+      }
+
+      // Reduce the minted count as we have back filled
+      _editionDetails.minted = _editionDetails.minted.sub(1);
+    }
+
+    ////////////////////////////////////////////////////////////
+    // End: special case handling for under minting V1 assets //
+    ////////////////////////////////////////////////////////////
 
     // Mint new base token
     super._mint(_to, _tokenId);

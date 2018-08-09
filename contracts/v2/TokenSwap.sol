@@ -42,9 +42,9 @@ contract KnownOriginV1TokenSwap is Ownable {
     KODAV2 _kodaV2,
     address _archiveAddress
   ) public {
-    require(_kodaV1 != address(0));
-    require(_kodaV2 != address(0));
-    require(_archiveAddress != address(0));
+    require(_kodaV1 != address(0), "Missing KODA V1 address");
+    require(_kodaV2 != address(0), "Missing KODA V2 address");
+    require(_archiveAddress != address(0), "Missing KODA achieve address");
 
     archiveAddress = _archiveAddress;
     kodaV1 = _kodaV1;
@@ -120,27 +120,20 @@ contract KnownOriginV1TokenSwap is Ownable {
     oldToNewEditionMappings[0x464b414d41525449414e424e47444947] = 6800; // FKAMARTIANBNGDIG
   }
 
-  function tokenSwap(uint256 _oldTokenId) {
-    // lookup edition from V2
+  function tokenSwap(uint256 _oldTokenId) public {
+
     bytes16 oldEdition = kodaV1.editionOf(_oldTokenId);
-
-    // Get owner from old contract
-    address owner = kodaV1.ownerOf(_oldTokenId);
-
-    // Ensure the contract can actually to the swap
-    require(kodaV1.isApprovedForAll(owner, address(this)), "Token swap contract not approved for transfer");
-
-    // match edition in new contract
     uint256 newEdition = oldToNewEditionMappings[oldEdition];
-
-    // Ensure edition matched
     require(kodaV2.editionExists(newEdition), "Edition number is not valid");
+
+    address owner = kodaV1.ownerOf(_oldTokenId);
+    require(isApprovedForTransfer(_oldTokenId), "Token swap contract not approved for transfer");
 
     // call mint to old token owner
     uint256 _newTokenId = kodaV2.koMint(owner, newEdition);
 
     // transfer ownerShip of old token to archiveAddress
-    kodaV1.safeTransferFrom(owner, archiveAddress, _oldTokenId);
+    kodaV1.transferFrom(owner, archiveAddress, _oldTokenId);
 
     emit TokenSwapped(_oldTokenId, _newTokenId, oldEdition, newEdition);
   }
@@ -149,9 +142,13 @@ contract KnownOriginV1TokenSwap is Ownable {
     return oldToNewEditionMappings[oldEdition];
   }
 
-  function checkTokenIdCanSwap(uint256 _tokenId) public view returns (uint256 newEdition) {
+  function editionMapping(uint256 _tokenId) public view returns (uint256 newEdition) {
     bytes16 oldEdition = kodaV1.editionOf(_tokenId);
-
     return oldToNewEditionMappings[oldEdition];
+  }
+
+  function isApprovedForTransfer(uint256 _tokenId) public view returns (bool) {
+    address owner = kodaV1.ownerOf(_tokenId);
+    return kodaV1.isApprovedForAll(owner, address(this));
   }
 }
