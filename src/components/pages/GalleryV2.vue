@@ -31,22 +31,23 @@
       <h4 class="text-primary pb-4 pt-2" v-if="hasFinishedLoading() && priceFilter === 'featured'">KnownOrigin.io x 0xCert Creative Challenge <br/>for Nifty Conference + Hackathon (July 24-26, 2018)
       </h4>
 
-      <div class="row justify-content-sm-center" v-if="editions.length > 0">
-
-        <div class="col-auto mb-3" v-for="edition in editions">
-          <div class="card mb-3 shadow-sm">
-            <img class="card-img-top" :src="edition.lowResImg"/>
-            <div class="card-body">
-              <p class="card-title">{{ edition.otherMeta.artworkName }}</p>
-              <img :src="findArtist(edition.artistCode).img" class="artist-avatar"/>
-              <span class="pl-1 artist-name">{{ edition.otherMeta.artist }}</span>
-            </div>
-            <div class="card-footer">
-              <div class="row">
-                <div class="col d-none d-md-block" v-if="availableAssetsForEdition(edition.edition)">
-                  {{ availableAssetsForEdition(edition.edition).length }} available
+      <div class="row" v-if="editions.length > 0">
+        <div class="card-deck">
+          <div class="col-auto mb-4" v-for="edition in editions">
+            <div class="card mb-3 shadow-sm">
+              <img class="card-img-top" :src="edition.lowResImg"/>
+              <div class="card-body">
+                <p class="card-title">{{ edition.otherMeta.artworkName }}</p>
+                <img :src="findArtist(edition.artistCode).img" class="artist-avatar"/>
+                <span class="pl-1 artist-name">{{ edition.otherMeta.artist }}</span>
+              </div>
+              <div class="card-footer">
+                <div class="row">
+                  <div class="col d-none d-md-block" v-if="availableAssetsForEdition(edition.edition)">
+                    {{ availableAssetsForEdition(edition.edition).length }} available
+                  </div>
+                  <div class="col text-right">{{ edition.priceInEther }} ETH</div>
                 </div>
-                <div class="col text-right">{{ edition.priceInEther }} ETH</div>
               </div>
             </div>
           </div>
@@ -148,8 +149,8 @@
   }
 
   .card {
-    width: 15rem;
-    height: 22rem;
+    width: 14rem;
+    height: 21.5rem;
   }
 
   .card-title {
@@ -162,7 +163,7 @@
 
   .card-footer {
     padding: 0.5rem;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
   }
 
   /* mobile only */
@@ -177,7 +178,7 @@
   }
 
   .artist-name {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
   }
 
   .artist-avatar {
