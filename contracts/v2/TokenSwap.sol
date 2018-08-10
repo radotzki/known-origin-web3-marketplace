@@ -16,7 +16,7 @@ contract KODAV1 {
 }
 
 contract KODAV2 {
-  function koMint(address _to, uint256 _editionNumber) returns (uint256);
+  function koUnderMint(address _to, uint256 _editionNumber) returns (uint256);
 
   function editionExists(uint256 _editionNumber) returns (bool);
 }
@@ -130,7 +130,7 @@ contract KnownOriginV1TokenSwap is Ownable {
     require(isApprovedForTransfer(_oldTokenId), "Token swap contract not approved for transfer");
 
     // call mint to old token owner
-    uint256 _newTokenId = kodaV2.koMint(owner, newEdition);
+    uint256 _newTokenId = kodaV2.koUnderMint(owner, newEdition);
 
     // transfer ownerShip of old token to archiveAddress
     kodaV1.transferFrom(owner, archiveAddress, _oldTokenId);

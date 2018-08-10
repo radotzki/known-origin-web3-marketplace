@@ -85,8 +85,6 @@ HasNoEther
   mapping(uint256 => uint256[]) internal editionNumberToTokenIds;
   mapping(uint256 => uint256) internal editionNumberToTokenIdIndex;
 
-  // TODO should we allow edition data to be burnt vs setting inactive or lowering available?
-
   mapping(address => uint256[]) internal artistToEditionNumbers;
   mapping(uint256 => uint256) internal editionNumberToArtistIndex;
 
@@ -534,6 +532,7 @@ HasNoEther
     _editionDetails.active = _active;
   }
 
+  // TODO checks to make sure we dont lower minted to less than tokens sold
   function updateMinted(uint256 _editionNumber, uint8 _minted)
   public
   onlyKnownOrigin
@@ -542,6 +541,7 @@ HasNoEther
     _editionDetails.minted = _minted;
   }
 
+  // TODO checks to make sure we dont lower minted to less than tokens sold
   function updateAvailable(uint256 _editionNumber, uint8 _available)
   external
   onlyKnownOrigin

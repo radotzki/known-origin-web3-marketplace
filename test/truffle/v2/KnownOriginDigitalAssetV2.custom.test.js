@@ -1086,7 +1086,7 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
 
   });
 
-  describe.only('Under mint', async function () {
+  describe('Under mint', async function () {
 
     const editionNumber3 = 300000;
     const editionData3 = "editionData3";
@@ -1210,6 +1210,9 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
       // Check cannot mint any more as sold out
       await assertRevert(this.token.koUnderMint(account2, editionNumber3, {from: _owner}));
     });
+
+    // TODO tests for burning undermints
+    // TODO tests for updating undermints
 
   });
 
