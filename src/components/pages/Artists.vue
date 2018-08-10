@@ -1,10 +1,7 @@
 <template>
-  <div>
-    <div class="row bg-secondary text-white full-banner mb-5">
-      <div class="col text-center m-5">
-        <p>Artists</p>
-      </div>
-    </div>
+  <div class="container">
+
+    <h1>Artists</h1>
 
     <div class="container mb-5">
       <div class="card-columns">
