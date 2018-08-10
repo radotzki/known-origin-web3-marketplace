@@ -22,7 +22,7 @@
     </modal>
 
     <header>
-      <nav class="navbar navbar-expand-md navbar-light bg-white text-primary fixed-top">
+      <nav class="navbar navbar-expand-md navbar-light bg-white text-primary fixed-top floating-nav">
         <router-link :to="{ name: 'home' }" class="navbar-brand">
           KnownOrigin.io
         </router-link>
@@ -105,6 +105,11 @@
       ...mapGetters([]),
       ...mapState(['assetsPurchasedByAccount']),
     },
+    methods: {
+      // handleScroll (event) {
+      //   console.log(document.body.scrollTop);
+      // }
+    },
     mounted() {
 
       let bootStrappedWeb3;
@@ -124,7 +129,15 @@
       // Bootstrap the full app
       this.$store.dispatch(actions.INIT_APP, bootStrappedWeb3);
     },
+    // created () {
+    //   window.addEventListener('scroll', this.handleScroll);
+    // },
+    // destroyed () {
+    //   window.removeEventListener('scroll', this.handleScroll);
+    // }
   };
+
+
 </script>
 
 <style lang="scss">
@@ -135,7 +148,6 @@
   $body-color: #545454;
   $primary: #132cc4;
   $secondary: #545454;
-  $enable-rounded: false;
 
   $font-family-base: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;
 
@@ -164,6 +176,15 @@
 
   .navbar-light .navbar-nav .nav-link {
     color: $primary;
+  }
+
+  .floating-nav {
+    box-shadow: 0px 1px 3px #999;
+  }
+
+  .full-banner {
+    font-size: 2.75rem;
+    background-image: url("../static/kodo_pattern.jpeg");
   }
 
   /* mobile only */
