@@ -37,7 +37,7 @@
             <router-link :to="{ name: 'artists' }" class="nav-link">Artists</router-link>
           </li>
           <li class="nav-item">
-            <router-link :to="{ name: 'account' }" class="nav-link">Account <span class="badge badge-nav" v-if="assetsPurchasedByAccount.length > 0">{{ assetsPurchasedByAccount.length }}</span></router-link>
+            <router-link :to="{ name: 'account' }" class="nav-link">Account <span class="badge badge-primary" v-if="assetsPurchasedByAccount.length > 0">{{ assetsPurchasedByAccount.length }}</span></router-link>
           </li>
         </ul>
       </nav>
@@ -167,6 +167,10 @@
     padding-bottom: 20px;
   }
 
+  h1 {
+    margin-top: 30px;
+  }
+
   [v-cloak] {display: none}
 
   .navbar-light .navbar-brand {
@@ -202,6 +206,16 @@
       .col-sm {
         padding-bottom: 10px;
       }
+    }
+
+    .navbar-light .navbar-brand {
+      font-weight: 500;
+      font-style: normal;
+      font-size: 18px;
+      letter-spacing: .02em;
+      line-height: 1em;
+      text-transform: none;
+      color: $primary;
     }
 
     h1 {

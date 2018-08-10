@@ -6,13 +6,11 @@
       </div>
     </div>
     <div class="row bg-white full-banner-secondary pt-3 d-none d-md-block">
-      <div class="col text-center">
-        <p>
-          <span class="pl-2 pr-2">Featured Artists</span>
-          <span class="pl-2 pr-2">Featured Artists</span>
-          <span class="pl-2 pr-2">Featured Artists</span>
-          <span class="pl-2 pr-2">Featured Artists</span>
-        </p>
+      <div class="col text-center mb-2">
+        <span class="pl-2 pr-2">Featured Artists</span>
+        <span class="pl-2 pr-2">Featured Artists</span>
+        <span class="pl-2 pr-2">Featured Artists</span>
+        <span class="pl-2 pr-2">Featured Artists</span>
       </div>
     </div>
 
@@ -33,22 +31,24 @@
       <div class="row" v-if="editions.length > 0">
         <div class="card-deck">
           <div class="col-auto mx-auto mb-4" v-for="edition in editions">
-            <div class="card shadow-sm">
-              <img class="card-img-top" :src="edition.lowResImg"/>
-              <div class="card-body">
-                <p class="card-title">{{ edition.otherMeta.artworkName }}</p>
-                <img :src="findArtist(edition.artistCode).img" class="artist-avatar"/>
-                <span class="pl-1 artist-name">{{ edition.otherMeta.artist }}</span>
-              </div>
-              <div class="card-footer">
-                <div class="row">
-                  <div class="col" v-if="availableAssetsForEdition(edition.edition)">
-                    {{ availableAssetsForEdition(edition.edition).length }} available
+            <router-link class="card-target" :to="{ name: 'confirmPurchase', params: { artistCode: edition.edition.substring(0, 3), edition: edition.edition }}">
+              <div class="card shadow-sm">
+                <img class="card-img-top" :src="edition.lowResImg"/>
+                <div class="card-body">
+                  <p class="card-title">{{ edition.otherMeta.artworkName }}</p>
+                  <img :src="findArtist(edition.artistCode).img" class="artist-avatar"/>
+                  <span class="pl-1 artist-name">{{ edition.otherMeta.artist }}</span>
+                </div>
+                <div class="card-footer">
+                  <div class="row">
+                    <div class="col" v-if="availableAssetsForEdition(edition.edition)">
+                      {{ availableAssetsForEdition(edition.edition).length }} available
+                    </div>
+                    <div class="col text-right">{{ edition.priceInEther }} ETH</div>
                   </div>
-                  <div class="col text-right">{{ edition.priceInEther }} ETH</div>
                 </div>
               </div>
-            </div>
+            </router-link>
           </div>
         </div>
       </div>
@@ -165,6 +165,14 @@
     font-size: 0.75rem;
   }
 
+  .card-target {
+    color: inherit;
+  }
+
+  a:hover{
+    text-decoration: none;
+  }
+
   /* mobile only */
   @media screen and (max-width: 767px) {
     .card-img-top {
@@ -173,7 +181,7 @@
     }
 
     .card {
-      width: 20.5rem;
+      width: 18.5rem;
       height: 25rem;
     }
 
