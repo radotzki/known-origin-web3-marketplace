@@ -175,6 +175,10 @@
 
   /* mobile only */
   @media screen and (max-width: 767px) {
+    .card-deck {
+      flex-flow: row wrap;
+    }
+
     .card-img-top {
       object-fit: cover;
       height: 15rem;
