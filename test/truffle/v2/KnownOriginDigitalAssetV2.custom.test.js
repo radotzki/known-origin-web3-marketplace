@@ -1169,10 +1169,10 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
     });
 
     it('should handle under mint and normal mints', async function () {
-      const firstMinted = editionNumber3 + 3;
-      const secondMinted = editionNumber3 + 4;
-      const thirdMinted = editionNumber3 + 1;
-      const fourthMinted = editionNumber3 + 2;
+      const firstMinted = editionNumber3 + 3; // 300003
+      const secondMinted = editionNumber3 + 4; // 300004
+      const thirdMinted = editionNumber3 + 1;  // 300001
+      const fourthMinted = editionNumber3 + 2;  // 300002
 
       // Mint two more to make the edition sold out
       await this.token.mint(editionNumber3, {from: account2, value: edition3Price});
