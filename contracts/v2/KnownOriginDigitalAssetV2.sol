@@ -268,57 +268,69 @@ HasNoEther
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
     require(msg.value >= _editionDetails.priceInWei);
 
+    // Construct next token ID e.g. 100000 + 1 = ID of 100001 (this first in the edition set)
+    uint256 _tokenId = _nextTokenId(_editionNumber);
+
     // Create the token
-    uint256 _tokenId = _mintToken(_to, _editionNumber);
+    _mintToken(_to, _tokenId, _editionNumber);
 
     // Splice funds and handle commissions
     _handleFunds(_editionNumber);
 
-    // TODO should this event also be emitted for koMint() ?
     // Broadcast purchase
     emit Purchase(_tokenId, msg.value, _to);
 
     return _tokenId;
   }
 
-  // TODO do we need a mint but not up the minted number when doing the token swap?
-
   function koMint(address _to, uint256 _editionNumber) public onlyKnownOrigin onlyValidEdition(_editionNumber) returns (uint256) {
-    return _mintToken(_to, _editionNumber);
+    // Construct next token ID e.g. 100000 + 1 = ID of 100001 (this first in the edition set)
+    uint256 _tokenId = _nextTokenId(_editionNumber);
+
+    // Create the token
+    _mintToken(_to, _tokenId, _editionNumber);
+
+    // Create the token
+    return _tokenId;
   }
 
-  function _mintToken(address _to, uint256 _editionNumber) internal returns (uint256) {
+  function koUnderMint(address _to, uint256 _editionNumber) public onlyKnownOrigin onlyValidEdition(_editionNumber) returns (uint256) {
+    // Under mint token, meaning it takes one from the already sold version
+    uint256 _tokenId = _underMintNextTokenId(_editionNumber);
 
+    // Create the token
+    _mintToken(_to, _tokenId, _editionNumber);
+
+    // Create the token
+    return _tokenId;
+  }
+
+  function _nextTokenId(uint256 _editionNumber) internal returns (uint256) {
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
 
     // Bump number minted
     _editionDetails.minted = _editionDetails.minted.add(1);
 
     // Construct next token ID e.g. 100000 + 1 = ID of 100001 (this first in the edition set)
-    uint256 _tokenId = _editionDetails.editionNumber.add(_editionDetails.minted);
+    return _editionDetails.editionNumber.add(_editionDetails.minted);
+  }
 
-    //////////////////////////////////////////////////////////////
-    // Start: Special case handling for under minting V1 assets //
-    //////////////////////////////////////////////////////////////
+  function _underMintNextTokenId(uint256 _editionNumber) internal returns (uint256) {
+    EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
 
-    // If we are dealing with KODA V1 assets which are being minted or transfer
-    if (_editionDetails.editionNumber < 10000) {
+    // For old editions start the counter as edition + 1
+    uint256 _tokenId = _editionDetails.editionNumber.add(1);
 
-      // For old editions start the counter as edition + 1
-      _tokenId = _editionDetails.editionNumber.add(1);
-
-      // Work your way up until you find a free token based on the new _tokenIdd
-      while (exists(_tokenId)) {
-        _tokenId = _tokenId.add(1);
-      }
-
-      // Reduce the minted count as we have back filled
-      _editionDetails.minted = _editionDetails.minted.sub(1);
+    // Work your way up until you find a free token based on the new _tokenIdd
+    while (exists(_tokenId)) {
+      _tokenId = _tokenId.add(1);
     }
 
-    ////////////////////////////////////////////////////////////
-    // End: special case handling for under minting V1 assets //
-    ////////////////////////////////////////////////////////////
+    return _tokenId;
+  }
+
+  function _mintToken(address _to, uint256 _tokenId, uint256 _editionNumber) internal {
+    EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
 
     // Mint new base token
     super._mint(_to, _tokenId);
@@ -341,8 +353,6 @@ HasNoEther
 
     // Emit minted event
     emit Minted(_tokenId, _editionNumber, _to);
-
-    return _tokenId;
   }
 
   function _handleFunds(uint256 _editionNumber) internal {
