@@ -23,13 +23,13 @@
 
     <header>
       <nav class="navbar navbar-expand-md navbar-light bg-white text-primary fixed-top floating-nav">
-        <router-link :to="{ name: 'home' }" class="navbar-brand">
+        <router-link :to="{ name: 'home' }" class="navbar-brand ml-5">
           KnownOrigin.io
         </router-link>
 
         <ul class="navbar-nav mr-auto">
         </ul>
-        <ul class="navbar-nav">
+        <ul class="navbar-nav mr-5">
           <li class="nav-item d-none d-md-block">
             <router-link :to="{ name: 'gallery' }" class="nav-link">Gallery</router-link>
           </li>
@@ -142,7 +142,7 @@
 
 <style lang="scss">
 
-  @import url('https://fonts.googleapis.com/css?family=Poppins:400,700');
+  @import url('https://fonts.googleapis.com/css?family=Poppins:400,500,700');
 
   $body-bg: #f2f5fb;
   $body-color: #545454;
@@ -170,7 +170,12 @@
   [v-cloak] {display: none}
 
   .navbar-light .navbar-brand {
-    font-size: 1.25rem;
+    font-weight: 500;
+    font-style: normal;
+    font-size: 28px;
+    letter-spacing: .02em;
+    line-height: 1em;
+    text-transform: none;
     color: $primary;
   }
 
