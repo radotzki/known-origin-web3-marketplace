@@ -5,7 +5,7 @@
         <p>Showcase and Discover Rare Digital Art</p>
       </div>
     </div>
-    <div class="row bg-white full-banner-secondary pt-3">
+    <div class="row bg-white full-banner-secondary pt-3 d-none d-md-block">
       <div class="col text-center">
         <p>
           <span class="pl-2 pr-2">Featured Artists</span>
@@ -32,7 +32,7 @@
 
       <div class="row" v-if="editions.length > 0">
         <div class="card-deck">
-          <div class="col mx-auto mb-4" v-for="edition in editions">
+          <div class="col-auto mx-auto mb-4" v-for="edition in editions">
             <div class="card shadow-sm">
               <img class="card-img-top" :src="edition.lowResImg"/>
               <div class="card-body">
@@ -173,7 +173,7 @@
     }
 
     .card {
-      width: 20rem;
+      width: 20.5rem;
       height: 25rem;
     }
 

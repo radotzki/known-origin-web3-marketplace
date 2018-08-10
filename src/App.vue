@@ -23,13 +23,13 @@
 
     <header>
       <nav class="navbar navbar-expand-md navbar-light bg-white text-primary fixed-top floating-nav">
-        <router-link :to="{ name: 'home' }" class="navbar-brand ml-5">
+        <router-link :to="{ name: 'home' }" class="navbar-brand">
           KnownOrigin.io
         </router-link>
 
         <ul class="navbar-nav mr-auto">
         </ul>
-        <ul class="navbar-nav mr-5">
+        <ul class="navbar-nav">
           <li class="nav-item d-none d-md-block">
             <router-link :to="{ name: 'gallery' }" class="nav-link">Gallery</router-link>
           </li>
