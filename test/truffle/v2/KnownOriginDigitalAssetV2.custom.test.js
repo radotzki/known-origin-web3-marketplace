@@ -1086,8 +1086,135 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
 
   });
 
-  describe('burn', async function () {
+  describe.only('Under mint', async function () {
 
+    const editionNumber3 = 300000;
+    const editionData3 = "editionData3";
+    const editionTokenUri3 = "edition3";
+    const edition3Price = etherToWei(0.3);
+    const minted = 2;
+    const available = 4;
+
+    beforeEach(async function () {
+      await this.token.createActiveFullEdition(editionNumber3, editionData3, editionType, 0, 0, artistAccount, artistShare, edition3Price, editionTokenUri3, minted, available, {from: _owner});
+    });
+
+    it('under mint edition 3 is setup correctly', async function () {
+      let edition = await this.token.allEditionData(editionNumber3);
+
+      web3.toAscii(edition[0]).replace(/\0/g, '').should.be.equal(editionData3); //_editionData
+      edition[1].should.be.bignumber.equal(editionType); //_editionType
+      edition[2].should.be.bignumber.equal(0); // _auctionStartDate
+      edition[3].should.be.bignumber.equal(MAX_UINT32); // _auctionEndDate
+      edition[4].should.be.equal(artistAccount); // _artistAccount
+      edition[5].should.be.bignumber.equal(artistShare); // _artistCommission
+      edition[6].should.be.bignumber.equal(edition3Price); // _priceInWei
+      edition[7].should.be.equal(`${BASE_URI}${editionTokenUri3}`); // _tokenURI
+      edition[8].should.be.bignumber.equal(minted); // _minted
+      edition[9].should.be.bignumber.equal(available); // _available
+      edition[10].should.be.equal(true); // _active
+    });
+
+    describe('edition 3 query methods', function () {
+      it('editionsForType', async function () {
+        let editions = await this.token.editionsForType(editionType);
+        editions.map(e => e.toNumber()).should.be.deep.equal([editionNumber3]);
+      });
+
+      it('artistsEditions', async function () {
+        let currentArtistEditions = await this.token.artistsEditions(artistAccount);
+        currentArtistEditions.map(e => e.toNumber()).should.be.deep.equal([editionNumber3]);
+      });
+
+      it('purchaseDatesEdition', async function () {
+        let dates = await this.token.purchaseDatesEdition(editionNumber3);
+        dates[0].should.be.bignumber.equal(0);
+        dates[1].should.be.bignumber.equal(MAX_UINT32);
+      });
+
+      it('priceInWeiEdition', async function () {
+        let priceInWei = await this.token.priceInWeiEdition(editionNumber3);
+        priceInWei.should.be.bignumber.equal(edition3Price);
+      });
+
+      it('tokensOfEdition', async function () {
+        let tokensOfEdition = await this.token.tokensOfEdition(editionNumber3);
+        tokensOfEdition.should.be.deep.equal([]);
+      });
+
+      it('editionActive', async function () {
+        let editionActive = await this.token.editionActive(editionNumber3);
+        editionActive.should.be.equal(true);
+      });
+
+      it('totalRemaining', async function () {
+        let totalRemaining = await this.token.totalRemaining(editionNumber3);
+        totalRemaining.should.be.bignumber.equal(available - minted);
+      });
+
+      it('numberMinted', async function () {
+        let numberMinted = await this.token.numberMinted(editionNumber3);
+        numberMinted.should.be.bignumber.equal(minted);
+      });
+
+      it('numberAvailable', async function () {
+        let numberAvailable = await this.token.numberAvailable(editionNumber3);
+        numberAvailable.should.be.bignumber.equal(available);
+      });
+
+      it('tokenURIEdition', async function () {
+        let tokenURIEdition = await this.token.tokenURIEdition(editionNumber3);
+        tokenURIEdition.should.be.equal(`https://ipfs.infura.io/ipfs/${editionTokenUri3}`);
+      });
+    });
+
+    it('should handle under mint and normal mints', async function () {
+      const firstMinted = editionNumber3 + 3;
+      const secondMinted = editionNumber3 + 4;
+      const thirdMinted = editionNumber3 + 1;
+      const fourthMinted = editionNumber3 + 2;
+
+      // Mint two more to make the edition sold out
+      await this.token.mint(editionNumber3, {from: account2, value: edition3Price});
+      await this.token.mint(editionNumber3, {from: account2, value: edition3Price});
+
+      let tokensOf = await this.token.tokensOf(account2);
+      tokensOf
+        .map(e => e.toNumber())
+        .should.be.deep.equal([firstMinted, secondMinted]);
+
+      let totalRemaining = await this.token.totalRemaining(editionNumber3);
+      totalRemaining.should.be.bignumber.equal(0);
+
+      // Reverts as sold out
+      await assertRevert(this.token.mint(editionNumber3, {from: account2}));
+
+      // Attempt to under mint the original two editions
+      await this.token.koUnderMint(account2, editionNumber3, {from: _owner});
+
+      // Make sure you can update mint the correct token ID
+      let updatedTokenIds = await this.token.tokensOf(account2);
+      updatedTokenIds
+        .map(e => e.toNumber())
+        .should.be.deep.equal([firstMinted, secondMinted, thirdMinted]);
+
+      // Attempt to under mint the original two editions
+      await this.token.koUnderMint(account2, editionNumber3, {from: _owner});
+
+      // Make sure you can update mint the correct token ID
+      updatedTokenIds = await this.token.tokensOf(account2);
+      updatedTokenIds
+        .map(e => e.toNumber())
+        .should.be.deep.equal([firstMinted, secondMinted, thirdMinted, fourthMinted]);
+
+      // Check cannot mint any more as sold out
+      await assertRevert(this.token.koUnderMint(account2, editionNumber3, {from: _owner}));
+    });
+
+  });
+
+  describe('burn', async function () {
+    // FIXME
   });
 
 });

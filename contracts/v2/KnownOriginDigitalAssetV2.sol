@@ -111,6 +111,11 @@ HasNoEther
     _;
   }
 
+  modifier onlyTokensNotAllCreatedEdition(uint256 _editionNumber) {
+    require(tokensOfEdition(_editionNumber).length != editionNumberToEditionDetails[_editionNumber].available, "No more editions left to mint");
+    _;
+  }
+
   modifier onlyActiveEdition(uint256 _editionNumber) {
     require(editionNumberToEditionDetails[_editionNumber].active, "Edition not active");
     _;
@@ -138,7 +143,38 @@ HasNoEther
     addAddressToWhitelist(msg.sender);
   }
 
-  // Called once per edition
+  function createActiveFullEdition(
+    uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
+    uint32 _auctionStartDate, uint32 _auctionEndDate,
+    address _artistAccount, uint8 _artistCommission,
+    uint256 _priceInWei, string _tokenURI,
+    uint8 _minted, uint8 _available
+  )
+  public
+  onlyKnownOrigin
+  returns (bool)
+  {
+    _createEdition(_editionNumber, _editionData, _editionType, _auctionStartDate, _auctionEndDate, _artistAccount, _artistCommission, _priceInWei, _tokenURI, _available, true);
+    updateMinted(_editionNumber, _minted);
+    return true;
+  }
+
+  function createDisabledFullEdition(
+    uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
+    uint32 _auctionStartDate, uint32 _auctionEndDate,
+    address _artistAccount, uint8 _artistCommission,
+    uint256 _priceInWei, string _tokenURI,
+    uint8 _minted, uint8 _available
+  )
+  public
+  onlyKnownOrigin
+  returns (bool)
+  {
+    _createEdition(_editionNumber, _editionData, _editionType, _auctionStartDate, _auctionEndDate, _artistAccount, _artistCommission, _priceInWei, _tokenURI, _available, false);
+    updateMinted(_editionNumber, _minted);
+    return true;
+  }
+
   function createEdition(
     uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
     uint32 _auctionStartDate, uint32 _auctionEndDate,
@@ -170,7 +206,7 @@ HasNoEther
     uint32 _auctionStartDate, uint32 _auctionEndDate,
     address _artistAccount, uint8 _artistCommission,
     uint256 _priceInWei, string _tokenURI,
-    uint8 _available, bool active
+    uint8 _available, bool _active
   )
   internal
   returns (bool)
@@ -212,7 +248,7 @@ HasNoEther
       tokenURI : _tokenURI,
       minted : 0, // default to all available
       available : _available,
-      active : active
+      active : _active
       });
 
     // TODO how to handle an artists with multiple accounts i.e. CJ changed accounts between editions?
@@ -283,7 +319,7 @@ HasNoEther
     return _tokenId;
   }
 
-  function koMint(address _to, uint256 _editionNumber) public onlyKnownOrigin onlyValidEdition(_editionNumber) returns (uint256) {
+  function koMint(address _to, uint256 _editionNumber) public onlyKnownOrigin onlyValidEdition(_editionNumber) onlyAvailableEdition(_editionNumber) returns (uint256) {
     // Construct next token ID e.g. 100000 + 1 = ID of 100001 (this first in the edition set)
     uint256 _tokenId = _nextTokenId(_editionNumber);
 
@@ -294,7 +330,7 @@ HasNoEther
     return _tokenId;
   }
 
-  function koUnderMint(address _to, uint256 _editionNumber) public onlyKnownOrigin onlyValidEdition(_editionNumber) returns (uint256) {
+  function koUnderMint(address _to, uint256 _editionNumber) public onlyKnownOrigin onlyValidEdition(_editionNumber) onlyTokensNotAllCreatedEdition(_editionNumber) returns (uint256) {
     // Under mint token, meaning it takes one from the already sold version
     uint256 _tokenId = _underMintNextTokenId(_editionNumber);
 
@@ -496,6 +532,14 @@ HasNoEther
   onlyValidEdition(_editionNumber) {
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
     _editionDetails.active = _active;
+  }
+
+  function updateMinted(uint256 _editionNumber, uint8 _minted)
+  public
+  onlyKnownOrigin
+  onlyValidEdition(_editionNumber) {
+    EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
+    _editionDetails.minted = _minted;
   }
 
   function updateAvailable(uint256 _editionNumber, uint8 _available)

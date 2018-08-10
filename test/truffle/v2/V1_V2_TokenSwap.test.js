@@ -15,7 +15,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-contract.only('V1 to V2 TokenSwap', function (accounts) {
+contract('V1 to V2 TokenSwap', function (accounts) {
   const _owner = accounts[0];
 
   const account1 = accounts[1];
