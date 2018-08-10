@@ -5,9 +5,15 @@
         <p>Showcase and Discover Rare Digital Art</p>
       </div>
     </div>
-    <div class="row bg-white full-banner-secondary">
-      <div class="col text-center mt-3">
-        <p>&nbsp;</p>
+    <div class="row bg-white full-banner-secondary pt-3">
+      <div class="col text-right">
+        <p>Featured Artists</p>
+      </div>
+      <div class="col text-center">
+        <p>Low to High</p>
+      </div>
+      <div class="col text-left">
+        <p>High to Low</p>
       </div>
     </div>
 
@@ -26,26 +32,21 @@
       </h4>
 
       <div class="row justify-content-sm-center" v-if="editions.length > 0">
+
         <div class="col-auto mb-3" v-for="edition in editions">
-          <div class="card mb-3">
-            <!--<router-link :to="{ name: 'mycard', params: { tokenId: tokenId} }">-->
+          <div class="card mb-3 shadow-sm">
             <img class="card-img-top" :src="edition.lowResImg"/>
-            <!--</router-link>-->
             <div class="card-body">
               <p class="card-title">{{ edition.otherMeta.artworkName }}</p>
-            </div>
-            <div class="card-footer bg-white">
-              <!--<router-link :to="{ name: 'artist', params: { artistCode: edition.artistCode} }">-->
               <img :src="findArtist(edition.artistCode).img" class="artist-avatar"/>
               <span class="pl-1 artist-name">{{ edition.otherMeta.artist }}</span>
-              <!--</router-link>-->
             </div>
             <div class="card-footer">
               <div class="row">
                 <div class="col d-none d-md-block" v-if="availableAssetsForEdition(edition.edition)">
                   {{ availableAssetsForEdition(edition.edition).length }} available
                 </div>
-                <div class="col text-right font-weight-bold">{{ edition.priceInEther }} ETH</div>
+                <div class="col text-right">{{ edition.priceInEther }} ETH</div>
               </div>
             </div>
           </div>
@@ -137,10 +138,6 @@
 </script>
 
 <style scoped lang="scss">
-  .full-banner {
-    font-size: 3rem;
-  }
-
   .full-banner-secondary {
 
   }
@@ -151,8 +148,8 @@
   }
 
   .card {
-    width: 12rem;
-    height: 24rem;
+    width: 15rem;
+    height: 22rem;
   }
 
   .card-title {
@@ -160,13 +157,12 @@
   }
 
   .card-body {
-
+    padding: 1rem;
   }
 
   .card-footer {
     padding: 0.5rem;
-    font-size: 0.7rem;
-    border-top: 0px;
+    font-size: 0.85rem;
   }
 
   /* mobile only */
@@ -181,7 +177,7 @@
   }
 
   .artist-name {
-    font-size: 0.65rem;
+    font-size: 0.75rem;
   }
 
   .artist-avatar {
