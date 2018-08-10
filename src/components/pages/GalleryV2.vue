@@ -6,22 +6,21 @@
       </div>
     </div>
     <div class="row bg-white full-banner-secondary pt-3">
-      <div class="col text-right">
-        <p>Featured Artists</p>
-      </div>
       <div class="col text-center">
-        <p>Low to High</p>
-      </div>
-      <div class="col text-left">
-        <p>High to Low</p>
+        <p>
+          <span class="pl-2 pr-2">Featured Artists</span>
+          <span class="pl-2 pr-2">Featured Artists</span>
+          <span class="pl-2 pr-2">Featured Artists</span>
+          <span class="pl-2 pr-2">Featured Artists</span>
+        </p>
       </div>
     </div>
 
-    <div class="container mt-4">
+    <div class="container-fluid justify-content-sm-center mt-4">
 
       <loading-spinner v-if="!hasFinishedLoading()"></loading-spinner>
 
-      <div class="row justify-content-sm-center" v-if="!hasFinishedLoading()">
+      <div class="row" v-if="!hasFinishedLoading()">
         <div class="col text-center mt-5">
           <p>We are loading assets from the Blockchain.</p>
           <p>Please be patient as we are fully decentralised.</p>
@@ -33,8 +32,8 @@
 
       <div class="row" v-if="editions.length > 0">
         <div class="card-deck">
-          <div class="col-auto mb-4" v-for="edition in editions">
-            <div class="card mb-3 shadow-sm">
+          <div class="col mx-auto mb-4" v-for="edition in editions">
+            <div class="card shadow-sm">
               <img class="card-img-top" :src="edition.lowResImg"/>
               <div class="card-body">
                 <p class="card-title">{{ edition.otherMeta.artworkName }}</p>
@@ -43,7 +42,7 @@
               </div>
               <div class="card-footer">
                 <div class="row">
-                  <div class="col d-none d-md-block" v-if="availableAssetsForEdition(edition.edition)">
+                  <div class="col" v-if="availableAssetsForEdition(edition.edition)">
                     {{ availableAssetsForEdition(edition.edition).length }} available
                   </div>
                   <div class="col text-right">{{ edition.priceInEther }} ETH</div>
@@ -168,8 +167,14 @@
 
   /* mobile only */
   @media screen and (max-width: 767px) {
+    .card-img-top {
+      object-fit: cover;
+      height: 15rem;
+    }
+
     .card {
-      width: 8rem;
+      width: 20rem;
+      height: 25rem;
     }
 
     .full-banner {
