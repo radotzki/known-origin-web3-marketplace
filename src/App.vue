@@ -37,7 +37,9 @@
             <router-link :to="{ name: 'artists' }" class="nav-link">Artists</router-link>
           </li>
           <li class="nav-item">
-            <router-link :to="{ name: 'account' }" class="nav-link">Account <span class="badge badge-primary" v-if="assetsPurchasedByAccount.length > 0">{{ assetsPurchasedByAccount.length }}</span></router-link>
+            <router-link :to="{ name: 'account' }" class="nav-link">Account
+              <!--<span class="badge badge-primary" v-if="assetsPurchasedByAccount.length > 0">{{ assetsPurchasedByAccount.length }}</span>-->
+            </router-link>
           </li>
         </ul>
       </nav>
@@ -75,7 +77,9 @@
             <a href="https://medium.com/knownorigin" target="_blank" class="pr-2" title="Medium">
               <font-awesome-icon :icon="['fab', 'medium']" size="lg"></font-awesome-icon>
             </a>
-            <small class=""><current-network></current-network></small>
+            <small class="">
+              <current-network></current-network>
+            </small>
           </div>
         </div>
       </div>
@@ -87,12 +91,12 @@
   /* global web3:true */
 
   import Web3 from 'web3';
-  import {mapGetters, mapState} from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
   import * as actions from './store/actions';
   import * as mutations from './store/mutation';
   import CurrentNetwork from './components/ui-controls/CurrentNetwork';
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
-  import NetworkWarningBanner from "./components/ui-controls/NetworkWarningBanner";
+  import NetworkWarningBanner from './components/ui-controls/NetworkWarningBanner';
 
   export default {
     name: 'app',
@@ -110,7 +114,7 @@
       //   console.log(document.body.scrollTop);
       // }
     },
-    mounted() {
+    mounted () {
 
       let bootStrappedWeb3;
 
@@ -121,7 +125,7 @@
         console.log('No web3! You should consider trying MetaMask or an Ethereum browser');
         console.log('Falling back to using HTTP Provider');
 
-        bootStrappedWeb3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/nbCbdzC6IG9CF6hmvAVQ"));
+        bootStrappedWeb3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/nbCbdzC6IG9CF6hmvAVQ'));
       }
 
       window.web3 = bootStrappedWeb3;
@@ -171,7 +175,9 @@
     margin-top: 30px;
   }
 
-  [v-cloak] {display: none}
+  [v-cloak] {
+    display: none
+  }
 
   .navbar-light .navbar-brand {
     font-weight: 500;
@@ -187,6 +193,10 @@
     color: $primary;
   }
 
+  .navbar-light .navbar-brand:hover, .navbar-light .navbar-brand:focus {
+    color: $primary;
+  }
+  
   .floating-nav {
     box-shadow: 0px 1px 3px #999;
   }
