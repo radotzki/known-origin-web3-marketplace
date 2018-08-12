@@ -29,7 +29,7 @@
 
       <div class="row editions-wrap" v-if="editions.length > 0">
         <div class="card-deck">
-          <div class="col-auto mx-auto mb-4" v-for="edition in editions">
+          <div class="col-auto mx-auto mb-5" v-for="edition in editions">
             <router-link class="card-target" :to="{ name: 'confirmPurchase', params: { artistCode: edition.edition.substring(0, 3), edition: edition.edition }}">
               <div class="card shadow-sm">
                 <img class="card-img-top" :src="edition.lowResImg"/>
@@ -140,6 +140,12 @@
 </script>
 
 <style scoped lang="scss">
+  .full-banner {
+    p {
+      margin-bottom: 0;
+    }
+  }
+
   .full-banner-secondary {
 
   }
