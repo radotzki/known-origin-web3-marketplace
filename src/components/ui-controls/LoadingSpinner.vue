@@ -14,7 +14,7 @@
 
 <style scoped lang="scss">
 
-  $primary: #3e27d9;
+  $primary: #132cc4;
   $body-bg: #f2f5fb;
 
   .spinner {

@@ -147,7 +147,7 @@
 <style scoped lang="scss">
   $body-bg: #f2f5fb;
   $body-color: #545454;
-  $primary: #3e27d9;
+  $primary: #132cc4;
 
   h1 {
     color: #000;
