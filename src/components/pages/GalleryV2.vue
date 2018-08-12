@@ -16,7 +16,7 @@
       </div>
     </div>
 
-    <div class="container-fluid justify-content-sm-center mt-4">
+    <div class="container-fluid mt-4">
 
       <loading-spinner v-if="!hasFinishedLoading()"></loading-spinner>
 
@@ -27,7 +27,7 @@
         </div>
       </div>
 
-      <div class="row" v-if="editions.length > 0">
+      <div class="row editions-wrap" v-if="editions.length > 0">
         <div class="card-deck">
           <div class="col-auto mx-auto mb-4" v-for="edition in editions">
             <router-link class="card-target" :to="{ name: 'confirmPurchase', params: { artistCode: edition.edition.substring(0, 3), edition: edition.edition }}">
@@ -181,6 +181,11 @@
     padding-right: 3rem;
   }
 
+  .editions-wrap {
+    margin-left: 50px;
+    margin-right: 50px;
+  }
+
   /* mobile only */
   @media screen and (max-width: 767px) {
     .card-deck {
@@ -205,10 +210,15 @@
       padding-left: 0.7rem;
       padding-right: 0.7rem;
     }
+
+    .editions-wrap {
+      margin-left: -30px;
+      margin-right: -30px;
+    }
   }
 
   .artist-name {
-    font-size: 0.65rem;
+    font-size: 0.75rem;
   }
 
   .artist-avatar {
