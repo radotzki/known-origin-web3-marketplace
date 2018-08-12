@@ -5,12 +5,13 @@
         <p>Showcase and Discover Rare Digital Art</p>
       </div>
     </div>
-    <div class="row bg-white full-banner-secondary pt-3 d-none d-md-block">
-      <div class="col text-center mb-2">
-        <span class="pl-2 pr-2">Featured Artists</span>
-        <span class="pl-2 pr-2">Featured Artists</span>
-        <span class="pl-2 pr-2">Featured Artists</span>
-        <span class="pl-2 pr-2">Featured Artists</span>
+    <div class="row bg-white full-banner-secondary pt-3">
+      <div class="col text-center">
+        <p>
+          <span @click="onSubFilter('featured')" class="sub-filter" v-bind:class="{'font-weight-bold': priceFilter === 'featured'}">Featured Artists</span>
+          <span @click="onSubFilter('asc')" class="sub-filter" v-bind:class="{'font-weight-bold': priceFilter === 'asc'}">Low - High</span>
+          <span @click="onSubFilter('desc')" class="sub-filter" v-bind:class="{'font-weight-bold': priceFilter === 'desc'}">High - Low</span>
+        </p>
       </div>
     </div>
 
@@ -24,9 +25,6 @@
           <p>Please be patient as we are fully decentralised.</p>
         </div>
       </div>
-
-      <h4 class="text-primary pb-4 pt-2" v-if="hasFinishedLoading() && priceFilter === 'featured'">KnownOrigin.io x 0xCert Creative Challenge <br/>for Nifty Conference + Hackathon (July 24-26, 2018)
-      </h4>
 
       <div class="row" v-if="editions.length > 0">
         <div class="card-deck">
@@ -74,7 +72,7 @@
     data () {
       return {
         finishedLoading: false,
-        priceFilter: 'asc',
+        priceFilter: 'featured',
         artistFilter: 'all',
         search: ''
       };
@@ -89,6 +87,9 @@
           return false;
         }
         return this.editions.length > 0 || this.finishedLoading === true;
+      },
+      onSubFilter: function (value) {
+        this.priceFilter = value;
       },
     },
     computed: {
@@ -169,8 +170,14 @@
     color: inherit;
   }
 
-  a:hover{
+  a:hover {
     text-decoration: none;
+  }
+
+  .sub-filter {
+    cursor:pointer;
+    padding-left: 3rem;
+    padding-right: 3rem;
   }
 
   /* mobile only */
@@ -191,6 +198,11 @@
 
     .full-banner {
       font-size: 1.5rem;
+    }
+
+    .sub-filter {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
     }
   }
 
