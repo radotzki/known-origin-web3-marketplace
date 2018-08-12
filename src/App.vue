@@ -236,6 +236,7 @@
     padding: 60px 60px 0;
   }
 
+
   .footer > .container {
     padding-right: 15px;
     padding-left: 15px;
@@ -251,6 +252,11 @@
       padding-left: 2px;
       padding-right: 2px;
     }
+  }
+
+  .container-fluid > .container {
+    margin-top: 25px;
+    margin-bottom: 25px;
   }
 
   .btn-group-vertical > button {
