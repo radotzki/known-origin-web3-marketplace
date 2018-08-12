@@ -10,7 +10,8 @@
         <p>
           <span @click="onSubFilter('featured')" class="sub-filter" v-bind:class="{'font-weight-bold': priceFilter === 'featured'}">Featured Artists</span>
           <span @click="onSubFilter('asc')" class="sub-filter" v-bind:class="{'font-weight-bold': priceFilter === 'asc'}">Low - High</span>
-          <span @click="onSubFilter('desc')" class="sub-filter" v-bind:class="{'font-weight-bold': priceFilter === 'desc'}">High - Low</span>
+          <span @click="onSubFilter('desc')" class="sub-filter d-none d-md-inline" v-bind:class="{'font-weight-bold': priceFilter === 'desc'}">High - Low</span>
+          <span @click="onSubFilter('sold')" class="sub-filter d-none d-md-inline" v-bind:class="{'font-weight-bold': priceFilter === 'sold'}">Sold</span>
         </p>
       </div>
     </div>
@@ -201,8 +202,8 @@
     }
 
     .sub-filter {
-      padding-left: 0.5rem;
-      padding-right: 0.5rem;
+      padding-left: 0.7rem;
+      padding-right: 0.7rem;
     }
   }
 
