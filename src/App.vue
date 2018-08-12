@@ -109,11 +109,7 @@
       ...mapGetters([]),
       ...mapState(['assetsPurchasedByAccount']),
     },
-    methods: {
-      // handleScroll (event) {
-      //   console.log(document.body.scrollTop);
-      // }
-    },
+    methods: {},
     mounted () {
 
       let bootStrappedWeb3;
@@ -133,12 +129,6 @@
       // Bootstrap the full app
       this.$store.dispatch(actions.INIT_APP, bootStrappedWeb3);
     },
-    // created () {
-    //   window.addEventListener('scroll', this.handleScroll);
-    // },
-    // destroyed () {
-    //   window.removeEventListener('scroll', this.handleScroll);
-    // }
   };
 
 
@@ -196,7 +186,7 @@
   .navbar-light .navbar-brand:hover, .navbar-light .navbar-brand:focus {
     color: $primary;
   }
-  
+
   .floating-nav {
     box-shadow: 0px 1px 3px #999;
   }
