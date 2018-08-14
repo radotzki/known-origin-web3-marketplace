@@ -246,8 +246,6 @@ HasNoEther
       active : _active
       });
 
-    // TODO how to handle an artists with multiple accounts i.e. CJ changed accounts between editions?
-
     // Add to total available count
     totalNumberAvailable = totalNumberAvailable.add(_available);
 
@@ -357,7 +355,6 @@ HasNoEther
       _tokenId = _tokenId.add(1);
     }
 
-    // TODO confirm this logic is correct with more tests
     // Bump number minted if we are now over minting new tokens
     if (_tokenId > _editionDetails.editionNumber.add(_editionDetails.minted)) {
       _editionDetails.minted = _editionDetails.minted.add(1);
@@ -410,7 +407,7 @@ HasNoEther
 
     // TODO Send overspend back to caller or absorb?
     // TODO additional commission split?
-    //  - maybe have secondary mapping for edition to commission mapping (address/ampount) - not set by default but can be provided?
+    //  - maybe have secondary mapping for edition to commission mapping (address/amount) - not set by default but can be provided?
     //  - maybe allow for array of mappings to have dynamic number/split?
   }
 
@@ -543,7 +540,6 @@ HasNoEther
   public
   onlyKnownOrigin
   onlyValidEdition(_editionNumber) {
-    // TODO add test for new require step
     require(tokensOfEdition(_editionNumber).length <= _minted, "Cant lower minted to below the number of tokens already in existence");
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
     _editionDetails.minted = _minted;
@@ -553,7 +549,6 @@ HasNoEther
   external
   onlyKnownOrigin
   onlyValidEdition(_editionNumber)
-    // TODO add test for new validation check
   onlyEditionsWithTokensAvailableToMint(_editionNumber) {
     require(editionNumberToEditionDetails[_editionNumber].minted <= _available, "Unable to reduce available amount to the below the number minted");
 
@@ -606,7 +601,7 @@ HasNoEther
   function tokensOfEdition(uint256 _editionNumber) public view returns (uint256[] _tokenIds) {
     return editionNumberToTokenIds[_editionNumber];
   }
-  
+
   // TODO confirm query methods are suitable for webapp and logic flow?
 
   function allEditionData(uint256 editionNumber)

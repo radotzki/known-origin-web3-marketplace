@@ -15,7 +15,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-contract.only('V1 to V2 TokenSwap', function (accounts) {
+contract('V1 to V2 TokenSwap', function (accounts) {
   const _owner = accounts[0];
 
   const account1 = accounts[1];
@@ -186,18 +186,18 @@ contract.only('V1 to V2 TokenSwap', function (accounts) {
       let totalSupply = await this.kodaV1.totalSupply();
       totalSupply.should.be.bignumber.equal(2);
 
-      await checkTotalRemaining.call(this, editionNumber, 2);
+      await checkTotalRemaining.call(this, editionNumber, 2, 2);
 
       // Token swap the 2 tokens
       await swapTokenAndCheckOwnership.call(this, originalFirstV1TokenId, account2, firstTokenSwapId, editionNumber, edition);
       await swapTokenAndCheckOwnership.call(this, originalSecondV1TokenId, account2, secondTokenSwapId, editionNumber, edition);
-      await checkTotalRemaining.call(this, editionNumber, 2);
+      await checkTotalRemaining.call(this, editionNumber, 2, 2);
 
       await mintNewTokenAndValidate.call(this, editionNumber, account3, price, thirdNewlyMintedV2Token);
-      await checkTotalRemaining.call(this, editionNumber, 1);
+      await checkTotalRemaining.call(this, editionNumber, 1, 3);
 
       await mintNewTokenAndValidate.call(this, editionNumber, account4, price, fourthNewlyMintedV2Token);
-      await checkTotalRemaining.call(this, editionNumber, 0);
+      await checkTotalRemaining.call(this, editionNumber, 0, 4);
 
       // Confirm no more tokens left to mint
       await assertRevert(this.kodaV2.mint(editionNumber, {from: account4, value: price}));
@@ -212,9 +212,12 @@ contract.only('V1 to V2 TokenSwap', function (accounts) {
       ownerOf.should.be.equal(purchaser);
     };
 
-    const checkTotalRemaining = async function (editionNumber, expectedRemaining) {
+    const checkTotalRemaining = async function (editionNumber, expectedRemaining, expectedMinted) {
       let totalRemaining = await this.kodaV2.totalRemaining(editionNumber);
       totalRemaining.should.be.bignumber.equal(expectedRemaining);
+
+      let numberMinted = await this.kodaV2.numberMinted(editionNumber);
+      numberMinted.should.be.bignumber.equal(expectedMinted);
     };
 
     const swapTokenAndCheckOwnership = async function (originalTokenId, originalOwner, newTokenId, newEditionNumber, oldEdition) {
