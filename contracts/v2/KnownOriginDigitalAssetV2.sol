@@ -25,10 +25,7 @@ ERC721Token,
 Whitelist,
 HasNoEther
 {
-  // TODO is there a better way of doing this and is it correct?
   using SafeMath for uint256;
-  using SafeMath32 for uint32;
-  using SafeMath16 for uint16;
   using SafeMath8 for uint8;
 
   uint32 constant internal MAX_UINT32 = ~uint32(0);
@@ -54,7 +51,6 @@ HasNoEther
   // number of assets sold of any type
   uint256 public totalNumberMinted;
 
-  // TODO add test for totalNumberAvailable
   // number of assets available of any type
   uint256 public totalNumberAvailable;
 
@@ -65,16 +61,17 @@ HasNoEther
     bytes32 editionData;      // some data about the edition
     uint8 editionType;        // e.g. 1 = KODA V1 physical, 2 = KODA V1 digital, 3 = KODA V2, 4 = KOTA
     // Config
-    uint32 auctionStartDate;
-    uint32 auctionEndDate;
-    address artistAccount;
-    uint8 artistCommission;
-    uint256 priceInWei;
+    uint32 auctionStartDate;  // date when the asset goes on sale
+    uint32 auctionEndDate;    // date when the asset is available until
+    address artistAccount;    // artists account
+    uint8 artistCommission;   // base commissions, could be overridden by parent contracts
+    uint256 priceInWei;       // base price for asset, could be overridden by parent contracts
     string tokenURI;          // IPFS Hash only
     // Counters
     uint8 minted;             // Total purchases/minted
     uint8 available;          // Number with edition
     bool active;              // root on/off edition control
+    // TODO add additional commission - how?
     // TODO add a new flag for active but not publicly on sale?
   }
 
@@ -412,8 +409,12 @@ HasNoEther
     totalPurchaseValueInWei = totalPurchaseValueInWei.add(msg.value);
 
     // TODO Send overspend back to caller or absorb?
+    // TODO additional commission split?
+    //  - maybe have secondary mapping for edition to commission mapping (address/ampount) - not set by default but can be provided?
+    //  - maybe allow for array of mappings to have dynamic number/split?
   }
 
+  // TODO this needs lots of tests
   function burn(uint256 _tokenId) public {
     // TODO validation
 
@@ -552,7 +553,7 @@ HasNoEther
   external
   onlyKnownOrigin
   onlyValidEdition(_editionNumber)
-  // TODO add test for new validation check
+    // TODO add test for new validation check
   onlyEditionsWithTokensAvailableToMint(_editionNumber) {
     require(editionNumberToEditionDetails[_editionNumber].minted <= _available, "Unable to reduce available amount to the below the number minted");
 
@@ -605,6 +606,8 @@ HasNoEther
   function tokensOfEdition(uint256 _editionNumber) public view returns (uint256[] _tokenIds) {
     return editionNumberToTokenIds[_editionNumber];
   }
+  
+  // TODO confirm query methods are suitable for webapp and logic flow?
 
   function allEditionData(uint256 editionNumber)
   public view

@@ -12,7 +12,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-contract('KnownOriginDigitalAssetV2 - custom', function (accounts) {
+contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
   const _owner = accounts[0];
 
   const account1 = accounts[1];
@@ -1213,6 +1213,14 @@ contract('KnownOriginDigitalAssetV2 - custom', function (accounts) {
 
     // TODO tests for burning undermints
     // TODO tests for updating undermints
+
+  });
+
+  describe('totalNumberAvailable', async function () {
+
+    // TODO on edition creation
+    // TODO updated on available changed
+    // TODO updated on burn
 
   });
 

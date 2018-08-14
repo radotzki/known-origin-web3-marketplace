@@ -16,7 +16,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
+contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
   const _owner = accounts[0];
 
   const account1 = accounts[1];
