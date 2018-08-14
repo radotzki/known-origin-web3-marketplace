@@ -12,7 +12,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
+contract('KnownOriginDigitalAssetV2 - custom', function (accounts) {
   const _owner = accounts[0];
 
   const account1 = accounts[1];

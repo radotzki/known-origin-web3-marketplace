@@ -109,7 +109,7 @@ HasNoEther
     _;
   }
 
-  modifier onlyTokensNotAllCreatedEdition(uint256 _editionNumber) {
+  modifier onlyEditionsWithTokensAvailableToMint(uint256 _editionNumber) {
     require(tokensOfEdition(_editionNumber).length != editionNumberToEditionDetails[_editionNumber].available, "No more editions left to mint");
     _;
   }
@@ -328,7 +328,7 @@ HasNoEther
     return _tokenId;
   }
 
-  function koUnderMint(address _to, uint256 _editionNumber) public onlyKnownOrigin onlyValidEdition(_editionNumber) onlyTokensNotAllCreatedEdition(_editionNumber) returns (uint256) {
+  function koUnderMint(address _to, uint256 _editionNumber) public onlyKnownOrigin onlyValidEdition(_editionNumber) onlyEditionsWithTokensAvailableToMint(_editionNumber) returns (uint256) {
     // Under mint token, meaning it takes one from the already sold version
     uint256 _tokenId = _underMintNextTokenId(_editionNumber);
 
@@ -358,6 +358,12 @@ HasNoEther
     // Work your way up until you find a free token based on the new _tokenIdd
     while (exists(_tokenId)) {
       _tokenId = _tokenId.add(1);
+    }
+
+    // TODO confirm this logic is correct with more tests
+    // Bump number minted if we are now over minting new tokens
+    if (_tokenId > _editionDetails.editionNumber.add(_editionDetails.minted)) {
+      _editionDetails.minted = _editionDetails.minted.add(1);
     }
 
     return _tokenId;
@@ -532,20 +538,22 @@ HasNoEther
     _editionDetails.active = _active;
   }
 
-  // TODO checks to make sure we dont lower minted to less than tokens sold
   function updateMinted(uint256 _editionNumber, uint8 _minted)
   public
   onlyKnownOrigin
   onlyValidEdition(_editionNumber) {
+    // TODO add test for new require step
+    require(tokensOfEdition(_editionNumber).length <= _minted, "Cant lower minted to below the number of tokens already in existence");
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
     _editionDetails.minted = _minted;
   }
 
-  // TODO checks to make sure we dont lower minted to less than tokens sold
   function updateAvailable(uint256 _editionNumber, uint8 _available)
   external
   onlyKnownOrigin
-  onlyValidEdition(_editionNumber) {
+  onlyValidEdition(_editionNumber)
+  // TODO add test for new validation check
+  onlyEditionsWithTokensAvailableToMint(_editionNumber) {
     require(editionNumberToEditionDetails[_editionNumber].minted <= _available, "Unable to reduce available amount to the below the number minted");
 
     uint256 originalAvailability = editionNumberToEditionDetails[_editionNumber].available;
