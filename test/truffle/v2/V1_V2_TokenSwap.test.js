@@ -15,7 +15,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-contract('V1 to V2 TokenSwap', function (accounts) {
+contract.only('V1 to V2 TokenSwap', function (accounts) {
   const _owner = accounts[0];
 
   const account1 = accounts[1];
@@ -101,7 +101,7 @@ contract('V1 to V2 TokenSwap', function (accounts) {
 
       beforeEach(async function () {
         await this.kodaV1.mint("", edition, 0, 0, artistAccount, {from: _owner});
-        await this.kodaV2.createEdition(editionNumber, editionData, editionType, 0, 0, artistAccount, artistCommission, price, editionTokenUri, 4, {from: _owner});
+        await this.kodaV2.createActiveEdition(editionNumber, editionData, editionType, 0, 0, artistAccount, artistCommission, price, editionTokenUri, 4, {from: _owner});
       });
 
       it('should fail if editions match but token swap not approved', async function () {
@@ -167,7 +167,7 @@ contract('V1 to V2 TokenSwap', function (accounts) {
       await this.kodaV1.purchaseWithEther(originalSecondV1TokenId, {from: account2, value: price});
 
       // Create under mint edition i.e. minted = 2, available = 4 - 2 more to be available as part of V2
-      await this.kodaV2.createActiveFullEdition(editionNumber, editionData, editionType, 0, 0, artistAccount, artistCommission, price, editionTokenUri, minted, available, {from: _owner});
+      await this.kodaV2.createActivePreMintedEdition(editionNumber, editionData, editionType, 0, 0, artistAccount, artistCommission, price, editionTokenUri, minted, available, {from: _owner});
 
       // Ensure token swap is white listed as a minter
       await this.kodaV1.setApprovalForAll(this.tokenSwap.address, true, {from: account2});
@@ -200,13 +200,13 @@ contract('V1 to V2 TokenSwap', function (accounts) {
       await checkTotalRemaining.call(this, editionNumber, 0, 4);
 
       // Confirm no more tokens left to mint
-      await assertRevert(this.kodaV2.mint(editionNumber, {from: account4, value: price}));
+      await assertRevert(this.kodaV2.purchase(editionNumber, {from: account4, value: price}));
     });
 
     const mintNewTokenAndValidate = async function (editionNumber, purchaser, price, newTokenId) {
       await assertRevert(this.kodaV2.ownerOf(newTokenId));
 
-      await this.kodaV2.mint(editionNumber, {from: purchaser, value: price});
+      await this.kodaV2.purchase(editionNumber, {from: purchaser, value: price});
 
       let ownerOf = await this.kodaV2.ownerOf(newTokenId);
       ownerOf.should.be.equal(purchaser);
@@ -216,8 +216,8 @@ contract('V1 to V2 TokenSwap', function (accounts) {
       let totalRemaining = await this.kodaV2.totalRemaining(editionNumber);
       totalRemaining.should.be.bignumber.equal(expectedRemaining);
 
-      let numberMinted = await this.kodaV2.numberMinted(editionNumber);
-      numberMinted.should.be.bignumber.equal(expectedMinted);
+      let editionTotalSupply = await this.kodaV2.editionTotalSupply(editionNumber);
+      editionTotalSupply.should.be.bignumber.equal(expectedMinted);
     };
 
     const swapTokenAndCheckOwnership = async function (originalTokenId, originalOwner, newTokenId, newEditionNumber, oldEdition) {

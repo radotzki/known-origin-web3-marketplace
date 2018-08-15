@@ -79,7 +79,6 @@ HasNoEther // TODO add tests for HasNoEther
     uint8 totalSupply;        // Total purchases/totalSupply
     uint8 totalAvailable;     // Total number available to be purchased
     bool active;              // Root control - on/off for the edition
-    // TODO add additional commission - how?
     // TODO add a new flag for active but not publicly on sale?
   }
 
@@ -95,10 +94,6 @@ HasNoEther // TODO add tests for HasNoEther
 
   mapping(uint8 => uint256[]) internal editionTypeToEditionNumber;
   mapping(uint256 => uint256) internal editionNumberToTypeIndex;
-
-  // TODO master list of editions - on creation? - how to handle edition burns/inactive?
-  // TODO master list of active editions - on creation and on toggle of active
-  // TODO master list of active by type
 
   ///////////////
   // Modifiers //
@@ -146,7 +141,33 @@ HasNoEther // TODO add tests for HasNoEther
     addAddressToWhitelist(msg.sender);
   }
 
-  function createActiveFullEdition(
+  function createActiveEdition(
+    uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
+    uint32 _startDate, uint32 _endDate,
+    address _artistAccount, uint8 _artistCommission,
+    uint256 _priceInWei, string _tokenURI, uint8 _totalAvailable
+  )
+  public
+  onlyKnownOrigin
+  returns (bool)
+  {
+    return _createEdition(_editionNumber, _editionData, _editionType, _startDate, _endDate, _artistAccount, _artistCommission, _priceInWei, _tokenURI, _totalAvailable, true);
+  }
+
+  function createInactiveEdition(
+    uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
+    uint32 _startDate, uint32 _endDate,
+    address _artistAccount, uint8 _artistCommission,
+    uint256 _priceInWei, string _tokenURI, uint8 _totalAvailable
+  )
+  public
+  onlyKnownOrigin
+  returns (bool)
+  {
+    return _createEdition(_editionNumber, _editionData, _editionType, _startDate, _endDate, _artistAccount, _artistCommission, _priceInWei, _tokenURI, _totalAvailable, false);
+  }
+
+  function createActivePreMintedEdition(
     uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
     uint32 _startDate, uint32 _endDate,
     address _artistAccount, uint8 _artistCommission,
@@ -162,7 +183,7 @@ HasNoEther // TODO add tests for HasNoEther
     return true;
   }
 
-  function createDisabledFullEdition(
+  function createInactivePreMintedEdition(
     uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
     uint32 _startDate, uint32 _endDate,
     address _artistAccount, uint8 _artistCommission,
@@ -176,32 +197,6 @@ HasNoEther // TODO add tests for HasNoEther
     _createEdition(_editionNumber, _editionData, _editionType, _startDate, _endDate, _artistAccount, _artistCommission, _priceInWei, _tokenURI, _totalAvailable, false);
     updateTotalSupply(_editionNumber, _totalSupply);
     return true;
-  }
-
-  function createEdition(
-    uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
-    uint32 _startDate, uint32 _endDate,
-    address _artistAccount, uint8 _artistCommission,
-    uint256 _priceInWei, string _tokenURI, uint8 _totalAvailable
-  )
-  public
-  onlyKnownOrigin
-  returns (bool)
-  {
-    return _createEdition(_editionNumber, _editionData, _editionType, _startDate, _endDate, _artistAccount, _artistCommission, _priceInWei, _tokenURI, _totalAvailable, true);
-  }
-
-  function createDisabledEdition(
-    uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
-    uint32 _startDate, uint32 _endDate,
-    address _artistAccount, uint8 _artistCommission,
-    uint256 _priceInWei, string _tokenURI, uint8 _totalAvailable
-  )
-  public
-  onlyKnownOrigin
-  returns (bool)
-  {
-    return _createEdition(_editionNumber, _editionData, _editionType, _startDate, _endDate, _artistAccount, _artistCommission, _priceInWei, _tokenURI, _totalAvailable, false);
   }
 
   function _createEdition(
@@ -275,19 +270,14 @@ HasNoEther // TODO add tests for HasNoEther
     editionNumberToArtistIndex[_editionNumber] = artistEditionIndex;
   }
 
-  // This is the main purchase method
-  function mint(uint256 _editionNumber)
+  function purchase(uint256 _editionNumber)
   public payable
-  onlyAvailableEdition(_editionNumber)
-  onlyValidEdition(_editionNumber)
-  onlyActiveEdition(_editionNumber)
-    //  onlyAfterPurchaseFromTime(_editionNumber) // TODO this doesnt work
   returns (uint256)
   {
-    return mintTo(msg.sender, _editionNumber);
+    return purchaseTo(msg.sender, _editionNumber);
   }
 
-  function mintTo(address _to, uint256 _editionNumber)
+  function purchaseTo(address _to, uint256 _editionNumber)
   public payable
   onlyAvailableEdition(_editionNumber)
   onlyValidEdition(_editionNumber)
@@ -313,7 +303,12 @@ HasNoEther // TODO add tests for HasNoEther
     return _tokenId;
   }
 
-  function koMint(address _to, uint256 _editionNumber) public onlyKnownOrigin onlyValidEdition(_editionNumber) onlyAvailableEdition(_editionNumber) returns (uint256) {
+  function mint(address _to, uint256 _editionNumber)
+  public
+  onlyKnownOrigin
+  onlyValidEdition(_editionNumber)
+  onlyAvailableEdition(_editionNumber)
+  returns (uint256) {
     // Construct next token ID e.g. 100000 + 1 = ID of 100001 (this first in the edition set)
     uint256 _tokenId = _nextTokenId(_editionNumber);
 
@@ -324,7 +319,12 @@ HasNoEther // TODO add tests for HasNoEther
     return _tokenId;
   }
 
-  function koUnderMint(address _to, uint256 _editionNumber) public onlyKnownOrigin onlyValidEdition(_editionNumber) onlyEditionsWithTokensAvailableToMint(_editionNumber) returns (uint256) {
+  function underMint(address _to, uint256 _editionNumber)
+  public
+  onlyKnownOrigin
+  onlyValidEdition(_editionNumber)
+  onlyEditionsWithTokensAvailableToMint(_editionNumber)
+  returns (uint256) {
     // Under mint token, meaning it takes one from the already sold version
     uint256 _tokenId = _underMintNextTokenId(_editionNumber);
 

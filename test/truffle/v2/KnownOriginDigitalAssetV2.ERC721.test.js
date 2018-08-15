@@ -16,7 +16,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
+contract.only('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
   const _owner = accounts[0];
 
   const account1 = accounts[1];
@@ -55,8 +55,8 @@ contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
   });
 
   beforeEach(async function () {
-    await this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner});
-    await this.token.createEdition(editionNumber2, editionData2, editionType, 0, 0, artistAccount, artistCommission, edition2Price, editionTokenUri2, 3, {from: _owner});
+    await this.token.createActiveEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistCommission, edition1Price, editionTokenUri1, 3, {from: _owner});
+    await this.token.createActiveEdition(editionNumber2, editionData2, editionType, 0, 0, artistAccount, artistCommission, edition2Price, editionTokenUri2, 3, {from: _owner});
   });
 
   describe('like a full ERC721', function () {
@@ -64,15 +64,15 @@ contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
     const secondTokenId = 200001;
 
     beforeEach(async function () {
-      await this.token.mint(editionNumber1, {from: account1, value: edition1Price}); // tokenId 100001
-      await this.token.mint(editionNumber2, {from: account1, value: edition2Price}); // tokenId 200001
+      await this.token.purchase(editionNumber1, {from: account1, value: edition1Price}); // tokenId 100001
+      await this.token.purchase(editionNumber2, {from: account1, value: edition2Price}); // tokenId 200001
     });
 
     describe('mint', function () {
       const thirdTokenId = 100002;
 
       beforeEach(async function () {
-        await this.token.mintTo(account2, editionNumber1, {from: account2, value: edition1Price});
+        await this.token.purchaseTo(account2, editionNumber1, {from: account2, value: edition1Price});
       });
 
       it(`adjusts owner tokens by index - [${firstTokenId}]`, async function () {
@@ -234,8 +234,8 @@ contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
 
           await this.token.burn(tokenId, {from});
 
-          await this.token.mint(edition, {from, value});
-          await this.token.mint(edition, {from, value});
+          await this.token.purchase(edition, {from, value});
+          await this.token.purchase(edition, {from, value});
 
           const count = await this.token.totalSupply();
           count.toNumber().should.be.equal(3);
@@ -263,8 +263,8 @@ contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
     const creator = account1;
 
     beforeEach(async function () {
-      await this.token.mintTo(creator, editionNumber1, {from: creator, value: edition1Price});
-      await this.token.mintTo(creator, editionNumber2, {from: creator, value: edition2Price});
+      await this.token.purchaseTo(creator, editionNumber1, {from: creator, value: edition1Price});
+      await this.token.purchaseTo(creator, editionNumber2, {from: creator, value: edition2Price});
     });
 
     describe('mint', function () {
@@ -273,7 +273,7 @@ contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
 
       describe('when successful', function () {
         beforeEach(async function () {
-          const result = await this.token.mintTo(to, editionNumber1, {value: edition1Price});
+          const result = await this.token.purchaseTo(to, editionNumber1, {value: edition1Price});
           logs = result.logs;
         });
 
@@ -298,13 +298,13 @@ contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
 
       describe('when the given owner address is the zero address', function () {
         it('reverts', async function () {
-          await assertRevert(this.token.mintTo(ZERO_ADDRESS, editionNumber1, {value: edition1Price}));
+          await assertRevert(this.token.purchaseTo(ZERO_ADDRESS, editionNumber1, {value: edition1Price}));
         });
       });
 
       describe('when the given token ID was NOT tracked by this contract', function () {
         it('reverts', async function () {
-          await assertRevert(this.token.mintTo(account1, unknownEdition, {value: edition1Price}));
+          await assertRevert(this.token.purchaseTo(account1, unknownEdition, {value: edition1Price}));
         });
       });
     });
@@ -365,8 +365,8 @@ contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
     const RECEIVER_MAGIC_VALUE = '0x150b7a02';
 
     beforeEach(async function () {
-      await this.token.mint(editionNumber1, {from: account1, value: edition1Price}); // tokenId 100001
-      await this.token.mint(editionNumber2, {from: account1, value: edition2Price}); // tokenId 200001
+      await this.token.purchase(editionNumber1, {from: account1, value: edition1Price}); // tokenId 100001
+      await this.token.purchase(editionNumber2, {from: account1, value: edition2Price}); // tokenId 200001
     });
 
     describe('balanceOf', function () {
