@@ -134,8 +134,8 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         edition[10].should.be.equal(true); // _active
       });
 
-      it('editionsForType', async function () {
-        let editions = await this.token.editionsForType(editionType);
+      it('editionsOfType', async function () {
+        let editions = await this.token.editionsOfType(editionType);
         editions.map(e => e.toNumber()).should.be.deep.equal([editionNumber1, editionNumber2]);
       });
 
@@ -268,18 +268,18 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         it('can be updated by whitelist', async function () {
           const type2 = 99;
 
-          let currentEditions = await this.token.editionsForType(editionType);
+          let currentEditions = await this.token.editionsOfType(editionType);
           currentEditions.map(e => e.toNumber()).should.be.deep.equal([editionNumber1, editionNumber2]);
 
-          let newEditions = await this.token.editionsForType(type2);
+          let newEditions = await this.token.editionsOfType(type2);
           newEditions.map(e => e.toNumber()).should.be.deep.equal([]);
 
           await this.token.updateEditionType(editionNumber1, type2);
 
-          currentEditions = await this.token.editionsForType(editionType);
+          currentEditions = await this.token.editionsOfType(editionType);
           currentEditions.map(e => e.toNumber()).should.be.deep.equal([0, editionNumber2]);
 
-          newEditions = await this.token.editionsForType(type2);
+          newEditions = await this.token.editionsOfType(type2);
           newEditions.map(e => e.toNumber()).should.be.deep.equal([editionNumber1]);
         });
 
@@ -553,19 +553,19 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
       });
     });
 
-    describe('tokenIdEditionNumber', async function () {
+    describe('editionOfTokenId', async function () {
 
       it('will return the correct edition ', async function () {
-        let result1 = await this.token.tokenIdEditionNumber(tokenId1);
+        let result1 = await this.token.editionOfTokenId(tokenId1);
         result1.should.be.bignumber.equal(editionNumber1);
 
-        let result2 = await this.token.tokenIdEditionNumber(tokenId2);
+        let result2 = await this.token.editionOfTokenId(tokenId2);
         result2.should.be.bignumber.equal(editionNumber2);
 
-        let result3 = await this.token.tokenIdEditionNumber(tokenId3);
+        let result3 = await this.token.editionOfTokenId(tokenId3);
         result3.should.be.bignumber.equal(editionNumber1);
 
-        let result4 = await this.token.tokenIdEditionNumber(tokenId4);
+        let result4 = await this.token.editionOfTokenId(tokenId4);
         result4.should.be.bignumber.equal(editionNumber2);
       });
 
@@ -791,12 +791,12 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
 
       it('adds to tokenId <-> edition mappings', async function () {
         [tokenId1_1, tokenId1_2, tokenId1_3].forEach(async (id) => {
-          let result = await this.token.tokenIdEditionNumber(id);
+          let result = await this.token.editionOfTokenId(id);
           result.should.be.bignumber.equal(editionNumber1);
         });
 
         [tokenId2_1, tokenId2_2, tokenId2_3].forEach(async (id) => {
-          let result = await this.token.tokenIdEditionNumber(id);
+          let result = await this.token.editionOfTokenId(id);
           result.should.be.bignumber.equal(editionNumber2);
         });
       });
@@ -1318,8 +1318,8 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
     });
 
     describe('edition 3 query methods', function () {
-      it('editionsForType', async function () {
-        let editions = await this.token.editionsForType(editionType);
+      it('editionsOfType', async function () {
+        let editions = await this.token.editionsOfType(editionType);
         editions.map(e => e.toNumber()).should.be.deep.equal([editionNumber3]);
       });
 

@@ -119,15 +119,14 @@ HasNoEther // TODO add tests for HasNoEther
     _;
   }
 
-  modifier onlyValidEdition(uint256 _editionNumber) {
-    // TODO this needs to change as we could set the available to zero - replace with better check
-    require(editionNumberToEditionDetails[_editionNumber].totalAvailable > 0, "No more editions available to purchase");
+  modifier onlyRealEdition(uint256 _editionNumber) {
+    require(editionNumberToEditionDetails[_editionNumber].editionNumber > 0, "Edition number invalid");
     _;
   }
 
-  modifier onlyAfterPurchaseFromTime(uint256 _editionNumber) {
-    require(editionNumberToEditionDetails[_editionNumber].startDate >= block.timestamp, "Edition auction not started");
-    require(editionNumberToEditionDetails[_editionNumber].endDate <= block.timestamp, "Edition auction finished");
+  modifier onlyPurchaseDuringWindow(uint256 _editionNumber) {
+    require(editionNumberToEditionDetails[_editionNumber].startDate <= block.timestamp, "Edition not available yet");
+    require(editionNumberToEditionDetails[_editionNumber].endDate >= block.timestamp, "Edition no longer available");
     _;
   }
 
@@ -279,10 +278,10 @@ HasNoEther // TODO add tests for HasNoEther
 
   function purchaseTo(address _to, uint256 _editionNumber)
   public payable
-  onlyAvailableEdition(_editionNumber)
-  onlyValidEdition(_editionNumber)
+  onlyRealEdition(_editionNumber)
   onlyActiveEdition(_editionNumber)
-    //  onlyAfterPurchaseFromTime(_editionNumber) // TODO this doesnt work
+  onlyAvailableEdition(_editionNumber)
+  onlyPurchaseDuringWindow(_editionNumber)
   returns (uint256) {
 
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
@@ -306,7 +305,7 @@ HasNoEther // TODO add tests for HasNoEther
   function mint(address _to, uint256 _editionNumber)
   public
   onlyKnownOrigin
-  onlyValidEdition(_editionNumber)
+  onlyRealEdition(_editionNumber)
   onlyAvailableEdition(_editionNumber)
   returns (uint256) {
     // Construct next token ID e.g. 100000 + 1 = ID of 100001 (this first in the edition set)
@@ -322,7 +321,7 @@ HasNoEther // TODO add tests for HasNoEther
   function underMint(address _to, uint256 _editionNumber)
   public
   onlyKnownOrigin
-  onlyValidEdition(_editionNumber)
+  onlyRealEdition(_editionNumber)
   onlyEditionsWithTokensAvailableToMint(_editionNumber)
   returns (uint256) {
     // Under mint token, meaning it takes one from the already sold version
@@ -478,21 +477,21 @@ HasNoEther // TODO add tests for HasNoEther
   function updateEditionTokenURI(uint256 _editionNumber, string _uri)
   external
   onlyKnownOrigin
-  onlyValidEdition(_editionNumber) {
+  onlyRealEdition(_editionNumber) {
     editionNumberToEditionDetails[_editionNumber].tokenURI = _uri;
   }
 
   function updatePriceInWei(uint256 _editionNumber, uint256 _priceInWei)
   external
   onlyKnownOrigin
-  onlyValidEdition(_editionNumber) {
+  onlyRealEdition(_editionNumber) {
     editionNumberToEditionDetails[_editionNumber].priceInWei = _priceInWei;
   }
 
   function updateArtistsAccount(uint256 _editionNumber, address _artistAccount)
   external
   onlyKnownOrigin
-  onlyValidEdition(_editionNumber) {
+  onlyRealEdition(_editionNumber) {
 
     EditionDetails storage _originalEditionDetails = editionNumberToEditionDetails[_editionNumber];
 
@@ -516,7 +515,7 @@ HasNoEther // TODO add tests for HasNoEther
   function updateEditionType(uint256 _editionNumber, uint8 _editionType)
   external
   onlyKnownOrigin
-  onlyValidEdition(_editionNumber) {
+  onlyRealEdition(_editionNumber) {
 
     EditionDetails storage _originalEditionDetails = editionNumberToEditionDetails[_editionNumber];
 
@@ -540,7 +539,7 @@ HasNoEther // TODO add tests for HasNoEther
   function updateActive(uint256 _editionNumber, bool _active)
   external
   onlyKnownOrigin
-  onlyValidEdition(_editionNumber) {
+  onlyRealEdition(_editionNumber) {
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
     _editionDetails.active = _active;
   }
@@ -548,7 +547,7 @@ HasNoEther // TODO add tests for HasNoEther
   function updateTotalSupply(uint256 _editionNumber, uint8 _totalSupply)
   public
   onlyKnownOrigin
-  onlyValidEdition(_editionNumber) {
+  onlyRealEdition(_editionNumber) {
     require(tokensOfEdition(_editionNumber).length <= _totalSupply, "Cant lower totalSupply to below the number of tokens already in existence");
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
     _editionDetails.totalSupply = _totalSupply;
@@ -557,7 +556,7 @@ HasNoEther // TODO add tests for HasNoEther
   function updateTotalAvailable(uint256 _editionNumber, uint8 _totalAvailable)
   external
   onlyKnownOrigin
-  onlyValidEdition(_editionNumber)
+  onlyRealEdition(_editionNumber)
   onlyEditionsWithTokensAvailableToMint(_editionNumber) {
     require(editionNumberToEditionDetails[_editionNumber].totalSupply <= _totalAvailable, "Unable to reduce available amount to the below the number totalSupply");
 
@@ -571,14 +570,14 @@ HasNoEther // TODO add tests for HasNoEther
   function updatestartDate(uint256 _editionNumber, uint32 _startDate)
   external
   onlyKnownOrigin
-  onlyValidEdition(_editionNumber) {
+  onlyRealEdition(_editionNumber) {
     editionNumberToEditionDetails[_editionNumber].startDate = _startDate;
   }
 
   function updateendDate(uint256 _editionNumber, uint32 _endDate)
   external
   onlyKnownOrigin
-  onlyValidEdition(_editionNumber) {
+  onlyRealEdition(_editionNumber) {
     editionNumberToEditionDetails[_editionNumber].endDate = _endDate;
   }
 
@@ -607,13 +606,11 @@ HasNoEther // TODO add tests for HasNoEther
   // Query Methods //
   ///////////////////
 
-  // TODO rename
-  function editionsForType(uint8 _type) public view returns (uint256[] _editionNumbers) {
+  function editionsOfType(uint8 _type) public view returns (uint256[] _editionNumbers) {
     return editionTypeToEditionNumber[_type];
   }
 
-  // TODO rename
-  function tokenIdEditionNumber(uint256 _tokenId) public view returns (uint256 _editionNumber) {
+  function editionOfTokenId(uint256 _tokenId) public view returns (uint256 _editionNumber) {
     return tokenIdToEditionNumber[_tokenId];
   }
 
@@ -637,7 +634,7 @@ HasNoEther // TODO add tests for HasNoEther
 
   function allEditionData(uint256 editionNumber)
   public view
-  onlyValidEdition(editionNumber)
+  onlyRealEdition(editionNumber)
   returns (
     bytes32 _editionData,
     uint8 _editionType,
@@ -704,7 +701,7 @@ HasNoEther // TODO add tests for HasNoEther
 
   function editionData(uint256 editionNumber)
   public view
-  onlyValidEdition(editionNumber)
+  onlyRealEdition(editionNumber)
   returns (
     uint256 _editionNumber,
     uint8 _editionType,
