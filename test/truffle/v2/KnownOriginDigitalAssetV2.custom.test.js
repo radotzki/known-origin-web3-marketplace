@@ -107,8 +107,8 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
 
         web3.toAscii(edition[0]).replace(/\0/g, '').should.be.equal(editionData1); //_editionData
         edition[1].should.be.bignumber.equal(editionType); //_editionType
-        edition[2].should.be.bignumber.equal(0); // _auctionStartDate
-        edition[3].should.be.bignumber.equal(MAX_UINT32); // _auctionEndDate
+        edition[2].should.be.bignumber.equal(0); // _startDate
+        edition[3].should.be.bignumber.equal(MAX_UINT32); // _endDate
         edition[4].should.be.equal(artistAccount); // _artistAccount
         edition[5].should.be.bignumber.equal(artistShare); // _artistCommission
         edition[6].should.be.bignumber.equal(edition1Price); // _priceInWei
@@ -123,8 +123,8 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
 
         web3.toAscii(edition[0]).replace(/\0/g, '').should.be.equal(editionData2); //_editionData
         edition[1].should.be.bignumber.equal(editionType); //_editionType
-        edition[2].should.be.bignumber.equal(0); // _auctionStartDate
-        edition[3].should.be.bignumber.equal(MAX_UINT32); // _auctionEndDate
+        edition[2].should.be.bignumber.equal(0); // _startDate
+        edition[3].should.be.bignumber.equal(MAX_UINT32); // _endDate
         edition[4].should.be.equal(artistAccount); // _artistAccount
         edition[5].should.be.bignumber.equal(artistShare); // _artistCommission
         edition[6].should.be.bignumber.equal(edition2Price); // _priceInWei
@@ -167,14 +167,14 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
           totalRemaining.should.be.bignumber.equal(3);
         });
 
-        it('numberMinted', async function () {
-          let numberMinted = await this.token.numberMinted(editionNumber1);
-          numberMinted.should.be.bignumber.equal(0);
+        it('editionTotalSupply', async function () {
+          let editionTotalSupply = await this.token.editionTotalSupply(editionNumber1);
+          editionTotalSupply.should.be.bignumber.equal(0);
         });
 
-        it('numberAvailable', async function () {
-          let numberAvailable = await this.token.numberAvailable(editionNumber1);
-          numberAvailable.should.be.bignumber.equal(3);
+        it('editionTotalAvailable', async function () {
+          let editionTotalAvailable = await this.token.editionTotalAvailable(editionNumber1);
+          editionTotalAvailable.should.be.bignumber.equal(3);
         });
 
         it('tokenURIEdition', async function () {
@@ -184,41 +184,41 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
 
       });
 
-      describe('updateAuctionStartDate', function () {
+      describe('updatestartDate', function () {
         it('can be updated by whitelist', async function () {
-          await this.token.updateAuctionStartDate(editionNumber1, 123456);
+          await this.token.updatestartDate(editionNumber1, 123456);
           let dates = await this.token.purchaseDatesEdition(editionNumber1);
           dates[0].should.be.bignumber.equal(123456);
           dates[1].should.be.bignumber.equal(MAX_UINT32);
         });
 
         it('should fail when not whitelisted', async function () {
-          await assertRevert(this.token.updateAuctionStartDate(editionNumber1, 123456, {from: account1}));
+          await assertRevert(this.token.updatestartDate(editionNumber1, 123456, {from: account1}));
         });
       });
 
-      describe('updateAuctionEndDate', function () {
+      describe('updateendDate', function () {
         it('can be updated by whitelist', async function () {
-          await this.token.updateAuctionEndDate(editionNumber1, 123456);
+          await this.token.updateendDate(editionNumber1, 123456);
           let dates = await this.token.purchaseDatesEdition(editionNumber1);
           dates[0].should.be.bignumber.equal(0);
           dates[1].should.be.bignumber.equal(123456);
         });
 
         it('should fail when not whitelisted', async function () {
-          await assertRevert(this.token.updateAuctionEndDate(editionNumber1, 123456, {from: account1}));
+          await assertRevert(this.token.updateendDate(editionNumber1, 123456, {from: account1}));
         });
       });
 
-      describe('updateAvailable', function () {
+      describe('updateTotalAvailable', function () {
         it('can be updated by whitelist', async function () {
-          await this.token.updateAvailable(editionNumber1, 100);
-          let available = await this.token.numberAvailable(editionNumber1);
+          await this.token.updateTotalAvailable(editionNumber1, 100);
+          let available = await this.token.editionTotalAvailable(editionNumber1);
           available.should.be.bignumber.equal(100);
         });
 
         it('should fail when not whitelisted', async function () {
-          await assertRevert(this.token.updateAvailable(editionNumber1, 100, {from: account1}));
+          await assertRevert(this.token.updateTotalAvailable(editionNumber1, 100, {from: account1}));
         });
 
         it('reverts if updating available to below the minted amount', async function () {
@@ -226,7 +226,7 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
           await this.token.mint(editionNumber1, {from: account1, value: edition1Price});
 
           // attempt to update available to less than minted amount
-          await assertRevert(this.token.updateAvailable(editionNumber1, 0, {from: _owner}));
+          await assertRevert(this.token.updateTotalAvailable(editionNumber1, 0, {from: _owner}));
         });
       });
 
@@ -329,8 +329,8 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
 
         web3.toAscii(edition[0]).replace(/\0/g, '').should.be.equal(editionData3); //_editionData
         edition[1].should.be.bignumber.equal(editionType); //_editionType
-        edition[2].should.be.bignumber.equal(0); // _auctionStartDate
-        edition[3].should.be.bignumber.equal(MAX_UINT32); // _auctionEndDate
+        edition[2].should.be.bignumber.equal(0); // _startDate
+        edition[3].should.be.bignumber.equal(MAX_UINT32); // _endDate
         edition[4].should.be.equal(artistAccount); // _artistAccount
         edition[5].should.be.bignumber.equal(artistShare); // _artistCommission
         edition[6].should.be.bignumber.equal(edition3Price); // _priceInWei
@@ -363,8 +363,8 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
 
         web3.toAscii(edition[0]).replace(/\0/g, '').should.be.equal(editionData3); //_editionData
         edition[1].should.be.bignumber.equal(editionType); //_editionType
-        edition[2].should.be.bignumber.equal(0); // _auctionStartDate
-        edition[3].should.be.bignumber.equal(MAX_UINT32); // _auctionEndDate
+        edition[2].should.be.bignumber.equal(0); // _startDate
+        edition[3].should.be.bignumber.equal(MAX_UINT32); // _endDate
         edition[4].should.be.equal(artistAccount); // _artistAccount
         edition[5].should.be.bignumber.equal(artistShare); // _artistCommission
         edition[6].should.be.bignumber.equal(edition3Price); // _priceInWei
@@ -407,14 +407,14 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
           totalRemaining.should.be.bignumber.equal(2);
         });
 
-        it('numberMinted', async function () {
-          let numberMinted = await this.token.numberMinted(editionNumber3);
-          numberMinted.should.be.bignumber.equal(1);
+        it('editionTotalSupply', async function () {
+          let editionTotalSupply = await this.token.editionTotalSupply(editionNumber3);
+          editionTotalSupply.should.be.bignumber.equal(1);
         });
 
-        it('numberAvailable', async function () {
-          let numberAvailable = await this.token.numberAvailable(editionNumber3);
-          numberAvailable.should.be.bignumber.equal(3);
+        it('editionTotalAvailable', async function () {
+          let editionTotalAvailable = await this.token.editionTotalAvailable(editionNumber3);
+          editionTotalAvailable.should.be.bignumber.equal(3);
         });
 
         it('tokenURIEdition', async function () {
@@ -713,7 +713,7 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
       });
 
       it('reverts if edition invalid', async function () {
-        await this.token.updateAvailable(editionNumber1, 0, {from: _owner});
+        await this.token.updateTotalAvailable(editionNumber1, 0, {from: _owner});
 
         // reverts as edition sat to zero available
         await assertRevert(this.token.mint(editionNumber1, {from: account1, value: edition1Price}));
@@ -1306,8 +1306,8 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
 
       web3.toAscii(edition[0]).replace(/\0/g, '').should.be.equal(editionData3); //_editionData
       edition[1].should.be.bignumber.equal(editionType); //_editionType
-      edition[2].should.be.bignumber.equal(0); // _auctionStartDate
-      edition[3].should.be.bignumber.equal(MAX_UINT32); // _auctionEndDate
+      edition[2].should.be.bignumber.equal(0); // _startDate
+      edition[3].should.be.bignumber.equal(MAX_UINT32); // _endDate
       edition[4].should.be.equal(artistAccount); // _artistAccount
       edition[5].should.be.bignumber.equal(artistShare); // _artistCommission
       edition[6].should.be.bignumber.equal(edition3Price); // _priceInWei
@@ -1354,14 +1354,14 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         totalRemaining.should.be.bignumber.equal(available - minted);
       });
 
-      it('numberMinted', async function () {
-        let numberMinted = await this.token.numberMinted(editionNumber3);
-        numberMinted.should.be.bignumber.equal(minted);
+      it('editionTotalSupply', async function () {
+        let editionTotalSupply = await this.token.editionTotalSupply(editionNumber3);
+        editionTotalSupply.should.be.bignumber.equal(minted);
       });
 
-      it('numberAvailable', async function () {
-        let numberAvailable = await this.token.numberAvailable(editionNumber3);
-        numberAvailable.should.be.bignumber.equal(available);
+      it('editionTotalAvailable', async function () {
+        let editionTotalAvailable = await this.token.editionTotalAvailable(editionNumber3);
+        editionTotalAvailable.should.be.bignumber.equal(available);
       });
 
       it('tokenURIEdition', async function () {
@@ -1376,8 +1376,8 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
       const thirdMinted = editionNumber3 + 1;  // 300001
       const fourthMinted = editionNumber3 + 2;  // 300002
 
-      let numberMinted = await this.token.numberMinted(editionNumber3);
-      numberMinted.should.be.bignumber.equal(minted);
+      let editionTotalSupply = await this.token.editionTotalSupply(editionNumber3);
+      editionTotalSupply.should.be.bignumber.equal(minted);
 
       // Mint two more to make the edition sold out
       await this.token.mint(editionNumber3, {from: account2, value: edition3Price});
@@ -1392,8 +1392,8 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
       totalRemaining.should.be.bignumber.equal(0);
 
       // Minted now at 4 as we mitned 2 more
-      numberMinted = await this.token.numberMinted(editionNumber3);
-      numberMinted.should.be.bignumber.equal(minted + 2);
+      editionTotalSupply = await this.token.editionTotalSupply(editionNumber3);
+      editionTotalSupply.should.be.bignumber.equal(minted + 2);
 
       // Reverts as sold out
       await assertRevert(this.token.mint(editionNumber3, {from: account2}));
@@ -1420,8 +1420,8 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
       await assertRevert(this.token.koUnderMint(account2, editionNumber3, {from: _owner}));
 
       // Minted still at 4 as we have under-minted the remaining
-      numberMinted = await this.token.numberMinted(editionNumber3);
-      numberMinted.should.be.bignumber.equal(minted + 2);
+      editionTotalSupply = await this.token.editionTotalSupply(editionNumber3);
+      editionTotalSupply.should.be.bignumber.equal(minted + 2);
     });
 
     // TODO tests for burning undermints
@@ -1429,20 +1429,20 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
 
   });
 
-  describe('updateMinted', async function () {
+  describe('updateTotalSupply', async function () {
 
     beforeEach(async function () {
       await this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistShare, edition1Price, editionTokenUri1, 3, {from: _owner});
     });
 
     it('should allow updating minted number of editions', async function () {
-      let numberMinted = await this.token.numberMinted(editionNumber1);
-      numberMinted.should.be.bignumber.equal(0);
+      let editionTotalSupply = await this.token.editionTotalSupply(editionNumber1);
+      editionTotalSupply.should.be.bignumber.equal(0);
 
-      await this.token.updateMinted(editionNumber1, 2, {from: _owner});
+      await this.token.updateTotalSupply(editionNumber1, 2, {from: _owner});
 
-      numberMinted = await this.token.numberMinted(editionNumber1);
-      numberMinted.should.be.bignumber.equal(2);
+      editionTotalSupply = await this.token.editionTotalSupply(editionNumber1);
+      editionTotalSupply.should.be.bignumber.equal(2);
     });
 
     it('should prevent updating minted number if tokens sold outways update', async function () {
@@ -1450,42 +1450,42 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
       await this.token.mint(editionNumber1, {from: account1, value: edition1Price});
       await this.token.mint(editionNumber1, {from: account1, value: edition1Price});
 
-      let numberMinted = await this.token.numberMinted(editionNumber1);
-      numberMinted.should.be.bignumber.equal(2);
+      let editionTotalSupply = await this.token.editionTotalSupply(editionNumber1);
+      editionTotalSupply.should.be.bignumber.equal(2);
 
       // should fail when attempting to lower than this
-      await assertRevert(this.token.updateMinted(editionNumber1, 1, {from: _owner}));
+      await assertRevert(this.token.updateTotalSupply(editionNumber1, 1, {from: _owner}));
     });
 
     it('should prevent updating minted if not KO', async function () {
-      await assertRevert(this.token.updateMinted(editionNumber1, 2, {from: account1}));
+      await assertRevert(this.token.updateTotalSupply(editionNumber1, 2, {from: account1}));
     });
   });
 
-  describe('updateAvailable', async function () {
+  describe('updateTotalAvailable', async function () {
 
     beforeEach(async function () {
       await this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistShare, edition1Price, editionTokenUri1, 3, {from: _owner});
     });
 
     it('should allow updating available number of editions', async function () {
-      let numberAvailable = await this.token.numberAvailable(editionNumber1);
-      numberAvailable.should.be.bignumber.equal(3);
+      let editionTotalAvailable = await this.token.editionTotalAvailable(editionNumber1);
+      editionTotalAvailable.should.be.bignumber.equal(3);
 
-      await this.token.updateAvailable(editionNumber1, 2, {from: _owner});
+      await this.token.updateTotalAvailable(editionNumber1, 2, {from: _owner});
 
-      numberAvailable = await this.token.numberAvailable(editionNumber1);
-      numberAvailable.should.be.bignumber.equal(2);
+      editionTotalAvailable = await this.token.editionTotalAvailable(editionNumber1);
+      editionTotalAvailable.should.be.bignumber.equal(2);
     });
 
     it('should reduce totalNumberAvailable when lowering edition config', async function () {
       let totalNumberAvailable = await this.token.totalNumberAvailable();
       totalNumberAvailable.should.be.bignumber.equal(3);
 
-      await this.token.updateAvailable(editionNumber1, 2, {from: _owner});
+      await this.token.updateTotalAvailable(editionNumber1, 2, {from: _owner});
 
-      let numberAvailable = await this.token.numberAvailable(editionNumber1);
-      numberAvailable.should.be.bignumber.equal(2);
+      let editionTotalAvailable = await this.token.editionTotalAvailable(editionNumber1);
+      editionTotalAvailable.should.be.bignumber.equal(2);
 
       totalNumberAvailable = await this.token.totalNumberAvailable();
       totalNumberAvailable.should.be.bignumber.equal(2);
@@ -1496,15 +1496,15 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
       await this.token.mint(editionNumber1, {from: account1, value: edition1Price});
       await this.token.mint(editionNumber1, {from: account1, value: edition1Price});
 
-      let numberAvailable = await this.token.numberAvailable(editionNumber1);
-      numberAvailable.should.be.bignumber.equal(3);
+      let editionTotalAvailable = await this.token.editionTotalAvailable(editionNumber1);
+      editionTotalAvailable.should.be.bignumber.equal(3);
 
       // should fail when attempting to lower than this
-      await assertRevert(this.token.updateAvailable(editionNumber1, 1, {from: _owner}));
+      await assertRevert(this.token.updateTotalAvailable(editionNumber1, 1, {from: _owner}));
     });
 
     it('should prevent updating available if not KO', async function () {
-      await assertRevert(this.token.updateAvailable(editionNumber1, 2, {from: account1}));
+      await assertRevert(this.token.updateTotalAvailable(editionNumber1, 2, {from: account1}));
     });
   });
 
