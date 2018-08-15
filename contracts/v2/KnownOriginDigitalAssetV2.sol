@@ -1,16 +1,17 @@
 pragma solidity ^0.4.24;
 
-// allows for muti-address access
+// allows for multi-address access
 import "openzeppelin-solidity/contracts/access/Whitelist.sol";
 
-// prevents stuck ether for
+// prevents stuck ether
 import "openzeppelin-solidity/contracts/ownership/HasNoEther.sol";
 
 // For safe maths operations
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "../libs/SafeMath32.sol";
-import "../libs/SafeMath16.sol";
 import "../libs/SafeMath8.sol";
+
+// Pause purchasing only in case of emergency/migration
+import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 
 // ERC721
 import "openzeppelin-solidity/contracts/token/ERC721/ERC721Token.sol";
@@ -18,12 +19,11 @@ import "openzeppelin-solidity/contracts/token/ERC721/ERC721Token.sol";
 // Utils only
 import "../Strings.sol";
 
-// TODO consider Pausable - stop open purchases?
-
 contract KnownOriginDigitalAssetV2 is
 ERC721Token,
-Whitelist, // TODO add tests for Whitelist
-HasNoEther // TODO add tests for HasNoEther
+Whitelist,
+HasNoEther,
+Pausable
 {
   using SafeMath for uint256;
   using SafeMath8 for uint8;
@@ -132,7 +132,7 @@ HasNoEther // TODO add tests for HasNoEther
   /*
    * Constructor
    */
-  constructor () public ERC721Token("KnownOriginDigitalAsset", "KODA") {
+  constructor () public payable ERC721Token("KnownOriginDigitalAsset", "KODA") {
     // Assume the commission account is the creator for now
     koCommissionAccount = msg.sender;
     // Whitelist owner
@@ -277,6 +277,7 @@ HasNoEther // TODO add tests for HasNoEther
 
   function purchaseTo(address _to, uint256 _editionNumber)
   public payable
+  whenNotPaused
   onlyRealEdition(_editionNumber)
   onlyActiveEdition(_editionNumber)
   onlyAvailableEdition(_editionNumber)
