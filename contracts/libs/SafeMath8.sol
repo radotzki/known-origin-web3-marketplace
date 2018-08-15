@@ -1,3 +1,5 @@
+pragma solidity 0.4.24;
+
 library SafeMath8 {
   function mul(uint8 a, uint8 b) internal pure returns (uint8) {
     if (a == 0) {

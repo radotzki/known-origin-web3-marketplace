@@ -1,6 +1,8 @@
 const assertRevert = require('../../helpers/assertRevert');
 const etherToWei = require('../../helpers/etherToWei');
 const advanceBlock = require('../../helpers/advanceToBlock');
+const {duration, increaseTimeTo} = require('../../helpers/increaseTime');
+const latestTime = require('../../helpers/latestTime');
 
 const _ = require('lodash');
 
@@ -12,7 +14,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
+contract('KnownOriginDigitalAssetV2 - custom', function (accounts) {
   const _owner = accounts[0];
 
   const account1 = accounts[1];
@@ -184,29 +186,29 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
 
       });
 
-      describe('updatestartDate', function () {
+      describe('updateStartDate', function () {
         it('can be updated by whitelist', async function () {
-          await this.token.updatestartDate(editionNumber1, 123456);
+          await this.token.updateStartDate(editionNumber1, 123456);
           let dates = await this.token.purchaseDatesEdition(editionNumber1);
           dates[0].should.be.bignumber.equal(123456);
           dates[1].should.be.bignumber.equal(MAX_UINT32);
         });
 
         it('should fail when not whitelisted', async function () {
-          await assertRevert(this.token.updatestartDate(editionNumber1, 123456, {from: account1}));
+          await assertRevert(this.token.updateStartDate(editionNumber1, 123456, {from: account1}));
         });
       });
 
-      describe('updateendDate', function () {
+      describe('updateEndDate', function () {
         it('can be updated by whitelist', async function () {
-          await this.token.updateendDate(editionNumber1, 123456);
+          await this.token.updateEndDate(editionNumber1, 123456);
           let dates = await this.token.purchaseDatesEdition(editionNumber1);
           dates[0].should.be.bignumber.equal(0);
           dates[1].should.be.bignumber.equal(123456);
         });
 
         it('should fail when not whitelisted', async function () {
-          await assertRevert(this.token.updateendDate(editionNumber1, 123456, {from: account1}));
+          await assertRevert(this.token.updateEndDate(editionNumber1, 123456, {from: account1}));
         });
       });
 
@@ -719,14 +721,6 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         await assertRevert(this.token.purchase(editionNumber1, {from: account1, value: edition1Price}));
       });
 
-      it('reverts if edition auction not started', async function () {
-        // TODO
-      });
-
-      it('reverts if edition auction closed', async function () {
-        // TODO
-      });
-
       it('reverts if purchase price not provided', async function () {
         await assertRevert(this.token.purchase(editionNumber1, {from: account1, value: 0}));
       });
@@ -1012,6 +1006,70 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         results[6].should.be.bignumber.equal(edition2Price);
         results[7].should.be.bignumber.equal(4);
         results[8].should.be.bignumber.equal(1);
+      });
+    });
+  });
+
+  describe('handle start & end dates', async function () {
+
+    let startDate = 0;
+    let endDate = 0; // set to zero to be set to default max uint32
+
+    beforeEach(async function () {
+      let tokens = await this.token.tokensOf(account1);
+      tokens.map(e => e.toNumber()).should.be.deep.equal([]);
+    });
+
+    describe('starts in the future', async function () {
+      beforeEach(async function () {
+        // starts in 30 seconds
+        startDate = latestTime() + duration.seconds(30);
+
+        await this.token.createActiveEdition(editionNumber1, editionData1, editionType, startDate, endDate, artistAccount, artistShare, edition1Price, editionTokenUri1, 3, {from: _owner});
+      });
+
+      it('reverts if edition auction not started', async function () {
+        await assertRevert(this.token.purchase(editionNumber1, {from: account1, value: edition1Price}));
+      });
+
+      it('once updated the purchase will succeed', async function () {
+        startDate = latestTime() - duration.seconds(30); // lower start time to in the past
+        await this.token.updateStartDate(editionNumber1, startDate, {from: _owner});
+
+        await this.token.purchase(editionNumber1, {from: account1, value: edition1Price});
+
+        let tokens = await this.token.tokensOf(account1);
+        tokens
+          .map(e => e.toNumber())
+          .should.be.deep.equal([editionNumber1 + 1]);
+      });
+    });
+
+    describe('ends before being purchased', async function () {
+      beforeEach(async function () {
+        // ends in 30 seconds
+        endDate = latestTime() + duration.seconds(30);
+
+        await this.token.createActiveEdition(editionNumber1, editionData1, editionType, startDate, endDate, artistAccount, artistShare, edition1Price, editionTokenUri1, 3, {from: _owner});
+
+        // force time to move 1 minute
+        await increaseTimeTo(latestTime() + duration.minutes(1));
+      });
+
+      it('reverts if edition auction closed', async function () {
+        await assertRevert(this.token.purchase(editionNumber1, {from: account1, value: edition1Price}));
+      });
+
+      it('once updated the purchase will succeed', async function () {
+        endDate = latestTime() + duration.minutes(2); // increase start time to in the future
+        await this.token.updateEndDate(editionNumber1, endDate, {from: _owner});
+
+        await this.token.purchase(editionNumber1, {from: account1, value: edition1Price});
+
+        let tokens = await this.token.tokensOf(account1);
+        tokens
+          .map(e => e.toNumber())
+          .should.be.deep.equal([editionNumber1 + 1]);
       });
     });
   });

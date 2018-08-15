@@ -75,11 +75,10 @@ HasNoEther // TODO add tests for HasNoEther
     uint8 artistCommission;   // base commissions, could be overridden by parent contracts
     uint256 priceInWei;       // base price for asset, could be overridden by parent contracts
     string tokenURI;          // IPFS Hash only
+    bool active;              // Root control - on/off for the edition
     // Counters
     uint8 totalSupply;        // Total purchases/totalSupply
     uint8 totalAvailable;     // Total number available to be purchased
-    bool active;              // Root control - on/off for the edition
-    // TODO add a new flag for active but not publicly on sale?
   }
 
   mapping(uint256 => EditionDetails) internal editionNumberToEditionDetails;
@@ -567,14 +566,14 @@ HasNoEther // TODO add tests for HasNoEther
     totalNumberAvailable = totalNumberAvailable.sub(originalAvailability).add(_totalAvailable);
   }
 
-  function updatestartDate(uint256 _editionNumber, uint32 _startDate)
+  function updateStartDate(uint256 _editionNumber, uint32 _startDate)
   external
   onlyKnownOrigin
   onlyRealEdition(_editionNumber) {
     editionNumberToEditionDetails[_editionNumber].startDate = _startDate;
   }
 
-  function updateendDate(uint256 _editionNumber, uint32 _endDate)
+  function updateEndDate(uint256 _editionNumber, uint32 _endDate)
   external
   onlyKnownOrigin
   onlyRealEdition(_editionNumber) {

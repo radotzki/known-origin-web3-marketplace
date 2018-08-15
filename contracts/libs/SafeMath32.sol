@@ -1,3 +1,5 @@
+pragma solidity 0.4.24;
+
 library SafeMath32 {
   function mul(uint32 a, uint32 b) internal pure returns (uint32) {
     if (a == 0) {
