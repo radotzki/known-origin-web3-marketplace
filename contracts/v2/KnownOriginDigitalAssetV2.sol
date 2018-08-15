@@ -22,11 +22,16 @@ import "../Strings.sol";
 
 contract KnownOriginDigitalAssetV2 is
 ERC721Token,
-Whitelist,
-HasNoEther
+Whitelist, // TODO add tests for Whitelist
+HasNoEther // TODO add tests for HasNoEther
 {
   using SafeMath for uint256;
   using SafeMath8 for uint8;
+
+  struct CommissionSplit {
+    uint8 rate;
+    address recipient;
+  }
 
   uint32 constant internal MAX_UINT32 = ~uint32(0);
 
@@ -44,6 +49,9 @@ HasNoEther
 
   // the KO account which can receive commission
   address public koCommissionAccount;
+
+  // Optional commission split can be defined per edition
+  mapping(uint256 => CommissionSplit) editionNumberToOptionalCommissionSplit;
 
   // total wei been processed through the contract
   uint256 public totalPurchaseValueInWei;
@@ -249,13 +257,7 @@ HasNoEther
     // Add to total available count
     totalNumberAvailable = totalNumberAvailable.add(_available);
 
-    // Maintain two way mappings so we can query direct
-    // e.g.
-    // /tokenId - DONE
-    // /artist - DONE
-    // /type - DONE
-    // /editionNumber- DONE
-
+    // Update mappings
     _updateArtistLookData(_artistAccount, _editionNumber);
     _updateEditionTypeLookData(_editionType, _editionNumber);
 
@@ -390,25 +392,33 @@ HasNoEther
   }
 
   function _handleFunds(uint256 _editionNumber) internal {
+
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
 
+    // Extract the artists commission and send it
     address artistsAccount = _editionDetails.artistAccount;
+    uint256 artistPayment = msg.value / 100 * _editionDetails.artistCommission;
+    if (artistPayment > 0) {
+      artistsAccount.transfer(artistPayment);
+    }
 
-    // Extract the artists commission and send them it
-    uint256 artistCommission = msg.value / 100 * _editionDetails.artistCommission;
-    artistsAccount.transfer(artistCommission);
+    // Load any commission overrides
+    CommissionSplit memory commission = editionNumberToOptionalCommissionSplit[_editionNumber];
+
+    // Apply optional commission structure
+    uint256 rateSplit = msg.value / 100 * commission.rate;
+    if (commission.rate > 0) {
+      commission.recipient.transfer(rateSplit);
+    }
 
     // Send remaining eth to KO
-    uint256 remainingCommission = msg.value - artistCommission;
+    uint256 remainingCommission = msg.value - artistPayment - rateSplit;
     koCommissionAccount.transfer(remainingCommission);
+
+    // TODO Send overspend back to caller or absorb?
 
     // Record wei sale value
     totalPurchaseValueInWei = totalPurchaseValueInWei.add(msg.value);
-
-    // TODO Send overspend back to caller or absorb?
-    // TODO additional commission split?
-    //  - maybe have secondary mapping for edition to commission mapping (address/amount) - not set by default but can be provided?
-    //  - maybe allow for array of mappings to have dynamic number/split?
   }
 
   // TODO this needs lots of tests
@@ -580,6 +590,20 @@ HasNoEther
     koCommissionAccount = _koCommissionAccount;
   }
 
+  function updateOptionalCommission(uint256 _editionNumber, uint8 _rate, address _recipient)
+  external
+  onlyKnownOrigin {
+    EditionDetails memory _editionDetails = editionNumberToEditionDetails[_editionNumber];
+    uint256 artistCommission = _editionDetails.artistCommission;
+
+    if (_rate > 0) {
+      require(_recipient != address(0), "Setting a rate must be accompanied by a valid address");
+    }
+    require(artistCommission.add(_rate) <= 100, "Cant set commission greater than 100%");
+
+    editionNumberToOptionalCommissionSplit[_editionNumber] = CommissionSplit({rate : _rate, recipient : _recipient});
+  }
+
   ///////////////////
   // Query Methods //
   ///////////////////
@@ -600,6 +624,14 @@ HasNoEther
 
   function tokensOfEdition(uint256 _editionNumber) public view returns (uint256[] _tokenIds) {
     return editionNumberToTokenIds[_editionNumber];
+  }
+
+  function editionOptionalCommission(uint256 _editionNumber) public view returns (uint8 _rate, address _recipient) {
+    CommissionSplit memory commission = editionNumberToOptionalCommissionSplit[_editionNumber];
+    return (
+    commission.rate,
+    commission.recipient
+    );
   }
 
   // TODO confirm query methods are suitable for webapp and logic flow?
@@ -699,7 +731,7 @@ HasNoEther
     );
   }
 
-  function editionExists(uint256 _editionNumber) returns (bool) {
+  function editionExists(uint256 _editionNumber) public view returns (bool) {
     EditionDetails memory editionNumber = editionNumberToEditionDetails[_editionNumber];
     return editionNumber.editionNumber == _editionNumber;
   }

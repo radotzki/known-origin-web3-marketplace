@@ -11,43 +11,43 @@ library SafeMath {
   /**
   * @dev Multiplies two numbers, throws on overflow.
   */
-  function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
+  function mul(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
     // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
     // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
-    if (a == 0) {
+    if (_a == 0) {
       return 0;
     }
 
-    c = a * b;
-    assert(c / a == b);
+    c = _a * _b;
+    assert(c / _a == _b);
     return c;
   }
 
   /**
   * @dev Integer division of two numbers, truncating the quotient.
   */
-  function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b > 0); // Solidity automatically throws when dividing by 0
-    // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
-    return a / b;
+  function div(uint256 _a, uint256 _b) internal pure returns (uint256) {
+    // assert(_b > 0); // Solidity automatically throws when dividing by 0
+    // uint256 c = _a / _b;
+    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn't hold
+    return _a / _b;
   }
 
   /**
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
-  function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b <= a);
-    return a - b;
+  function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
+    assert(_b <= _a);
+    return _a - _b;
   }
 
   /**
   * @dev Adds two numbers, throws on overflow.
   */
-  function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    c = a + b;
-    assert(c >= a);
+  function add(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
+    c = _a + _b;
+    assert(c >= _a);
     return c;
   }
 }
@@ -131,7 +131,7 @@ contract KODAV1 {
 }
 
 contract KODAV2 {
-  function koMint(address _to, uint256 _editionNumber) returns (uint256);
+  function koUnderMint(address _to, uint256 _editionNumber) returns (uint256);
 
   function editionExists(uint256 _editionNumber) returns (bool);
 }
@@ -157,9 +157,9 @@ contract KnownOriginV1TokenSwap is Ownable {
     KODAV2 _kodaV2,
     address _archiveAddress
   ) public {
-    require(_kodaV1 != address(0));
-    require(_kodaV2 != address(0));
-    require(_archiveAddress != address(0));
+    require(_kodaV1 != address(0), "Missing KODA V1 address");
+    require(_kodaV2 != address(0), "Missing KODA V2 address");
+    require(_archiveAddress != address(0), "Missing KODA achieve address");
 
     archiveAddress = _archiveAddress;
     kodaV1 = _kodaV1;
@@ -235,27 +235,20 @@ contract KnownOriginV1TokenSwap is Ownable {
     oldToNewEditionMappings[0x464b414d41525449414e424e47444947] = 6800; // FKAMARTIANBNGDIG
   }
 
-  function tokenSwap(uint256 _oldTokenId) {
-    // lookup edition from V2
+  function tokenSwap(uint256 _oldTokenId) public {
+
     bytes16 oldEdition = kodaV1.editionOf(_oldTokenId);
-
-    // Get owner from old contract
-    address owner = kodaV1.ownerOf(_oldTokenId);
-
-    // Ensure the contract can actually to the swap
-    require(kodaV1.isApprovedForAll(owner, address(this)), "Token swap contract not approved for transfer");
-
-    // match edition in new contract
     uint256 newEdition = oldToNewEditionMappings[oldEdition];
-
-    // Ensure edition matched
     require(kodaV2.editionExists(newEdition), "Edition number is not valid");
 
+    address owner = kodaV1.ownerOf(_oldTokenId);
+    require(isApprovedForTransfer(_oldTokenId), "Token swap contract not approved for transfer");
+
     // call mint to old token owner
-    uint256 _newTokenId = kodaV2.koMint(owner, newEdition);
+    uint256 _newTokenId = kodaV2.koUnderMint(owner, newEdition);
 
     // transfer ownerShip of old token to archiveAddress
-    kodaV1.safeTransferFrom(owner, archiveAddress, _oldTokenId);
+    kodaV1.transferFrom(owner, archiveAddress, _oldTokenId);
 
     emit TokenSwapped(_oldTokenId, _newTokenId, oldEdition, newEdition);
   }
@@ -264,9 +257,13 @@ contract KnownOriginV1TokenSwap is Ownable {
     return oldToNewEditionMappings[oldEdition];
   }
 
-  function checkTokenIdCanSwap(uint256 _tokenId) public view returns (uint256 newEdition) {
+  function editionMapping(uint256 _tokenId) public view returns (uint256 newEdition) {
     bytes16 oldEdition = kodaV1.editionOf(_tokenId);
-
     return oldToNewEditionMappings[oldEdition];
+  }
+
+  function isApprovedForTransfer(uint256 _tokenId) public view returns (bool) {
+    address owner = kodaV1.ownerOf(_tokenId);
+    return kodaV1.isApprovedForAll(owner, address(this));
   }
 }

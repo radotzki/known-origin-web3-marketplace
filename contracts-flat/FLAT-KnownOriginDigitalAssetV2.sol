@@ -145,6 +145,165 @@ library SafeMath8 {
   }
 }
 
+// File: openzeppelin-solidity/contracts/access/rbac/Roles.sol
+
+/**
+ * @title Roles
+ * @author Francisco Giordano (@frangio)
+ * @dev Library for managing addresses assigned to a Role.
+ * See RBAC.sol for example usage.
+ */
+library Roles {
+  struct Role {
+    mapping (address => bool) bearer;
+  }
+
+  /**
+   * @dev give an address access to this role
+   */
+  function add(Role storage _role, address _addr)
+    internal
+  {
+    _role.bearer[_addr] = true;
+  }
+
+  /**
+   * @dev remove an address' access to this role
+   */
+  function remove(Role storage _role, address _addr)
+    internal
+  {
+    _role.bearer[_addr] = false;
+  }
+
+  /**
+   * @dev check if an address has this role
+   * // reverts
+   */
+  function check(Role storage _role, address _addr)
+    internal
+    view
+  {
+    require(has(_role, _addr));
+  }
+
+  /**
+   * @dev check if an address has this role
+   * @return bool
+   */
+  function has(Role storage _role, address _addr)
+    internal
+    view
+    returns (bool)
+  {
+    return _role.bearer[_addr];
+  }
+}
+
+// File: openzeppelin-solidity/contracts/access/rbac/RBAC.sol
+
+/**
+ * @title RBAC (Role-Based Access Control)
+ * @author Matt Condon (@Shrugs)
+ * @dev Stores and provides setters and getters for roles and addresses.
+ * Supports unlimited numbers of roles and addresses.
+ * See //contracts/mocks/RBACMock.sol for an example of usage.
+ * This RBAC method uses strings to key roles. It may be beneficial
+ * for you to write your own implementation of this interface using Enums or similar.
+ */
+contract RBAC {
+  using Roles for Roles.Role;
+
+  mapping (string => Roles.Role) private roles;
+
+  event RoleAdded(address indexed operator, string role);
+  event RoleRemoved(address indexed operator, string role);
+
+  /**
+   * @dev reverts if addr does not have role
+   * @param _operator address
+   * @param _role the name of the role
+   * // reverts
+   */
+  function checkRole(address _operator, string _role)
+    public
+    view
+  {
+    roles[_role].check(_operator);
+  }
+
+  /**
+   * @dev determine if addr has role
+   * @param _operator address
+   * @param _role the name of the role
+   * @return bool
+   */
+  function hasRole(address _operator, string _role)
+    public
+    view
+    returns (bool)
+  {
+    return roles[_role].has(_operator);
+  }
+
+  /**
+   * @dev add a role to an address
+   * @param _operator address
+   * @param _role the name of the role
+   */
+  function addRole(address _operator, string _role)
+    internal
+  {
+    roles[_role].add(_operator);
+    emit RoleAdded(_operator, _role);
+  }
+
+  /**
+   * @dev remove a role from an address
+   * @param _operator address
+   * @param _role the name of the role
+   */
+  function removeRole(address _operator, string _role)
+    internal
+  {
+    roles[_role].remove(_operator);
+    emit RoleRemoved(_operator, _role);
+  }
+
+  /**
+   * @dev modifier to scope access to a single role (uses msg.sender as addr)
+   * @param _role the name of the role
+   * // reverts
+   */
+  modifier onlyRole(string _role)
+  {
+    checkRole(msg.sender, _role);
+    _;
+  }
+
+  /**
+   * @dev modifier to scope access to a set of roles (uses msg.sender as addr)
+   * @param _roles the names of the roles to scope access to
+   * // reverts
+   *
+   * @TODO - when solidity supports dynamic arrays as arguments to modifiers, provide this
+   *  see: https://github.com/ethereum/solidity/issues/2467
+   */
+  // modifier onlyRoles(string[] _roles) {
+  //     bool hasAnyRole = false;
+  //     for (uint8 i = 0; i < _roles.length; i++) {
+  //         if (hasRole(msg.sender, _roles[i])) {
+  //             hasAnyRole = true;
+  //             break;
+  //         }
+  //     }
+
+  //     require(hasAnyRole);
+
+  //     _;
+  // }
+}
+
 // File: openzeppelin-solidity/contracts/ownership/Ownable.sol
 
 /**
@@ -209,167 +368,6 @@ contract Ownable {
   }
 }
 
-// File: openzeppelin-solidity/contracts/ownership/rbac/Roles.sol
-
-/**
- * @title Roles
- * @author Francisco Giordano (@frangio)
- * @dev Library for managing addresses assigned to a Role.
- * See RBAC.sol for example usage.
- */
-library Roles {
-  struct Role {
-    mapping (address => bool) bearer;
-  }
-
-  /**
-   * @dev give an address access to this role
-   */
-  function add(Role storage role, address addr)
-    internal
-  {
-    role.bearer[addr] = true;
-  }
-
-  /**
-   * @dev remove an address' access to this role
-   */
-  function remove(Role storage role, address addr)
-    internal
-  {
-    role.bearer[addr] = false;
-  }
-
-  /**
-   * @dev check if an address has this role
-   * // reverts
-   */
-  function check(Role storage role, address addr)
-    view
-    internal
-  {
-    require(has(role, addr));
-  }
-
-  /**
-   * @dev check if an address has this role
-   * @return bool
-   */
-  function has(Role storage role, address addr)
-    view
-    internal
-    returns (bool)
-  {
-    return role.bearer[addr];
-  }
-}
-
-// File: openzeppelin-solidity/contracts/ownership/rbac/RBAC.sol
-
-/**
- * @title RBAC (Role-Based Access Control)
- * @author Matt Condon (@Shrugs)
- * @dev Stores and provides setters and getters for roles and addresses.
- * Supports unlimited numbers of roles and addresses.
- * See //contracts/mocks/RBACMock.sol for an example of usage.
- * This RBAC method uses strings to key roles. It may be beneficial
- * for you to write your own implementation of this interface using Enums or similar.
- * It's also recommended that you define constants in the contract, like ROLE_ADMIN below,
- * to avoid typos.
- */
-contract RBAC {
-  using Roles for Roles.Role;
-
-  mapping (string => Roles.Role) private roles;
-
-  event RoleAdded(address indexed operator, string role);
-  event RoleRemoved(address indexed operator, string role);
-
-  /**
-   * @dev reverts if addr does not have role
-   * @param _operator address
-   * @param _role the name of the role
-   * // reverts
-   */
-  function checkRole(address _operator, string _role)
-    view
-    public
-  {
-    roles[_role].check(_operator);
-  }
-
-  /**
-   * @dev determine if addr has role
-   * @param _operator address
-   * @param _role the name of the role
-   * @return bool
-   */
-  function hasRole(address _operator, string _role)
-    view
-    public
-    returns (bool)
-  {
-    return roles[_role].has(_operator);
-  }
-
-  /**
-   * @dev add a role to an address
-   * @param _operator address
-   * @param _role the name of the role
-   */
-  function addRole(address _operator, string _role)
-    internal
-  {
-    roles[_role].add(_operator);
-    emit RoleAdded(_operator, _role);
-  }
-
-  /**
-   * @dev remove a role from an address
-   * @param _operator address
-   * @param _role the name of the role
-   */
-  function removeRole(address _operator, string _role)
-    internal
-  {
-    roles[_role].remove(_operator);
-    emit RoleRemoved(_operator, _role);
-  }
-
-  /**
-   * @dev modifier to scope access to a single role (uses msg.sender as addr)
-   * @param _role the name of the role
-   * // reverts
-   */
-  modifier onlyRole(string _role)
-  {
-    checkRole(msg.sender, _role);
-    _;
-  }
-
-  /**
-   * @dev modifier to scope access to a set of roles (uses msg.sender as addr)
-   * @param _roles the names of the roles to scope access to
-   * // reverts
-   *
-   * @TODO - when solidity supports dynamic arrays as arguments to modifiers, provide this
-   *  see: https://github.com/ethereum/solidity/issues/2467
-   */
-  // modifier onlyRoles(string[] _roles) {
-  //     bool hasAnyRole = false;
-  //     for (uint8 i = 0; i < _roles.length; i++) {
-  //         if (hasRole(msg.sender, _roles[i])) {
-  //             hasAnyRole = true;
-  //             break;
-  //         }
-  //     }
-
-  //     require(hasAnyRole);
-
-  //     _;
-  // }
-}
-
 // File: openzeppelin-solidity/contracts/access/Whitelist.sol
 
 /**
@@ -395,8 +393,8 @@ contract Whitelist is Ownable, RBAC {
    * @return true if the address was added to the whitelist, false if the address was already in the whitelist
    */
   function addAddressToWhitelist(address _operator)
-    onlyOwner
     public
+    onlyOwner
   {
     addRole(_operator, ROLE_WHITELISTED);
   }
@@ -419,8 +417,8 @@ contract Whitelist is Ownable, RBAC {
    * false if all addresses were already in the whitelist
    */
   function addAddressesToWhitelist(address[] _operators)
-    onlyOwner
     public
+    onlyOwner
   {
     for (uint256 i = 0; i < _operators.length; i++) {
       addAddressToWhitelist(_operators[i]);
@@ -434,8 +432,8 @@ contract Whitelist is Ownable, RBAC {
    * false if the address wasn't in the whitelist in the first place
    */
   function removeAddressFromWhitelist(address _operator)
-    onlyOwner
     public
+    onlyOwner
   {
     removeRole(_operator, ROLE_WHITELISTED);
   }
@@ -447,8 +445,8 @@ contract Whitelist is Ownable, RBAC {
    * false if all addresses weren't in the whitelist in the first place
    */
   function removeAddressesFromWhitelist(address[] _operators)
-    onlyOwner
     public
+    onlyOwner
   {
     for (uint256 i = 0; i < _operators.length; i++) {
       removeAddressFromWhitelist(_operators[i]);
@@ -468,43 +466,43 @@ library SafeMath {
   /**
   * @dev Multiplies two numbers, throws on overflow.
   */
-  function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
+  function mul(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
     // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
     // benefit is lost if 'b' is also tested.
     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
-    if (a == 0) {
+    if (_a == 0) {
       return 0;
     }
 
-    c = a * b;
-    assert(c / a == b);
+    c = _a * _b;
+    assert(c / _a == _b);
     return c;
   }
 
   /**
   * @dev Integer division of two numbers, truncating the quotient.
   */
-  function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b > 0); // Solidity automatically throws when dividing by 0
-    // uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
-    return a / b;
+  function div(uint256 _a, uint256 _b) internal pure returns (uint256) {
+    // assert(_b > 0); // Solidity automatically throws when dividing by 0
+    // uint256 c = _a / _b;
+    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn't hold
+    return _a / _b;
   }
 
   /**
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
-  function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b <= a);
-    return a - b;
+  function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
+    assert(_b <= _a);
+    return _a - _b;
   }
 
   /**
   * @dev Adds two numbers, throws on overflow.
   */
-  function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
-    c = a + b;
-    assert(c >= a);
+  function add(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
+    c = _a + _b;
+    assert(c >= _a);
     return c;
   }
 }
@@ -515,7 +513,7 @@ library SafeMath {
  * @title Contracts that should not own Ether
  * @author Remco Bloemen <remco@2π.com>
  * @dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up
- * in the contract, it will allow the owner to reclaim this ether.
+ * in the contract, it will allow the owner to reclaim this Ether.
  * @notice Ether can still be sent to this contract by:
  * calling functions labeled `payable`
  * `selfdestruct(contract_address)`
@@ -535,7 +533,7 @@ contract HasNoEther is Ownable {
   }
 
   /**
-   * @dev Disallows direct send by settings a default function without the `payable` flag.
+   * @dev Disallows direct send by setting a default function without the `payable` flag.
    */
   function() external {
   }
@@ -576,6 +574,7 @@ interface ERC165 {
  * @dev Implements ERC165 using a lookup table.
  */
 contract SupportsInterfaceWithLookup is ERC165 {
+
   bytes4 public constant InterfaceId_ERC165 = 0x01ffc9a7;
   /**
    * 0x01ffc9a7 ===
@@ -626,6 +625,43 @@ contract SupportsInterfaceWithLookup is ERC165 {
  * @dev see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
  */
 contract ERC721Basic is ERC165 {
+
+  bytes4 internal constant InterfaceId_ERC721 = 0x80ac58cd;
+  /*
+   * 0x80ac58cd ===
+   *   bytes4(keccak256('balanceOf(address)')) ^
+   *   bytes4(keccak256('ownerOf(uint256)')) ^
+   *   bytes4(keccak256('approve(address,uint256)')) ^
+   *   bytes4(keccak256('getApproved(uint256)')) ^
+   *   bytes4(keccak256('setApprovalForAll(address,bool)')) ^
+   *   bytes4(keccak256('isApprovedForAll(address,address)')) ^
+   *   bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+   *   bytes4(keccak256('safeTransferFrom(address,address,uint256)')) ^
+   *   bytes4(keccak256('safeTransferFrom(address,address,uint256,bytes)'))
+   */
+
+  bytes4 internal constant InterfaceId_ERC721Exists = 0x4f558e79;
+  /*
+   * 0x4f558e79 ===
+   *   bytes4(keccak256('exists(uint256)'))
+   */
+
+  bytes4 internal constant InterfaceId_ERC721Enumerable = 0x780e9d63;
+  /**
+   * 0x780e9d63 ===
+   *   bytes4(keccak256('totalSupply()')) ^
+   *   bytes4(keccak256('tokenOfOwnerByIndex(address,uint256)')) ^
+   *   bytes4(keccak256('tokenByIndex(uint256)'))
+   */
+
+  bytes4 internal constant InterfaceId_ERC721Metadata = 0x5b5e139f;
+  /**
+   * 0x5b5e139f ===
+   *   bytes4(keccak256('name()')) ^
+   *   bytes4(keccak256('symbol()')) ^
+   *   bytes4(keccak256('tokenURI(uint256)'))
+   */
+
   event Transfer(
     address indexed _from,
     address indexed _to,
@@ -716,10 +752,10 @@ library AddressUtils {
    * Returns whether the target address is a contract
    * @dev This function will return false if invoked during the constructor of a contract,
    * as the code is not actually created until after the constructor finishes.
-   * @param addr address to check
+   * @param _addr address to check
    * @return whether the target address is a contract
    */
-  function isContract(address addr) internal view returns (bool) {
+  function isContract(address _addr) internal view returns (bool) {
     uint256 size;
     // XXX Currently there is no better way to check if there is a contract in an address
     // than to check the size of the code at that address.
@@ -728,7 +764,7 @@ library AddressUtils {
     // TODO Check this again before the Serenity release, because all addresses will be
     // contracts then.
     // solium-disable-next-line security/no-inline-assembly
-    assembly { size := extcodesize(addr) }
+    assembly { size := extcodesize(_addr) }
     return size > 0;
   }
 
@@ -753,12 +789,12 @@ contract ERC721Receiver {
    * @notice Handle the receipt of an NFT
    * @dev The ERC721 smart contract calls this function on the recipient
    * after a `safetransfer`. This function MAY throw to revert and reject the
-   * transfer. Return of other than the magic value MUST result in the 
+   * transfer. Return of other than the magic value MUST result in the
    * transaction being reverted.
    * Note: the contract address is always the message sender.
    * @param _operator The address which called `safeTransferFrom` function
    * @param _from The address which previously owned the token
-   * @param _tokenId The NFT identifier which is being transfered
+   * @param _tokenId The NFT identifier which is being transferred
    * @param _data Additional data with no specified format
    * @return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
    */
@@ -780,26 +816,6 @@ contract ERC721Receiver {
  */
 contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
 
-  bytes4 private constant InterfaceId_ERC721 = 0x80ac58cd;
-  /*
-   * 0x80ac58cd ===
-   *   bytes4(keccak256('balanceOf(address)')) ^
-   *   bytes4(keccak256('ownerOf(uint256)')) ^
-   *   bytes4(keccak256('approve(address,uint256)')) ^
-   *   bytes4(keccak256('getApproved(uint256)')) ^
-   *   bytes4(keccak256('setApprovalForAll(address,bool)')) ^
-   *   bytes4(keccak256('isApprovedForAll(address,address)')) ^
-   *   bytes4(keccak256('transferFrom(address,address,uint256)')) ^
-   *   bytes4(keccak256('safeTransferFrom(address,address,uint256)')) ^
-   *   bytes4(keccak256('safeTransferFrom(address,address,uint256,bytes)'))
-   */
-
-  bytes4 private constant InterfaceId_ERC721Exists = 0x4f558e79;
-  /*
-   * 0x4f558e79 ===
-   *   bytes4(keccak256('exists(uint256)'))
-   */
-
   using SafeMath for uint256;
   using AddressUtils for address;
 
@@ -818,24 +834,6 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
 
   // Mapping from owner to operator approvals
   mapping (address => mapping (address => bool)) internal operatorApprovals;
-
-  /**
-   * @dev Guarantees msg.sender is owner of the given token
-   * @param _tokenId uint256 ID of the token to validate its ownership belongs to msg.sender
-   */
-  modifier onlyOwnerOf(uint256 _tokenId) {
-    require(ownerOf(_tokenId) == msg.sender);
-    _;
-  }
-
-  /**
-   * @dev Checks msg.sender can transfer a token, by being owner, approved, or operator
-   * @param _tokenId uint256 ID of the token to validate
-   */
-  modifier canTransfer(uint256 _tokenId) {
-    require(isApprovedOrOwner(msg.sender, _tokenId));
-    _;
-  }
 
   constructor()
     public
@@ -945,8 +943,8 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
     uint256 _tokenId
   )
     public
-    canTransfer(_tokenId)
   {
+    require(isApprovedOrOwner(msg.sender, _tokenId));
     require(_from != address(0));
     require(_to != address(0));
 
@@ -975,7 +973,6 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
     uint256 _tokenId
   )
     public
-    canTransfer(_tokenId)
   {
     // solium-disable-next-line arg-overflow
     safeTransferFrom(_from, _to, _tokenId, "");
@@ -1000,7 +997,6 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
     bytes _data
   )
     public
-    canTransfer(_tokenId)
   {
     transferFrom(_from, _to, _tokenId);
     // solium-disable-next-line arg-overflow
@@ -1127,22 +1123,6 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
  * @dev see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
  */
 contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
-
-  bytes4 private constant InterfaceId_ERC721Enumerable = 0x780e9d63;
-  /**
-   * 0x780e9d63 ===
-   *   bytes4(keccak256('totalSupply()')) ^
-   *   bytes4(keccak256('tokenOfOwnerByIndex(address,uint256)')) ^
-   *   bytes4(keccak256('tokenByIndex(uint256)'))
-   */
-
-  bytes4 private constant InterfaceId_ERC721Metadata = 0x5b5e139f;
-  /**
-   * 0x5b5e139f ===
-   *   bytes4(keccak256('name()')) ^
-   *   bytes4(keccak256('symbol()')) ^
-   *   bytes4(keccak256('tokenURI(uint256)'))
-   */
 
   // Token name
   string internal name_;
@@ -1271,17 +1251,20 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
   function removeTokenFrom(address _from, uint256 _tokenId) internal {
     super.removeTokenFrom(_from, _tokenId);
 
+    // To prevent a gap in the array, we store the last token in the index of the token to delete, and
+    // then delete the last slot.
     uint256 tokenIndex = ownedTokensIndex[_tokenId];
     uint256 lastTokenIndex = ownedTokens[_from].length.sub(1);
     uint256 lastToken = ownedTokens[_from][lastTokenIndex];
 
     ownedTokens[_from][tokenIndex] = lastToken;
-    ownedTokens[_from][lastTokenIndex] = 0;
+    // This also deletes the contents at the last position of the array
+    ownedTokens[_from].length--;
+
     // Note that this will handle single-element arrays. In that case, both tokenIndex and lastTokenIndex are going to
     // be zero. Then we can make sure that we will remove _tokenId from the ownedTokens list since we are first swapping
     // the lastToken to the first position, and then dropping the element placed in the last position of the list
 
-    ownedTokens[_from].length--;
     ownedTokensIndex[_tokenId] = 0;
     ownedTokensIndex[lastToken] = tokenIndex;
   }
@@ -1352,14 +1335,16 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
 
 contract KnownOriginDigitalAssetV2 is
 ERC721Token,
-Whitelist,
-HasNoEther
+Whitelist, // TODO add tests for Whitelist
+HasNoEther // TODO add tests for HasNoEther
 {
-  // TODO is there a better way of doing this and is it correct?
   using SafeMath for uint256;
-  using SafeMath32 for uint32;
-  using SafeMath16 for uint16;
   using SafeMath8 for uint8;
+
+  struct CommissionSplit {
+    uint8 rate;
+    address recipient;
+  }
 
   uint32 constant internal MAX_UINT32 = ~uint32(0);
 
@@ -1378,13 +1363,15 @@ HasNoEther
   // the KO account which can receive commission
   address public koCommissionAccount;
 
+  // Optional commission split can be defined per edition
+  mapping(uint256 => CommissionSplit) editionNumberToOptionalCommissionSplit;
+
   // total wei been processed through the contract
   uint256 public totalPurchaseValueInWei;
 
   // number of assets sold of any type
   uint256 public totalNumberMinted;
 
-  // TODO add test for totalNumberAvailable
   // number of assets available of any type
   uint256 public totalNumberAvailable;
 
@@ -1395,16 +1382,17 @@ HasNoEther
     bytes32 editionData;      // some data about the edition
     uint8 editionType;        // e.g. 1 = KODA V1 physical, 2 = KODA V1 digital, 3 = KODA V2, 4 = KOTA
     // Config
-    uint32 auctionStartDate;
-    uint32 auctionEndDate;
-    address artistAccount;
-    uint8 artistCommission;
-    uint256 priceInWei;
+    uint32 auctionStartDate;  // date when the asset goes on sale
+    uint32 auctionEndDate;    // date when the asset is available until
+    address artistAccount;    // artists account
+    uint8 artistCommission;   // base commissions, could be overridden by parent contracts
+    uint256 priceInWei;       // base price for asset, could be overridden by parent contracts
     string tokenURI;          // IPFS Hash only
     // Counters
     uint8 minted;             // Total purchases/minted
     uint8 available;          // Number with edition
     bool active;              // root on/off edition control
+    // TODO add additional commission - how?
     // TODO add a new flag for active but not publicly on sale?
   }
 
@@ -1414,8 +1402,6 @@ HasNoEther
 
   mapping(uint256 => uint256[]) internal editionNumberToTokenIds;
   mapping(uint256 => uint256) internal editionNumberToTokenIdIndex;
-
-  // TODO should we allow edition data to be burnt vs setting inactive or lowering available?
 
   mapping(address => uint256[]) internal artistToEditionNumbers;
   mapping(uint256 => uint256) internal editionNumberToArtistIndex;
@@ -1438,6 +1424,11 @@ HasNoEther
 
   modifier onlyAvailableEdition(uint256 _editionNumber) {
     require(editionNumberToEditionDetails[_editionNumber].minted < editionNumberToEditionDetails[_editionNumber].available, "No more editions left to purchase");
+    _;
+  }
+
+  modifier onlyEditionsWithTokensAvailableToMint(uint256 _editionNumber) {
+    require(tokensOfEdition(_editionNumber).length != editionNumberToEditionDetails[_editionNumber].available, "No more editions left to mint");
     _;
   }
 
@@ -1468,7 +1459,38 @@ HasNoEther
     addAddressToWhitelist(msg.sender);
   }
 
-  // Called once per edition
+  function createActiveFullEdition(
+    uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
+    uint32 _auctionStartDate, uint32 _auctionEndDate,
+    address _artistAccount, uint8 _artistCommission,
+    uint256 _priceInWei, string _tokenURI,
+    uint8 _minted, uint8 _available
+  )
+  public
+  onlyKnownOrigin
+  returns (bool)
+  {
+    _createEdition(_editionNumber, _editionData, _editionType, _auctionStartDate, _auctionEndDate, _artistAccount, _artistCommission, _priceInWei, _tokenURI, _available, true);
+    updateMinted(_editionNumber, _minted);
+    return true;
+  }
+
+  function createDisabledFullEdition(
+    uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
+    uint32 _auctionStartDate, uint32 _auctionEndDate,
+    address _artistAccount, uint8 _artistCommission,
+    uint256 _priceInWei, string _tokenURI,
+    uint8 _minted, uint8 _available
+  )
+  public
+  onlyKnownOrigin
+  returns (bool)
+  {
+    _createEdition(_editionNumber, _editionData, _editionType, _auctionStartDate, _auctionEndDate, _artistAccount, _artistCommission, _priceInWei, _tokenURI, _available, false);
+    updateMinted(_editionNumber, _minted);
+    return true;
+  }
+
   function createEdition(
     uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
     uint32 _auctionStartDate, uint32 _auctionEndDate,
@@ -1500,7 +1522,7 @@ HasNoEther
     uint32 _auctionStartDate, uint32 _auctionEndDate,
     address _artistAccount, uint8 _artistCommission,
     uint256 _priceInWei, string _tokenURI,
-    uint8 _available, bool active
+    uint8 _available, bool _active
   )
   internal
   returns (bool)
@@ -1542,10 +1564,8 @@ HasNoEther
       tokenURI : _tokenURI,
       minted : 0, // default to all available
       available : _available,
-      active : active
+      active : _active
       });
-
-    // TODO how to handle an artists with multiple accounts i.e. CJ changed accounts between editions?
 
     // Add to total available count
     totalNumberAvailable = totalNumberAvailable.add(_available);
@@ -1598,35 +1618,74 @@ HasNoEther
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
     require(msg.value >= _editionDetails.priceInWei);
 
+    // Construct next token ID e.g. 100000 + 1 = ID of 100001 (this first in the edition set)
+    uint256 _tokenId = _nextTokenId(_editionNumber);
+
     // Create the token
-    uint256 _tokenId = _mintToken(_to, _editionNumber);
+    _mintToken(_to, _tokenId, _editionNumber);
 
     // Splice funds and handle commissions
     _handleFunds(_editionNumber);
 
-    // TODO should this event also be emitted for koMint() ?
     // Broadcast purchase
     emit Purchase(_tokenId, msg.value, _to);
 
     return _tokenId;
   }
 
-  // TODO do we need a mint with specific token ID?
-  // TODO do we need a mint but not up the minted number when doing the token swap?
+  function koMint(address _to, uint256 _editionNumber) public onlyKnownOrigin onlyValidEdition(_editionNumber) onlyAvailableEdition(_editionNumber) returns (uint256) {
+    // Construct next token ID e.g. 100000 + 1 = ID of 100001 (this first in the edition set)
+    uint256 _tokenId = _nextTokenId(_editionNumber);
 
-  function koMint(address _to, uint256 _editionNumber) public onlyKnownOrigin onlyValidEdition(_editionNumber) returns (uint256) {
-    return _mintToken(_to, _editionNumber);
+    // Create the token
+    _mintToken(_to, _tokenId, _editionNumber);
+
+    // Create the token
+    return _tokenId;
   }
 
-  function _mintToken(address _to, uint256 _editionNumber) internal returns (uint256) {
+  function koUnderMint(address _to, uint256 _editionNumber) public onlyKnownOrigin onlyValidEdition(_editionNumber) onlyEditionsWithTokensAvailableToMint(_editionNumber) returns (uint256) {
+    // Under mint token, meaning it takes one from the already sold version
+    uint256 _tokenId = _underMintNextTokenId(_editionNumber);
 
+    // Create the token
+    _mintToken(_to, _tokenId, _editionNumber);
+
+    // Create the token
+    return _tokenId;
+  }
+
+  function _nextTokenId(uint256 _editionNumber) internal returns (uint256) {
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
 
     // Bump number minted
     _editionDetails.minted = _editionDetails.minted.add(1);
 
     // Construct next token ID e.g. 100000 + 1 = ID of 100001 (this first in the edition set)
-    uint256 _tokenId = _editionDetails.editionNumber.add(_editionDetails.minted);
+    return _editionDetails.editionNumber.add(_editionDetails.minted);
+  }
+
+  function _underMintNextTokenId(uint256 _editionNumber) internal returns (uint256) {
+    EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
+
+    // For old editions start the counter as edition + 1
+    uint256 _tokenId = _editionDetails.editionNumber.add(1);
+
+    // Work your way up until you find a free token based on the new _tokenIdd
+    while (exists(_tokenId)) {
+      _tokenId = _tokenId.add(1);
+    }
+
+    // Bump number minted if we are now over minting new tokens
+    if (_tokenId > _editionDetails.editionNumber.add(_editionDetails.minted)) {
+      _editionDetails.minted = _editionDetails.minted.add(1);
+    }
+
+    return _tokenId;
+  }
+
+  function _mintToken(address _to, uint256 _tokenId, uint256 _editionNumber) internal {
+    EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
 
     // Mint new base token
     super._mint(_to, _tokenId);
@@ -1649,29 +1708,39 @@ HasNoEther
 
     // Emit minted event
     emit Minted(_tokenId, _editionNumber, _to);
-
-    return _tokenId;
   }
 
   function _handleFunds(uint256 _editionNumber) internal {
+
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
 
+    // Extract the artists commission and send it
     address artistsAccount = _editionDetails.artistAccount;
+    uint256 artistPayment = msg.value / 100 * _editionDetails.artistCommission;
+    if (artistPayment > 0) {
+      artistsAccount.transfer(artistPayment);
+    }
 
-    // Extract the artists commission and send them it
-    uint256 artistCommission = msg.value / 100 * _editionDetails.artistCommission;
-    artistsAccount.transfer(artistCommission);
+    // Load any commission overrides
+    CommissionSplit memory commission = editionNumberToOptionalCommissionSplit[_editionNumber];
+
+    // Apply optional commission structure
+    uint256 rateSplit = msg.value / 100 * commission.rate;
+    if (commission.rate > 0) {
+      commission.recipient.transfer(rateSplit);
+    }
 
     // Send remaining eth to KO
-    uint256 remainingCommission = msg.value - artistCommission;
+    uint256 remainingCommission = msg.value - artistPayment - rateSplit;
     koCommissionAccount.transfer(remainingCommission);
+
+    // TODO Send overspend back to caller or absorb?
 
     // Record wei sale value
     totalPurchaseValueInWei = totalPurchaseValueInWei.add(msg.value);
-
-    // TODO Send overspend back to caller or absorb?
   }
 
+  // TODO this needs lots of tests
   function burn(uint256 _tokenId) public {
     // TODO validation
 
@@ -1796,10 +1865,20 @@ HasNoEther
     _editionDetails.active = _active;
   }
 
+  function updateMinted(uint256 _editionNumber, uint8 _minted)
+  public
+  onlyKnownOrigin
+  onlyValidEdition(_editionNumber) {
+    require(tokensOfEdition(_editionNumber).length <= _minted, "Cant lower minted to below the number of tokens already in existence");
+    EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
+    _editionDetails.minted = _minted;
+  }
+
   function updateAvailable(uint256 _editionNumber, uint8 _available)
   external
   onlyKnownOrigin
-  onlyValidEdition(_editionNumber) {
+  onlyValidEdition(_editionNumber)
+  onlyEditionsWithTokensAvailableToMint(_editionNumber) {
     require(editionNumberToEditionDetails[_editionNumber].minted <= _available, "Unable to reduce available amount to the below the number minted");
 
     uint256 originalAvailability = editionNumberToEditionDetails[_editionNumber].available;
@@ -1830,6 +1909,20 @@ HasNoEther
     koCommissionAccount = _koCommissionAccount;
   }
 
+  function updateOptionalCommission(uint256 _editionNumber, uint8 _rate, address _recipient)
+  external
+  onlyKnownOrigin {
+    EditionDetails memory _editionDetails = editionNumberToEditionDetails[_editionNumber];
+    uint256 artistCommission = _editionDetails.artistCommission;
+
+    if (_rate > 0) {
+      require(_recipient != address(0), "Setting a rate must be accompanied by a valid address");
+    }
+    require(artistCommission.add(_rate) <= 100, "Cant set commission greater than 100%");
+
+    editionNumberToOptionalCommissionSplit[_editionNumber] = CommissionSplit({rate : _rate, recipient : _recipient});
+  }
+
   ///////////////////
   // Query Methods //
   ///////////////////
@@ -1851,6 +1944,16 @@ HasNoEther
   function tokensOfEdition(uint256 _editionNumber) public view returns (uint256[] _tokenIds) {
     return editionNumberToTokenIds[_editionNumber];
   }
+
+  function editionOptionalCommission(uint256 _editionNumber) public view returns (uint8 _rate, address _recipient) {
+    CommissionSplit memory commission = editionNumberToOptionalCommissionSplit[_editionNumber];
+    return (
+    commission.rate,
+    commission.recipient
+    );
+  }
+
+  // TODO confirm query methods are suitable for webapp and logic flow?
 
   function allEditionData(uint256 editionNumber)
   public view

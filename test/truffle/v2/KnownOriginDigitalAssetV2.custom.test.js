@@ -820,7 +820,7 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
 
     });
 
-    describe('handling of funds', async function () {
+    describe('handling of funds without optional commission', async function () {
       let originalAccount1Balance;
       let originalAccount2Balance;
       let originalKoAccountBalance;
@@ -858,12 +858,6 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         postKoAccountBalance = await web3.eth.getBalance(await this.token.koCommissionAccount());
         postArtistAccountBalance = await web3.eth.getBalance(artistAccount);
       });
-
-      async function getGasCosts(receipt) {
-        let tx = await web3.eth.getTransaction(receipt.tx);
-        let gasPrice = tx.gasPrice;
-        return gasPrice.mul(receipt.receipt.gasUsed);
-      }
 
       it('splits funds between artist and KO account', async function () {
         console.log(`GasUsed Account 1: ${account1GasFees}`);
@@ -1020,6 +1014,136 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         results[8].should.be.bignumber.equal(1);
       });
     });
+  });
+
+  describe('handling optional commission splits on purchase', async function () {
+
+    beforeEach(async function () {
+      await this.token.createEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistShare, edition1Price, editionTokenUri1, 3, {from: _owner});
+    });
+
+    describe('optional commissions are applied when found', async function () {
+
+      let originalAccount1Balance;
+      let originalKoAccountBalance;
+      let originalArtistAccountBalance;
+      let originalOptionalAccountBalance;
+
+      let postAccount1Balance;
+      let postKoAccountBalance;
+      let postArtistAccountBalance;
+      let postOptionalAccountBalance;
+
+      let receiptAccount1;
+      let account1GasFees;
+
+      let optionalAccount = account2;
+      let optionalRate = 5;
+
+      beforeEach(async function () {
+        await this.token.updateOptionalCommission(editionNumber1, optionalRate, optionalAccount, {from: _owner});
+      });
+
+      beforeEach(async function () {
+        // pre balances
+        originalAccount1Balance = await web3.eth.getBalance(account1);
+        originalOptionalAccountBalance = await web3.eth.getBalance(optionalAccount);
+        originalKoAccountBalance = await web3.eth.getBalance(await this.token.koCommissionAccount());
+        originalArtistAccountBalance = await web3.eth.getBalance(artistAccount);
+
+        // account 1 purchases edition 1
+        receiptAccount1 = await this.token.mint(editionNumber1, {from: account1, value: edition1Price});
+        account1GasFees = await getGasCosts(receiptAccount1);
+
+        // post balances
+        postAccount1Balance = await web3.eth.getBalance(account1);
+        postOptionalAccountBalance = await web3.eth.getBalance(optionalAccount);
+        postKoAccountBalance = await web3.eth.getBalance(await this.token.koCommissionAccount());
+        postArtistAccountBalance = await web3.eth.getBalance(artistAccount);
+      });
+
+      it('splits funds between artist, optional & KO account', async function () {
+        console.log(`GasUsed Account 1: ${account1GasFees}`);
+
+        // account 1 should be equal the cost of transaction, minus the edition cost
+        postAccount1Balance.should.be.bignumber.equal(
+          originalAccount1Balance.sub(
+            account1GasFees.add(edition1Price)
+          )
+        );
+
+        // ensure artists get the correct 76% commission
+        postArtistAccountBalance.should.be.bignumber.equal(
+          originalArtistAccountBalance.add(
+            edition1Price.dividedBy(100)
+              .times(76) // 24% goes to KO
+          )
+        );
+
+        // ensure optional account gets the correct 5% commission
+        postOptionalAccountBalance.should.be.bignumber.equal(
+          originalOptionalAccountBalance.add(
+            edition1Price.dividedBy(100)
+              .times(5) // 5% goes to optional account
+          )
+        );
+
+        // ensure KO gets a the correct cut
+        postKoAccountBalance.should.be.bignumber.equal(
+          originalKoAccountBalance.add(
+            edition1Price.dividedBy(100)
+              .times(100 - (76 + 5)) // 19% goes to KO
+          )
+        );
+      });
+
+    });
+
+    describe('commission can be updated', async function () {
+      beforeEach(async function () {
+        await this.token.updateOptionalCommission(editionNumber1, 5, account1, {from: _owner});
+      });
+
+      it('correct values are set', async function () {
+        let commission = await this.token.editionOptionalCommission(editionNumber1);
+        commission[0].should.be.bignumber.equal(5);
+        commission[1].should.be.equal(account1);
+      });
+    });
+
+    describe('validation', async function () {
+      it('should prevent setting commission rate without a valid address', async function () {
+        await assertRevert(this.token.updateOptionalCommission(editionNumber1, 1, ZERO_ADDRESS, {
+          from: _owner
+        }));
+      });
+
+      it('should prevent setting commission with more than 100%', async function () {
+        await assertRevert(this.token.updateOptionalCommission(editionNumber1, 25, account1, {
+          from: _owner
+        }));
+      });
+    });
+
+    describe('commission can be cleared', async function () {
+
+      beforeEach(async function () {
+        await this.token.updateOptionalCommission(editionNumber1, 5, account1, {from: _owner});
+      });
+
+      it('reset to zero', async function () {
+        let commission = await this.token.editionOptionalCommission(editionNumber1);
+        commission[0].should.be.bignumber.equal(5);
+        commission[1].should.be.equal(account1);
+
+        await this.token.updateOptionalCommission(editionNumber1, 0, ZERO_ADDRESS, {from: _owner});
+
+        commission = await this.token.editionOptionalCommission(editionNumber1);
+        commission[0].should.be.bignumber.equal(0);
+        commission[1].should.be.equal(ZERO_ADDRESS);
+      });
+    });
+
   });
 
   describe('koMint', async function () {
@@ -1402,5 +1526,11 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
   describe('burn', async function () {
     // FIXME
   });
+
+  async function getGasCosts(receipt) {
+    let tx = await web3.eth.getTransaction(receipt.tx);
+    let gasPrice = tx.gasPrice;
+    return gasPrice.mul(receipt.receipt.gasUsed);
+  }
 
 });

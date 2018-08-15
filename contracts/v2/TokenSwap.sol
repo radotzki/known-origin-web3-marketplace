@@ -12,13 +12,13 @@ contract KODAV1 {
 
   function isApprovedForAll(address _owner, address _operator) public view returns (bool);
 
-  function transferFrom(address _from, address _to, uint256 _tokenId);
+  function transferFrom(address _from, address _to, uint256 _tokenId) public;
 }
 
 contract KODAV2 {
-  function koUnderMint(address _to, uint256 _editionNumber) returns (uint256);
+  function koUnderMint(address _to, uint256 _editionNumber) public returns (uint256);
 
-  function editionExists(uint256 _editionNumber) returns (bool);
+  function editionExists(uint256 _editionNumber) public returns (bool);
 }
 
 contract KnownOriginV1TokenSwap is Ownable {
