@@ -116,11 +116,6 @@ Pausable
     _;
   }
 
-  modifier onlyEditionsWithTokensAvailableToMint(uint256 _editionNumber) {
-    require(tokensOfEdition(_editionNumber).length != editionNumberToEditionDetails[_editionNumber].totalAvailable, "No more editions left to mint");
-    _;
-  }
-
   modifier onlyActiveEdition(uint256 _editionNumber) {
     require(editionNumberToEditionDetails[_editionNumber].active, "Edition not active");
     _;
@@ -330,10 +325,15 @@ Pausable
   public
   onlyKnownOrigin
   onlyRealEdition(_editionNumber)
-  onlyEditionsWithTokensAvailableToMint(_editionNumber)
+    //  onlyAvailableEdition(_editionNumber)
   returns (uint256) {
     // Under mint token, meaning it takes one from the already sold version
     uint256 _tokenId = _underMintNextTokenId(_editionNumber);
+
+    // If the next tokenId generate is more than the available number, abort
+    if (_tokenId > _editionNumber.add(editionNumberToEditionDetails[_editionNumber].totalAvailable)) {
+      revert("Reached max tokenId, cannot under mint anymore");
+    }
 
     // Create the token
     _mintToken(_to, _tokenId, _editionNumber);
@@ -427,19 +427,21 @@ Pausable
     totalPurchaseValueInWei = totalPurchaseValueInWei.add(msg.value);
   }
 
-  function burn(uint256 _tokenId) public {
+  function burn(uint256 _tokenId)
+  public
+  onlyKnownOrigin {
 
     // Clear from parents
-    super._burn(msg.sender, _tokenId);
+    super._burn(ownerOf(_tokenId), _tokenId);
 
     // Get hold of the edition for cleanup
-    uint256 editionNumber = tokenIdToEditionNumber[_tokenId];
+    uint256 _editionNumber = tokenIdToEditionNumber[_tokenId];
 
     // Delete token ID mapping
     delete tokenIdToEditionNumber[_tokenId];
 
     // Delete tokens associated to the edition - this will leave a gap in the array of zero
-    uint256[] storage tokenIdsForEdition = editionNumberToTokenIds[editionNumber];
+    uint256[] storage tokenIdsForEdition = editionNumberToTokenIds[_editionNumber];
     uint256 editionTokenIdIndex = editionNumberToTokenIdIndex[_tokenId];
     delete tokenIdsForEdition[editionTokenIdIndex];
   }
@@ -544,8 +546,7 @@ Pausable
   function updateTotalAvailable(uint256 _editionNumber, uint8 _totalAvailable)
   external
   onlyKnownOrigin
-  onlyRealEdition(_editionNumber)
-  onlyEditionsWithTokensAvailableToMint(_editionNumber) {
+  onlyRealEdition(_editionNumber) {
     require(editionNumberToEditionDetails[_editionNumber].totalSupply <= _totalAvailable, "Unable to reduce available amount to the below the number totalSupply");
 
     uint256 originalAvailability = editionNumberToEditionDetails[_editionNumber].totalAvailable;
