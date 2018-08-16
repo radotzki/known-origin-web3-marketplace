@@ -21,6 +21,7 @@ contract('KnownOriginDigitalAssetV2 - custom', function (accounts) {
   const account2 = accounts[2];
   const account3 = accounts[4];
   const account4 = accounts[5];
+  const account5 = accounts[6];
 
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -556,7 +557,6 @@ contract('KnownOriginDigitalAssetV2 - custom', function (accounts) {
     });
 
     describe('editionOfTokenId', async function () {
-
       it('will return the correct edition ', async function () {
         let result1 = await this.token.editionOfTokenId(tokenId1);
         result1.should.be.bignumber.equal(editionNumber1);
@@ -570,13 +570,9 @@ contract('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         let result4 = await this.token.editionOfTokenId(tokenId4);
         result4.should.be.bignumber.equal(editionNumber2);
       });
-
-      // TODO test this after a burn
-
     });
 
     describe('tokenURI', async function () {
-
       it('will return the correct edition ', async function () {
         let result1 = await this.token.tokenURI(tokenId1);
         result1.should.be.equal(`${BASE_URI}${editionTokenUri1}`);
@@ -594,9 +590,6 @@ contract('KnownOriginDigitalAssetV2 - custom', function (accounts) {
       it('will revert when invalid token ID', async function () {
         await assertRevert(this.token.tokenURI(99));
       });
-
-      // TODO test this after a burn
-
     });
 
     describe('tokenURISafe', async function () {
@@ -619,8 +612,6 @@ contract('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         let result = await this.token.tokenURISafe(99);
         result.should.be.equal(`${BASE_URI}`);
       });
-
-      // TODO test this after a burn
 
     });
 
@@ -1481,10 +1472,6 @@ contract('KnownOriginDigitalAssetV2 - custom', function (accounts) {
       editionTotalSupply = await this.token.editionTotalSupply(editionNumber3);
       editionTotalSupply.should.be.bignumber.equal(minted + 2);
     });
-
-    // TODO tests for burning undermints
-    // TODO tests for updating undermints
-
   });
 
   describe('updateTotalSupply', async function () {
@@ -1577,12 +1564,227 @@ contract('KnownOriginDigitalAssetV2 - custom', function (accounts) {
       let totalNumberAvailable = await this.token.totalNumberAvailable();
       totalNumberAvailable.should.be.bignumber.equal(3 + 4);
     });
-
-    // TODO updated on burn
   });
 
   describe('burn', async function () {
-    // FIXME
+
+    describe('validation', async function () {
+      const unknownTokenId = 9999;
+      const tokenId = editionNumber1 + 1;
+
+      beforeEach(async function () {
+        // Create edition
+        await this.token.createActiveEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistShare, edition1Price, editionTokenUri1, 3, {from: _owner});
+
+        // Create token
+        await this.token.purchase(editionNumber1, {from: account3, value: edition1Price});
+
+        // Confirm the token is owned by the purchaser
+        let tokensOf = await this.token.tokensOf(account3);
+        tokensOf.map(e => e.toNumber()).should.be.deep.equal([tokenId]);
+      });
+
+      it('cant burn a token which does not exist', async function () {
+        await assertRevert(this.token.burn(unknownTokenId));
+      });
+
+      it('cant burn a token which is already burnt', async function () {
+        await this.token.burn(tokenId, {from: account3});
+        await assertRevert(this.token.burn(tokenId, {from: account3}));
+      });
+
+      it('cant burn a token which you dont own', async function () {
+        // Confirm another account cant burn it
+        await assertRevert(this.token.burn(tokenId, {from: account2}));
+      });
+
+      it('can burn token if you are the owner', async function () {
+        await this.token.burn(tokenId, {from: account3});
+      });
+    });
+
+    describe('once minted', async function () {
+
+      const edition1Available = 3;
+
+      const edition2Minted = 2;
+      const edition2Available = 4;
+      const editionType2 = 2;
+
+      const token1 = editionNumber1 + 1;
+      const token2 = editionNumber2 + edition2Minted + 1;
+      const token3 = editionNumber1 + 2;
+      const token4 = editionNumber2 + 1; // under minted
+
+      beforeEach(async function () {
+        // Create normal edition with no pre-minted (type 1)
+        await this.token.createActiveEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistShare, edition1Price, editionTokenUri1, edition1Available, {from: _owner});
+
+        // Create pre-minted edition (type 2)
+        await this.token.createActivePreMintedEdition(editionNumber2, editionData2, editionType2, 0, 0, artistAccount, artistShare, edition2Price, editionTokenUri2, edition2Minted, edition2Available, {from: _owner});
+      });
+
+      beforeEach(async function () {
+        // Mint token 1 - account 3
+        await this.token.purchase(editionNumber1, {from: account3, value: edition1Price});
+        let tokensOf = await this.token.tokensOf(account3);
+        tokensOf.map(e => e.toNumber()).should.be.deep.equal([token1]);
+
+        // Mint token 2 - account 2
+        await this.token.purchase(editionNumber2, {from: account2, value: edition2Price});
+        tokensOf = await this.token.tokensOf(account2);
+        tokensOf.map(e => e.toNumber()).should.be.deep.equal([token2]);
+
+        // Mint token 3 - account 1
+        await this.token.purchase(editionNumber1, {from: account1, value: edition1Price});
+        tokensOf = await this.token.tokensOf(account1);
+        tokensOf.map(e => e.toNumber()).should.be.deep.equal([token3]);
+
+        // Mint token 4 - account 3
+        await this.token.underMint(account3, editionNumber2, {from: _owner});
+        tokensOf = await this.token.tokensOf(account3);
+        tokensOf.map(e => e.toNumber()).should.be.deep.equal([token1, token4]);
+      });
+
+      describe('once burnt', async function () {
+
+        beforeEach(async function () {
+          // Burn two of the created tokens
+          await this.token.burn(token3, {from: account1});
+          await this.token.burn(token4, {from: account3});
+        });
+
+        it('tokensOfEdition leaves zero in place of burnt token', async function () {
+          let tokensOfEdition = await this.token.tokensOfEdition(editionNumber1);
+          tokensOfEdition.map(e => e.toNumber()).should.be.deep.equal([token1, 0]);
+
+          tokensOfEdition = await this.token.tokensOfEdition(editionNumber2);
+          tokensOfEdition.map(e => e.toNumber()).should.be.deep.equal([token2, 0]);
+        });
+
+        it('editionOfTokenId returns zero once burnt', async function () {
+          let editionOfTokenId = await this.token.editionOfTokenId(token3);
+          editionOfTokenId.should.be.bignumber.equal(0);
+
+          editionOfTokenId = await this.token.editionOfTokenId(token4);
+          editionOfTokenId.should.be.bignumber.equal(0);
+        });
+
+        it('totalNumberAvailable remains the same', async function () {
+          let totalNumberAvailable = await this.token.totalNumberAvailable();
+          totalNumberAvailable.should.be.bignumber.equal(edition1Available + edition2Available);
+        });
+
+        it('totalNumberMinted remains the same', async function () {
+          let totalNumberMinted = await this.token.totalNumberMinted();
+          totalNumberMinted.should.be.bignumber.equal(edition2Minted + 2); // + 2 as we minted 2 from edition 1
+        });
+
+        it('tokenURI throws as required by the spec', async function () {
+          await assertRevert(this.token.tokenURI(token3));
+        });
+
+        it('tokenURISafe returns only the base when token burnt', async function () {
+          let tokenURISafe = await this.token.tokenURISafe(token3);
+          tokenURISafe.should.be.equal(BASE_URI);
+        });
+
+        it('edition 1 - editionTotalAvailable remains the same after burnt', async function () {
+          let editionNumber1Available = await this.token.editionTotalAvailable(editionNumber1);
+          editionNumber1Available.should.be.bignumber.equal(edition1Available);
+        });
+
+        it('edition 2 - editionTotalAvailable remains the same after burnt', async function () {
+          let editionNumber2Available = await this.token.editionTotalAvailable(editionNumber2);
+          editionNumber2Available.should.be.bignumber.equal(edition2Available);
+        });
+
+        it('edition 1 - editionTotalSupply remains the same after burnt', async function () {
+          let editionNumber1TotalSupply = await this.token.editionTotalSupply(editionNumber1);
+          editionNumber1TotalSupply.should.be.bignumber.equal(2); // 2 tokens sold from edition 1
+        });
+
+        it('edition 2 - editionTotalSupply remains the same after burnt', async function () {
+          let editionNumber2TotalSupply = await this.token.editionTotalSupply(editionNumber2);
+          editionNumber2TotalSupply.should.be.bignumber.equal(edition2Minted + 1); // 1 under mint + 1 normal mint
+        });
+
+        it('edition 1 - totalRemaining remains the same after burnt', async function () {
+          let editionNumber1Remaining = await this.token.totalRemaining(editionNumber1);
+          editionNumber1Remaining.should.be.bignumber.equal(edition1Available - 2); // 2 tokens sold from edition 1
+        });
+
+        it('edition 2 - totalRemaining remains the same after burnt', async function () {
+          let editionNumber2Remaining = await this.token.totalRemaining(editionNumber2);
+          editionNumber2Remaining.should.be.bignumber.equal(edition2Available - edition2Minted - 1); // 1 under mint + 1 normal mint
+        });
+
+        it('edition 1 setup remains correct', async function () {
+          let edition = await this.token.allEditionData(editionNumber1);
+
+          web3.toAscii(edition[0]).replace(/\0/g, '').should.be.equal(editionData1); //_editionData
+          edition[1].should.be.bignumber.equal(editionType); //_editionType
+          edition[2].should.be.bignumber.equal(0); // _startDate
+          edition[3].should.be.bignumber.equal(MAX_UINT32); // _endDate
+          edition[4].should.be.equal(artistAccount); // _artistAccount
+          edition[5].should.be.bignumber.equal(artistShare); // _artistCommission
+          edition[6].should.be.bignumber.equal(edition1Price); // _priceInWei
+          edition[7].should.be.equal(`${BASE_URI}${editionTokenUri1}`); // _tokenURI
+          edition[8].should.be.bignumber.equal(2); // _minted
+          edition[9].should.be.bignumber.equal(edition1Available); // _available
+          edition[10].should.be.equal(true); // _active
+        });
+
+        it(`tokenIdentificationData reverts when burnt`, async function () {
+          [token4, token3].forEach(async function (token) {
+            await assertRevert(this.token.tokenIdentificationData(token));
+          });
+        });
+
+        it(`tokenEditionData reverts when burnt`, async function () {
+          [token4, token3].forEach(async function (token) {
+            await assertRevert(this.token.tokenEditionData(token));
+          });
+        });
+
+        it('purchaseDatesToken is cleared when burnt', async function () {
+          [token4, token3].forEach(async function (token) {
+            let result1 = await this.token.purchaseDatesToken(token);
+            result1.map(e => e.toNumber())
+              .should.be.deep.equal([0, 0]);
+          });
+        });
+
+        it('priceInWeiToken is cleared when burnt', async function () {
+          [token4, token3].forEach(async function (token) {
+            let result1 = await this.token.priceInWeiToken(token);
+            result1.should.be.bignumber.equal(0);
+          });
+        });
+
+        it('setTokenURI cant be changed once burnt', async function () {
+          await assertRevert(this.token.setTokenURI(token4, "123", {from: _owner}));
+        });
+
+      });
+
+      describe('once burnt undermint still works for edition with burnt token', async function () {
+
+        // TODO tests for burning undermints
+        // TODO tests for updating undermints
+
+      });
+
+      describe('once burnt normal mint still works for edition with burnt token', async function () {
+
+        // TODO tests for burning undermints
+        // TODO tests for updating undermints
+
+      });
+
+    });
+
+    // TODO tests for token swap after a burn
   });
 
   async function getGasCosts(receipt) {

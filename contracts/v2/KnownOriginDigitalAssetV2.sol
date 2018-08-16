@@ -40,10 +40,18 @@ Pausable
   ////////////////
 
   // Purchase events fire when publicly bought through mint/mintTo
-  event Purchase(uint256 indexed _tokenId, uint256 indexed _costInWei, address indexed _buyer);
+  event Purchase(
+    uint256 indexed _tokenId,
+    uint256 indexed _costInWei,
+    address indexed _buyer
+  );
 
-  // Mint always emitted even by koMint
-  event Minted(uint256 indexed _tokenId, uint256 indexed _editionNumber, address indexed _buyer);
+  // Mint always emitted
+  event Minted(
+    uint256 indexed _tokenId,
+    uint256 indexed _editionNumber,
+    address indexed _buyer
+  );
 
   string public tokenBaseURI = "https://ipfs.infura.io/ipfs/";
 
@@ -419,40 +427,20 @@ Pausable
     totalPurchaseValueInWei = totalPurchaseValueInWei.add(msg.value);
   }
 
-  // TODO this needs lots of tests
   function burn(uint256 _tokenId) public {
-    // TODO validation
 
-    require(exists(_tokenId));
-    require(ownerOf(_tokenId) == msg.sender);
-
-    // TODO ensure we can burn from other accounts/contracts?
+    // Clear from parents
     super._burn(msg.sender, _tokenId);
 
-    // TODO delete any token mappings
-
+    // Get hold of the edition for cleanup
     uint256 editionNumber = tokenIdToEditionNumber[_tokenId];
-    EditionDetails storage _editionDetails = editionNumberToEditionDetails[editionNumber];
-
-    // TODO if someone sells from can we re-mint another?
-    // TODO we could keep a burnt counter but this would be off if sent to zero address unless handled specially
-    // Remove one from the available count
-    _editionDetails.totalAvailable.sub(1);
-
-    // Remove one from the totalSupply list
-    _editionDetails.totalSupply.sub(1);
-
-    // Lower available count
-    totalNumberAvailable = totalNumberAvailable.sub(1);
 
     // Delete token ID mapping
     delete tokenIdToEditionNumber[_tokenId];
 
-    // Delete tokens associated to the edition
+    // Delete tokens associated to the edition - this will leave a gap in the array of zero
     uint256[] storage tokenIdsForEdition = editionNumberToTokenIds[editionNumber];
     uint256 editionTokenIdIndex = editionNumberToTokenIdIndex[_tokenId];
-
-    // this will leave a gap of ID zero which we can handle client side
     delete tokenIdsForEdition[editionTokenIdIndex];
   }
 
