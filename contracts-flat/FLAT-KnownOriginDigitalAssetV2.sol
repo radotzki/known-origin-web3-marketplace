@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 // File: contracts/Strings.sol
 
@@ -58,62 +58,6 @@ library Strings {
 
     // Byte values of string are the same
     return true;
-  }
-}
-
-// File: contracts/libs/SafeMath16.sol
-
-library SafeMath16 {
-  function mul(uint16 a, uint16 b) internal pure returns (uint16) {
-    if (a == 0) {
-      return 0;
-    }
-    uint16 c = a * b;
-    assert(c / a == b);
-    return c;
-  }
-  function div(uint16 a, uint16 b) internal pure returns (uint16) {
-    // assert(b > 0); // Solidity automatically throws when dividing by 0
-    uint16 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn’t hold
-    return c;
-  }
-  function sub(uint16 a, uint16 b) internal pure returns (uint16) {
-    assert(b <= a);
-    return a - b;
-  }
-  function add(uint16 a, uint16 b) internal pure returns (uint16) {
-    uint16 c = a + b;
-    assert(c >= a);
-    return c;
-  }
-}
-
-// File: contracts/libs/SafeMath32.sol
-
-library SafeMath32 {
-  function mul(uint32 a, uint32 b) internal pure returns (uint32) {
-    if (a == 0) {
-      return 0;
-    }
-    uint32 c = a * b;
-    assert(c / a == b);
-    return c;
-  }
-  function div(uint32 a, uint32 b) internal pure returns (uint32) {
-    // assert(b > 0); // Solidity automatically throws when dividing by 0
-    uint32 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn’t hold
-    return c;
-  }
-  function sub(uint32 a, uint32 b) internal pure returns (uint32) {
-    assert(b <= a);
-    return a - b;
-  }
-  function add(uint32 a, uint32 b) internal pure returns (uint32) {
-    uint32 c = a + b;
-    assert(c >= a);
-    return c;
   }
 }
 
@@ -453,6 +397,52 @@ contract Whitelist is Ownable, RBAC {
     }
   }
 
+}
+
+// File: openzeppelin-solidity/contracts/lifecycle/Pausable.sol
+
+/**
+ * @title Pausable
+ * @dev Base contract which allows children to implement an emergency stop mechanism.
+ */
+contract Pausable is Ownable {
+  event Pause();
+  event Unpause();
+
+  bool public paused = false;
+
+
+  /**
+   * @dev Modifier to make a function callable only when the contract is not paused.
+   */
+  modifier whenNotPaused() {
+    require(!paused);
+    _;
+  }
+
+  /**
+   * @dev Modifier to make a function callable only when the contract is paused.
+   */
+  modifier whenPaused() {
+    require(paused);
+    _;
+  }
+
+  /**
+   * @dev called by the owner to pause, triggers stopped state
+   */
+  function pause() public onlyOwner whenNotPaused {
+    paused = true;
+    emit Pause();
+  }
+
+  /**
+   * @dev called by the owner to unpause, returns to normal state
+   */
+  function unpause() public onlyOwner whenPaused {
+    paused = false;
+    emit Unpause();
+  }
 }
 
 // File: openzeppelin-solidity/contracts/math/SafeMath.sol
@@ -1313,16 +1303,17 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
 
 // File: contracts/v2/KnownOriginDigitalAssetV2.sol
 
-// allows for muti-address access
+// allows for multi-address access
 
 
-// prevents stuck ether for
+// prevents stuck ether
 
 
 // For safe maths operations
 
 
 
+// Pause purchasing only in case of emergency/migration
 
 
 // ERC721
@@ -1331,12 +1322,11 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
 // Utils only
 
 
-// TODO consider Pausable - stop open purchases?
-
 contract KnownOriginDigitalAssetV2 is
 ERC721Token,
-Whitelist, // TODO add tests for Whitelist
-HasNoEther // TODO add tests for HasNoEther
+Whitelist,
+HasNoEther,
+Pausable
 {
   using SafeMath for uint256;
   using SafeMath8 for uint8;
@@ -1353,10 +1343,18 @@ HasNoEther // TODO add tests for HasNoEther
   ////////////////
 
   // Purchase events fire when publicly bought through mint/mintTo
-  event Purchase(uint256 indexed _tokenId, uint256 indexed _costInWei, address indexed _buyer);
+  event Purchase(
+    uint256 indexed _tokenId,
+    uint256 indexed _costInWei,
+    address indexed _buyer
+  );
 
-  // Mint always emitted even by koMint
-  event Minted(uint256 indexed _tokenId, uint256 indexed _editionNumber, address indexed _buyer);
+  // Mint always emitted
+  event Minted(
+    uint256 indexed _tokenId,
+    uint256 indexed _editionNumber,
+    address indexed _buyer
+  );
 
   string public tokenBaseURI = "https://ipfs.infura.io/ipfs/";
 
@@ -1382,18 +1380,16 @@ HasNoEther // TODO add tests for HasNoEther
     bytes32 editionData;      // some data about the edition
     uint8 editionType;        // e.g. 1 = KODA V1 physical, 2 = KODA V1 digital, 3 = KODA V2, 4 = KOTA
     // Config
-    uint32 auctionStartDate;  // date when the asset goes on sale
-    uint32 auctionEndDate;    // date when the asset is available until
+    uint32 startDate;         // date when the asset goes on sale
+    uint32 endDate;           // date when the asset is available until
     address artistAccount;    // artists account
     uint8 artistCommission;   // base commissions, could be overridden by parent contracts
     uint256 priceInWei;       // base price for asset, could be overridden by parent contracts
     string tokenURI;          // IPFS Hash only
+    bool active;              // Root control - on/off for the edition
     // Counters
-    uint8 minted;             // Total purchases/minted
-    uint8 available;          // Number with edition
-    bool active;              // root on/off edition control
-    // TODO add additional commission - how?
-    // TODO add a new flag for active but not publicly on sale?
+    uint8 totalSupply;        // Total purchases/totalSupply
+    uint8 totalAvailable;     // Total number available to be purchased
   }
 
   mapping(uint256 => EditionDetails) internal editionNumberToEditionDetails;
@@ -1409,10 +1405,6 @@ HasNoEther // TODO add tests for HasNoEther
   mapping(uint8 => uint256[]) internal editionTypeToEditionNumber;
   mapping(uint256 => uint256) internal editionNumberToTypeIndex;
 
-  // TODO master list of editions - on creation? - how to handle edition burns/inactive?
-  // TODO master list of active editions - on creation and on toggle of active
-  // TODO master list of active by type
-
   ///////////////
   // Modifiers //
   ///////////////
@@ -1423,12 +1415,7 @@ HasNoEther // TODO add tests for HasNoEther
   }
 
   modifier onlyAvailableEdition(uint256 _editionNumber) {
-    require(editionNumberToEditionDetails[_editionNumber].minted < editionNumberToEditionDetails[_editionNumber].available, "No more editions left to purchase");
-    _;
-  }
-
-  modifier onlyEditionsWithTokensAvailableToMint(uint256 _editionNumber) {
-    require(tokensOfEdition(_editionNumber).length != editionNumberToEditionDetails[_editionNumber].available, "No more editions left to mint");
+    require(editionNumberToEditionDetails[_editionNumber].totalSupply < editionNumberToEditionDetails[_editionNumber].totalAvailable, "No more editions left to purchase");
     _;
   }
 
@@ -1437,92 +1424,91 @@ HasNoEther // TODO add tests for HasNoEther
     _;
   }
 
-  modifier onlyValidEdition(uint256 _editionNumber) {
-    // TODO this needs to change as we could set the available to zero - replace with better check
-    require(editionNumberToEditionDetails[_editionNumber].available > 0, "No more editions available to purchase");
+  modifier onlyRealEdition(uint256 _editionNumber) {
+    require(editionNumberToEditionDetails[_editionNumber].editionNumber > 0, "Edition number invalid");
     _;
   }
 
-  modifier onlyAfterPurchaseFromTime(uint256 _editionNumber) {
-    require(editionNumberToEditionDetails[_editionNumber].auctionStartDate >= block.timestamp, "Edition auction not started");
-    require(editionNumberToEditionDetails[_editionNumber].auctionEndDate <= block.timestamp, "Edition auction finished");
+  modifier onlyPurchaseDuringWindow(uint256 _editionNumber) {
+    require(editionNumberToEditionDetails[_editionNumber].startDate <= block.timestamp, "Edition not available yet");
+    require(editionNumberToEditionDetails[_editionNumber].endDate >= block.timestamp, "Edition no longer available");
     _;
   }
 
   /*
    * Constructor
    */
-  constructor () public ERC721Token("KnownOriginDigitalAsset", "KODA") {
+  constructor () public payable ERC721Token("KnownOriginDigitalAsset", "KODA") {
     // Assume the commission account is the creator for now
     koCommissionAccount = msg.sender;
     // Whitelist owner
     addAddressToWhitelist(msg.sender);
   }
 
-  function createActiveFullEdition(
+  function createActiveEdition(
     uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
-    uint32 _auctionStartDate, uint32 _auctionEndDate,
+    uint32 _startDate, uint32 _endDate,
     address _artistAccount, uint8 _artistCommission,
-    uint256 _priceInWei, string _tokenURI,
-    uint8 _minted, uint8 _available
+    uint256 _priceInWei, string _tokenURI, uint8 _totalAvailable
   )
   public
   onlyKnownOrigin
   returns (bool)
   {
-    _createEdition(_editionNumber, _editionData, _editionType, _auctionStartDate, _auctionEndDate, _artistAccount, _artistCommission, _priceInWei, _tokenURI, _available, true);
-    updateMinted(_editionNumber, _minted);
+    return _createEdition(_editionNumber, _editionData, _editionType, _startDate, _endDate, _artistAccount, _artistCommission, _priceInWei, _tokenURI, _totalAvailable, true);
+  }
+
+  function createInactiveEdition(
+    uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
+    uint32 _startDate, uint32 _endDate,
+    address _artistAccount, uint8 _artistCommission,
+    uint256 _priceInWei, string _tokenURI, uint8 _totalAvailable
+  )
+  public
+  onlyKnownOrigin
+  returns (bool)
+  {
+    return _createEdition(_editionNumber, _editionData, _editionType, _startDate, _endDate, _artistAccount, _artistCommission, _priceInWei, _tokenURI, _totalAvailable, false);
+  }
+
+  function createActivePreMintedEdition(
+    uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
+    uint32 _startDate, uint32 _endDate,
+    address _artistAccount, uint8 _artistCommission,
+    uint256 _priceInWei, string _tokenURI,
+    uint8 _totalSupply, uint8 _totalAvailable
+  )
+  public
+  onlyKnownOrigin
+  returns (bool)
+  {
+    _createEdition(_editionNumber, _editionData, _editionType, _startDate, _endDate, _artistAccount, _artistCommission, _priceInWei, _tokenURI, _totalAvailable, true);
+    updateTotalSupply(_editionNumber, _totalSupply);
     return true;
   }
 
-  function createDisabledFullEdition(
+  function createInactivePreMintedEdition(
     uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
-    uint32 _auctionStartDate, uint32 _auctionEndDate,
+    uint32 _startDate, uint32 _endDate,
     address _artistAccount, uint8 _artistCommission,
     uint256 _priceInWei, string _tokenURI,
-    uint8 _minted, uint8 _available
+    uint8 _totalSupply, uint8 _totalAvailable
   )
   public
   onlyKnownOrigin
   returns (bool)
   {
-    _createEdition(_editionNumber, _editionData, _editionType, _auctionStartDate, _auctionEndDate, _artistAccount, _artistCommission, _priceInWei, _tokenURI, _available, false);
-    updateMinted(_editionNumber, _minted);
+    _createEdition(_editionNumber, _editionData, _editionType, _startDate, _endDate, _artistAccount, _artistCommission, _priceInWei, _tokenURI, _totalAvailable, false);
+    updateTotalSupply(_editionNumber, _totalSupply);
     return true;
-  }
-
-  function createEdition(
-    uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
-    uint32 _auctionStartDate, uint32 _auctionEndDate,
-    address _artistAccount, uint8 _artistCommission,
-    uint256 _priceInWei, string _tokenURI, uint8 _available
-  )
-  public
-  onlyKnownOrigin
-  returns (bool)
-  {
-    return _createEdition(_editionNumber, _editionData, _editionType, _auctionStartDate, _auctionEndDate, _artistAccount, _artistCommission, _priceInWei, _tokenURI, _available, true);
-  }
-
-  function createDisabledEdition(
-    uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
-    uint32 _auctionStartDate, uint32 _auctionEndDate,
-    address _artistAccount, uint8 _artistCommission,
-    uint256 _priceInWei, string _tokenURI, uint8 _available
-  )
-  public
-  onlyKnownOrigin
-  returns (bool)
-  {
-    return _createEdition(_editionNumber, _editionData, _editionType, _auctionStartDate, _auctionEndDate, _artistAccount, _artistCommission, _priceInWei, _tokenURI, _available, false);
   }
 
   function _createEdition(
     uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
-    uint32 _auctionStartDate, uint32 _auctionEndDate,
+    uint32 _startDate, uint32 _endDate,
     address _artistAccount, uint8 _artistCommission,
     uint256 _priceInWei, string _tokenURI,
-    uint8 _available, bool _active
+    uint8 _totalAvailable, bool _active
   )
   internal
   returns (bool)
@@ -1540,79 +1526,68 @@ HasNoEther // TODO add tests for HasNoEther
     require(_artistAccount != address(0), "Artist account not provided");
 
     // Prevent commission of greater than 100% and less than 0%
-    require(_artistCommission <= 100, "Artist commission cannot be greater than 100");
-    require(_artistCommission >= 0, "Artist commission cannot be less than zero");
+    require(_artistCommission <= 100 && _artistCommission >= 0, "Artist commission cannot be greater than 100 or less than 0");
 
     // prevent duplicate editions
     require(editionNumberToEditionDetails[_editionNumber].editionNumber == 0, "Edition already in existence");
 
     // Default end date to max uint32
-    uint32 auctionEndDate = _auctionEndDate;
-    if (_auctionEndDate == 0) {
-      auctionEndDate = MAX_UINT32;
+    uint32 endDate = _endDate;
+    if (_endDate == 0) {
+      endDate = MAX_UINT32;
     }
 
     editionNumberToEditionDetails[_editionNumber] = EditionDetails({
       editionNumber : _editionNumber,
       editionData : _editionData,
       editionType : _editionType,
-      auctionStartDate : _auctionStartDate,
-      auctionEndDate : auctionEndDate,
+      startDate : _startDate,
+      endDate : endDate,
       artistAccount : _artistAccount,
       artistCommission : _artistCommission,
       priceInWei : _priceInWei,
       tokenURI : _tokenURI,
-      minted : 0, // default to all available
-      available : _available,
+      totalSupply : 0, // default to all available
+      totalAvailable : _totalAvailable,
       active : _active
       });
 
     // Add to total available count
-    totalNumberAvailable = totalNumberAvailable.add(_available);
+    totalNumberAvailable = totalNumberAvailable.add(_totalAvailable);
 
-    // Maintain two way mappings so we can query direct
-    // e.g.
-    // /tokenId - DONE
-    // /artist - DONE
-    // /type - DONE
-    // /editionNumber- DONE
-
-    _updateArtistLookData(_artistAccount, _editionNumber);
-    _updateEditionTypeLookData(_editionType, _editionNumber);
+    // Update mappings
+    _updateArtistLookupData(_artistAccount, _editionNumber);
+    _updateEditionTypeLookupData(_editionType, _editionNumber);
 
     return true;
   }
 
-  function _updateEditionTypeLookData(uint8 _editionType, uint256 _editionNumber) internal {
+  function _updateEditionTypeLookupData(uint8 _editionType, uint256 _editionNumber) internal {
     uint256 typeEditionIndex = editionTypeToEditionNumber[_editionType].length;
     editionTypeToEditionNumber[_editionType].push(_editionNumber);
     editionNumberToTypeIndex[_editionNumber] = typeEditionIndex;
   }
 
-  function _updateArtistLookData(address _artistAccount, uint256 _editionNumber) internal {
+  function _updateArtistLookupData(address _artistAccount, uint256 _editionNumber) internal {
     uint256 artistEditionIndex = artistToEditionNumbers[_artistAccount].length;
     artistToEditionNumbers[_artistAccount].push(_editionNumber);
     editionNumberToArtistIndex[_editionNumber] = artistEditionIndex;
   }
 
-  // This is the main purchase method
-  function mint(uint256 _editionNumber)
+  function purchase(uint256 _editionNumber)
   public payable
-  onlyAvailableEdition(_editionNumber)
-  onlyValidEdition(_editionNumber)
-  onlyActiveEdition(_editionNumber)
-    //  onlyAfterPurchaseFromTime(_editionNumber) // TODO this doesnt work
   returns (uint256)
   {
-    return mintTo(msg.sender, _editionNumber);
+    return purchaseTo(msg.sender, _editionNumber);
   }
 
-  function mintTo(address _to, uint256 _editionNumber)
+  function purchaseTo(address _to, uint256 _editionNumber)
   public payable
-  onlyAvailableEdition(_editionNumber)
-  onlyValidEdition(_editionNumber)
+  whenNotPaused
+  onlyRealEdition(_editionNumber)
   onlyActiveEdition(_editionNumber)
-    //  onlyAfterPurchaseFromTime(_editionNumber) // TODO this doesnt work
+  onlyAvailableEdition(_editionNumber)
+  onlyPurchaseDuringWindow(_editionNumber)
   returns (uint256) {
 
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
@@ -1633,7 +1608,12 @@ HasNoEther // TODO add tests for HasNoEther
     return _tokenId;
   }
 
-  function koMint(address _to, uint256 _editionNumber) public onlyKnownOrigin onlyValidEdition(_editionNumber) onlyAvailableEdition(_editionNumber) returns (uint256) {
+  function mint(address _to, uint256 _editionNumber)
+  public
+  onlyKnownOrigin
+  onlyRealEdition(_editionNumber)
+  onlyAvailableEdition(_editionNumber)
+  returns (uint256) {
     // Construct next token ID e.g. 100000 + 1 = ID of 100001 (this first in the edition set)
     uint256 _tokenId = _nextTokenId(_editionNumber);
 
@@ -1644,9 +1624,19 @@ HasNoEther // TODO add tests for HasNoEther
     return _tokenId;
   }
 
-  function koUnderMint(address _to, uint256 _editionNumber) public onlyKnownOrigin onlyValidEdition(_editionNumber) onlyEditionsWithTokensAvailableToMint(_editionNumber) returns (uint256) {
+  function underMint(address _to, uint256 _editionNumber)
+  public
+  onlyKnownOrigin
+  onlyRealEdition(_editionNumber)
+    //  onlyAvailableEdition(_editionNumber)
+  returns (uint256) {
     // Under mint token, meaning it takes one from the already sold version
     uint256 _tokenId = _underMintNextTokenId(_editionNumber);
+
+    // If the next tokenId generate is more than the available number, abort
+    if (_tokenId > _editionNumber.add(editionNumberToEditionDetails[_editionNumber].totalAvailable)) {
+      revert("Reached max tokenId, cannot under mint anymore");
+    }
 
     // Create the token
     _mintToken(_to, _tokenId, _editionNumber);
@@ -1658,11 +1648,11 @@ HasNoEther // TODO add tests for HasNoEther
   function _nextTokenId(uint256 _editionNumber) internal returns (uint256) {
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
 
-    // Bump number minted
-    _editionDetails.minted = _editionDetails.minted.add(1);
+    // Bump number totalSupply
+    _editionDetails.totalSupply = _editionDetails.totalSupply.add(1);
 
     // Construct next token ID e.g. 100000 + 1 = ID of 100001 (this first in the edition set)
-    return _editionDetails.editionNumber.add(_editionDetails.minted);
+    return _editionDetails.editionNumber.add(_editionDetails.totalSupply);
   }
 
   function _underMintNextTokenId(uint256 _editionNumber) internal returns (uint256) {
@@ -1676,9 +1666,9 @@ HasNoEther // TODO add tests for HasNoEther
       _tokenId = _tokenId.add(1);
     }
 
-    // Bump number minted if we are now over minting new tokens
-    if (_tokenId > _editionDetails.editionNumber.add(_editionDetails.minted)) {
-      _editionDetails.minted = _editionDetails.minted.add(1);
+    // Bump number totalSupply if we are now over minting new tokens
+    if (_tokenId > _editionDetails.editionNumber.add(_editionDetails.totalSupply)) {
+      _editionDetails.totalSupply = _editionDetails.totalSupply.add(1);
     }
 
     return _tokenId;
@@ -1740,40 +1730,22 @@ HasNoEther // TODO add tests for HasNoEther
     totalPurchaseValueInWei = totalPurchaseValueInWei.add(msg.value);
   }
 
-  // TODO this needs lots of tests
-  function burn(uint256 _tokenId) public {
-    // TODO validation
+  function burn(uint256 _tokenId)
+  public
+  onlyKnownOrigin {
 
-    require(exists(_tokenId));
-    require(ownerOf(_tokenId) == msg.sender);
+    // Clear from parents
+    super._burn(ownerOf(_tokenId), _tokenId);
 
-    // TODO ensure we can burn from other accounts/contracts?
-    super._burn(msg.sender, _tokenId);
-
-    // TODO delete any token mappings
-
-    uint256 editionNumber = tokenIdToEditionNumber[_tokenId];
-    EditionDetails storage _editionDetails = editionNumberToEditionDetails[editionNumber];
-
-    // TODO if someone sells from can we re-mint another?
-    // TODO we could keep a burnt counter but this would be off if sent to zero address unless handled specially
-    // Remove one from the available count
-    _editionDetails.available.sub(1);
-
-    // Remove one from the minted list
-    _editionDetails.minted.sub(1);
-
-    // Lower available count
-    totalNumberAvailable = totalNumberAvailable.sub(1);
+    // Get hold of the edition for cleanup
+    uint256 _editionNumber = tokenIdToEditionNumber[_tokenId];
 
     // Delete token ID mapping
     delete tokenIdToEditionNumber[_tokenId];
 
-    // Delete tokens associated to the edition
-    uint256[] storage tokenIdsForEdition = editionNumberToTokenIds[editionNumber];
+    // Delete tokens associated to the edition - this will leave a gap in the array of zero
+    uint256[] storage tokenIdsForEdition = editionNumberToTokenIds[_editionNumber];
     uint256 editionTokenIdIndex = editionNumberToTokenIdIndex[_tokenId];
-
-    // this will leave a gap of ID zero which we can handle client side
     delete tokenIdsForEdition[editionTokenIdIndex];
   }
 
@@ -1798,21 +1770,21 @@ HasNoEther // TODO add tests for HasNoEther
   function updateEditionTokenURI(uint256 _editionNumber, string _uri)
   external
   onlyKnownOrigin
-  onlyValidEdition(_editionNumber) {
+  onlyRealEdition(_editionNumber) {
     editionNumberToEditionDetails[_editionNumber].tokenURI = _uri;
   }
 
   function updatePriceInWei(uint256 _editionNumber, uint256 _priceInWei)
   external
   onlyKnownOrigin
-  onlyValidEdition(_editionNumber) {
+  onlyRealEdition(_editionNumber) {
     editionNumberToEditionDetails[_editionNumber].priceInWei = _priceInWei;
   }
 
   function updateArtistsAccount(uint256 _editionNumber, address _artistAccount)
   external
   onlyKnownOrigin
-  onlyValidEdition(_editionNumber) {
+  onlyRealEdition(_editionNumber) {
 
     EditionDetails storage _originalEditionDetails = editionNumberToEditionDetails[_editionNumber];
 
@@ -1836,7 +1808,7 @@ HasNoEther // TODO add tests for HasNoEther
   function updateEditionType(uint256 _editionNumber, uint8 _editionType)
   external
   onlyKnownOrigin
-  onlyValidEdition(_editionNumber) {
+  onlyRealEdition(_editionNumber) {
 
     EditionDetails storage _originalEditionDetails = editionNumberToEditionDetails[_editionNumber];
 
@@ -1860,46 +1832,45 @@ HasNoEther // TODO add tests for HasNoEther
   function updateActive(uint256 _editionNumber, bool _active)
   external
   onlyKnownOrigin
-  onlyValidEdition(_editionNumber) {
+  onlyRealEdition(_editionNumber) {
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
     _editionDetails.active = _active;
   }
 
-  function updateMinted(uint256 _editionNumber, uint8 _minted)
+  function updateTotalSupply(uint256 _editionNumber, uint8 _totalSupply)
   public
   onlyKnownOrigin
-  onlyValidEdition(_editionNumber) {
-    require(tokensOfEdition(_editionNumber).length <= _minted, "Cant lower minted to below the number of tokens already in existence");
+  onlyRealEdition(_editionNumber) {
+    require(tokensOfEdition(_editionNumber).length <= _totalSupply, "Cant lower totalSupply to below the number of tokens already in existence");
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
-    _editionDetails.minted = _minted;
+    _editionDetails.totalSupply = _totalSupply;
   }
 
-  function updateAvailable(uint256 _editionNumber, uint8 _available)
+  function updateTotalAvailable(uint256 _editionNumber, uint8 _totalAvailable)
   external
   onlyKnownOrigin
-  onlyValidEdition(_editionNumber)
-  onlyEditionsWithTokensAvailableToMint(_editionNumber) {
-    require(editionNumberToEditionDetails[_editionNumber].minted <= _available, "Unable to reduce available amount to the below the number minted");
+  onlyRealEdition(_editionNumber) {
+    require(editionNumberToEditionDetails[_editionNumber].totalSupply <= _totalAvailable, "Unable to reduce available amount to the below the number totalSupply");
 
-    uint256 originalAvailability = editionNumberToEditionDetails[_editionNumber].available;
+    uint256 originalAvailability = editionNumberToEditionDetails[_editionNumber].totalAvailable;
 
-    editionNumberToEditionDetails[_editionNumber].available = _available;
+    editionNumberToEditionDetails[_editionNumber].totalAvailable = _totalAvailable;
 
-    totalNumberAvailable = totalNumberAvailable.sub(originalAvailability).add(_available);
+    totalNumberAvailable = totalNumberAvailable.sub(originalAvailability).add(_totalAvailable);
   }
 
-  function updateAuctionStartDate(uint256 _editionNumber, uint32 _auctionStartDate)
+  function updateStartDate(uint256 _editionNumber, uint32 _startDate)
   external
   onlyKnownOrigin
-  onlyValidEdition(_editionNumber) {
-    editionNumberToEditionDetails[_editionNumber].auctionStartDate = _auctionStartDate;
+  onlyRealEdition(_editionNumber) {
+    editionNumberToEditionDetails[_editionNumber].startDate = _startDate;
   }
 
-  function updateAuctionEndDate(uint256 _editionNumber, uint32 _auctionEndDate)
+  function updateEndDate(uint256 _editionNumber, uint32 _endDate)
   external
   onlyKnownOrigin
-  onlyValidEdition(_editionNumber) {
-    editionNumberToEditionDetails[_editionNumber].auctionEndDate = _auctionEndDate;
+  onlyRealEdition(_editionNumber) {
+    editionNumberToEditionDetails[_editionNumber].endDate = _endDate;
   }
 
   function updateKoCommissionAccount(address _koCommissionAccount)
@@ -1927,13 +1898,11 @@ HasNoEther // TODO add tests for HasNoEther
   // Query Methods //
   ///////////////////
 
-  // TODO rename
-  function editionsForType(uint8 _type) public view returns (uint256[] _editionNumbers) {
+  function editionsOfType(uint8 _type) public view returns (uint256[] _editionNumbers) {
     return editionTypeToEditionNumber[_type];
   }
 
-  // TODO rename
-  function tokenIdEditionNumber(uint256 _tokenId) public view returns (uint256 _editionNumber) {
+  function editionOfTokenId(uint256 _tokenId) public view returns (uint256 _editionNumber) {
     return tokenIdToEditionNumber[_tokenId];
   }
 
@@ -1957,32 +1926,32 @@ HasNoEther // TODO add tests for HasNoEther
 
   function allEditionData(uint256 editionNumber)
   public view
-  onlyValidEdition(editionNumber)
+  onlyRealEdition(editionNumber)
   returns (
     bytes32 _editionData,
     uint8 _editionType,
-    uint32 _auctionStartDate,
-    uint32 _auctionEndDate,
+    uint32 _startDate,
+    uint32 _endDate,
     address _artistAccount,
     address _artistCommission,
     uint256 _priceInWei,
     string _tokenURI,
-    uint8 _minted,
-    uint8 _available,
+    uint8 _totalSupply,
+    uint8 _totalAvailable,
     bool _active
   ) {
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[editionNumber];
     return (
     _editionDetails.editionData,
     _editionDetails.editionType,
-    _editionDetails.auctionStartDate,
-    _editionDetails.auctionEndDate,
+    _editionDetails.startDate,
+    _editionDetails.endDate,
     _editionDetails.artistAccount,
     _editionDetails.artistCommission,
     _editionDetails.priceInWei,
     Strings.strConcat(tokenBaseURI, _editionDetails.tokenURI),
-    _editionDetails.minted,
-    _editionDetails.available,
+    _editionDetails.totalSupply,
+    _editionDetails.totalAvailable,
     _editionDetails.active
     );
   }
@@ -2009,13 +1978,13 @@ HasNoEther // TODO add tests for HasNoEther
   function tokenEditionData(uint256 _tokenId) public view returns (
     uint256 _editionNumber,
     uint8 _editionType,
-    uint32 _auctionStartDate,
-    uint32 _auctionEndDate,
+    uint32 _startDate,
+    uint32 _endDate,
     address _artistAccount,
     uint8 _artistCommission,
     uint256 _priceInWei,
-    uint256 _available,
-    uint256 _minted
+    uint256 _totalAvailable,
+    uint256 _totalSupply
   ) {
     require(exists(_tokenId));
     uint256 editionNumber = tokenIdToEditionNumber[_tokenId];
@@ -2024,33 +1993,33 @@ HasNoEther // TODO add tests for HasNoEther
 
   function editionData(uint256 editionNumber)
   public view
-  onlyValidEdition(editionNumber)
+  onlyRealEdition(editionNumber)
   returns (
     uint256 _editionNumber,
     uint8 _editionType,
-    uint32 _auctionStartDate,
-    uint32 _auctionEndDate,
+    uint32 _startDate,
+    uint32 _endDate,
     address _artistAccount,
     uint8 _artistCommission,
     uint256 _priceInWei,
-    uint256 _available,
-    uint256 _minted
+    uint256 _totalAvailable,
+    uint256 _totalSupply
   ) {
     EditionDetails memory editionDetails = editionNumberToEditionDetails[editionNumber];
     return (
     editionNumber,
     editionDetails.editionType,
-    editionDetails.auctionStartDate,
-    editionDetails.auctionEndDate,
+    editionDetails.startDate,
+    editionDetails.endDate,
     editionDetails.artistAccount,
     editionDetails.artistCommission,
     editionDetails.priceInWei,
-    editionDetails.available,
-    editionDetails.minted
+    editionDetails.totalAvailable,
+    editionDetails.totalSupply
     );
   }
 
-  function editionExists(uint256 _editionNumber) returns (bool) {
+  function editionExists(uint256 _editionNumber) public view returns (bool) {
     EditionDetails memory editionNumber = editionNumberToEditionDetails[_editionNumber];
     return editionNumber.editionNumber == _editionNumber;
   }
@@ -2075,19 +2044,19 @@ HasNoEther // TODO add tests for HasNoEther
     return ownedTokens[_owner];
   }
 
-  function numberAvailable(uint256 _editionNumber) public view returns (uint256) {
+  function editionTotalAvailable(uint256 _editionNumber) public view returns (uint256) {
     EditionDetails memory _editionDetails = editionNumberToEditionDetails[_editionNumber];
-    return _editionDetails.available;
+    return _editionDetails.totalAvailable;
   }
 
-  function numberMinted(uint256 _editionNumber) public view returns (uint256) {
+  function editionTotalSupply(uint256 _editionNumber) public view returns (uint256) {
     EditionDetails memory _editionDetails = editionNumberToEditionDetails[_editionNumber];
-    return _editionDetails.minted;
+    return _editionDetails.totalSupply;
   }
 
   function totalRemaining(uint256 _editionNumber) public view returns (uint256) {
     EditionDetails memory _editionDetails = editionNumberToEditionDetails[_editionNumber];
-    return _editionDetails.available.sub(_editionDetails.minted);
+    return _editionDetails.totalAvailable.sub(_editionDetails.totalSupply);
   }
 
   function editionActive(uint256 _editionNumber) public view returns (bool) {
@@ -2095,16 +2064,16 @@ HasNoEther // TODO add tests for HasNoEther
     return _editionDetails.active;
   }
 
-  function purchaseDatesToken(uint256 _tokenId) public view returns (uint32 _auctionStartDate, uint32 _auctionEndDate) {
+  function purchaseDatesToken(uint256 _tokenId) public view returns (uint32 _startDate, uint32 _endDate) {
     uint256 _editionNumber = tokenIdToEditionNumber[_tokenId];
     return purchaseDatesEdition(_editionNumber);
   }
 
-  function purchaseDatesEdition(uint256 _editionNumber) public view returns (uint32 _auctionStartDate, uint32 _auctionEndDate) {
+  function purchaseDatesEdition(uint256 _editionNumber) public view returns (uint32 _startDate, uint32 _endDate) {
     EditionDetails memory _editionDetails = editionNumberToEditionDetails[_editionNumber];
     return (
-    _editionDetails.auctionStartDate,
-    _editionDetails.auctionEndDate
+    _editionDetails.startDate,
+    _editionDetails.endDate
     );
   }
 
