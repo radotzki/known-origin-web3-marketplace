@@ -49,8 +49,8 @@ Pausable
   // Emitted on every edition created
   event EditionCreated(
     uint256 indexed _editionNumber,
-    bytes32 indexed editionData,
-    uint8 indexed editionType
+    bytes32 indexed _editionData,
+    uint8 indexed _editionType
   );
 
   ////////////////
@@ -268,7 +268,6 @@ Pausable
     _updateArtistLookupData(_artistAccount, _editionNumber);
     _updateEditionTypeLookupData(_editionType, _editionNumber);
 
-    // TODO add test
     emit EditionCreated(_editionNumber, _editionData, _editionType);
 
     return true;
@@ -458,14 +457,20 @@ Pausable
     delete tokenIdsForEdition[editionTokenIdIndex];
   }
 
-  // TODO add test
+  /*
+   * An extension to the default ERC721 behaviour, derived from ERC-875.
+   * Allowing for batch transfers from the sender, will fail if from does not own all the tokens
+   */
   function batchTransfer(address _to, uint256[] _tokenIds) public {
     for (uint i = 0; i < _tokenIds.length; i++) {
-      safeTransferFrom(msg.sender, _to, _tokenIds[i]);
+      safeTransferFrom(ownerOf(_tokenIds[i]), _to, _tokenIds[i]);
     }
   }
 
-  // TODO add test
+  /*
+   * An extension to the default ERC721 behaviour, derived from ERC-875.
+   * Allowing for batch transfers from the provided address, will fail if from does not own all the tokens
+   */
   function batchTransferFrom(address _from, address _to, uint256[] _tokenIds) public {
     for (uint i = 0; i < _tokenIds.length; i++) {
       transferFrom(_from, _to, _tokenIds[i]);
@@ -645,8 +650,6 @@ Pausable
     );
   }
 
-  // TODO confirm query methods are suitable for webapp and logic flow?
-
   function allEditionData(uint256 editionNumber)
   public view
   onlyRealEdition(editionNumber)
@@ -765,10 +768,6 @@ Pausable
 
   function tokensOf(address _owner) public view returns (uint256[] _tokenIds) {
     return ownedTokens[_owner];
-  }
-
-  function exists(uint256 _tokenId) public view returns (bool) {
-    return super._exists(_tokenId);
   }
 
   function editionTotalAvailable(uint256 _editionNumber) public view returns (uint256) {

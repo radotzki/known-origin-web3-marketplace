@@ -97,9 +97,14 @@ contract('KnownOriginDigitalAssetV2 - custom', function (accounts) {
 
   describe('edition setup and control', async function () {
 
+    let logs1;
+    let logs2;
+
     beforeEach(async function () {
-      await this.token.createActiveEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistShare, edition1Price, editionTokenUri1, 3, {from: _owner});
-      await this.token.createActiveEdition(editionNumber2, editionData2, editionType, 0, 0, artistAccount, artistShare, edition2Price, editionTokenUri2, 4, {from: _owner});
+      let {logs: edition1Logs} = await this.token.createActiveEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistShare, edition1Price, editionTokenUri1, 3, {from: _owner});
+      logs1 = edition1Logs;
+      let {logs: edition2Logs} = await this.token.createActiveEdition(editionNumber2, editionData2, editionType, 0, 0, artistAccount, artistShare, edition2Price, editionTokenUri2, 4, {from: _owner});
+      logs2 = edition2Logs;
     });
 
     describe('checking raw edition data on creation', function () {
@@ -515,6 +520,27 @@ contract('KnownOriginDigitalAssetV2 - custom', function (accounts) {
             this.token.createInactiveEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistShare, edition1Price, editionTokenUri1, 3, {from: _owner})
           );
         });
+      });
+    });
+
+    describe('edition event emitted', async function () {
+
+      it('edition 1 creation event', async function () {
+        logs1.length.should.be.equal(1);
+        logs1[0].event.should.be.equal('EditionCreated');
+
+        logs1[0].args._editionNumber.should.be.bignumber.equal(editionNumber1);
+        web3.toAscii(logs1[0].args._editionData).replace(/\0/g, '').should.be.equal(editionData1);
+        logs1[0].args._editionType.should.be.bignumber.equal(editionType);
+      });
+
+      it('edition 2 creation event', async function () {
+        logs2.length.should.be.equal(1);
+        logs2[0].event.should.be.equal('EditionCreated');
+
+        logs2[0].args._editionNumber.should.be.bignumber.equal(editionNumber2);
+        web3.toAscii(logs2[0].args._editionData).replace(/\0/g, '').should.be.equal(editionData2);
+        logs2[0].args._editionType.should.be.bignumber.equal(editionType);
       });
     });
   });
@@ -1842,6 +1868,150 @@ contract('KnownOriginDigitalAssetV2 - custom', function (accounts) {
     });
 
     // TODO tests for token swap after a burn
+  });
+
+  describe('batchTransfer', async function () {
+
+    const _100001 = editionNumber1 + 1;
+    const _100002 = editionNumber1 + 2;
+    const _100003 = editionNumber1 + 3;
+
+    beforeEach(async function () {
+      await this.token.createActiveEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistShare, edition1Price, editionTokenUri1, 3, {from: _owner});
+
+      // Account2 owns first 2 tokens
+      await this.token.purchase(editionNumber1, {from: account2, value: edition1Price});
+      await this.token.purchase(editionNumber1, {from: account2, value: edition1Price});
+
+      // Account3 owns the last one
+      await this.token.purchase(editionNumber1, {from: account3, value: edition1Price});
+    });
+
+    it('should transfer all tokens defined', async function () {
+      let tokensOf = await this.token.tokensOf(account2);
+      tokensOf.map(e => e.toNumber())
+        .should.be.deep.equal([_100001, _100002]);
+
+      await this.token.batchTransfer(account4, [_100001, _100002], {from: account2});
+
+      // Check account 2 no longer owns them
+      tokensOf = await this.token.tokensOf(account2);
+      tokensOf.map(e => e.toNumber())
+        .should.be.deep.equal([]);
+
+      // Check account 4 now owns them
+      tokensOf = await this.token.tokensOf(account4);
+      tokensOf.map(e => e.toNumber())
+        .should.be.deep.equal([_100001, _100002]);
+    });
+
+    it('should fail if one of the tokens is not owner by the caller', async function () {
+      await assertRevert(this.token.batchTransfer(account4, [_100001, _100003], {from: account2}));
+
+      // confirm account2 still owns both
+      let tokensOf = await this.token.tokensOf(account2);
+      tokensOf.map(e => e.toNumber())
+        .should.be.deep.equal([_100001, _100002]);
+
+      // Check account 4 does not own any
+      tokensOf = await this.token.tokensOf(account4);
+      tokensOf.map(e => e.toNumber())
+        .should.be.deep.equal([]);
+    });
+
+    it('should allow transfer to someone from approved account even if they dont own them', async function () {
+      // Fails
+      await assertRevert(this.token.batchTransfer(account4, [_100001, _100002], {from: account3}));
+
+      // Approve account 3 to move them
+      await this.token.setApprovalForAll(account3, true, {from: account2});
+
+      // Try again
+      await this.token.batchTransfer(account4, [_100001, _100002], {from: account3});
+
+      // Check account 2 no longer owns them
+      let tokensOf = await this.token.tokensOf(account2);
+      tokensOf.map(e => e.toNumber())
+        .should.be.deep.equal([]);
+
+      // Check account 4 now owns them
+      tokensOf = await this.token.tokensOf(account4);
+      tokensOf.map(e => e.toNumber())
+        .should.be.deep.equal([_100001, _100002]);
+    });
+
+  });
+
+  describe('batchTransferFrom', async function () {
+
+    const _100001 = editionNumber1 + 1;
+    const _100002 = editionNumber1 + 2;
+    const _100003 = editionNumber1 + 3;
+
+    beforeEach(async function () {
+      await this.token.createActiveEdition(editionNumber1, editionData1, editionType, 0, 0, artistAccount, artistShare, edition1Price, editionTokenUri1, 3, {from: _owner});
+
+      // Account2 owns first 2 tokens
+      await this.token.purchase(editionNumber1, {from: account2, value: edition1Price});
+      await this.token.purchase(editionNumber1, {from: account2, value: edition1Price});
+
+      // Account3 owns the last one
+      await this.token.purchase(editionNumber1, {from: account3, value: edition1Price});
+    });
+
+    it('should transfer all tokens defined', async function () {
+      let tokensOf = await this.token.tokensOf(account2);
+      tokensOf.map(e => e.toNumber())
+        .should.be.deep.equal([_100001, _100002]);
+
+      await this.token.batchTransferFrom(account2, account4, [_100001, _100002], {from: account2});
+
+      // Check account 2 no longer owns them
+      tokensOf = await this.token.tokensOf(account2);
+      tokensOf.map(e => e.toNumber())
+        .should.be.deep.equal([]);
+
+      // Check account 4 now owns them
+      tokensOf = await this.token.tokensOf(account4);
+      tokensOf.map(e => e.toNumber())
+        .should.be.deep.equal([_100001, _100002]);
+    });
+
+    it('should fail if one of the tokens is not owner by the caller', async function () {
+      await assertRevert(this.token.batchTransferFrom(account2, account4, [_100001, _100003], {from: account2}));
+
+      // confirm account2 still owns both
+      let tokensOf = await this.token.tokensOf(account2);
+      tokensOf.map(e => e.toNumber())
+        .should.be.deep.equal([_100001, _100002]);
+
+      // Check account 4 does not own any
+      tokensOf = await this.token.tokensOf(account4);
+      tokensOf.map(e => e.toNumber())
+        .should.be.deep.equal([]);
+    });
+
+    it('should allow transfer to someone from approved account even if they dont own them', async function () {
+      // Fails
+      await assertRevert(this.token.batchTransferFrom(account2, account4, [_100001, _100002], {from: account3}));
+
+      // Approve account 3 to move them
+      await this.token.setApprovalForAll(account3, true, {from: account2});
+
+      // Try again
+      await this.token.batchTransferFrom(account2, account4, [_100001, _100002], {from: account3});
+
+      // Check account 2 no longer owns them
+      let tokensOf = await this.token.tokensOf(account2);
+      tokensOf.map(e => e.toNumber())
+        .should.be.deep.equal([]);
+
+      // Check account 4 now owns them
+      tokensOf = await this.token.tokensOf(account4);
+      tokensOf.map(e => e.toNumber())
+        .should.be.deep.equal([_100001, _100002]);
+    });
+
   });
 
   async function getGasCosts(receipt) {
