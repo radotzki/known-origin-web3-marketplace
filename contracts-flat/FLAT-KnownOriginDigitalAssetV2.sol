@@ -1749,6 +1749,7 @@ Pausable
     delete tokenIdsForEdition[editionTokenIdIndex];
   }
 
+
   ///////////////////////////
   // Edition/Token Updates //
   ///////////////////////////
@@ -1921,8 +1922,6 @@ Pausable
     commission.recipient
     );
   }
-
-  // TODO confirm query methods are suitable for webapp and logic flow?
 
   function allEditionData(uint256 editionNumber)
   public view

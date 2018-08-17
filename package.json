@@ -44,7 +44,7 @@
     "vuex": "^3.0.1",
     "vuex-persistedstate": "^2.5.4",
     "web3": "^1.0.0-beta.35",
-    "openzeppelin-solidity": "^1.11.0"
+    "openzeppelin-solidity": "^1.12.0"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

@@ -28,38 +28,38 @@ Pausable
   using SafeMath for uint256;
   using SafeMath8 for uint8;
 
-  struct CommissionSplit {
-    uint8 rate;
-    address recipient;
-  }
+  ////////////
+  // Events //
+  ////////////
 
-  uint32 constant internal MAX_UINT32 = ~uint32(0);
-
-  ////////////////
-  // Properties //
-  ////////////////
-
-  // Purchase events fire when publicly bought through mint/mintTo
+  // On purchases from within this contract - bought through mint/mintTo
   event Purchase(
     uint256 indexed _tokenId,
     uint256 indexed _costInWei,
     address indexed _buyer
   );
 
-  // Mint always emitted
+  // Emitted on every mint
   event Minted(
     uint256 indexed _tokenId,
     uint256 indexed _editionNumber,
     address indexed _buyer
   );
 
+  // Emitted on every edition created
+  event EditionCreated(
+    uint256 indexed _editionNumber,
+    bytes32 indexed editionData,
+    uint8 indexed editionType
+  );
+
+  ////////////////
+  // Properties //
+  ////////////////
+
+  uint32 constant internal MAX_UINT32 = ~uint32(0);
+
   string public tokenBaseURI = "https://ipfs.infura.io/ipfs/";
-
-  // the KO account which can receive commission
-  address public koCommissionAccount;
-
-  // Optional commission split can be defined per edition
-  mapping(uint256 => CommissionSplit) editionNumberToOptionalCommissionSplit;
 
   // total wei been processed through the contract
   uint256 public totalPurchaseValueInWei;
@@ -69,6 +69,18 @@ Pausable
 
   // number of assets available of any type
   uint256 public totalNumberAvailable;
+
+  // the KO account which can receive commission
+  address public koCommissionAccount;
+
+  // Optional commission split can be defined per edition
+  mapping(uint256 => CommissionSplit) editionNumberToOptionalCommissionSplit;
+
+  // Simple struct providing an optional commission split on asset purchase
+  struct CommissionSplit {
+    uint8 rate;
+    address recipient;
+  }
 
   // Object for edition details
   struct EditionDetails {
@@ -256,6 +268,9 @@ Pausable
     _updateArtistLookupData(_artistAccount, _editionNumber);
     _updateEditionTypeLookupData(_editionType, _editionNumber);
 
+    // TODO add test
+    emit EditionCreated(_editionNumber, _editionData, _editionType);
+
     return true;
   }
 
@@ -325,12 +340,11 @@ Pausable
   public
   onlyKnownOrigin
   onlyRealEdition(_editionNumber)
-    //  onlyAvailableEdition(_editionNumber)
   returns (uint256) {
     // Under mint token, meaning it takes one from the already sold version
     uint256 _tokenId = _underMintNextTokenId(_editionNumber);
 
-    // If the next tokenId generate is more than the available number, abort
+    // If the next tokenId generate is more than the available number, abort as we have reached maximum under mint
     if (_tokenId > _editionNumber.add(editionNumberToEditionDetails[_editionNumber].totalAvailable)) {
       revert("Reached max tokenId, cannot under mint anymore");
     }
@@ -427,9 +441,7 @@ Pausable
     totalPurchaseValueInWei = totalPurchaseValueInWei.add(msg.value);
   }
 
-  function burn(uint256 _tokenId)
-  public
-  onlyKnownOrigin {
+  function burn(uint256 _tokenId) public onlyKnownOrigin {
 
     // Clear from parents
     super._burn(ownerOf(_tokenId), _tokenId);
@@ -444,6 +456,20 @@ Pausable
     uint256[] storage tokenIdsForEdition = editionNumberToTokenIds[_editionNumber];
     uint256 editionTokenIdIndex = editionNumberToTokenIdIndex[_tokenId];
     delete tokenIdsForEdition[editionTokenIdIndex];
+  }
+
+  // TODO add test
+  function batchTransfer(address _to, uint256[] _tokenIds) public {
+    for (uint i = 0; i < _tokenIds.length; i++) {
+      safeTransferFrom(msg.sender, _to, _tokenIds[i]);
+    }
+  }
+
+  // TODO add test
+  function batchTransferFrom(address _from, address _to, uint256[] _tokenIds) public {
+    for (uint i = 0; i < _tokenIds.length; i++) {
+      transferFrom(_from, _to, _tokenIds[i]);
+    }
   }
 
   ///////////////////////////
@@ -739,6 +765,10 @@ Pausable
 
   function tokensOf(address _owner) public view returns (uint256[] _tokenIds) {
     return ownedTokens[_owner];
+  }
+
+  function exists(uint256 _tokenId) public view returns (bool) {
+    return super._exists(_tokenId);
   }
 
   function editionTotalAvailable(uint256 _editionNumber) public view returns (uint256) {

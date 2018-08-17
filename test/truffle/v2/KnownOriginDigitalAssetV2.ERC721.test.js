@@ -100,7 +100,7 @@ contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
       const sender = account1;
 
       beforeEach(async function () {
-        await this.token.burn(firstTokenId, {from: sender});
+        await this.token.burn(firstTokenId, {from: _owner});
       });
 
       it('removes that token from the token list of the owner', async function () {
@@ -114,7 +114,7 @@ contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
       });
 
       it('burns all tokens', async function () {
-        await this.token.burn(secondTokenId, {from: sender});
+        await this.token.burn(secondTokenId, {from: _owner});
         const total = await this.token.totalSupply();
         total.toNumber().should.be.equal(0);
         await assertRevert(this.token.tokenByIndex(0));
@@ -142,7 +142,7 @@ contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
 
       it('can burn token with metadata', async function () {
         await this.token.setTokenURI(firstTokenId, sampleUri);
-        await this.token.burn(firstTokenId, {from: account1});
+        await this.token.burn(firstTokenId, {from: _owner});
         const exists = await this.token.exists(firstTokenId);
         exists.should.be.false;
       });
@@ -232,7 +232,7 @@ contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
         it(`should return all tokens after burning token ${tokenId} and minting new tokens in edition ${edition}`, async function () {
           const from = account1;
 
-          await this.token.burn(tokenId, {from});
+          await this.token.burn(tokenId, {from: _owner});
 
           await this.token.purchase(edition, {from, value});
           await this.token.purchase(edition, {from, value});
@@ -316,7 +316,7 @@ contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
 
       describe('when successful', function () {
         beforeEach(async function () {
-          const result = await this.token.burn(tokenId, {from: sender});
+          const result = await this.token.burn(tokenId, {from: _owner});
           logs = result.logs;
         });
 
@@ -338,7 +338,7 @@ contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
       describe('when there is a previous approval', function () {
         beforeEach(async function () {
           await this.token.approve(account2, tokenId, {from: sender});
-          const result = await this.token.burn(tokenId, {from: sender});
+          const result = await this.token.burn(tokenId, {from: _owner});
           logs = result.logs;
         });
 
@@ -350,7 +350,7 @@ contract('KnownOriginDigitalAssetV2 - ERC721Token', function (accounts) {
 
       describe('when the given token ID was not tracked by this contract', function () {
         it('reverts', async function () {
-          await assertRevert(this.token.burn(unknownTokenId, {from: creator}));
+          await assertRevert(this.token.burn(unknownTokenId, {from: _owner}));
         });
       });
     });
