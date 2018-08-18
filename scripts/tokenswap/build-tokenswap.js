@@ -11,14 +11,21 @@ const fs = require('fs');
   // download IPFS data
   // build token swap per edition
 
-  let network = `mainnet`;
+  let network = `local`;
   let RAW_PATH = `./scripts/tokenswap/${network}/data.json`;
   let PROCESSED_PATH = `./scripts/tokenswap/${network}/processed.json`;
   let TO_MINT_PATH = `./scripts/tokenswap/${network}/to-mint.json`;
   let UNSOLD_MINT_PATH = `./scripts/tokenswap/${network}/unsold-edition.json`;
 
+  let httpProvider;
+  if (network === 'local') {
+    httpProvider = new Eth.HttpProvider(`HTTP://127.0.0.1:7545`);
+  } else {
+    httpProvider = new Eth.HttpProvider(`https://${network}.infura.io/nbCbdzC6IG9CF6hmvAVQ`);
+  }
+
   // Connect to the contract
-  let contract = new Eth(new Eth.HttpProvider(`https://${network}.infura.io/nbCbdzC6IG9CF6hmvAVQ`))
+  let contract = new Eth(httpProvider)
     .contract(require('./koda-abi'))
     .at(getMarketplaceContractAddress(network));
 
@@ -58,43 +65,52 @@ const fs = require('fs');
 
       _.forEach(allData, (data) => {
 
-        if (!editionsToMigrate[data.edition]) {
-          editionsToMigrate[data.edition] = {
-            editionData: data.edition,
-            rawEdition: data.rawEdition,
-            editionType: 1,
-            auctionStartDate: 0,
-            auctionEndDate: 0,
-            artistAccount: data.artistAccount, // TODO lookup artists account from JSON data
-            artistCommission: 76,
-            priceInWei: data.priceInWei,
-            tokenURI: data.tokenURI.replace('https://ipfs.infura.io/ipfs/', ''),
-            minted: 0,
-            available: 0,
-            active: true,
-            tokenIds: [],
-            purchasedTokens: [],
-            unsoldTokens: []
-          };
-        }
+        let type = data.edition.substring(13, 16);
 
-        let tokenAlreadyHandled = _.find(editionsToMigrate[data.edition].tokenIds, data.tokenId);
-        if (!tokenAlreadyHandled) {
-          editionsToMigrate[data.edition].available++;
+        // Skip physical for now
+        let isNotPhysical = type !== 'PHY';
 
-          if (data.owner !== '0x3f8c962eb167ad2f80c72b5f933511ccdf0719d4') {
-            editionsToMigrate[data.edition].minted++;
-            editionsToMigrate[data.edition].purchasedTokens.push(data.tokenId);
-          } else {
-            editionsToMigrate[data.edition].unsoldTokens.push(data.tokenId);
+        if (isNotPhysical) {
+
+          if (!editionsToMigrate[data.edition]) {
+            editionsToMigrate[data.edition] = {
+              editionData: data.edition,
+              rawEdition: data.rawEdition,
+              editionType: 1,
+              auctionStartDate: 0,
+              auctionEndDate: 0,
+              artistAccount: data.artistAccount, // TODO lookup artists account from JSON data
+              artistCommission: 76,
+              priceInWei: data.priceInWei,
+              tokenURI: data.tokenURI.replace('https://ipfs.infura.io/ipfs/', ''),
+              type: type,
+              totalSupply: 0,
+              totalAvailable: 0,
+              active: true,
+              tokenIds: [],
+              purchasedTokens: [],
+              unsoldTokens: []
+            };
           }
 
-          editionsToMigrate[data.edition].tokenIds.push(data.tokenId);
+          let tokenAlreadyHandled = _.find(editionsToMigrate[data.edition].tokenIds, data.tokenId);
+          if (!tokenAlreadyHandled) {
+            editionsToMigrate[data.edition].totalAvailable++;
+
+            if (isPurchased(data)) {
+              editionsToMigrate[data.edition].totalSupply++;
+              editionsToMigrate[data.edition].purchasedTokens.push(data.tokenId);
+            } else {
+              editionsToMigrate[data.edition].unsoldTokens.push(data.tokenId);
+            }
+
+            editionsToMigrate[data.edition].tokenIds.push(data.tokenId);
+          }
+
         }
       });
 
       fs.writeFileSync(PROCESSED_PATH, JSON.stringify(editionsToMigrate, null, 4));
-
 
       const newEditionsToMint = [];
       const unsoldEditionsToMint = [];
@@ -102,7 +118,8 @@ const fs = require('fs');
       let migrationEditionCounter = 100;
 
       _.forEach(editionsToMigrate, (data, edition) => {
-        if (data.minted !== data.available) {
+        if (data.totalSupply !== data.totalAvailable) {
+          data.editionNumber = migrationEditionCounter;
           console.log(`oldToNewEditionMappings[${data.rawEdition}] = ${migrationEditionCounter}; // ${edition}`);
           migrationEditionCounter = migrationEditionCounter + 100;
           newEditionsToMint.push(data);
@@ -118,6 +135,13 @@ const fs = require('fs');
 
 
     });
+
+  function isPurchased({owner}) {
+    if (network === 'local') {
+      return owner !== '0x0df0cc6576ed17ba870d6fc271e20601e3ee176e';
+    }
+    return owner !== '0x3f8c962eb167ad2f80c72b5f933511ccdf0719d4';
+  }
 
   function assetInfo(contract, tokenId) {
     return contract.assetInfo(tokenId)
