@@ -1720,8 +1720,6 @@ Pausable
     uint256 remainingCommission = msg.value - artistPayment - rateSplit;
     koCommissionAccount.transfer(remainingCommission);
 
-    // TODO Send overspend back to caller or absorb?
-
     // Record wei sale value
     totalPurchaseValueInWei = totalPurchaseValueInWei.add(msg.value);
   }
