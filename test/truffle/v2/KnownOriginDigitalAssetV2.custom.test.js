@@ -1173,6 +1173,67 @@ contract('KnownOriginDigitalAssetV2 - custom', function (accounts) {
 
     });
 
+    describe('over spends are absorbed by KO', async function () {
+
+      let originalAccount1Balance;
+      let originalKoAccountBalance;
+      let originalArtistAccountBalance;
+
+      let postAccount1Balance;
+      let postKoAccountBalance;
+      let postArtistAccountBalance;
+
+      let receiptAccount1;
+      let account1GasFees;
+
+      const overspend = etherToWei(0.1);
+
+      beforeEach(async function () {
+        // pre balances
+        originalAccount1Balance = await web3.eth.getBalance(account1);
+        originalKoAccountBalance = await web3.eth.getBalance(await this.token.koCommissionAccount());
+        originalArtistAccountBalance = await web3.eth.getBalance(artistAccount);
+
+        // account 1 purchases edition 1
+        receiptAccount1 = await this.token.purchase(editionNumber1, {
+          from: account1,
+          value: edition1Price.add(overspend) // add the overspend
+        });
+        account1GasFees = await getGasCosts(receiptAccount1);
+
+        // post balances
+        postAccount1Balance = await web3.eth.getBalance(account1);
+        postKoAccountBalance = await web3.eth.getBalance(await this.token.koCommissionAccount());
+        postArtistAccountBalance = await web3.eth.getBalance(artistAccount);
+      });
+
+      it('splits funds between artist, optional & KO account', async function () {
+        // account 1 should be equal the cost of transaction, minus the edition cost
+        postAccount1Balance.should.be.bignumber.equal(
+          originalAccount1Balance.sub(
+            account1GasFees.add(edition1Price).add(overspend) // overspend lost
+          )
+        );
+
+        // ensure artists get the correct 76% commission
+        postArtistAccountBalance.should.be.bignumber.equal(
+          originalArtistAccountBalance.add(
+            edition1Price.dividedBy(100)
+              .times(76) // 24% goes to KO
+          )
+        );
+
+        // ensure KO gets a the correct cut
+        postKoAccountBalance.should.be.bignumber.equal(
+          originalKoAccountBalance.add(
+            edition1Price.dividedBy(100)
+              .times(24) // 24% goes to KO
+          ).add(overspend) // over spend absorbed
+        );
+      });
+
+    });
+
     describe('commission can be updated', async function () {
       beforeEach(async function () {
         await this.token.updateOptionalCommission(editionNumber1, 5, account1, {from: _owner});

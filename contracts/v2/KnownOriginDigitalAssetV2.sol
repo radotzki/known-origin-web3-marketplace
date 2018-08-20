@@ -155,10 +155,16 @@ Pausable
   }
 
   function createActiveEdition(
-    uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
-    uint32 _startDate, uint32 _endDate,
-    address _artistAccount, uint8 _artistCommission,
-    uint256 _priceInWei, string _tokenURI, uint8 _totalAvailable
+    uint256 _editionNumber,
+    bytes32 _editionData,
+    uint8 _editionType,
+    uint32 _startDate,
+    uint32 _endDate,
+    address _artistAccount,
+    uint8 _artistCommission,
+    uint256 _priceInWei,
+    string _tokenURI,
+    uint8 _totalAvailable
   )
   public
   onlyKnownOrigin
@@ -168,10 +174,16 @@ Pausable
   }
 
   function createInactiveEdition(
-    uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
-    uint32 _startDate, uint32 _endDate,
-    address _artistAccount, uint8 _artistCommission,
-    uint256 _priceInWei, string _tokenURI, uint8 _totalAvailable
+    uint256 _editionNumber,
+    bytes32 _editionData,
+    uint8 _editionType,
+    uint32 _startDate,
+    uint32 _endDate,
+    address _artistAccount,
+    uint8 _artistCommission,
+    uint256 _priceInWei,
+    string _tokenURI,
+    uint8 _totalAvailable
   )
   public
   onlyKnownOrigin
@@ -181,11 +193,17 @@ Pausable
   }
 
   function createActivePreMintedEdition(
-    uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
-    uint32 _startDate, uint32 _endDate,
-    address _artistAccount, uint8 _artistCommission,
-    uint256 _priceInWei, string _tokenURI,
-    uint8 _totalSupply, uint8 _totalAvailable
+    uint256 _editionNumber,
+    bytes32 _editionData,
+    uint8 _editionType,
+    uint32 _startDate,
+    uint32 _endDate,
+    address _artistAccount,
+    uint8 _artistCommission,
+    uint256 _priceInWei,
+    string _tokenURI,
+    uint8 _totalSupply,
+    uint8 _totalAvailable
   )
   public
   onlyKnownOrigin
@@ -197,11 +215,17 @@ Pausable
   }
 
   function createInactivePreMintedEdition(
-    uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
-    uint32 _startDate, uint32 _endDate,
-    address _artistAccount, uint8 _artistCommission,
-    uint256 _priceInWei, string _tokenURI,
-    uint8 _totalSupply, uint8 _totalAvailable
+    uint256 _editionNumber,
+    bytes32 _editionData,
+    uint8 _editionType,
+    uint32 _startDate,
+    uint32 _endDate,
+    address _artistAccount,
+    uint8 _artistCommission,
+    uint256 _priceInWei,
+    string _tokenURI,
+    uint8 _totalSupply,
+    uint8 _totalAvailable
   )
   public
   onlyKnownOrigin
@@ -213,11 +237,17 @@ Pausable
   }
 
   function _createEdition(
-    uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
-    uint32 _startDate, uint32 _endDate,
-    address _artistAccount, uint8 _artistCommission,
-    uint256 _priceInWei, string _tokenURI,
-    uint8 _totalAvailable, bool _active
+    uint256 _editionNumber,
+    bytes32 _editionData,
+    uint8 _editionType,
+    uint32 _startDate,
+    uint32 _endDate,
+    address _artistAccount,
+    uint8 _artistCommission,
+    uint256 _priceInWei,
+    string _tokenURI,
+    uint8 _totalAvailable,
+    bool _active
   )
   internal
   returns (bool)
@@ -343,6 +373,8 @@ Pausable
     // Under mint token, meaning it takes one from the already sold version
     uint256 _tokenId = _underMintNextTokenId(_editionNumber);
 
+    // TODO prevent underminting over the total supply
+
     // If the next tokenId generate is more than the available number, abort as we have reached maximum under mint
     if (_tokenId > _editionNumber.add(editionNumberToEditionDetails[_editionNumber].totalAvailable)) {
       revert("Reached max tokenId, cannot under mint anymore");
@@ -414,9 +446,11 @@ Pausable
 
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
 
+    uint256 editionPrice = _editionDetails.priceInWei;
+
     // Extract the artists commission and send it
     address artistsAccount = _editionDetails.artistAccount;
-    uint256 artistPayment = msg.value / 100 * _editionDetails.artistCommission;
+    uint256 artistPayment = editionPrice / 100 * _editionDetails.artistCommission;
     if (artistPayment > 0) {
       artistsAccount.transfer(artistPayment);
     }
@@ -425,7 +459,7 @@ Pausable
     CommissionSplit memory commission = editionNumberToOptionalCommissionSplit[_editionNumber];
 
     // Apply optional commission structure
-    uint256 rateSplit = msg.value / 100 * commission.rate;
+    uint256 rateSplit = editionPrice / 100 * commission.rate;
     if (commission.rate > 0) {
       commission.recipient.transfer(rateSplit);
     }
