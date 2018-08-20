@@ -38,3 +38,11 @@ export const PURCHASE_STARTED = 'PURCHASE_STARTED'; // metamask transaction subm
 export const PURCHASE_FAILED = 'PURCHASE_FAILED'; // a failure
 export const PURCHASE_SUCCESSFUL = 'PURCHASE_SUCCESSFUL'; // transaction mined and Purchase event heard
 export const RESET_PURCHASE_STATE = 'RESET_PURCHASE_STATE';
+
+/////////////
+// KODA V2 //
+/////////////
+
+export const SET_EDITION = 'SET_EDITION';
+export const SET_EDITIONS = 'SET_EDITIONS';
+

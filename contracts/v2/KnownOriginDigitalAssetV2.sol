@@ -691,7 +691,7 @@ Pausable
     uint32 _startDate,
     uint32 _endDate,
     address _artistAccount,
-    address _artistCommission,
+    uint8 _artistCommission,
     uint256 _priceInWei,
     string _tokenURI,
     uint8 _totalSupply,

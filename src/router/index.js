@@ -3,6 +3,7 @@ import Router from 'vue-router';
 import Artists from '@/components/pages/Artists';
 import ContractDetails from '@/components/pages/ContractDetails';
 import Gallery from '@/components/pages/Gallery';
+import GalleryKODAV2 from '@/components/pages/GalleryKODAV2';
 import GalleryV2 from '@/components/pages/GalleryV2';
 import Account from '@/components/pages/Account';
 import License from '@/components/pages/License';
@@ -12,7 +13,6 @@ import ConfirmPurchaseQr from '@/components/pages/ConfirmPurchaseQr';
 import ArtistPage from '@/components/pages/ArtistPage';
 import CompletePurchase from '@/components/pages/CompletePurchase';
 import AssetDetailView from '@/components/pages/AssetDetailView';
-import Home from '@/components/pages/Home';
 
 Vue.use(Router);
 
@@ -46,6 +46,11 @@ export default new Router({
       path: '/gallery',
       name: 'gallery',
       component: GalleryV2
+    },
+    {
+      path: '/gallery-v2',
+      name: 'galleryV2',
+      component: GalleryKODAV2
     },
     {
       path: '/editions',

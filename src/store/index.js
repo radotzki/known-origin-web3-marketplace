@@ -9,37 +9,31 @@ import artistData from './artist-data';
 import {getNetIdString, getEtherscanAddress} from '../utils';
 import truffleContract from 'truffle-contract';
 import knownOriginDigitalAssetJson from '../../build/contracts/KnownOriginDigitalAsset.json';
+import knownOriginDigitalAssetJsonV2 from '../../build/contracts/KnownOriginDigitalAssetV2.json';
 
 import createLogger from 'vuex/dist/logger';
-// import createPersistedState from "vuex-persistedstate";
 
 import purchase from './modules/purchase';
 import highres from './modules/highres';
 import contract from './modules/contract';
 import assets from './modules/assets';
+import v2 from './modules/v2';
 
 const KnownOriginDigitalAsset = truffleContract(knownOriginDigitalAssetJson);
+const KnownOriginDigitalAssetV2 = truffleContract(knownOriginDigitalAssetJsonV2);
 
 Vue.use(Vuex);
 
-
-
 const store = new Vuex.Store({
   plugins: [
-    // FIXME - disabled until we work out issue
-    // createPersistedState({
-    //   key: `${window.location.hostname}`,
-    //   paths: [
-    //     'assets' // Place assets in local storage to speed up load times when initially landing on the site
-    //   ]
-    // }),
     createLogger()
   ],
   modules: {
     purchase,
     highres,
     contract,
-    assets
+    assets,
+    v2
   },
   state: {
     // connectivity
@@ -51,6 +45,7 @@ const store = new Vuex.Store({
     assetsPurchasedByAccount: [],
 
     KnownOriginDigitalAsset: null,
+    KnownOriginDigitalAssetV2: null,
     web3: null,
     currentUsdPrice: null,
     etherscanBase: null,
@@ -61,6 +56,17 @@ const store = new Vuex.Store({
   getters: {
     findArtist: (state) => (artistCode) => {
       return _.find(state.artists, (artist) => artist.artistCode.toString() === artistCode);
+    },
+    findArtistsForAddress: (state) => (artistAddress) => {
+      let found = _.find(state.artists, (artist) => {
+        return Web3.utils.toChecksumAddress(artist.ethAddress) === Web3.utils.toChecksumAddress(artistAddress);
+      });
+      if (found) {
+        return found;
+      }
+      return {
+        img: "" // TODO handle not finding an image V2
+      };
     },
     liveArtists: (state) => {
       return state.artists.filter((a) => a.live);
@@ -103,8 +109,9 @@ const store = new Vuex.Store({
     [mutations.SET_WEB3](state, web3) {
       state.web3 = web3;
     },
-    [mutations.SET_KODA_CONTRACT](state, KnownOriginDigitalAsset) {
-      state.KnownOriginDigitalAsset = KnownOriginDigitalAsset;
+    [mutations.SET_KODA_CONTRACT](state, {v1, v2}) {
+      state.KnownOriginDigitalAsset = v1;
+      state.KnownOriginDigitalAssetV2 = v2;
     },
   },
   actions: {
@@ -150,6 +157,7 @@ const store = new Vuex.Store({
 
       // NON-ASYNC action - set web3 provider on init
       KnownOriginDigitalAsset.setProvider(web3.currentProvider);
+      KnownOriginDigitalAssetV2.setProvider(web3.currentProvider);
 
       //dirty hack for web3@1.0.0 support for localhost testrpc, see https://github.com/trufflesuite/truffle-contract/issues/56#issuecomment-331084530
       if (typeof KnownOriginDigitalAsset.currentProvider.sendAsync !== "function") {
@@ -160,9 +168,18 @@ const store = new Vuex.Store({
         };
       }
 
+      //dirty hack for web3@1.0.0 support for localhost testrpc, see https://github.com/trufflesuite/truffle-contract/issues/56#issuecomment-331084530
+      if (typeof KnownOriginDigitalAssetV2.currentProvider.sendAsync !== "function") {
+        KnownOriginDigitalAssetV2.currentProvider.sendAsync = function () {
+          return KnownOriginDigitalAssetV2.currentProvider.send.apply(
+            KnownOriginDigitalAssetV2.currentProvider, arguments
+          );
+        };
+      }
+
       // Set the web3 instance
       commit(mutations.SET_WEB3, web3);
-      commit(mutations.SET_KODA_CONTRACT, KnownOriginDigitalAsset);
+      commit(mutations.SET_KODA_CONTRACT, {v1: KnownOriginDigitalAsset, v2: KnownOriginDigitalAssetV2});
 
       // Find current network
       dispatch(actions.GET_CURRENT_NETWORK);

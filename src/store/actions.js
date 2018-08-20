@@ -26,3 +26,12 @@ export const RESET_PURCHASE_STATE = 'RESET_PURCHASE_STATE';
 //////////////
 export const HIGH_RES_DOWNLOAD = 'HIGH_RES_DOWNLOAD';
 
+
+/////////////
+// KODA V2 //
+/////////////
+
+export const LOAD_FEATURE_EDITIONS = 'LOAD_FEATURE_EDITIONS';
+export const LOAD_EDITIONS_FOR_TYPE = 'LOAD_EDITIONS_FOR_TYPE';
+export const LOAD_EDITIONS_FOR_ARTIST = 'LOAD_EDITIONS_FOR_ARTIST';
+
