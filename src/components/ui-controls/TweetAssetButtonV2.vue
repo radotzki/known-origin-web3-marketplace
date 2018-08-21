@@ -14,11 +14,11 @@
     props: ['edition'],
     computed: {
       purchaseText: function () {
-        let artistCode = this.edition.edition.substring(0, 3);
-        let editionCode = this.edition.edition;
-        let url = `${window.location.origin}/artists/${artistCode}/editions/${editionCode}`;
+        let artistAccount = this.edition.artistAccount;
+        let editionNumber = this.edition.editionNumber;
+        let url = `${window.location.origin}/artists/${artistAccount}/editions/${editionNumber}`;
         let text = `Check out this awesome KnownOrigin digital asset`;
-        let hashtags = 'KnownOrigin,DApp,ethereum,nft,erc721,blockchain';
+        let hashtags = 'KnownOrigin,DApp,ethereum,nft,erc721,blockchain,art';
         let via = "knownorigin_io";
         return `https://twitter.com/intent/tweet?text=${text}&url=${url}&hashtags=${hashtags}&via=${via}`;
       }

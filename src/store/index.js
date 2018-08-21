@@ -6,7 +6,7 @@ import _ from 'lodash';
 import Web3 from 'web3';
 import axios from 'axios';
 import artistData from './artist-data';
-import {getNetIdString, getEtherscanAddress} from '../utils';
+import {getEtherscanAddress, getNetIdString} from '../utils';
 import truffleContract from 'truffle-contract';
 import knownOriginDigitalAssetJson from '../../build/contracts/KnownOriginDigitalAsset.json';
 import knownOriginDigitalAssetJsonV2 from '../../build/contracts/KnownOriginDigitalAssetV2.json';
@@ -58,15 +58,9 @@ const store = new Vuex.Store({
       return _.find(state.artists, (artist) => artist.artistCode.toString() === artistCode);
     },
     findArtistsForAddress: (state) => (artistAddress) => {
-      let found = _.find(state.artists, (artist) => {
+      return _.find(state.artists, (artist) => {
         return Web3.utils.toChecksumAddress(artist.ethAddress) === Web3.utils.toChecksumAddress(artistAddress);
       });
-      if (found) {
-        return found;
-      }
-      return {
-        img: "" // TODO handle not finding an image V2
-      };
     },
     liveArtists: (state) => {
       return state.artists.filter((a) => a.live);

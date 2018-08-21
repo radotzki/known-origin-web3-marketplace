@@ -33,7 +33,6 @@ const contractStateModule = {
       });
     },
     filterEditions: (state) => (priceFilter = 'asc') => {
-
       const soldOutEditions = (edition) => edition.totalSupply === edition.totalAvailable;
       const availableEditions = (edition) => edition.totalSupply !== edition.totalAvailable;
       const featuredEditions = (edition) => FEATURED_ARTWORK.indexOf(edition.edition) > 0;
@@ -49,6 +48,12 @@ const contractStateModule = {
       });
 
       return _.orderBy(results, 'priceInEther', priceFilter);
+    },
+    editionsForArtist: (state) => (artistAccount) => {
+      artistAccount = Web3.utils.toChecksumAddress(artistAccount);
+      return _.pickBy(state.assets, function (value, key) {
+        return Web3.utils.toChecksumAddress(value.artistAccount) === artistAccount;
+      });
     },
   },
   mutations: {
@@ -78,10 +83,10 @@ const contractStateModule = {
         commit(mutations.SET_EDITION, data);
       });
     },
-    async [actions.LOAD_EDITIONS_FOR_ARTIST]({commit, dispatch, state, rootState}, {artist}) {
+    async [actions.LOAD_EDITIONS_FOR_ARTIST]({commit, dispatch, state, rootState}, {artistAccount}) {
 
       const contract = await rootState.KnownOriginDigitalAssetV2.deployed();
-      const editions = await contract.artistsEditions(artist);
+      const editions = await contract.artistsEditions(artistAccount);
 
       _.forEach(editions, async function (edition) {
         const data = await loadEditionData(contract, edition);
