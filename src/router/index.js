@@ -20,6 +20,7 @@ import AssetDetailView from '@/components/pages/AssetDetailView';
 import GalleryKODAV2 from '@/components/pages/GalleryKODAV2';
 import ArtistPageKODAV2 from '@/components/pages/ArtistPageKODAV2';
 import ConfirmPurchaseKODAV2 from '@/components/pages/ConfirmPurchaseKODAV2';
+import CompletePurchaseKODAV2 from '@/components/pages/CompletePurchaseKODAV2';
 
 Vue.use(Router);
 
@@ -128,6 +129,12 @@ export default new Router({
       path: '/artists-v2/:artistAccount/editions/:editionNumber',
       name: 'confirmPurchaseV2',
       component: ConfirmPurchaseKODAV2,
+      props: true
+    },
+    {
+      path: '/artists-v2/:artistAccount/editions/:editionNumber/buy',
+      name: 'completePurchaseV2',
+      component: CompletePurchaseKODAV2,
       props: true
     },
   ]

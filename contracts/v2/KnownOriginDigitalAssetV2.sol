@@ -37,6 +37,7 @@ Pausable
     uint256 indexed _tokenId,
     uint256 indexed _costInWei,
     address indexed _buyer
+    // TODO add edition number to this for completeness
   );
 
   // Emitted on every mint

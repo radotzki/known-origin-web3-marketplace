@@ -26,6 +26,8 @@
 
     <div class="container-fluid mt-4">
 
+      <!-- TODO loading -->
+
       <div class="row editions-wrap">
         <div class="card-deck">
           <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions">
@@ -37,9 +39,7 @@
                   <div class="card-body">
                     <p class="card-title">{{ edition.otherMeta.artworkName }}</p>
                     <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
-                    <!-- TODO how to click through to the artist -->
-                    <a class="pl-1 artist-name"
-                       v-on:click="goToArtist(edition.artistAccount)">{{ edition.otherMeta.artist }}</a>
+                    <a class="pl-1 artist-name">{{ edition.otherMeta.artist }}</a>
                   </div>
                   <div class="card-footer">
                     <div class="row">

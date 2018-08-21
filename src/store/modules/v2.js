@@ -59,6 +59,9 @@ const contractStateModule = {
     findEdition: (state) => (editionNumber) => {
       return state.assets[editionNumber];
     },
+    isStartDateInTheFuture: (state) => (startDate) => {
+      return startDate > (new Date().getTime() / 1000);
+    }
   },
   mutations: {
     [mutations.SET_EDITION](state, data) {

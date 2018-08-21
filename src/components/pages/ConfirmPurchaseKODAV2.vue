@@ -1,6 +1,7 @@
 <template>
   <div class="container">
 
+    <!-- TODO loading -->
 
     <div class="row justify-content-sm-center">
       <div class="col col-sm-6">
@@ -12,11 +13,8 @@
 
 <script>
   import {mapGetters, mapState} from 'vuex';
-  import Artist from '../Artist';
   import GalleryEdition from '../GalleryEditionV2';
-  import ConfirmPurchaseButton from '../ui-controls/ConfirmPurchaseButton';
   import _ from 'lodash';
-  import EditionQrCode from '../ui-controls/EditionQrCode';
   import LoadingSpinner from "../ui-controls/LoadingSpinner.vue";
   import * as actions from '../../store/actions';
 
@@ -24,9 +22,7 @@
     name: 'confirmPurchase',
     components: {
       LoadingSpinner,
-      EditionQrCode,
       GalleryEdition,
-      ConfirmPurchaseButton
     },
     computed: {
       ...mapGetters('v2', [

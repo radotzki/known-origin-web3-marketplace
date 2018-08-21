@@ -7,7 +7,7 @@
 
       <p class="card-text">
 
-         <high-res-label :asset="edition"></high-res-label>
+        <high-res-label :edition="edition"></high-res-label>
 
         <rarity-indicator :total-available="edition.totalAvailable"></rarity-indicator>
 
@@ -33,7 +33,9 @@
 
       <p class="card-text">{{ edition.description }}</p>
 
-      <!-- TODO AUCTION START DATE -->
+      <small class="text-danger" v-if="isStartDateInTheFuture(edition.startDate)">
+        <span>Available {{ edition.startDate | moment("from") }}</span>
+      </small>
 
       <span class="clearfix"></span>
     </div>
@@ -45,6 +47,11 @@
       </li>
     </ul>
 
+    <div class="card-footer text-center"
+         v-if="(edition.totalAvailable - edition.totalSupply > 0) && !isStartDateInTheFuture(edition.startDate)">
+      <a v-on:click="proceedWithPurchase" class="btn btn-primary btn-block text-white">Buy Now</a>
+    </div>
+
   </div>
 </template>
 
@@ -53,15 +60,17 @@
   import _ from 'lodash';
   import * as actions from '../store/actions';
   import PriceInEth from './ui-controls/PriceInEth';
-  import TweetAssetButton from "./ui-controls/TweetAssetButtonV2";
+  import TweetAssetButton from "./ui-controls/TweetEditionButton";
   import RarityIndicator from "./ui-controls/RarityIndicatorV2";
   import UsdPrice from "./ui-controls/USDPrice";
   import MetadataAttributes from "./ui-controls/MetadataAttributesV2";
   import HighResLabel from "./ui-controls/HighResLabelV2";
+  import ConfirmPurchaseButton from "./ui-controls/ConfirmPurchaseButton";
 
   export default {
     name: 'galleryEdition',
     components: {
+      ConfirmPurchaseButton,
       HighResLabel,
       UsdPrice,
       RarityIndicator,
@@ -71,17 +80,25 @@
     },
     props: {
       edition: {
-        required: true,
         type: Object
       }
     },
-    computed: {},
-    methods: {},
-    data() {
-      return {
-        nowTimestamp: new Date().getTime()
-      };
-    }
+    computed: {
+      ...mapGetters('v2', [
+        'isStartDateInTheFuture'
+      ])
+    },
+    methods: {
+      proceedWithPurchase: function () {
+        this.$router.push({
+          name: 'completePurchaseV2',
+          params: {
+            artistAccount: this.edition.artistAccount,
+            editionNumber: this.edition.edition
+          }
+        });
+      }
+    },
   };
 </script>
 

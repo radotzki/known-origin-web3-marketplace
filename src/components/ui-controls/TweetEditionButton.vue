@@ -10,12 +10,12 @@
 
 <script>
   export default {
-    name: 'tweetAssetButton',
+    name: 'tweetEditionButton',
     props: ['edition'],
     computed: {
       purchaseText: function () {
         let artistAccount = this.edition.artistAccount;
-        let editionNumber = this.edition.editionNumber;
+        let editionNumber = this.edition.edition;
         let url = `${window.location.origin}/artists/${artistAccount}/editions/${editionNumber}`;
         let text = `Check out this awesome KnownOrigin digital asset`;
         let hashtags = 'KnownOrigin,DApp,ethereum,nft,erc721,blockchain,art';

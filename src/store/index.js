@@ -14,6 +14,7 @@ import knownOriginDigitalAssetJsonV2 from '../../build/contracts/KnownOriginDigi
 import createLogger from 'vuex/dist/logger';
 
 import purchase from './modules/purchase';
+import purchaseV2 from './modules/purchaseV2';
 import highres from './modules/highres';
 import contract from './modules/contract';
 import assets from './modules/assets';
@@ -30,6 +31,7 @@ const store = new Vuex.Store({
   ],
   modules: {
     purchase,
+    purchaseV2,
     highres,
     contract,
     assets,

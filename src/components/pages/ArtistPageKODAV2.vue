@@ -1,6 +1,8 @@
 <template>
   <div>
 
+    <!-- TODO loading -->
+
     <artist-short-bio :artist="lookupArtist()"></artist-short-bio>
 
     <div class="container-fluid mt-4">
@@ -9,7 +11,8 @@
         <div class="card-deck">
           <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions">
             <div class="card-target">
-              <router-link class="card-target" :to="{ name: 'confirmPurchaseV2', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
+              <router-link class="card-target"
+                           :to="{ name: 'confirmPurchaseV2', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
                 <div class="card shadow-sm">
                   <img class="card-img-top" :src="edition.lowResImg"/>
                   <div class="card-body">
@@ -27,7 +30,9 @@
 
                     <high-res-label :asset="edition"></high-res-label>
 
-                    <!-- TODO AUCTION START DATE -->
+                    <small class="text-danger" v-if="isStartDateInTheFuture(edition)">
+                      <span>Available {{ edition.startDate | moment("from") }}</span>
+                    </small>
 
                   </div>
                   <div class="card-footer">
@@ -38,7 +43,7 @@
                     </div>
                     <div class="row">
                       <div class="col">
-                        <tweet-asset-button :edition="edition"></tweet-asset-button>
+                        <tweet-edition-button :edition="edition"></tweet-edition-button>
                       </div>
                       <div class="col text-right">{{ edition.priceInEther }} ETH</div>
                     </div>
@@ -63,14 +68,14 @@
   import GalleryEdition from '../GalleryEdition';
   import RarityIndicator from "../ui-controls/RarityIndicatorV2";
   import MetadataAttributes from "../ui-controls/MetadataAttributesV2";
-  import TweetAssetButton from "../ui-controls/TweetAssetButtonV2";
+  import TweetEditionButton from "../ui-controls/TweetEditionButton";
   import HighResLabel from "../ui-controls/HighResLabelV2";
 
   export default {
     name: 'artistPage',
     components: {
       HighResLabel,
-      TweetAssetButton,
+      TweetEditionButton,
       MetadataAttributes,
       RarityIndicator,
       ArtistShortBio,
@@ -82,7 +87,8 @@
         'findArtistsForAddress',
       ]),
       ...mapGetters('v2', [
-        'editionsForArtist'
+        'editionsForArtist',
+        'isStartDateInTheFuture'
       ]),
       editions: function () {
         return this.editionsForArtist(this.$route.params.artistAccount);
@@ -97,9 +103,7 @@
       this.$store.watch(
         () => this.$store.state.KnownOriginDigitalAssetV2,
         function (newValue, oldValue) {
-          if (newValue) {
-            this.$store.dispatch(`v2/${actions.LOAD_EDITIONS_FOR_ARTIST}`, {artistAccount: this.$route.params.artistAccount});
-          }
+          this.$store.dispatch(`v2/${actions.LOAD_EDITIONS_FOR_ARTIST}`, {artistAccount: this.$route.params.artistAccount});
         }.bind(this));
     }
   };

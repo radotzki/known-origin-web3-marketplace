@@ -1,5 +1,5 @@
 <template>
-  <span class="high-res-container" v-if="asset.highResAvailable">
+  <span class="high-res-container" v-if="edition.highResAvailable">
     <span class="badge badge-primary" v-b-tooltip.hover :id="'tooltipButton-highRes-info-' + uuid">
       high res
     </span>
@@ -23,7 +23,7 @@
       FontAwesomeIcon
     },
     name: 'highResLabel',
-    props: ['asset'],
+    props: ['edition'],
     data() {
       return {
         // We gen a random ID to bind the popup to

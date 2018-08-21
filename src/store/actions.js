@@ -36,3 +36,7 @@ export const LOAD_EDITIONS_FOR_TYPE = 'LOAD_EDITIONS_FOR_TYPE';
 export const LOAD_EDITIONS_FOR_ARTIST = 'LOAD_EDITIONS_FOR_ARTIST';
 export const LOAD_SPECIFIC_EDITION = 'LOAD_SPECIFIC_EDITION';
 
+//////////////////////
+// Purchase flow V2 //
+//////////////////////
+export const PURCHASE_EDITION = 'PURCHASE_EDITION';
