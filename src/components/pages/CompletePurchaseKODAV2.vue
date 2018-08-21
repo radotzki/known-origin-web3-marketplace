@@ -213,8 +213,7 @@
       },
       retryPurchase: function () {
         this.$store.dispatch(`purchaseV2/${actions.RESET_PURCHASE_STATE}`, {
-          edition: this.edition,
-          account: this.account
+          edition: this.edition
         });
       },
       isNotSoldOut: function () {
@@ -222,13 +221,12 @@
       }
     },
     mounted() {
-
       this.$store.watch(
-        () => this.$store.state.KnownOriginDigitaleditionV2,
+        () => this.$store.state.KnownOriginDigitalAssetV2,
         (newValue, oldValue) => {
-          this.$store.dispatch(`v2/${actions.LOAD_SPECIFIC_EDITION}`, {
-            editionNumber: this.$route.params.editionNumber
-          });
+          if (newValue) {
+            this.$store.dispatch(`v2/${actions.LOAD_SPECIFIC_EDITION}`, {editionNumber: this.$route.params.editionNumber});
+          }
         });
 
       // Dont' perform the no-web3 check immediately, allow the chain time to respond

@@ -151,10 +151,10 @@ const purchaseStateModule = {
           //if (timer) clearInterval(timer);
         });
     },
-    [actions.RESET_PURCHASE_STATE]: function ({commit, dispatch, state}, {editionNumber}) {
+    [actions.RESET_PURCHASE_STATE]: function ({commit, dispatch, state}, {edition}) {
       // TODO reinstate
       // dispatch(`assets/${actions.GET_ALL_ASSETS}`, null, {root: true});
-      commit(mutations.RESET_PURCHASE_STATE, {editionNumber});
+      commit(mutations.RESET_PURCHASE_STATE, {editionNumber: edition.edition});
     },
   },
 };
