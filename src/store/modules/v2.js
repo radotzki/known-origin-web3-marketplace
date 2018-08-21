@@ -4,6 +4,7 @@ import * as mutations from '../mutation';
 import _ from 'lodash';
 import Web3 from 'web3';
 import axios from 'axios';
+import {isHighRes} from '../../utils';
 
 const FEATURED_ARTWORK = [
   10700, // Oficinas TK
@@ -55,6 +56,9 @@ const contractStateModule = {
         return Web3.utils.toChecksumAddress(value.artistAccount) === artistAccount;
       });
     },
+    findEdition: (state) => (editionNumber) => {
+      return state.assets[editionNumber];
+    },
   },
   mutations: {
     [mutations.SET_EDITION](state, data) {
@@ -92,6 +96,12 @@ const contractStateModule = {
         const data = await loadEditionData(contract, edition);
         commit(mutations.SET_EDITION, data);
       });
+    },
+    async [actions.LOAD_SPECIFIC_EDITION]({commit, dispatch, state, rootState}, {editionNumber}) {
+      console.log("editionNumber", editionNumber);
+      const contract = await rootState.KnownOriginDigitalAssetV2.deployed();
+      const data = await loadEditionData(contract, editionNumber);
+      commit(mutations.SET_EDITION, data);
     }
   }
 };
@@ -106,7 +116,7 @@ const loadEditionData = async (contract, edition) => {
   const ipfsData = await lookupIPFSData(allEditionData.tokenURI);
 
   const data = {
-    edition: typeof edition === 'number' ? edition : edition.toNumber(),
+    edition: typeof edition === 'number' ? edition : _.toNumber(edition),
     ...ipfsData,
     ...allEditionData
   };

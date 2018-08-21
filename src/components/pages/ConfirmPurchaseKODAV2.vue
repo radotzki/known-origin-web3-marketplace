@@ -1,17 +1,10 @@
 <template>
   <div class="container">
-    <loading-spinner v-if="!edition"></loading-spinner>
 
-    <div class="row justify-content-sm-center" v-if="!edition">
-      <div class="col text-center mt-5">
-        <p>We are loading assets from the Blockchain.</p>
-        <p>Please be patient as we are fully decentralised.</p>
-      </div>
-    </div>
 
-    <div v-else-if="edition" class="row justify-content-sm-center">
+    <div class="row justify-content-sm-center">
       <div class="col col-sm-6">
-        <gallery-edition :edition="edition" :purchase="true"></gallery-edition>
+        <gallery-edition :edition="edition"></gallery-edition>
       </div>
     </div>
   </div>
@@ -20,11 +13,12 @@
 <script>
   import {mapGetters, mapState} from 'vuex';
   import Artist from '../Artist';
-  import GalleryEdition from '../GalleryEdition';
+  import GalleryEdition from '../GalleryEditionV2';
   import ConfirmPurchaseButton from '../ui-controls/ConfirmPurchaseButton';
   import _ from 'lodash';
   import EditionQrCode from '../ui-controls/EditionQrCode';
   import LoadingSpinner from "../ui-controls/LoadingSpinner.vue";
+  import * as actions from '../../store/actions';
 
   export default {
     name: 'confirmPurchase',
@@ -35,11 +29,11 @@
       ConfirmPurchaseButton
     },
     computed: {
-      ...mapGetters('assets', [
-        'firstAssetForEdition'
+      ...mapGetters('v2', [
+        'findEdition'
       ]),
       edition: function () {
-        return this.firstAssetForEdition(this.$route.params.edition);
+        return this.findEdition(this.$route.params.editionNumber);
       },
       title: function () {
         return `${this.edition.editionName} #${this.edition.edition}`;
@@ -54,6 +48,15 @@
       countAvailable: (assets) => {
         return _.filter(assets, {'purchased': 0});
       },
+    },
+    mounted: function () {
+      this.$store.watch(
+        () => this.$store.state.KnownOriginDigitalAssetV2,
+        (newValue, oldValue) => {
+          if (newValue) {
+            this.$store.dispatch(`v2/${actions.LOAD_SPECIFIC_EDITION}`, {editionNumber: this.$route.params.editionNumber});
+          }
+        });
     }
   };
 </script>

@@ -28,26 +28,30 @@
 
       <div class="row editions-wrap">
         <div class="card-deck">
-          <div class="col-auto mx-auto mb-5"
-               v-for="edition, editionNumber in editions">
+          <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions">
             <div class="card-target">
               <div class="card shadow-sm">
-                <img class="card-img-top" :src="edition.lowResImg"/>
-                <div class="card-body">
-                  <p class="card-title">{{ edition.otherMeta.artworkName }}</p>
-                  <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
-                  <a class="pl-1 artist-name"
-                        v-on:click="goToArtist(edition.artistAccount)">{{ edition.otherMeta.artist }}</a>
-                </div>
-                <div class="card-footer">
-                  <div class="row">
-                    <div class="col">
-                      {{ edition.totalAvailable }} available
-                    </div>
-                    <div class="col text-right">{{ edition.priceInEther }} ETH</div>
+                <router-link class="card-target"
+                             :to="{ name: 'confirmPurchaseV2', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
+                  <img class="card-img-top" :src="edition.lowResImg"/>
+                  <div class="card-body">
+                    <p class="card-title">{{ edition.otherMeta.artworkName }}</p>
+                    <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
+                    <!-- TODO how to click through to the artist -->
+                    <a class="pl-1 artist-name"
+                       v-on:click="goToArtist(edition.artistAccount)">{{ edition.otherMeta.artist }}</a>
                   </div>
-                </div>
+                  <div class="card-footer">
+                    <div class="row">
+                      <div class="col">
+                        {{ edition.totalAvailable }} available
+                      </div>
+                      <div class="col text-right">{{ edition.priceInEther }} ETH</div>
+                    </div>
+                  </div>
+                </router-link>
               </div>
+
             </div>
           </div>
         </div>

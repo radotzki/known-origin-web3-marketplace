@@ -7,42 +7,44 @@
 
       <div class="row editions-wrap">
         <div class="card-deck">
-          <div class="col-auto mx-auto mb-5"
-               v-for="edition, editionNumber in editions">
+          <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions">
             <div class="card-target">
-              <div class="card shadow-sm">
-                <img class="card-img-top" :src="edition.lowResImg"/>
-                <div class="card-body">
-                  <p class="card-title">{{ edition.otherMeta.artworkName }}</p>
-                  <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
-                  <span class="pl-1 artist-name" v-on:click="goToArtist(edition.artistAccount)">{{ edition.otherMeta.artist }}</span>
+              <router-link class="card-target" :to="{ name: 'confirmPurchaseV2', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
+                <div class="card shadow-sm">
+                  <img class="card-img-top" :src="edition.lowResImg"/>
+                  <div class="card-body">
+                    <p class="card-title">{{ edition.otherMeta.artworkName }}</p>
+                    <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
+                    <span class="pl-1 artist-name" v-on:click="goToArtist(edition.artistAccount)">{{ edition.otherMeta.artist }}</span>
 
-                  <span class="pl-1 artist-name">
-                    <rarity-indicator :total-available="edition.totalAvailable"></rarity-indicator>
-                  </span>
+                    <span class="pl-1 artist-name">
+                      <rarity-indicator :total-available="edition.totalAvailable"></rarity-indicator>
+                    </span>
 
-                  <span class="pl-1 artist-name">
-                    <metadata-attributes :other-meta="edition.otherMeta"></metadata-attributes>
-                  </span>
+                    <span class="pl-1 artist-name">
+                      <metadata-attributes :other-meta="edition.otherMeta"></metadata-attributes>
+                    </span>
 
-                  <!-- TODO HIGH-RES -->
-                  <!-- TODO AUCTION START DATE -->
+                    <high-res-label :asset="edition"></high-res-label>
 
-                </div>
-                <div class="card-footer">
-                  <div class="row">
-                    <div class="col">
-                      {{ edition.totalAvailable }} available
+                    <!-- TODO AUCTION START DATE -->
+
+                  </div>
+                  <div class="card-footer">
+                    <div class="row">
+                      <div class="col">
+                        {{ edition.totalAvailable }} available
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col">
+                        <tweet-asset-button :edition="edition"></tweet-asset-button>
+                      </div>
+                      <div class="col text-right">{{ edition.priceInEther }} ETH</div>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col">
-                      <tweet-asset-button :edition="edition"></tweet-asset-button>
-                    </div>
-                    <div class="col text-right">{{ edition.priceInEther }} ETH</div>
-                  </div>
                 </div>
-              </div>
+              </router-link>
             </div>
           </div>
         </div>
@@ -62,10 +64,12 @@
   import RarityIndicator from "../ui-controls/RarityIndicatorV2";
   import MetadataAttributes from "../ui-controls/MetadataAttributesV2";
   import TweetAssetButton from "../ui-controls/TweetAssetButtonV2";
+  import HighResLabel from "../ui-controls/HighResLabelV2";
 
   export default {
     name: 'artistPage',
     components: {
+      HighResLabel,
       TweetAssetButton,
       MetadataAttributes,
       RarityIndicator,
