@@ -107,7 +107,7 @@
         () => this.$store.state.KnownOriginDigitalAssetV2,
         (newValue, oldValue) => {
           if (newValue) {
-            this.$store.dispatch(`v2/${actions.LOAD_FEATURE_EDITIONS}`)
+            this.$store.dispatch(`v2/${actions.LOAD_FEATURED_EDITIONS}`)
               .then(() => {
                 setTimeout(function () {
                   this.$store.dispatch(`v2/${actions.LOAD_EDITIONS_FOR_TYPE}`, {editionType: 1});

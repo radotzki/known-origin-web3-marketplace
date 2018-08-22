@@ -46,6 +46,9 @@ const store = new Vuex.Store({
     // TODO this should be on 'assets'
     assetsPurchasedByAccount: [],
 
+    // TODO Move to V2?
+    v2AccountAssets: [],
+
     KnownOriginDigitalAsset: null,
     KnownOriginDigitalAssetV2: null,
     web3: null,
@@ -111,21 +114,15 @@ const store = new Vuex.Store({
     },
   },
   actions: {
-    [actions.GET_ASSETS_PURCHASED_FOR_ACCOUNT]({commit, dispatch, state}) {
-      KnownOriginDigitalAsset.deployed()
-        .then((contract) => {
-          return contract.tokensOf(state.account)
-            .then((tokens) => {
-              commit(mutations.SET_ASSETS_PURCHASED_FROM_ACCOUNT, tokens);
+    async [actions.GET_ASSETS_PURCHASED_FOR_ACCOUNT]({commit, dispatch, state}) {
+      const contract = await KnownOriginDigitalAsset.deployed();
 
-              // Note: this must happen after committing the accounts balance
-              dispatch(`purchase/${actions.UPDATE_PURCHASE_STATE_FOR_ACCOUNT}`);
-            });
-        })
-        .catch((e) => {
-          console.error(e);
-          // TODO handle errors
-        });
+      const tokens = await contract.tokensOf(state.account);
+
+      commit(mutations.SET_ASSETS_PURCHASED_FROM_ACCOUNT, tokens);
+
+      // Note: this must happen after committing the accounts balance
+      dispatch(`purchase/${actions.UPDATE_PURCHASE_STATE_FOR_ACCOUNT}`);
     },
     [actions.GET_CURRENT_NETWORK]({commit, dispatch, state}) {
       getNetIdString()
@@ -191,6 +188,8 @@ const store = new Vuex.Store({
                 let accountBalance = Web3.utils.fromWei(balance);
                 // store the account details
                 commit(mutations.SET_ACCOUNT, {account, accountBalance});
+
+                dispatch(`v2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account});
               });
           };
 

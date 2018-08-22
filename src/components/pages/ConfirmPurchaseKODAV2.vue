@@ -50,7 +50,7 @@
         () => this.$store.state.KnownOriginDigitalAssetV2,
         (newValue, oldValue) => {
           if (newValue) {
-            this.$store.dispatch(`v2/${actions.LOAD_SPECIFIC_EDITION}`, {editionNumber: this.$route.params.editionNumber});
+            this.$store.dispatch(`v2/${actions.LOAD_INDIVIDUAL_EDITION}`, {editionNumber: this.$route.params.editionNumber});
           }
         });
     }

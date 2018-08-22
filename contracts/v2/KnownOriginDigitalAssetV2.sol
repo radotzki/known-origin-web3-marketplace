@@ -35,9 +35,9 @@ Pausable
   // On purchases from within this contract - bought through mint/mintTo
   event Purchase(
     uint256 indexed _tokenId,
-    uint256 indexed _costInWei,
-    address indexed _buyer
-    // TODO add edition number to this for completeness
+    uint256 indexed _editionNumber,
+    address indexed _buyer,
+    uint256 _costInWei
   );
 
   // Emitted on every mint
@@ -136,6 +136,11 @@ Pausable
 
   modifier onlyRealEdition(uint256 _editionNumber) {
     require(editionNumberToEditionDetails[_editionNumber].editionNumber > 0, "Edition number invalid");
+    _;
+  }
+
+  modifier onlyValidTokenId(uint256 _tokenId) {
+    require(exists(_tokenId), "Token ID does not exist");
     _;
   }
 
@@ -345,7 +350,7 @@ Pausable
     _handleFunds(_editionNumber);
 
     // Broadcast purchase
-    emit Purchase(_tokenId, msg.value, _to);
+    emit Purchase(_tokenId, _editionNumber, _to, msg.value);
 
     return _tokenId;
   }
@@ -715,14 +720,16 @@ Pausable
     );
   }
 
-  function tokenIdentificationData(uint256 _tokenId) public view returns (
+  function tokenData(uint256 _tokenId)
+  public view
+  onlyValidTokenId(_tokenId)
+  returns (
     uint256 _editionNumber,
     uint8 _editionType,
     bytes32 _editionData,
     string _tokenURI,
     address _owner
   ) {
-    require(exists(_tokenId));
     uint256 editionNumber = tokenIdToEditionNumber[_tokenId];
     EditionDetails memory editionDetails = editionNumberToEditionDetails[editionNumber];
     return (
@@ -734,49 +741,37 @@ Pausable
     );
   }
 
-  function tokenEditionData(uint256 _tokenId) public view returns (
-    uint256 _editionNumber,
-    uint8 _editionType,
-    uint32 _startDate,
-    uint32 _endDate,
-    address _artistAccount,
-    uint8 _artistCommission,
-    uint256 _priceInWei,
-    uint256 _totalAvailable,
-    uint256 _totalSupply
-  ) {
-    require(exists(_tokenId));
-    uint256 editionNumber = tokenIdToEditionNumber[_tokenId];
-    return editionData(editionNumber);
-  }
-
-  function editionData(uint256 editionNumber)
+  function tokenEditionData(uint256 _tokenId)
   public view
-  onlyRealEdition(editionNumber)
+  onlyValidTokenId(_tokenId)
   returns (
     uint256 _editionNumber,
+    bytes32 _editionData,
     uint8 _editionType,
-    uint32 _startDate,
-    uint32 _endDate,
     address _artistAccount,
     uint8 _artistCommission,
     uint256 _priceInWei,
-    uint256 _totalAvailable,
-    uint256 _totalSupply
+    string _tokenURI,
+    uint8 _totalSupply,
+    uint8 _totalAvailable,
+    bool _active
   ) {
-    EditionDetails memory editionDetails = editionNumberToEditionDetails[editionNumber];
+    uint256 editionNumber = tokenIdToEditionNumber[_tokenId];
+    EditionDetails memory _editionDetails = editionNumberToEditionDetails[editionNumber];
     return (
     editionNumber,
-    editionDetails.editionType,
-    editionDetails.startDate,
-    editionDetails.endDate,
-    editionDetails.artistAccount,
-    editionDetails.artistCommission,
-    editionDetails.priceInWei,
-    editionDetails.totalAvailable,
-    editionDetails.totalSupply
+    _editionDetails.editionData,
+    _editionDetails.editionType,
+    _editionDetails.artistAccount,
+    _editionDetails.artistCommission,
+    _editionDetails.priceInWei,
+    Strings.strConcat(tokenBaseURI, _editionDetails.tokenURI),
+    _editionDetails.totalSupply,
+    _editionDetails.totalAvailable,
+    _editionDetails.active
     );
   }
+
 
   function editionExists(uint256 _editionNumber) public view returns (bool) {
     EditionDetails memory editionNumber = editionNumberToEditionDetails[_editionNumber];
@@ -784,8 +779,10 @@ Pausable
   }
 
   // Throws
-  function tokenURI(uint256 _tokenId) public view returns (string) {
-    require(exists(_tokenId));
+  function tokenURI(uint256 _tokenId)
+  public view
+  onlyValidTokenId(_tokenId)
+  returns (string) {
     return Strings.strConcat(tokenBaseURI, tokenURIs[_tokenId]);
   }
 
@@ -802,6 +799,15 @@ Pausable
   function tokensOf(address _owner) public view returns (uint256[] _tokenIds) {
     return ownedTokens[_owner];
   }
+
+//  function editionsOf(address _owner) public view returns (uint256[] _editionNumbers) {
+//    uint256[] storage tokens = ownedTokens[_owner];
+//    uint256[] memory editions = new uint256[](tokens.length);
+//    for (uint i = 0; i < tokens.length; i++) {
+//      editions[i] = editionOfTokenId(tokens[i]);
+//    }
+//    return editions;
+//  }
 
   function editionTotalAvailable(uint256 _editionNumber) public view returns (uint256) {
     EditionDetails memory _editionDetails = editionNumberToEditionDetails[_editionNumber];

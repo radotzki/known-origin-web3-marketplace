@@ -33,23 +33,19 @@ const purchaseStateModule = {
       state.purchaseState = {
         ...state.purchaseState,
         [editionNumber]: {
-          editionNumber: editionNumber,
-          account,
-          state: 'PURCHASE_TRIGGERED'
+          editionNumber, account, state: 'PURCHASE_TRIGGERED'
         }
       };
     },
     [mutations.PURCHASE_FAILED](state, {editionNumber, account}) {
-      // // Guard against the timed account check winner and the event coming through as failed
-      // if (state.purchaseState[tokenId] && state.purchaseState[tokenId].state === 'PURCHASE_SUCCESSFUL') {
-      //   return;
-      // }
+      // Guard against the timed account check winner and the event coming through as failed
+      if (state.purchaseState[editionNumber] && state.purchaseState[editionNumber].state === 'PURCHASE_SUCCESSFUL') {
+        return;
+      }
       state.purchaseState = {
         ...state.purchaseState,
         [editionNumber]: {
-          editionNumber: editionNumber,
-          account,
-          state: 'PURCHASE_FAILED'
+          editionNumber, account, state: 'PURCHASE_FAILED'
         }
       };
     },
@@ -57,7 +53,7 @@ const purchaseStateModule = {
       state.purchaseState = {
         ...state.purchaseState,
         [editionNumber]: {
-          editionNumber: editionNumber,
+          editionNumber,
           account,
           transaction: state.purchaseState[editionNumber].transaction,
           state: 'PURCHASE_SUCCESSFUL'
@@ -65,27 +61,21 @@ const purchaseStateModule = {
       };
     },
     [mutations.PURCHASE_STARTED](state, {editionNumber, account, transaction}) {
-      // // Guard against the timed account check beating the event callbacks
-      // if (state.purchaseState[tokenId].state === 'PURCHASE_SUCCESSFUL') {
-      //   state.purchaseState = {
-      //     ...state.purchaseState,
-      //     [tokenId]: {
-      //       tokenId: tokenId.toString(),
-      //       buyer,
-      //       transaction,
-      //       state: 'PURCHASE_SUCCESSFUL'
-      //     }
-      //   };
-      //   return;
-      // }
+      // Guard against the timed account check beating the event callbacks
+      if (state.purchaseState[tokenId].state === 'PURCHASE_SUCCESSFUL') {
+        state.purchaseState = {
+          ...state.purchaseState,
+          [editionNumber]: {
+            editionNumber, account, transaction, state: 'PURCHASE_SUCCESSFUL'
+          }
+        };
+        return;
+      }
 
       state.purchaseState = {
         ...state.purchaseState,
         [editionNumber]: {
-          editionNumber: editionNumber,
-          account,
-          transaction,
-          state: 'PURCHASE_STARTED'
+          editionNumber, account, transaction, state: 'PURCHASE_STARTED'
         }
       };
     },
@@ -95,17 +85,22 @@ const purchaseStateModule = {
     },
   },
   actions: {
+    [actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT]: async function ({commit, dispatch, state, rootState}, {account}) {
+      let contract = await rootState.KnownOriginDigitalAssetV2.deployed();
+
+      const tokenIds = await contract.editionsOf(account);
+
+      const tokenDatas = _.map(tokenIds, (tokenId) => contract.tokenEditionData(tokenId));
+
+      const allTokenData = await Promise.all(tokenDatas);
+
+      console.log(allTokenData);
+
+    },
     [actions.PURCHASE_EDITION]: async function ({commit, dispatch, state, rootState}, {edition, account}) {
       Vue.$log.debug(`Attempting purchase of [${edition.edition}] from account [${account}]`);
 
-      let contract;
-      try {
-        contract = await rootState.KnownOriginDigitalAssetV2.deployed();
-      } catch (e) {
-        console.log('Failure', e);
-        commit(mutations.PURCHASE_FAILED, {editionNumber: edition.edition, account});
-        return;
-      }
+      let contract = await rootState.KnownOriginDigitalAssetV2.deployed();
 
       commit(mutations.PURCHASE_TRIGGERED, {editionNumber: edition.edition, account});
 
@@ -114,30 +109,28 @@ const purchaseStateModule = {
         value: edition.priceInWei
       });
 
-      let mintedEvent = contract.Minted({_editionNumber: edition.edition, _to: account}, {
+      let mintedEvent = contract.Minted({_editionNumber: edition.edition, _buyer: account}, {
         fromBlock: web3.eth.blockNumber,
         toBlock: 'latest' // wait until event comes through
       });
 
-      // // Trigger a timer to check the accounts purchases - can provide update faster waiting for the event
-      // const timer = setInterval(function () {
-      //   console.log("Dispatching GET_ASSETS_PURCHASED_FOR_ACCOUNT");
-      //   dispatch(actions.GET_ASSETS_PURCHASED_FOR_ACCOUNT, null, {root: true});
-      // }, 1000);
+      // Trigger a timer to check the accounts purchases - can provide update faster waiting for the event
+      const timer = setInterval(function () {
+        console.log("Dispatching GET_ASSETS_PURCHASED_FOR_ACCOUNT");
+        dispatch(`v2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account}, {root: true});
+      }, 1000);
 
-      mintedEvent.watch(function (error, result) {
+      mintedEvent.watch(function (error, event) {
         if (!error) {
-          console.log('Purchase successful', result);
-          // TODO reinstate these below
-          // dispatch(`contract/${actions.REFRESH_CONTRACT_DETAILS}`, null, {root: true});
-          // dispatch(actions.GET_ASSETS_PURCHASED_FOR_ACCOUNT, null, {root: true});
+          console.log('Purchase successful', event);
+          dispatch(`v2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account}, {root: true});
           commit(mutations.PURCHASE_SUCCESSFUL, {editionNumber: edition.edition, account});
         } else {
           console.log('Failure', error);
           commit(mutations.PURCHASE_FAILED, {editionNumber: edition.edition, account});
           mintedEvent.stopWatching();
         }
-        //if (timer) clearInterval(timer);
+        if (timer) clearInterval(timer);
       });
 
       purchase
@@ -148,7 +141,7 @@ const purchaseStateModule = {
         .catch((error) => {
           console.log('Purchase rejection/error', error);
           commit(mutations.PURCHASE_FAILED, {editionNumber: edition.edition, account});
-          //if (timer) clearInterval(timer);
+          if (timer) clearInterval(timer);
         });
     },
     [actions.RESET_PURCHASE_STATE]: function ({commit, dispatch, state}, {edition}) {

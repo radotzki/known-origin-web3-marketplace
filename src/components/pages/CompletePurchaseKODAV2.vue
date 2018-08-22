@@ -1,8 +1,6 @@
 <template>
   <div class="container">
 
-    <!-- TODO loading -->
-
     <div v-if="edition" class="row justify-content-sm-center">
       <div class="col col-sm-6">
         <div class="card shadow-sm">
@@ -121,8 +119,9 @@
 
               </div>
 
-              <router-link v-if="isPurchaseSuccessful(edition.edition, account)" tag="button"
-                           class="btn btn-outline-primary btn-block">
+              <router-link :to="{ name: 'account'}"
+                           v-if="isPurchaseSuccessful(edition.edition, account)"
+                           tag="button" class="btn btn-outline-primary btn-block">
                 View account
               </router-link>
 
@@ -197,6 +196,9 @@
       ...mapGetters('v2', [
         'findEdition',
       ]),
+      accountAlreadyPurchasedEdition: function () {
+
+      },
       title: function () {
         return `${this.$route.params.edition} - ID ${this.$route.params.tokenId}`;
       },
@@ -225,7 +227,7 @@
         () => this.$store.state.KnownOriginDigitalAssetV2,
         (newValue, oldValue) => {
           if (newValue) {
-            this.$store.dispatch(`v2/${actions.LOAD_SPECIFIC_EDITION}`, {editionNumber: this.$route.params.editionNumber});
+            this.$store.dispatch(`v2/${actions.LOAD_INDIVIDUAL_EDITION}`, {editionNumber: this.$route.params.editionNumber});
           }
         });
 

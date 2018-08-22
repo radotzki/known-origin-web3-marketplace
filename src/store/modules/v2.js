@@ -69,8 +69,8 @@ const contractStateModule = {
     },
   },
   actions: {
-    async [actions.LOAD_FEATURE_EDITIONS]({commit, dispatch, state, rootState}) {
-      console.log("LOAD_FEATURE_EDITIONS");
+    async [actions.LOAD_FEATURED_EDITIONS]({commit, dispatch, state, rootState}) {
+      console.log("LOAD_FEATURED_EDITIONS");
       const contract = await rootState.KnownOriginDigitalAssetV2.deployed();
 
       _.forEach(FEATURED_ARTWORK, async function (edition) {
@@ -100,7 +100,7 @@ const contractStateModule = {
         commit(mutations.SET_EDITION, data);
       });
     },
-    async [actions.LOAD_SPECIFIC_EDITION]({commit, dispatch, state, rootState}, {editionNumber}) {
+    async [actions.LOAD_INDIVIDUAL_EDITION]({commit, dispatch, state, rootState}, {editionNumber}) {
       console.log("editionNumber", editionNumber);
       const contract = await rootState.KnownOriginDigitalAssetV2.deployed();
       const data = await loadEditionData(contract, editionNumber);
@@ -110,7 +110,7 @@ const contractStateModule = {
 };
 
 const setEditionData = function (data, state) {
-  let {edition, editionType} = data;
+  let {edition} = data;
   Vue.set(state.assets, edition, data);
 };
 
