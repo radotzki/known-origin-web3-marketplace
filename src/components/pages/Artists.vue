@@ -22,9 +22,6 @@
       ...mapGetters([
         'liveArtists',
       ]),
-      ...mapState('assets', [
-        'assets',
-      ]),
     },
     mounted () {
 

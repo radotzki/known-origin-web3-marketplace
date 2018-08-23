@@ -68,7 +68,7 @@ const store = new Vuex.Store({
       });
     },
     liveArtists: (state) => {
-      return state.artists.filter((a) => a.live);
+      return state.artists.filter((a) => a.live).filter((a) => a.ethAddress);
     },
     isOnMainnet: (state) => {
       if (!state.currentNetwork) {

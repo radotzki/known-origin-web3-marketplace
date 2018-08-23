@@ -4,6 +4,7 @@ import * as mutations from '../mutation';
 import _ from 'lodash';
 import Web3 from 'web3';
 import axios from 'axios';
+import {isHighRes} from "../../utils";
 
 const FEATURED_ARTWORK = [
   10700, // Oficinas TK
@@ -87,14 +88,14 @@ const contractStateModule = {
       // Find the token IDs the account owns
       const tokenIds = await contract.tokensOf(account);
       const tokenAndEditions = await Promise.all(
-        _.map(tokenIds, (tokenId) => editionOfTokenId(contract, tokenId))
+        _.map(tokenIds, (tokenId) => editionOfTokenId(contract, tokenId.toString("10")))
       );
       commit(mutations.SET_ACCOUNT_TOKENS, tokenAndEditions);
 
       // Lookup the editions for those tokens
       const uniqueEditionNumbers = _.uniqBy(tokenAndEditions, 'editionNumber');
       const editions = await Promise.all(
-        _.map(uniqueEditionNumbers, (editionNumber) => loadEditionData(contract, editionNumber))
+        _.map(uniqueEditionNumbers, ({edition}) => loadEditionData(contract, edition))
       );
       commit(mutations.SET_EDITIONS, editions);
 
@@ -170,7 +171,8 @@ const loadEditionData = async (contract, edition) => {
   return {
     edition: typeof edition === 'number' ? edition : _.toNumber(edition),
     ...ipfsData,
-    ...allEditionData
+    ...allEditionData,
+    highResAvailable: false // TODO re-enable high-res when ready
   };
 };
 

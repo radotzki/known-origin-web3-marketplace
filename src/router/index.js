@@ -41,11 +41,6 @@ export default new Router({
       component: GalleryV2
     },
     {
-      path: '/artists',
-      name: 'artists',
-      component: Artists
-    },
-    {
       path: '/contractDetails',
       name: 'details',
       component: ContractDetails
@@ -136,6 +131,11 @@ export default new Router({
       name: 'completePurchaseV2',
       component: CompletePurchaseKODAV2,
       props: true
+    },
+    {
+      path: '/artists',
+      name: 'artists',
+      component: Artists
     },
   ]
 });

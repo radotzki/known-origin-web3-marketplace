@@ -31,7 +31,7 @@
         </ul>
         <ul class="navbar-nav">
           <li class="nav-item d-none d-md-block">
-            <router-link :to="{ name: 'gallery' }" class="nav-link">Gallery</router-link>
+            <router-link :to="{ name: 'galleryV2' }" class="nav-link">Gallery</router-link>
           </li>
           <li class="nav-item d-none d-md-block">
             <router-link :to="{ name: 'artists' }" class="nav-link">Artists</router-link>
