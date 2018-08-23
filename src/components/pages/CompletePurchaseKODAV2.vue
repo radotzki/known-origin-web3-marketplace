@@ -85,10 +85,11 @@
             </li>
           </ul>
 
-          <div class="card-footer" v-if="!isPurchaseFailed(edition.edition, account)">
+          <div class="card-footer"
+               v-if="!isPurchaseFailed(edition.edition, account) && haveNotPurchasedEditionBefore(edition.edition)">
             <form v-if="account">
 
-              <div v-if="edition">
+              <div v-if="edition || !editionPurchaseState(edition.edition)">
 
                 <div class="form-check mb-2" v-if="isNotSoldOut">
                   <label class="form-check-label" :for="'confirm_terms'">
@@ -108,7 +109,8 @@
                 <div class="btn-group-vertical btn-block">
                   <button type="button" class="btn btn-success btn-block text-white"
                           :disabled="!confirm_terms || isPurchaseTriggered(edition.edition, account)"
-                          v-on:click="completePurchase" v-if="isNotSoldOut">
+                          v-on:click="completePurchase"
+                          v-if="isNotSoldOut || !isPurchaseSuccessful(edition.edition, account)">
                     Confirm buy
                   </button>
 
@@ -131,6 +133,12 @@
               Your account is locked!
             </p>
 
+          </div>
+
+          <div class="card-footer" v-if="!haveNotPurchasedEditionBefore(edition.edition)">
+            <p class="text-center pt-2">
+              It looks like you have already purchased this edition!
+            </p>
           </div>
 
           <div v-if="isPurchaseFailed(edition.edition, account)" class="card-footer">
@@ -194,11 +202,9 @@
         'getTransactionForEdition',
       ]),
       ...mapGetters('v2', [
+        'haveNotPurchasedEditionBefore',
         'findEdition',
       ]),
-      accountAlreadyPurchasedEdition: function () {
-
-      },
       title: function () {
         return `${this.$route.params.edition} - ID ${this.$route.params.tokenId}`;
       },
@@ -228,6 +234,7 @@
         (newValue, oldValue) => {
           if (newValue) {
             this.$store.dispatch(`v2/${actions.LOAD_INDIVIDUAL_EDITION}`, {editionNumber: this.$route.params.editionNumber});
+            this.$store.dispatch(`v2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account: this.account});
           }
         });
 

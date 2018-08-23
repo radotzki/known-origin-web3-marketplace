@@ -30,6 +30,10 @@ const contractStateModule = {
     accountOwnedEditions: [],
   },
   getters: {
+    haveNotPurchasedEditionBefore: (state) => (editionNumber) => {
+      const found = _.find(state.accountOwnedEditions, {edition: editionNumber});
+      return !found;
+    },
     featuredEditions: (state) => () => {
       return _.pickBy(state.assets, function (value, key) {
         return FEATURED_ARTWORK.indexOf(_.toNumber(key)) > 0;
