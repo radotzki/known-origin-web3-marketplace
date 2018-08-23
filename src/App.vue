@@ -357,7 +357,7 @@
   }
 
   .artist-name {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
   }
 
   .artist-avatar {

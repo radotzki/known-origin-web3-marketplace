@@ -10,11 +10,12 @@
     </div>
 
 
-    <div class="row editions-wrap" v-if="assetsPurchasedByAccount.length > 0">
+    <div class="row editions-wrap" v-if="assetsPurchasedByAccount.length > 0 || accountOwnedEditions.length > 0">
       <div class="card-deck">
+
+        <!-- V1 -->
         <div class="col-auto mx-auto mb-5" v-for="tokenId, key in assetsPurchasedByAccount" :key="key">
           <div class="card shadow-sm">
-
             <img class="card-img-top" :src="assetById(tokenId).lowResImg"/>
             <div class="card-body">
               <p class="card-title">{{ assetById(tokenId).artworkName }}</p>
@@ -26,10 +27,27 @@
             </div>
           </div>
         </div>
+
+        <!-- V2 -->
+        <div class="col-auto mx-auto mb-5" v-for="edition in accountOwnedEditions">
+          <div class="card shadow-sm">
+            <img class="card-img-top" :src="edition.lowResImg"/>
+            <div class="card-body">
+              <p class="card-title">{{ edition.otherMeta.artworkName }}</p>
+              <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
+              <span class="pl-1 artist-name">{{ edition.otherMeta.artist }}</span>
+            </div>
+            <div class="card-footer bg-danger text-white text-center">
+              SOLD
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
-    <div v-if="assetsPurchasedByAccount.length == 0" class="row justify-content-sm-center">
+
+    <div v-if="assetsPurchasedByAccount && accountOwnedEditions && assetsPurchasedByAccount.length == 0 && accountOwnedEditions.length == 0" class="row justify-content-sm-center">
       <div class="col col-sm-6 text-center">
         <div class="alert alert-secondary" role="alert">You don't have any digital assets yet.</div>
         <router-link :to="{ name: 'gallery' }" class="btn btn-outline-primary btn-lg">Open gallery</router-link>
@@ -58,9 +76,13 @@
         'accountBalance',
         'assetsPurchasedByAccount',
       ]),
+      ...mapState('v2', [
+        'accountOwnedEditions'
+      ]),
       ...mapGetters([
         'liveArtists',
-        'findArtist'
+        'findArtist',
+        'findArtistsForAddress'
       ]),
       ...mapGetters('assets', [
         'assetById',

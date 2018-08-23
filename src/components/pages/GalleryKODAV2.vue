@@ -31,28 +31,24 @@
       <div class="row editions-wrap">
         <div class="card-deck">
           <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions">
-            <div class="card-target">
+            <router-link class="card-target" :to="{ name: 'confirmPurchaseV2', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
               <div class="card shadow-sm">
-                <router-link class="card-target"
-                             :to="{ name: 'confirmPurchaseV2', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
-                  <img class="card-img-top" :src="edition.lowResImg"/>
-                  <div class="card-body">
-                    <p class="card-title">{{ edition.otherMeta.artworkName }}</p>
-                    <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
-                    <a class="pl-1 artist-name">{{ edition.otherMeta.artist }}</a>
-                  </div>
-                  <div class="card-footer">
-                    <div class="row">
-                      <div class="col">
-                        {{ edition.totalAvailable }} available
-                      </div>
-                      <div class="col text-right">{{ edition.priceInEther }} ETH</div>
+                <img class="card-img-top" :src="edition.lowResImg"/>
+                <div class="card-body">
+                  <p class="card-title">{{ edition.otherMeta.artworkName }}</p>
+                  <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
+                  <a class="pl-1 artist-name">{{ edition.otherMeta.artist }}</a>
+                </div>
+                <div class="card-footer">
+                  <div class="row">
+                    <div class="col">
+                      {{ edition.totalAvailable }} available
                     </div>
+                    <div class="col text-right">{{ edition.priceInEther }} ETH</div>
                   </div>
-                </router-link>
+                </div>
               </div>
-
-            </div>
+            </router-link>
           </div>
         </div>
       </div>
@@ -62,7 +58,7 @@
 
 <script>
 
-  import {mapGetters, mapState} from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
   import GalleryEdition from '../GalleryEdition';
   import LoadingSpinner from '../ui-controls/LoadingSpinner.vue';
   import _ from 'lodash';
@@ -76,7 +72,7 @@
       GalleryEdition,
       Available
     },
-    data() {
+    data () {
       return {
         priceFilter: 'featured'
       };
@@ -116,7 +112,6 @@
           }
         });
 
-
       if (this.$store.state.KnownOriginDigitalAssetV2) {
         this.$store.dispatch(`v2/${actions.LOAD_FEATURED_EDITIONS}`)
           .then(() => {
@@ -130,94 +125,5 @@
 </script>
 
 <style scoped lang="scss">
-  .full-banner {
-    p {
-      margin-bottom: 0;
-    }
-  }
 
-  .full-banner-secondary {
-
-  }
-
-  .card-img-top {
-    object-fit: cover;
-    height: 12rem;
-  }
-
-  .card {
-    width: 14rem;
-    height: 21.5rem;
-  }
-
-  .card-title {
-    font-size: 0.9rem;
-  }
-
-  .card-body {
-    padding: 1rem;
-  }
-
-  .card-footer {
-    padding: 0.5rem;
-    font-size: 0.75rem;
-  }
-
-  .card-target {
-    color: inherit;
-  }
-
-  a:hover {
-    text-decoration: none;
-  }
-
-  .sub-filter {
-    cursor: pointer;
-    padding-left: 3rem;
-    padding-right: 3rem;
-  }
-
-  .editions-wrap {
-    margin-left: 50px;
-    margin-right: 50px;
-  }
-
-  /* mobile only */
-  @media screen and (max-width: 767px) {
-    .card-deck {
-      flex-flow: row wrap;
-    }
-
-    .card-img-top {
-      object-fit: cover;
-      height: 15rem;
-    }
-
-    .card {
-      width: 18.5rem;
-      height: 25rem;
-    }
-
-    .full-banner {
-      font-size: 1.5rem;
-    }
-
-    .sub-filter {
-      padding-left: 0.7rem;
-      padding-right: 0.7rem;
-    }
-
-    .editions-wrap {
-      margin-left: -30px;
-      margin-right: -30px;
-    }
-  }
-
-  .artist-name {
-    font-size: 0.75rem;
-  }
-
-  .artist-avatar {
-    max-width: 30px;
-  }
 </style>
