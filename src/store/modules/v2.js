@@ -4,7 +4,6 @@ import * as mutations from '../mutation';
 import _ from 'lodash';
 import Web3 from 'web3';
 import axios from 'axios';
-import {isHighRes} from '../../utils';
 
 const FEATURED_ARTWORK = [
   10700, // Oficinas TK
@@ -26,6 +25,8 @@ const contractStateModule = {
   namespaced: true,
   state: {
     assets: {},
+    accountOwnedTokens: [],
+    accountOwnedEditions: [],
   },
   getters: {
     featuredEditions: (state) => () => {
@@ -61,14 +62,53 @@ const contractStateModule = {
     },
     isStartDateInTheFuture: (state) => (startDate) => {
       return startDate > (new Date().getTime() / 1000);
-    }
+    },
   },
   mutations: {
+    [mutations.SET_ACCOUNT_TOKENS](state, tokenAndEditions) {
+      Vue.set(state, 'accountOwnedTokens', tokenAndEditions);
+    },
+    [mutations.SET_ACCOUNT_EDITIONS](state, accountOwnedEditions) {
+      Vue.set(state, 'accountOwnedEditions', accountOwnedEditions);
+    },
     [mutations.SET_EDITION](state, data) {
       setEditionData(data, state);
     },
+    [mutations.SET_EDITIONS](state, editions) {
+      _.forEach(editions, (data) => {
+        setEditionData(data, state);
+      });
+    },
   },
   actions: {
+    [actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT]: async function ({commit, dispatch, state, rootState}, {account}) {
+      let contract = await rootState.KnownOriginDigitalAssetV2.deployed();
+
+      // Find the token IDs the account owns
+      const tokenIds = await contract.tokensOf(account);
+      const tokenAndEditions = await Promise.all(
+        _.map(tokenIds, (tokenId) => editionOfTokenId(contract, tokenId))
+      );
+      commit(mutations.SET_ACCOUNT_TOKENS, tokenAndEditions);
+
+      // Lookup the editions for those tokens
+      const uniqueEditionNumbers = _.unique(tokenAndEditions, 'editionNumber');
+      const editions = await Promise.all(
+        _.map(uniqueEditionNumbers, (editionNumber) => loadEditionData(contract, editionNumber))
+      );
+      commit(mutations.SET_EDITIONS, editions);
+
+      // Construct a data structure to represent an edition with the corresponding token ID
+      const accountOwnedEditions = [];
+      _.forEach(tokenAndEditions, ({tokenId, edition}) => {
+        const foundEdition = _.find(editions, {edition});
+        accountOwnedEditions.push({
+          tokenId,
+          ...foundEdition,
+        });
+      });
+      commit(mutations.SET_ACCOUNT_EDITIONS, accountOwnedEditions);
+    },
     async [actions.LOAD_FEATURED_EDITIONS]({commit, dispatch, state, rootState}) {
       console.log("LOAD_FEATURED_EDITIONS");
       const contract = await rootState.KnownOriginDigitalAssetV2.deployed();
@@ -91,6 +131,7 @@ const contractStateModule = {
       });
     },
     async [actions.LOAD_EDITIONS_FOR_ARTIST]({commit, dispatch, state, rootState}, {artistAccount}) {
+      console.log("LOAD_EDITIONS_FOR_ARTIST", artistAccount);
 
       const contract = await rootState.KnownOriginDigitalAssetV2.deployed();
       const editions = await contract.artistsEditions(artistAccount);
@@ -114,17 +155,23 @@ const setEditionData = function (data, state) {
   Vue.set(state.assets, edition, data);
 };
 
+const editionOfTokenId = async (contract, tokenId) => {
+  let edition = await contract.editionOfTokenId(tokenId);
+  return {
+    tokenId,
+    edition: typeof edition === 'number' ? edition : _.toNumber(edition),
+  }
+};
+
 const loadEditionData = async (contract, edition) => {
   const allEditionData = mapData(await contract.allEditionData(edition));
   const ipfsData = await lookupIPFSData(allEditionData.tokenURI);
 
-  const data = {
+  return {
     edition: typeof edition === 'number' ? edition : _.toNumber(edition),
     ...ipfsData,
     ...allEditionData
   };
-
-  return data;
 };
 
 const mapData = (rawData) => {

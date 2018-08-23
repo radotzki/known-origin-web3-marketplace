@@ -85,18 +85,6 @@ const purchaseStateModule = {
     },
   },
   actions: {
-    [actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT]: async function ({commit, dispatch, state, rootState}, {account}) {
-      let contract = await rootState.KnownOriginDigitalAssetV2.deployed();
-
-      const tokenIds = await contract.editionsOf(account);
-
-      const tokenDatas = _.map(tokenIds, (tokenId) => contract.tokenEditionData(tokenId));
-
-      const allTokenData = await Promise.all(tokenDatas);
-
-      console.log(allTokenData);
-
-    },
     [actions.PURCHASE_EDITION]: async function ({commit, dispatch, state, rootState}, {edition, account}) {
       Vue.$log.debug(`Attempting purchase of [${edition.edition}] from account [${account}]`);
 
