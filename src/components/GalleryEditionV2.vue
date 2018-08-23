@@ -3,7 +3,7 @@
     <img class="card-img-top" :src="edition.lowResImg"/>
 
     <ul class="list-group list-group-flush">
-      <li class="list-group-item text-center">
+      <li class="list-group-item text-center no-top-border">
         <span class="edition-data float-left">{{ edition.totalAvailable - edition.totalSupply }} available</span>
         <span class="edition-data float-right">1 of {{ edition.totalAvailable }}</span>
       </li>
@@ -97,79 +97,8 @@
     border-bottom: 0 none;
   }
 
-  .card-img-top {
-    object-fit: cover;
-  }
-
-  .card {
-    height: 100%;
-  }
-
-  .card-title {
-    font-size: 0.9rem;
-  }
-
-  .card-desc {
-    font-size: 0.75rem;
-  }
-
-  .card-body {
-    padding: 1rem;
-  }
-
-  .card-footer {
-    padding: 0.5rem;
-    font-size: 0.75rem;
-  }
-
-  .card-target {
-    color: inherit;
-  }
-
-  a:hover {
-    text-decoration: none;
-  }
-
-  .sub-filter {
-    cursor: pointer;
-    padding-left: 3rem;
-    padding-right: 3rem;
-  }
-
-  .editions-wrap {
-    margin-left: 50px;
-    margin-right: 50px;
-  }
-
-  /* mobile only */
-  @media screen and (max-width: 767px) {
-    .card-deck {
-      flex-flow: row wrap;
-    }
-
-    .card-img-top {
-      object-fit: cover;
-      height: 15rem;
-    }
-
-    .card {
-      width: 18.5rem;
-      height: 25rem;
-    }
-
-    .full-banner {
-      font-size: 1.5rem;
-    }
-
-    .sub-filter {
-      padding-left: 0.7rem;
-      padding-right: 0.7rem;
-    }
-
-    .editions-wrap {
-      margin-left: -30px;
-      margin-right: -30px;
-    }
+  li.no-top-border {
+    border-top: 0 none;
   }
 
   .artist-name {

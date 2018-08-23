@@ -138,12 +138,7 @@
 
   @import url('https://fonts.googleapis.com/css?family=Poppins:400,500,700');
 
-  $body-bg: #f2f5fb;
-  $body-color: #545454;
-  $primary: #132cc4;
-  $secondary: #545454;
-
-  $font-family-base: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;
+  @import './ko-colours.scss';
 
   @import '../node_modules/bootstrap/scss/bootstrap.scss';
   @import '../node_modules/bootstrap-vue/dist/bootstrap-vue.css';
@@ -270,6 +265,10 @@
   .badge-nav {
     background-color: rgba(255, 255, 255, 0.5);
     color: $primary;
+  }
+
+  .card-desc {
+    font-size: 0.75rem;
   }
 
 </style>
