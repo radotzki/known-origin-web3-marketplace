@@ -60,8 +60,8 @@
             <small>
               <router-link :to="{ name: 'gallery' }">Gallery</router-link> &bull;
               <router-link :to="{ name: 'artists' }">Artists</router-link> &bull;
-              <router-link :to="{ name: 'details' }">Contract</router-link> &bull;
-              <router-link :to="{ name: 'assets' }">Assets</router-link>
+              <router-link :to="{ name: 'details' }">Contract</router-link>
+              <!--<router-link :to="{ name: 'assets' }">Assets</router-link>-->
             </small>
           </div>
           <div class="col-sm text-center">
@@ -269,6 +269,14 @@
 
   .card-desc {
     font-size: 0.75rem;
+  }
+
+  .artist-name {
+    font-size: 0.65rem;
+  }
+
+  .artist-avatar {
+    max-width: 30px;
   }
 
 </style>

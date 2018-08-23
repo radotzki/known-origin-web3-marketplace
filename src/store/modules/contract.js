@@ -9,6 +9,7 @@ const contractStateModule = {
 
     //SET_COMMISSION_ADDRESSES
     contractAddress: null,
+    contractAddressV2: null,
     curatorAddress: null,
     contractDeveloperAddress: null,
 
@@ -48,6 +49,9 @@ const contractStateModule = {
       state.totalNumberOfPurchases = totalNumberOfPurchases;
       state.totalPurchaseValueInEther = totalPurchaseValueInEther;
     },
+    [mutations.SET_CONTRACT_ADDRESS_V2](state, contractAddressV2) {
+      state.contractAddressV2 = contractAddressV2;
+    }
   },
   actions: {
     [actions.REFRESH_CONTRACT_DETAILS]({commit, dispatch, state, rootState}) {
@@ -85,6 +89,9 @@ const contractStateModule = {
               });
             });
         }).catch((error) => console.log("Something went bang!", error));
+
+      rootState.KnownOriginDigitalAssetV2.deployed()
+        .then((contract) => commit(mutations.SET_CONTRACT_ADDRESS_V2, contract.address));
     },
   }
 };

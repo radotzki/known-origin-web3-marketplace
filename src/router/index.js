@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Artists from '@/components/pages/Artists';
-import ContractDetails from '@/components/pages/ContractDetails';
+import ContractDetailsV2 from '@/components/pages/ContractDetailsV2';
 import Gallery from '@/components/pages/Gallery';
 import GalleryV2 from '@/components/pages/GalleryV2';
 import Account from '@/components/pages/Account';
@@ -43,7 +43,7 @@ export default new Router({
     {
       path: '/contractDetails',
       name: 'details',
-      component: ContractDetails
+      component: ContractDetailsV2
     },
     {
       path: '/gallery',
