@@ -1,5 +1,5 @@
 <template>
-  <span class="price">Price {{ value }} ETH</span>
+  <span class="price">{{ value }} ETH</span>
 </template>
 
 <script>

@@ -2,7 +2,7 @@
   <div v-if="artist"  class="clearfix">
 
     <h1>{{ artist.name }}</h1>
-    <img :src="'../' + artist.img" class="float-left pr-4"/>
+    <img :src="artist.img" class="float-left pr-4"/>
     <p class="mt-4 mb-4 ml-5 lead">
       {{ artist.strapline }}
       <small v-if="artist.ethAddress"><br/><clickable-address :eth-address="artist.ethAddress"></clickable-address></small>

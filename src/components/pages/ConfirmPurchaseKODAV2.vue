@@ -4,7 +4,7 @@
     <!-- TODO loading -->
 
     <div class="row justify-content-sm-center">
-      <div class="col col-sm-6">
+      <div class="col-sm-6">
         <gallery-edition :edition="edition"></gallery-edition>
       </div>
     </div>
