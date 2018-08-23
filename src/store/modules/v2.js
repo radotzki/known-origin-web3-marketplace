@@ -92,7 +92,7 @@ const contractStateModule = {
       commit(mutations.SET_ACCOUNT_TOKENS, tokenAndEditions);
 
       // Lookup the editions for those tokens
-      const uniqueEditionNumbers = _.unique(tokenAndEditions, 'editionNumber');
+      const uniqueEditionNumbers = _.uniqBy(tokenAndEditions, 'editionNumber');
       const editions = await Promise.all(
         _.map(uniqueEditionNumbers, (editionNumber) => loadEditionData(contract, editionNumber))
       );
@@ -160,7 +160,7 @@ const editionOfTokenId = async (contract, tokenId) => {
   return {
     tokenId,
     edition: typeof edition === 'number' ? edition : _.toNumber(edition),
-  }
+  };
 };
 
 const loadEditionData = async (contract, edition) => {

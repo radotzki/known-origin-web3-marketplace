@@ -62,7 +62,7 @@ const purchaseStateModule = {
     },
     [mutations.PURCHASE_STARTED](state, {editionNumber, account, transaction}) {
       // Guard against the timed account check beating the event callbacks
-      if (state.purchaseState[tokenId].state === 'PURCHASE_SUCCESSFUL') {
+      if (state.purchaseState[editionNumber].state === 'PURCHASE_SUCCESSFUL') {
         state.purchaseState = {
           ...state.purchaseState,
           [editionNumber]: {
