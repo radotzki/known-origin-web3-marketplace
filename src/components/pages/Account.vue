@@ -9,11 +9,24 @@
       </div>
     </div>
 
-    <div class="card-columns" v-if="assetsPurchasedByAccount.length > 0">
-      <asset v-for="tokenId, key in assetsPurchasedByAccount"
-             :asset="assetById(tokenId)"
-             :key="key">
-      </asset>
+
+    <div class="row editions-wrap" v-if="assetsPurchasedByAccount.length > 0">
+      <div class="card-deck">
+        <div class="col-auto mx-auto mb-5" v-for="tokenId, key in assetsPurchasedByAccount" :key="key">
+          <div class="card shadow-sm">
+
+            <img class="card-img-top" :src="assetById(tokenId).lowResImg"/>
+            <div class="card-body">
+              <p class="card-title">{{ assetById(tokenId).artworkName }}</p>
+              <img :src="findArtist(assetById(tokenId).artistCode).img" class="artist-avatar"/>
+              <span class="pl-1 artist-name">{{ assetById(tokenId).otherMeta.artist }}</span>
+            </div>
+            <div class="card-footer bg-danger text-white text-center">
+              SOLD
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div v-if="assetsPurchasedByAccount.length == 0" class="row justify-content-sm-center">
@@ -45,11 +58,15 @@
         'accountBalance',
         'assetsPurchasedByAccount',
       ]),
+      ...mapGetters([
+        'liveArtists',
+        'findArtist'
+      ]),
       ...mapGetters('assets', [
         'assetById',
       ])
     },
-    mounted() {}
+    mounted () {}
   };
 </script>
 

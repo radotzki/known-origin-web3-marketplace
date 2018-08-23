@@ -271,4 +271,96 @@
     background-color: rgba(255, 255, 255, 0.5);
     color: $primary;
   }
+
+  // CARDS
+  .full-banner {
+    p {
+      margin-bottom: 0;
+    }
+  }
+
+  .full-banner-secondary {
+
+  }
+
+  .card-img-top {
+    object-fit: cover;
+    height: 12rem;
+  }
+
+  .card {
+    width: 14rem;
+    height: 21.5rem;
+  }
+
+  .card-title {
+    font-size: 0.9rem;
+  }
+
+  .card-body {
+    padding: 1rem;
+  }
+
+  .card-footer {
+    padding: 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .card-target {
+    color: inherit;
+  }
+
+  a:hover {
+    text-decoration: none;
+  }
+
+  .sub-filter {
+    cursor:pointer;
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+
+  .editions-wrap {
+    margin-left: 50px;
+    margin-right: 50px;
+  }
+
+  /* mobile only */
+  @media screen and (max-width: 767px) {
+    .card-deck {
+      flex-flow: row wrap;
+    }
+
+    .card-img-top {
+      object-fit: cover;
+      height: 15rem;
+    }
+
+    .card {
+      width: 18.5rem;
+      height: 25rem;
+    }
+
+    .full-banner {
+      font-size: 1.5rem;
+    }
+
+    .sub-filter {
+      padding-left: 0.7rem;
+      padding-right: 0.7rem;
+    }
+
+    .editions-wrap {
+      margin-left: -30px;
+      margin-right: -30px;
+    }
+  }
+
+  .artist-name {
+    font-size: 0.75rem;
+  }
+
+  .artist-avatar {
+    max-width: 30px;
+  }
 </style>
