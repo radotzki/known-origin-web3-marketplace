@@ -1,20 +1,13 @@
 <template>
-  <div class="card text-center shadow-sm" v-if="artist">
-    <router-link :to="{ name: 'artist-v2', params: { artistCode: artist.ethAddress} }">
-        <img :src="artist.img" class="pt-4"/>
-    </router-link>
-
-    <div class="card-body">
-
-      <h5 class="card-title text-uppercase">
-        <router-link :to="{ name: 'artist-v2', params: { artistAccount: artist.ethAddress } }">
-          {{ artist.name }}
-        </router-link>
-      </h5>
-
-      <p class="card-text text-left">{{ artist.strapline }}</p>
+  <router-link :to="{ name: 'artist-v2', params: { artistAccount: artist.ethAddress } }">
+    <div class="card text-center shadow-sm" v-if="artist">
+      <img :src="artist.img" class="pt-4"/>
+      <div class="card-body">
+        <h5 class="card-title text-uppercase">{{ artist.name }}</h5>
+        <p class="card-text card-desc text-left">{{ artist.strapline }}</p>
+      </div>
     </div>
-  </div>
+  </router-link>
 </template>
 
 <script>
@@ -27,5 +20,9 @@
 <style scoped>
   img {
     width: 50%;
+  }
+
+  a {
+    color: inherit;
   }
 </style>

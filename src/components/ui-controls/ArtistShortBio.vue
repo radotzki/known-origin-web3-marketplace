@@ -1,9 +1,8 @@
 <template>
-  <div v-if="artist"  class="clearfix">
-
+  <div v-if="artist" class="clearfix">
     <h1>{{ artist.name }}</h1>
     <img :src="artist.img" class="float-left pr-4"/>
-    <p class="mt-4 mb-4 ml-5 lead">
+    <p class="mt-4 mb-4 ml-5 mr-5">
       {{ artist.strapline }}
       <small v-if="artist.ethAddress"><br/><clickable-address :eth-address="artist.ethAddress"></clickable-address></small>
     </p>
