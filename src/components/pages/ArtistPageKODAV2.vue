@@ -20,16 +20,6 @@
                     <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
                     <span class="pl-1 artist-name" v-on:click="goToArtist(edition.artistAccount)">{{ edition.otherMeta.artist }}</span>
 
-                    <span class="pl-1 artist-name">
-                      <rarity-indicator :total-available="edition.totalAvailable"></rarity-indicator>
-                    </span>
-
-                    <span class="pl-1 artist-name">
-                      <metadata-attributes :other-meta="edition.otherMeta"></metadata-attributes>
-                    </span>
-
-                    <high-res-label :asset="edition"></high-res-label>
-
                     <small class="text-danger" v-if="isStartDateInTheFuture(edition)">
                       <span>Available {{ edition.startDate | moment("from") }}</span>
                     </small>
@@ -39,11 +29,6 @@
                     <div class="row">
                       <div class="col">
                         {{ edition.totalAvailable }} available
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col">
-                        <tweet-edition-button :edition="edition"></tweet-edition-button>
                       </div>
                       <div class="col text-right">{{ edition.priceInEther }} ETH</div>
                     </div>
@@ -158,7 +143,7 @@
   }
 
   .sub-filter {
-    cursor: pointer;
+    cursor:pointer;
     padding-left: 3rem;
     padding-right: 3rem;
   }
@@ -200,7 +185,7 @@
   }
 
   .artist-name {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
   }
 
   .artist-avatar {
