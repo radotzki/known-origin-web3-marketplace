@@ -1,9 +1,9 @@
 <template>
   <div class="container">
 
-    <loading-section :page="PAGES.COMPLETE_PURCHASE"></loading-section>
+    <loading-section v-if="!edition" :page="PAGES.COMPLETE_PURCHASE"></loading-section>
 
-    <div v-if="edition && !isLoading(PAGES.COMPLETE_PURCHASE)" class="row justify-content-sm-center">
+    <div v-if="edition" class="row justify-content-sm-center">
       <div class="col col-sm-6">
         <div class="card shadow-sm">
 
@@ -246,17 +246,23 @@
     mounted() {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.COMPLETE_PURCHASE);
 
+      const loadData = function () {
+        this.$store.dispatch(`v2/${actions.LOAD_INDIVIDUAL_EDITION}`, {editionNumber: this.$route.params.editionNumber})
+          .then(() => {
+            return this.$store.dispatch(`v2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account: this.account});
+          })
+          .finally(() => {
+            this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.COMPLETE_PURCHASE);
+          });
+      }.bind(this);
+
       this.$store.watch(
         () => this.$store.state.KnownOriginDigitalAssetV2,
-        () => {
-          this.$store.dispatch(`v2/${actions.LOAD_INDIVIDUAL_EDITION}`, {editionNumber: this.$route.params.editionNumber})
-            .then(() => {
-              return this.$store.dispatch(`v2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account: this.account});
-            })
-            .finally(() => {
-              this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.COMPLETE_PURCHASE);
-            });
-        });
+        () => loadData());
+
+      if (this.$store.state.KnownOriginDigitalAssetV2) {
+        loadData();
+      }
 
       // Dont' perform the no-web3 check immediately, allow the chain time to respond
       setTimeout(function () {

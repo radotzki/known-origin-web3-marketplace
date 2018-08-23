@@ -1,7 +1,7 @@
 <template>
   <div class="container">
 
-    <loading-section :page="PAGES.CONFIRM_PURCHASE"></loading-section>
+    <loading-section v-if="!edition" :page="PAGES.CONFIRM_PURCHASE"></loading-section>
 
     <div class="row justify-content-sm-center">
       <div class="col-sm-6">
@@ -54,14 +54,21 @@
     mounted: function () {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.CONFIRM_PURCHASE);
 
+      const loadData = function () {
+        this.$store.dispatch(`v2/${actions.LOAD_INDIVIDUAL_EDITION}`, {editionNumber: this.$route.params.editionNumber})
+          .finally(() => {
+            this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.CONFIRM_PURCHASE);
+          });
+      }.bind(this);
+
       this.$store.watch(
         () => this.$store.state.KnownOriginDigitalAssetV2,
-        () => {
-          this.$store.dispatch(`v2/${actions.LOAD_INDIVIDUAL_EDITION}`, {editionNumber: this.$route.params.editionNumber})
-            .finally(() => {
-              this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.CONFIRM_PURCHASE);
-            });
-        });
+        () => loadData()
+      );
+
+      if (this.$store.state.KnownOriginDigitalAssetV2) {
+        loadData();
+      }
     }
   };
 </script>

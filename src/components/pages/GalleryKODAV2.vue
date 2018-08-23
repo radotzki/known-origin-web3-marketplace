@@ -104,19 +104,7 @@
     mounted: function () {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.GALLERY);
 
-      this.$store.watch(
-        () => this.$store.state.KnownOriginDigitalAssetV2,
-        () => {
-          this.$store.dispatch(`v2/${actions.LOAD_FEATURED_EDITIONS}`)
-            .then(() => {
-              this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.GALLERY);
-              setTimeout(function () {
-                this.$store.dispatch(`v2/${actions.LOAD_EDITIONS_FOR_TYPE}`, {editionType: 1});
-              }.bind(this), 3000);
-            });
-        });
-
-      if (this.$store.state.KnownOriginDigitalAssetV2) {
+      const loadData = function () {
         this.$store.dispatch(`v2/${actions.LOAD_FEATURED_EDITIONS}`)
           .then(() => {
             this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.GALLERY);
@@ -124,6 +112,15 @@
               this.$store.dispatch(`v2/${actions.LOAD_EDITIONS_FOR_TYPE}`, {editionType: 1});
             }.bind(this), 3000);
           });
+      }.bind(this);
+
+      this.$store.watch(
+        () => this.$store.state.KnownOriginDigitalAssetV2,
+        () => loadData()
+      );
+
+      if (this.$store.state.KnownOriginDigitalAssetV2) {
+        loadData();
       }
     }
   };
@@ -172,7 +169,7 @@
   }
 
   .sub-filter {
-    cursor:pointer;
+    cursor: pointer;
     padding-left: 3rem;
     padding-right: 3rem;
   }
