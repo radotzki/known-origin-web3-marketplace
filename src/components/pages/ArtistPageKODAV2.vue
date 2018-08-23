@@ -1,7 +1,7 @@
 <template>
   <div>
 
-    <!-- TODO loading -->
+    <loading-section :page="PAGES.ARTISTS"></loading-section>
 
     <artist-short-bio :artist="lookupArtist()"></artist-short-bio>
 
@@ -55,10 +55,13 @@
   import MetadataAttributes from "../ui-controls/MetadataAttributesV2";
   import TweetEditionButton from "../ui-controls/TweetEditionButton";
   import HighResLabel from "../ui-controls/HighResLabelV2";
+  import {PAGES} from '../../store/loadingPageState';
+  import LoadingSection from "../ui-controls/LoadingSection";
 
   export default {
     name: 'artistPage',
     components: {
+      LoadingSection,
       HighResLabel,
       TweetEditionButton,
       MetadataAttributes,
@@ -85,14 +88,22 @@
       }
     },
     mounted: function () {
+      this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.ARTISTS);
+
+      const loadData = function () {
+        this.$store.dispatch(`v2/${actions.LOAD_EDITIONS_FOR_ARTIST}`, {artistAccount: this.$route.params.artistAccount})
+          .finally(() => {
+            this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.ARTISTS);
+          });
+      }.bind(this);
+
       this.$store.watch(
         () => this.$store.state.KnownOriginDigitalAssetV2,
-        function (newValue, oldValue) {
-          this.$store.dispatch(`v2/${actions.LOAD_EDITIONS_FOR_ARTIST}`, {artistAccount: this.$route.params.artistAccount});
-        }.bind(this));
+        () => loadData()
+      );
 
       if (this.$store.state.KnownOriginDigitalAssetV2) {
-        this.$store.dispatch(`v2/${actions.LOAD_EDITIONS_FOR_ARTIST}`, {artistAccount: this.$route.params.artistAccount});
+        loadData();
       }
     }
   };

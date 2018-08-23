@@ -48,9 +48,6 @@ const store = new Vuex.Store({
     // TODO this should be on 'assets'
     assetsPurchasedByAccount: [],
 
-    // TODO Move to V2?
-    v2AccountAssets: [],
-
     KnownOriginDigitalAsset: null,
     KnownOriginDigitalAssetV2: null,
     web3: null,
