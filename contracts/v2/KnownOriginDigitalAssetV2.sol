@@ -741,38 +741,6 @@ Pausable
     );
   }
 
-  function tokenEditionData(uint256 _tokenId)
-  public view
-  onlyValidTokenId(_tokenId)
-  returns (
-    uint256 _editionNumber,
-    bytes32 _editionData,
-    uint8 _editionType,
-    address _artistAccount,
-    uint8 _artistCommission,
-    uint256 _priceInWei,
-    string _tokenURI,
-    uint8 _totalSupply,
-    uint8 _totalAvailable,
-    bool _active
-  ) {
-    uint256 editionNumber = tokenIdToEditionNumber[_tokenId];
-    EditionDetails memory _editionDetails = editionNumberToEditionDetails[editionNumber];
-    return (
-    editionNumber,
-    _editionDetails.editionData,
-    _editionDetails.editionType,
-    _editionDetails.artistAccount,
-    _editionDetails.artistCommission,
-    _editionDetails.priceInWei,
-    Strings.strConcat(tokenBaseURI, _editionDetails.tokenURI),
-    _editionDetails.totalSupply,
-    _editionDetails.totalAvailable,
-    _editionDetails.active
-    );
-  }
-
-
   function editionExists(uint256 _editionNumber) public view returns (bool) {
     EditionDetails memory editionNumber = editionNumberToEditionDetails[_editionNumber];
     return editionNumber.editionNumber == _editionNumber;
