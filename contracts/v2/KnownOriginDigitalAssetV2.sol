@@ -800,15 +800,6 @@ Pausable
     return ownedTokens[_owner];
   }
 
-//  function editionsOf(address _owner) public view returns (uint256[] _editionNumbers) {
-//    uint256[] storage tokens = ownedTokens[_owner];
-//    uint256[] memory editions = new uint256[](tokens.length);
-//    for (uint i = 0; i < tokens.length; i++) {
-//      editions[i] = editionOfTokenId(tokens[i]);
-//    }
-//    return editions;
-//  }
-
   function editionTotalAvailable(uint256 _editionNumber) public view returns (uint256) {
     EditionDetails memory _editionDetails = editionNumberToEditionDetails[_editionNumber];
     return _editionDetails.totalAvailable;

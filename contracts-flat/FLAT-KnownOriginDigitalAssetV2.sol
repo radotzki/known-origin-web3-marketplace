@@ -1321,8 +1321,9 @@ Pausable
   // On purchases from within this contract - bought through mint/mintTo
   event Purchase(
     uint256 indexed _tokenId,
-    uint256 indexed _costInWei,
-    address indexed _buyer
+    uint256 indexed _editionNumber,
+    address indexed _buyer,
+    uint256 _costInWei
   );
 
   // Emitted on every mint
@@ -1424,6 +1425,11 @@ Pausable
     _;
   }
 
+  modifier onlyValidTokenId(uint256 _tokenId) {
+    require(exists(_tokenId), "Token ID does not exist");
+    _;
+  }
+
   modifier onlyPurchaseDuringWindow(uint256 _editionNumber) {
     require(editionNumberToEditionDetails[_editionNumber].startDate <= block.timestamp, "Edition not available yet");
     require(editionNumberToEditionDetails[_editionNumber].endDate >= block.timestamp, "Edition no longer available");
@@ -1441,10 +1447,16 @@ Pausable
   }
 
   function createActiveEdition(
-    uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
-    uint32 _startDate, uint32 _endDate,
-    address _artistAccount, uint8 _artistCommission,
-    uint256 _priceInWei, string _tokenURI, uint8 _totalAvailable
+    uint256 _editionNumber,
+    bytes32 _editionData,
+    uint8 _editionType,
+    uint32 _startDate,
+    uint32 _endDate,
+    address _artistAccount,
+    uint8 _artistCommission,
+    uint256 _priceInWei,
+    string _tokenURI,
+    uint8 _totalAvailable
   )
   public
   onlyKnownOrigin
@@ -1454,10 +1466,16 @@ Pausable
   }
 
   function createInactiveEdition(
-    uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
-    uint32 _startDate, uint32 _endDate,
-    address _artistAccount, uint8 _artistCommission,
-    uint256 _priceInWei, string _tokenURI, uint8 _totalAvailable
+    uint256 _editionNumber,
+    bytes32 _editionData,
+    uint8 _editionType,
+    uint32 _startDate,
+    uint32 _endDate,
+    address _artistAccount,
+    uint8 _artistCommission,
+    uint256 _priceInWei,
+    string _tokenURI,
+    uint8 _totalAvailable
   )
   public
   onlyKnownOrigin
@@ -1467,11 +1485,17 @@ Pausable
   }
 
   function createActivePreMintedEdition(
-    uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
-    uint32 _startDate, uint32 _endDate,
-    address _artistAccount, uint8 _artistCommission,
-    uint256 _priceInWei, string _tokenURI,
-    uint8 _totalSupply, uint8 _totalAvailable
+    uint256 _editionNumber,
+    bytes32 _editionData,
+    uint8 _editionType,
+    uint32 _startDate,
+    uint32 _endDate,
+    address _artistAccount,
+    uint8 _artistCommission,
+    uint256 _priceInWei,
+    string _tokenURI,
+    uint8 _totalSupply,
+    uint8 _totalAvailable
   )
   public
   onlyKnownOrigin
@@ -1483,11 +1507,17 @@ Pausable
   }
 
   function createInactivePreMintedEdition(
-    uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
-    uint32 _startDate, uint32 _endDate,
-    address _artistAccount, uint8 _artistCommission,
-    uint256 _priceInWei, string _tokenURI,
-    uint8 _totalSupply, uint8 _totalAvailable
+    uint256 _editionNumber,
+    bytes32 _editionData,
+    uint8 _editionType,
+    uint32 _startDate,
+    uint32 _endDate,
+    address _artistAccount,
+    uint8 _artistCommission,
+    uint256 _priceInWei,
+    string _tokenURI,
+    uint8 _totalSupply,
+    uint8 _totalAvailable
   )
   public
   onlyKnownOrigin
@@ -1499,11 +1529,17 @@ Pausable
   }
 
   function _createEdition(
-    uint256 _editionNumber, bytes32 _editionData, uint8 _editionType,
-    uint32 _startDate, uint32 _endDate,
-    address _artistAccount, uint8 _artistCommission,
-    uint256 _priceInWei, string _tokenURI,
-    uint8 _totalAvailable, bool _active
+    uint256 _editionNumber,
+    bytes32 _editionData,
+    uint8 _editionType,
+    uint32 _startDate,
+    uint32 _endDate,
+    address _artistAccount,
+    uint8 _artistCommission,
+    uint256 _priceInWei,
+    string _tokenURI,
+    uint8 _totalAvailable,
+    bool _active
   )
   internal
   returns (bool)
@@ -1600,7 +1636,7 @@ Pausable
     _handleFunds(_editionNumber);
 
     // Broadcast purchase
-    emit Purchase(_tokenId, msg.value, _to);
+    emit Purchase(_tokenId, _editionNumber, _to, msg.value);
 
     return _tokenId;
   }
@@ -1628,6 +1664,8 @@ Pausable
   returns (uint256) {
     // Under mint token, meaning it takes one from the already sold version
     uint256 _tokenId = _underMintNextTokenId(_editionNumber);
+
+    // TODO prevent underminting over the total supply
 
     // If the next tokenId generate is more than the available number, abort as we have reached maximum under mint
     if (_tokenId > _editionNumber.add(editionNumberToEditionDetails[_editionNumber].totalAvailable)) {
@@ -1700,9 +1738,11 @@ Pausable
 
     EditionDetails storage _editionDetails = editionNumberToEditionDetails[_editionNumber];
 
+    uint256 editionPrice = _editionDetails.priceInWei;
+
     // Extract the artists commission and send it
     address artistsAccount = _editionDetails.artistAccount;
-    uint256 artistPayment = msg.value / 100 * _editionDetails.artistCommission;
+    uint256 artistPayment = editionPrice / 100 * _editionDetails.artistCommission;
     if (artistPayment > 0) {
       artistsAccount.transfer(artistPayment);
     }
@@ -1711,7 +1751,7 @@ Pausable
     CommissionSplit memory commission = editionNumberToOptionalCommissionSplit[_editionNumber];
 
     // Apply optional commission structure
-    uint256 rateSplit = msg.value / 100 * commission.rate;
+    uint256 rateSplit = editionPrice / 100 * commission.rate;
     if (commission.rate > 0) {
       commission.recipient.transfer(rateSplit);
     }
@@ -1943,7 +1983,7 @@ Pausable
     uint32 _startDate,
     uint32 _endDate,
     address _artistAccount,
-    address _artistCommission,
+    uint8 _artistCommission,
     uint256 _priceInWei,
     string _tokenURI,
     uint8 _totalSupply,
@@ -1966,14 +2006,16 @@ Pausable
     );
   }
 
-  function tokenIdentificationData(uint256 _tokenId) public view returns (
+  function tokenData(uint256 _tokenId)
+  public view
+  onlyValidTokenId(_tokenId)
+  returns (
     uint256 _editionNumber,
     uint8 _editionType,
     bytes32 _editionData,
     string _tokenURI,
     address _owner
   ) {
-    require(exists(_tokenId));
     uint256 editionNumber = tokenIdToEditionNumber[_tokenId];
     EditionDetails memory editionDetails = editionNumberToEditionDetails[editionNumber];
     return (
@@ -1985,49 +2027,37 @@ Pausable
     );
   }
 
-  function tokenEditionData(uint256 _tokenId) public view returns (
-    uint256 _editionNumber,
-    uint8 _editionType,
-    uint32 _startDate,
-    uint32 _endDate,
-    address _artistAccount,
-    uint8 _artistCommission,
-    uint256 _priceInWei,
-    uint256 _totalAvailable,
-    uint256 _totalSupply
-  ) {
-    require(exists(_tokenId));
-    uint256 editionNumber = tokenIdToEditionNumber[_tokenId];
-    return editionData(editionNumber);
-  }
-
-  function editionData(uint256 editionNumber)
+  function tokenEditionData(uint256 _tokenId)
   public view
-  onlyRealEdition(editionNumber)
+  onlyValidTokenId(_tokenId)
   returns (
     uint256 _editionNumber,
+    bytes32 _editionData,
     uint8 _editionType,
-    uint32 _startDate,
-    uint32 _endDate,
     address _artistAccount,
     uint8 _artistCommission,
     uint256 _priceInWei,
-    uint256 _totalAvailable,
-    uint256 _totalSupply
+    string _tokenURI,
+    uint8 _totalSupply,
+    uint8 _totalAvailable,
+    bool _active
   ) {
-    EditionDetails memory editionDetails = editionNumberToEditionDetails[editionNumber];
+    uint256 editionNumber = tokenIdToEditionNumber[_tokenId];
+    EditionDetails memory _editionDetails = editionNumberToEditionDetails[editionNumber];
     return (
     editionNumber,
-    editionDetails.editionType,
-    editionDetails.startDate,
-    editionDetails.endDate,
-    editionDetails.artistAccount,
-    editionDetails.artistCommission,
-    editionDetails.priceInWei,
-    editionDetails.totalAvailable,
-    editionDetails.totalSupply
+    _editionDetails.editionData,
+    _editionDetails.editionType,
+    _editionDetails.artistAccount,
+    _editionDetails.artistCommission,
+    _editionDetails.priceInWei,
+    Strings.strConcat(tokenBaseURI, _editionDetails.tokenURI),
+    _editionDetails.totalSupply,
+    _editionDetails.totalAvailable,
+    _editionDetails.active
     );
   }
+
 
   function editionExists(uint256 _editionNumber) public view returns (bool) {
     EditionDetails memory editionNumber = editionNumberToEditionDetails[_editionNumber];
@@ -2035,8 +2065,10 @@ Pausable
   }
 
   // Throws
-  function tokenURI(uint256 _tokenId) public view returns (string) {
-    require(exists(_tokenId));
+  function tokenURI(uint256 _tokenId)
+  public view
+  onlyValidTokenId(_tokenId)
+  returns (string) {
     return Strings.strConcat(tokenBaseURI, tokenURIs[_tokenId]);
   }
 
@@ -2053,6 +2085,15 @@ Pausable
   function tokensOf(address _owner) public view returns (uint256[] _tokenIds) {
     return ownedTokens[_owner];
   }
+
+//  function editionsOf(address _owner) public view returns (uint256[] _editionNumbers) {
+//    uint256[] storage tokens = ownedTokens[_owner];
+//    uint256[] memory editions = new uint256[](tokens.length);
+//    for (uint i = 0; i < tokens.length; i++) {
+//      editions[i] = editionOfTokenId(tokens[i]);
+//    }
+//    return editions;
+//  }
 
   function editionTotalAvailable(uint256 _editionNumber) public view returns (uint256) {
     EditionDetails memory _editionDetails = editionNumberToEditionDetails[_editionNumber];
