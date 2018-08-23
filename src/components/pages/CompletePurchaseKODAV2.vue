@@ -13,17 +13,19 @@
 
             <div class="text-center mb-2" v-if="isPurchaseTriggered(edition.edition, account)">
               <loading-spinner></loading-spinner>
-              <p class="card-text text-muted mt-4">Your purchase has been initiated</p>
-              <p class="card-text text-muted mt-4">Please be patient. Blockchains need to be mined.</p>
+              <p class="card-text text-dark mt-4">Your purchase has been initiated</p>
+              <p class="card-text text-dark mt-4">Please be patient. Blockchains need to be mined.</p>
+              <hr/>
             </div>
 
             <div class="text-center mb-2" v-if="isPurchaseStarted(edition.edition, account)">
               <loading-spinner></loading-spinner>
-              <p class="card-text text-muted mt-4">Your purchase is being confirmed...</p>
+              <p class="card-text text-dark mt-4">Your purchase is being confirmed...</p>
               <small class="text-muted">
                 <clickable-transaction
                   :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>
               </small>
+              <hr/>
             </div>
 
             <div class="text-center mb-2" v-if="isPurchaseSuccessful(edition.edition, account)">
@@ -33,56 +35,37 @@
                 <clickable-transaction
                   :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>
               </small>
-              <div class="mt-2">
-                <tweet-edition-button :edition="edition"></tweet-edition-button>
-              </div>
+              <hr/>
             </div>
 
             <div class="text-center mb-2" v-if="isPurchaseFailed(edition.edition, account)">
               <img src="../../../static/Failure.svg" style="width: 100px"/>
               <p class="card-text text-danger mt-4">Your purchase failed!</p>
+              <hr/>
             </div>
 
-            <p class="card-text">
+            <p class="card-title">{{ edition.otherMeta.artworkName }}</p>
+            <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
+            <span class="pl-1 artist-name">{{ edition.otherMeta.artist }}</span>
 
-              <high-res-label :edition="edition"></high-res-label>
-
-              <rarity-indicator :total-available="edition.totalAvailable"></rarity-indicator>
-
-              <span class="badge badge-light">1 of {{ edition.totalAvailable }}</span>
-
-              <metadata-attributes :other-meta="edition.otherMeta"></metadata-attributes>
-            </p>
-
-            <span>
-              <h5 class="card-title">{{ edition.otherMeta.artworkName }}</h5>
-              <h6 class="card-subtitle mb-2 text-muted">By <router-link
-                :to="{ name: 'artist-v2', params: { artistAccount: edition.artistAccount} }">{{ edition.otherMeta.artist }}</router-link></h6>
-            </span>
           </div>
 
           <ul class="list-group list-group-flush" v-if="isNotSoldOut() && account">
             <li class="list-group-item">
               <div class="d-inline-block"><img src="/../../static/Account_You_icn.svg" style="height: 50px"/></div>
               <div class="d-inline-block">
-                <span class="pl-2 text-muted">You:</span>
+                <small class="pl-2 text-muted">You:</small>
                 <clickable-address :eth-address="account"></clickable-address>
-              </div>
-            </li>
-            <li class="list-group-item">
-              <div class="d-inline-block"><img src="/../../static/ETH_icn.svg" style="height: 50px"/></div>
-              <div class="d-inline-block">
-                <span class="pl-2 text-muted">Amount:</span> <strong>{{ edition.priceInEther }} ETH</strong>
               </div>
             </li>
             <li class="list-group-item">
               <div class="d-inline-block"><img src="/../../static/Account_You_icn.svg" style="height: 50px"/></div>
               <div class="d-inline-block">
-                <span class="pl-2 text-muted">Artists:</span>
+                <small class="pl-2 text-muted">Artist:</small>
                 <clickable-address :eth-address="edition.artistAccount"></clickable-address>
               </div>
             </li>
-            <li class="list-group-item text-right no-bottom-border">
+            <li class="list-group-item text-right no-bottom-border font-weight-bold">
               <price-in-eth :value="edition.priceInEther"></price-in-eth>
             </li>
           </ul>
@@ -113,7 +96,7 @@
                           :disabled="!confirm_terms || isPurchaseTriggered(edition.edition, account)"
                           v-on:click="completePurchase"
                           v-if="isNotSoldOut || !isPurchaseSuccessful(edition.edition, account)">
-                    Confirm buy
+                    Confirm
                   </button>
 
                   <router-link :to="{ name: 'galleryV2'}" tag="button" class="btn btn-outline-primary btn-block">
@@ -220,6 +203,9 @@
       ...mapGetters('loading', [
         'isLoading'
       ]),
+      ...mapGetters([
+        'findArtistsForAddress'
+      ]),
       title: function () {
         return `${this.$route.params.edition} - ID ${this.$route.params.tokenId}`;
       },
@@ -277,5 +263,17 @@
 <style scoped>
   li.no-bottom-border {
     border-bottom: 0 none;
+  }
+
+  li.no-top-border {
+    border-top: 0 none;
+  }
+
+  .edition-data {
+    font-size: 0.75rem;
+  }
+
+  .form-check {
+    padding-left: 0;
   }
 </style>

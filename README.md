@@ -98,3 +98,4 @@ npm run build
 # License
 
 [MIT](https://opensource.org/licenses/MIT)
+# erc721-ipfs-uploader
