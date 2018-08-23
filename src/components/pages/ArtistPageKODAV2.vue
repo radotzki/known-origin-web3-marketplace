@@ -105,6 +105,10 @@
         function (newValue, oldValue) {
           this.$store.dispatch(`v2/${actions.LOAD_EDITIONS_FOR_ARTIST}`, {artistAccount: this.$route.params.artistAccount});
         }.bind(this));
+
+      if (this.$store.state.KnownOriginDigitalAssetV2) {
+        this.$store.dispatch(`v2/${actions.LOAD_EDITIONS_FOR_ARTIST}`, {artistAccount: this.$route.params.artistAccount});
+      }
     }
   };
 </script>

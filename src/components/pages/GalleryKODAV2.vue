@@ -115,6 +115,16 @@
               });
           }
         });
+
+
+      if (this.$store.state.KnownOriginDigitalAssetV2) {
+        this.$store.dispatch(`v2/${actions.LOAD_FEATURED_EDITIONS}`)
+          .then(() => {
+            setTimeout(function () {
+              this.$store.dispatch(`v2/${actions.LOAD_EDITIONS_FOR_TYPE}`, {editionType: 1});
+            }.bind(this), 3000);
+          });
+      }
     }
   };
 </script>
