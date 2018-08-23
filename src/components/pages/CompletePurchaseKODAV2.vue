@@ -1,7 +1,9 @@
 <template>
   <div class="container">
 
-    <div v-if="edition" class="row justify-content-sm-center">
+    <loading-section :page="PAGES.COMPLETE_PURCHASE"></loading-section>
+
+    <div v-if="edition && !isLoading(PAGES.COMPLETE_PURCHASE)" class="row justify-content-sm-center">
       <div class="col col-sm-6">
         <div class="card shadow-sm">
 
@@ -139,6 +141,12 @@
             <p class="text-center pt-2">
               It looks like you have already purchased this edition!
             </p>
+
+            <router-link :to="{ name: 'account'}"
+                         v-if="isPurchaseSuccessful(edition.edition, account)"
+                         tag="button" class="btn btn-outline-primary btn-block">
+              View account
+            </router-link>
           </div>
 
           <div v-if="isPurchaseFailed(edition.edition, account)" class="card-footer">
@@ -162,6 +170,7 @@
   import PurchaseState from '../ui-controls/PurchaseState';
   import PriceInEth from '../ui-controls/PriceInEth';
   import * as actions from '../../store/actions';
+  import {PAGES} from '../../store/loadingPageState';
   import ClickableTransaction from "../ui-controls/ClickableTransaction";
   import ClickableAddress from "../ui-controls/ClickableAddress";
   import LoadingSpinner from "../ui-controls/LoadingSpinner";
@@ -169,10 +178,12 @@
   import HighResLabel from "../ui-controls/HighResLabelV2.vue";
   import MetadataAttributes from "../ui-controls/MetadataAttributesV2.vue";
   import TweetEditionButton from "../ui-controls/TweetEditionButton";
+  import LoadingSection from "../ui-controls/LoadingSection";
 
   export default {
     name: 'completePurchaseV2',
     components: {
+      LoadingSection,
       TweetEditionButton,
       MetadataAttributes,
       HighResLabel,
@@ -186,6 +197,7 @@
     },
     data() {
       return {
+        PAGES: PAGES,
         confirm_terms: false
       };
     },
@@ -204,6 +216,9 @@
       ...mapGetters('v2', [
         'haveNotPurchasedEditionBefore',
         'findEdition',
+      ]),
+      ...mapGetters('loading', [
+        'isLoading'
       ]),
       title: function () {
         return `${this.$route.params.edition} - ID ${this.$route.params.tokenId}`;
@@ -229,13 +244,18 @@
       }
     },
     mounted() {
+      this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.COMPLETE_PURCHASE);
+
       this.$store.watch(
         () => this.$store.state.KnownOriginDigitalAssetV2,
-        (newValue, oldValue) => {
-          if (newValue) {
-            this.$store.dispatch(`v2/${actions.LOAD_INDIVIDUAL_EDITION}`, {editionNumber: this.$route.params.editionNumber});
-            this.$store.dispatch(`v2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account: this.account});
-          }
+        () => {
+          this.$store.dispatch(`v2/${actions.LOAD_INDIVIDUAL_EDITION}`, {editionNumber: this.$route.params.editionNumber})
+            .then(() => {
+              return this.$store.dispatch(`v2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account: this.account});
+            })
+            .finally(() => {
+              this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.COMPLETE_PURCHASE);
+            });
         });
 
       // Dont' perform the no-web3 check immediately, allow the chain time to respond

@@ -38,6 +38,9 @@ export const LOAD_EDITIONS_FOR_TYPE = 'LOAD_EDITIONS_FOR_TYPE';
 export const LOAD_EDITIONS_FOR_ARTIST = 'LOAD_EDITIONS_FOR_ARTIST';
 export const LOAD_INDIVIDUAL_EDITION = 'LOAD_INDIVIDUAL_EDITION';
 
+export const LOADING_STARTED = 'LOADING_STARTED';
+export const LOADING_FINISHED = 'LOADING_FINISHED';
+
 //////////////////////
 // Purchase flow V2 //
 //////////////////////

@@ -19,6 +19,7 @@ import highres from './modules/highres';
 import contract from './modules/contract';
 import assets from './modules/assets';
 import v2 from './modules/v2';
+import loading from './modules/loading';
 
 const KnownOriginDigitalAsset = truffleContract(knownOriginDigitalAssetJson);
 const KnownOriginDigitalAssetV2 = truffleContract(knownOriginDigitalAssetJsonV2);
@@ -35,7 +36,8 @@ const store = new Vuex.Store({
     highres,
     contract,
     assets,
-    v2
+    v2,
+    loading,
   },
   state: {
     // connectivity

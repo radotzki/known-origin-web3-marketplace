@@ -1,7 +1,7 @@
 <template>
   <div class="container">
 
-    <!-- TODO loading -->
+    <loading-section :page="PAGES.CONFIRM_PURCHASE"></loading-section>
 
     <div class="row justify-content-sm-center">
       <div class="col col-sm-6">
@@ -15,14 +15,20 @@
   import {mapGetters, mapState} from 'vuex';
   import GalleryEdition from '../GalleryEditionV2';
   import _ from 'lodash';
-  import LoadingSpinner from "../ui-controls/LoadingSpinner.vue";
   import * as actions from '../../store/actions';
+  import LoadingSection from "../ui-controls/LoadingSection";
+  import {PAGES} from '../../store/loadingPageState';
 
   export default {
     name: 'confirmPurchase',
     components: {
-      LoadingSpinner,
+      LoadingSection,
       GalleryEdition,
+    },
+    data() {
+      return {
+        PAGES: PAGES
+      };
     },
     computed: {
       ...mapGetters('v2', [
@@ -46,12 +52,15 @@
       },
     },
     mounted: function () {
+      this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.CONFIRM_PURCHASE);
+
       this.$store.watch(
         () => this.$store.state.KnownOriginDigitalAssetV2,
-        (newValue, oldValue) => {
-          if (newValue) {
-            this.$store.dispatch(`v2/${actions.LOAD_INDIVIDUAL_EDITION}`, {editionNumber: this.$route.params.editionNumber});
-          }
+        () => {
+          this.$store.dispatch(`v2/${actions.LOAD_INDIVIDUAL_EDITION}`, {editionNumber: this.$route.params.editionNumber})
+            .finally(() => {
+              this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.CONFIRM_PURCHASE);
+            });
         });
     }
   };

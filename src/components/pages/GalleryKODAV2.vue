@@ -26,12 +26,13 @@
 
     <div class="container-fluid mt-4">
 
-      <!-- TODO loading -->
+      <loading-section :page="PAGES.GALLERY"></loading-section>
 
       <div class="row editions-wrap">
         <div class="card-deck">
           <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions">
-            <router-link class="card-target" :to="{ name: 'confirmPurchaseV2', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
+            <router-link class="card-target"
+                         :to="{ name: 'confirmPurchaseV2', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
               <div class="card shadow-sm">
                 <img class="card-img-top" :src="edition.lowResImg"/>
                 <div class="card-body">
@@ -58,22 +59,24 @@
 
 <script>
 
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import GalleryEdition from '../GalleryEdition';
-  import LoadingSpinner from '../ui-controls/LoadingSpinner.vue';
   import _ from 'lodash';
   import Available from '../ui-controls/Available.vue';
   import * as actions from '../../store/actions';
+  import {PAGES} from '../../store/loadingPageState';
+  import LoadingSection from "../ui-controls/LoadingSection";
 
   export default {
     name: 'galleryKODAV2',
     components: {
-      LoadingSpinner,
+      LoadingSection,
       GalleryEdition,
       Available
     },
-    data () {
+    data() {
       return {
+        PAGES,
         priceFilter: 'featured'
       };
     },
@@ -99,22 +102,24 @@
       }
     },
     mounted: function () {
+      this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.GALLERY);
+
       this.$store.watch(
         () => this.$store.state.KnownOriginDigitalAssetV2,
-        (newValue, oldValue) => {
-          if (newValue) {
-            this.$store.dispatch(`v2/${actions.LOAD_FEATURED_EDITIONS}`)
-              .then(() => {
-                setTimeout(function () {
-                  this.$store.dispatch(`v2/${actions.LOAD_EDITIONS_FOR_TYPE}`, {editionType: 1});
-                }.bind(this), 3000);
-              });
-          }
+        () => {
+          this.$store.dispatch(`v2/${actions.LOAD_FEATURED_EDITIONS}`)
+            .then(() => {
+              this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.GALLERY);
+              setTimeout(function () {
+                this.$store.dispatch(`v2/${actions.LOAD_EDITIONS_FOR_TYPE}`, {editionType: 1});
+              }.bind(this), 3000);
+            });
         });
 
       if (this.$store.state.KnownOriginDigitalAssetV2) {
         this.$store.dispatch(`v2/${actions.LOAD_FEATURED_EDITIONS}`)
           .then(() => {
+            this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.GALLERY);
             setTimeout(function () {
               this.$store.dispatch(`v2/${actions.LOAD_EDITIONS_FOR_TYPE}`, {editionType: 1});
             }.bind(this), 3000);
