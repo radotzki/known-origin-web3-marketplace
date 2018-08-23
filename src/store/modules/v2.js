@@ -114,22 +114,25 @@ const contractStateModule = {
       console.log("LOAD_FEATURED_EDITIONS");
       const contract = await rootState.KnownOriginDigitalAssetV2.deployed();
 
-      _.forEach(FEATURED_ARTWORK, async function (edition) {
-        const data = await loadEditionData(contract, edition);
-        commit(mutations.SET_EDITION, data);
-      });
+      const editions = await Promise.all(_.map(FEATURED_ARTWORK, async function (edition) {
+        return await loadEditionData(contract, edition);
+      }));
+
+      commit(mutations.SET_EDITIONS, editions);
     },
     async [actions.LOAD_EDITIONS_FOR_TYPE]({commit, dispatch, state, rootState}, {editionType}) {
       console.log("LOAD_EDITIONS_FOR_TYPE", editionType);
 
       const contract = await rootState.KnownOriginDigitalAssetV2.deployed();
       const editions = await contract.editionsOfType(editionType);
-      console.log(editions);
+      if (_.size(state.assets) === _.size(editions)) {
+        return;
+      }
 
-      _.forEach(editions, async function (edition) {
-        const data = await loadEditionData(contract, edition);
-        commit(mutations.SET_EDITION, data);
-      });
+      const editionsData = await Promise.all(_.map(editions, async function (edition) {
+        return await loadEditionData(contract, edition);
+      }));
+      commit(mutations.SET_EDITIONS, editionsData);
     },
     async [actions.LOAD_EDITIONS_FOR_ARTIST]({commit, dispatch, state, rootState}, {artistAccount}) {
       console.log("LOAD_EDITIONS_FOR_ARTIST", artistAccount);
@@ -137,10 +140,14 @@ const contractStateModule = {
       const contract = await rootState.KnownOriginDigitalAssetV2.deployed();
       const editions = await contract.artistsEditions(artistAccount);
 
-      _.forEach(editions, async function (edition) {
-        const data = await loadEditionData(contract, edition);
-        commit(mutations.SET_EDITION, data);
-      });
+      if (_.size(state.assets) === _.size(editions)) {
+        return;
+      }
+
+      const editionsData = await Promise.all(_.map(editions, async function (edition) {
+        return await loadEditionData(contract, edition);
+      }));
+      commit(mutations.SET_EDITIONS, editionsData);
     },
     async [actions.LOAD_INDIVIDUAL_EDITION]({commit, dispatch, state, rootState}, {editionNumber}) {
       console.log("editionNumber", editionNumber);

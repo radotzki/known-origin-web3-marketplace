@@ -116,7 +116,6 @@
           }
         });
 
-
       if (this.$store.state.KnownOriginDigitalAssetV2) {
         this.$store.dispatch(`v2/${actions.LOAD_FEATURED_EDITIONS}`)
           .then(() => {
