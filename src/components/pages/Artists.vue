@@ -1,9 +1,12 @@
 <template>
-  <div class="container">
+  <div>
+    <div class="row bg-secondary text-white full-banner">
+      <div class="col text-center m-5">
+        <p>Artists</p>
+      </div>
+    </div>
 
-    <h1>Artists</h1>
-
-    <div class="container mb-5">
+    <div class="container mt-4">
       <div class="card-columns">
         <artist v-for="artist in liveArtists" :key="artist.name" :artist="artist"></artist>
       </div>
@@ -13,7 +16,7 @@
 
 <script>
   import { mapGetters, mapState } from 'vuex';
-  import Artist from '../Artist';
+  import Artist from '../ui-controls/cards/Artist';
 
   export default {
     name: 'artists',
@@ -21,9 +24,6 @@
     computed: {
       ...mapGetters([
         'liveArtists',
-      ]),
-      ...mapState('assets', [
-        'assets',
       ]),
     },
     mounted () {

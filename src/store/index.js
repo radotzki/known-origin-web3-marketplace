@@ -6,64 +6,71 @@ import _ from 'lodash';
 import Web3 from 'web3';
 import axios from 'axios';
 import artistData from './artist-data';
-import {getNetIdString, getEtherscanAddress} from '../utils';
+import {getEtherscanAddress, getNetIdString} from '../utils';
 import truffleContract from 'truffle-contract';
 import knownOriginDigitalAssetJson from '../../build/contracts/KnownOriginDigitalAsset.json';
+import knownOriginDigitalAssetJsonV2 from '../../build/contracts/KnownOriginDigitalAssetV2.json';
 
 import createLogger from 'vuex/dist/logger';
-// import createPersistedState from "vuex-persistedstate";
 
 import purchase from './modules/purchase';
 import highres from './modules/highres';
-import contract from './modules/contract';
-import assets from './modules/assets';
+import kodaV1 from './modules/kodaV1';
+import kodaV2 from './modules/kodaV2';
+import loading from './modules/loading';
 
-const KnownOriginDigitalAsset = truffleContract(knownOriginDigitalAssetJson);
+const KnownOriginDigitalAssetV1 = truffleContract(knownOriginDigitalAssetJson);
+const KnownOriginDigitalAssetV2 = truffleContract(knownOriginDigitalAssetJsonV2);
 
 Vue.use(Vuex);
 
-
-
 const store = new Vuex.Store({
   plugins: [
-    // FIXME - disabled until we work out issue
-    // createPersistedState({
-    //   key: `${window.location.hostname}`,
-    //   paths: [
-    //     'assets' // Place assets in local storage to speed up load times when initially landing on the site
-    //   ]
-    // }),
     createLogger()
   ],
   modules: {
+    kodaV1,
+    kodaV2,
     purchase,
     highres,
-    contract,
-    assets
+    loading,
   },
   state: {
     // connectivity
     account: null,
     currentNetwork: null,
     accountBalance: null,
-
-    // TODO this should be on 'assets'
-    assetsPurchasedByAccount: [],
-
-    KnownOriginDigitalAsset: null,
     web3: null,
     currentUsdPrice: null,
     etherscanBase: null,
 
     // non-contract data
     artists: artistData,
+
+    artistLookupCache: {},
+
+    KnownOriginDigitalAssetV1: null,
+    KnownOriginDigitalAssetV2: null,
   },
   getters: {
     findArtist: (state) => (artistCode) => {
       return _.find(state.artists, (artist) => artist.artistCode.toString() === artistCode);
     },
+    findArtistsForAddress: (state) => (artistAddress) => {
+      if (state.artistLookupCache[artistAddress]) {
+        return state.artistLookupCache[artistAddress];
+      }
+      const artist = _.find(state.artists, (artist) => {
+        return Web3.utils.toChecksumAddress(artist.ethAddress) === Web3.utils.toChecksumAddress(artistAddress);
+      });
+      if (!artist) {
+        console.error(`Unable to find artists [${artistAddress}]`);
+      }
+      state.artistLookupCache[artistAddress] = artist;
+      return artist;
+    },
     liveArtists: (state) => {
-      return state.artists.filter((a) => a.live);
+      return state.artists.filter((a) => a.live).filter((a) => a.ethAddress);
     },
     isOnMainnet: (state) => {
       if (!state.currentNetwork) {
@@ -71,18 +78,19 @@ const store = new Vuex.Store({
       }
       return state.currentNetwork === 'Main';
     },
+    totalPurchases: (state) => () => {
+      let v1 = state.kodaV1.assetsOwnedByAccount.length;
+      let v2 = state.kodaV2.accountOwnedTokens.length;
+      return v1 + v2;
+    }
   },
   mutations: {
     [mutations.SET_ARTISTS](state, {artists}) {
       state.artists = artists;
     },
-    [mutations.SET_ASSETS_PURCHASED_FROM_ACCOUNT](state, tokens) {
-      Vue.set(state, 'assetsPurchasedByAccount', tokens.map(val => val.toString()));
-    },
     [mutations.SET_ACCOUNT](state, {account, accountBalance}) {
-      state.account = account;
+      state.account = Web3.utils.toChecksumAddress(account);
       state.accountBalance = accountBalance;
-      store.dispatch(actions.GET_ASSETS_PURCHASED_FOR_ACCOUNT);
 
       // Full story identification of account for tracking
       /* global FS:true */
@@ -103,27 +111,12 @@ const store = new Vuex.Store({
     [mutations.SET_WEB3](state, web3) {
       state.web3 = web3;
     },
-    [mutations.SET_KODA_CONTRACT](state, KnownOriginDigitalAsset) {
-      state.KnownOriginDigitalAsset = KnownOriginDigitalAsset;
+    [mutations.SET_KODA_CONTRACT](state, {v1, v2}) {
+      state.KnownOriginDigitalAssetV1 = v1;
+      state.KnownOriginDigitalAssetV2 = v2;
     },
   },
   actions: {
-    [actions.GET_ASSETS_PURCHASED_FOR_ACCOUNT]({commit, dispatch, state}) {
-      KnownOriginDigitalAsset.deployed()
-        .then((contract) => {
-          return contract.tokensOf(state.account)
-            .then((tokens) => {
-              commit(mutations.SET_ASSETS_PURCHASED_FROM_ACCOUNT, tokens);
-
-              // Note: this must happen after committing the accounts balance
-              dispatch(`purchase/${actions.UPDATE_PURCHASE_STATE_FOR_ACCOUNT}`);
-            });
-        })
-        .catch((e) => {
-          console.error(e);
-          // TODO handle errors
-        });
-    },
     [actions.GET_CURRENT_NETWORK]({commit, dispatch, state}) {
       getNetIdString()
         .then((currentNetwork) => {
@@ -135,7 +128,6 @@ const store = new Vuex.Store({
         });
     },
     [actions.GET_USD_PRICE]: function ({commit, dispatch, state}) {
-
       axios.get('https://api.coinmarketcap.com/v1/ticker/ethereum/?convert=USD')
         .then((response) => {
           let currentPriceInUSD = response.data[0].price_usd;
@@ -148,21 +140,37 @@ const store = new Vuex.Store({
 
       dispatch(actions.GET_USD_PRICE);
 
+      // TODO can we ditch the hacks below yet?
+
       // NON-ASYNC action - set web3 provider on init
-      KnownOriginDigitalAsset.setProvider(web3.currentProvider);
+      KnownOriginDigitalAssetV1.setProvider(web3.currentProvider);
+      KnownOriginDigitalAssetV2.setProvider(web3.currentProvider);
 
       //dirty hack for web3@1.0.0 support for localhost testrpc, see https://github.com/trufflesuite/truffle-contract/issues/56#issuecomment-331084530
-      if (typeof KnownOriginDigitalAsset.currentProvider.sendAsync !== "function") {
-        KnownOriginDigitalAsset.currentProvider.sendAsync = function () {
-          return KnownOriginDigitalAsset.currentProvider.send.apply(
-            KnownOriginDigitalAsset.currentProvider, arguments
+      if (typeof KnownOriginDigitalAssetV1.currentProvider.sendAsync !== "function") {
+        KnownOriginDigitalAssetV1.currentProvider.sendAsync = function () {
+          return KnownOriginDigitalAssetV1.currentProvider.send.apply(
+            KnownOriginDigitalAssetV1.currentProvider, arguments
+          );
+        };
+      }
+
+      //dirty hack for web3@1.0.0 support for localhost testrpc, see https://github.com/trufflesuite/truffle-contract/issues/56#issuecomment-331084530
+      if (typeof KnownOriginDigitalAssetV2.currentProvider.sendAsync !== "function") {
+        KnownOriginDigitalAssetV2.currentProvider.sendAsync = function () {
+          return KnownOriginDigitalAssetV2.currentProvider.send.apply(
+            KnownOriginDigitalAssetV2.currentProvider, arguments
           );
         };
       }
 
       // Set the web3 instance
       commit(mutations.SET_WEB3, web3);
-      commit(mutations.SET_KODA_CONTRACT, KnownOriginDigitalAsset);
+
+      commit(mutations.SET_KODA_CONTRACT, {
+        v1: KnownOriginDigitalAssetV1,
+        v2: KnownOriginDigitalAssetV2
+      });
 
       // Find current network
       dispatch(actions.GET_CURRENT_NETWORK);
@@ -178,6 +186,9 @@ const store = new Vuex.Store({
                 let accountBalance = Web3.utils.fromWei(balance);
                 // store the account details
                 commit(mutations.SET_ACCOUNT, {account, accountBalance});
+
+                dispatch(`kodaV1/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account});
+                dispatch(`kodaV2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account});
               });
           };
 
@@ -194,16 +205,12 @@ const store = new Vuex.Store({
           // Every second check if the main account has changed
           setInterval(refreshHandler, 1000);
 
-          // init the KODA contract
-          dispatch(`contract/${actions.REFRESH_CONTRACT_DETAILS}`);
-
           if (account) {
             return setAccountAndBalance(account);
           }
         })
         .catch(function (error) {
           console.log('ERROR - account locked', error);
-          // TODO handle locked metamask account
         });
     },
   }

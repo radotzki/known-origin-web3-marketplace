@@ -1,5 +1,9 @@
 const _ = require('lodash');
 
+const getNetId = async () => {
+  return window.web3.eth.net.getId();
+};
+
 const getNetIdString = () => {
   return window.web3.eth.net.getId()
     .then((id) => {
@@ -48,7 +52,41 @@ const getEtherscanAddress = () => {
     });
 };
 
-const isHighRes = ({artistCode, attributes, edition}) => {
+const isHighRes = (editionNumber) => {
+
+  const V1Editions = [
+    5900, //STREMOJI10000DIG
+    6200, //STRTRTSYM0001DIG
+    6700, //STRSOFTFACE01DIG
+    6000, //STRLIQUIFY001DIG
+    6500, //STRTOOMNYNOONDIG
+    6100, //STRTAMINGLIONDIG
+    6600, //STRGRASSROOTSDIG
+    7100, //FKABURNINFIATDIG
+    4100, //STJHAPPYFOX00DIG
+    6300, //FKAHYPDTHSTY0DIG
+    6400, //FKADAFFY0RAINDIG
+  ];
+
+  // TODO re-enable this once V2 is live and update KO serverless API to check edition number not edition data
+  const V2Editions = [
+    // 11000,
+    // 12000,
+    // 13000,
+    // 14000,
+    // 15000,
+    // 16000
+  ];
+
+  const HIGH_RES_EDITIONS = [
+    ...V1Editions,
+    ...V2Editions,
+  ];
+
+  return _.includes(HIGH_RES_EDITIONS, editionNumber);
+};
+
+const isHighResV1Old = ({artistCode, attributes, edition}) => {
   if (!attributes || !artistCode) {
     return false;
   }
@@ -86,7 +124,9 @@ const isHighRes = ({artistCode, attributes, edition}) => {
 };
 
 export {
+  getNetId,
   getNetIdString,
   getEtherscanAddress,
-  isHighRes
+  isHighResV1Old,
+  isHighRes,
 };

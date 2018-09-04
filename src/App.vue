@@ -37,8 +37,9 @@
             <router-link :to="{ name: 'artists' }" class="nav-link">Artists</router-link>
           </li>
           <li class="nav-item">
-            <router-link :to="{ name: 'account' }" class="nav-link">Account
-              <!--<span class="badge badge-primary" v-if="assetsPurchasedByAccount.length > 0">{{ assetsPurchasedByAccount.length }}</span>-->
+            <router-link :to="{ name: 'account' }" class="nav-link">
+              Account
+              <span class="badge badge-primary" v-if="totalPurchases() > 0">{{ totalPurchases() }}</span>
             </router-link>
           </li>
         </ul>
@@ -60,8 +61,8 @@
             <small>
               <router-link :to="{ name: 'gallery' }">Gallery</router-link> &bull;
               <router-link :to="{ name: 'artists' }">Artists</router-link> &bull;
-              <router-link :to="{ name: 'details' }">Contract</router-link> &bull;
-              <router-link :to="{ name: 'assets' }">Assets</router-link>
+              <router-link :to="{ name: 'contracts' }">Contract</router-link>
+              <!--<router-link :to="{ name: 'assets' }">Assets</router-link>-->
             </small>
           </div>
           <div class="col-sm text-center">
@@ -94,9 +95,9 @@
   import { mapGetters, mapState } from 'vuex';
   import * as actions from './store/actions';
   import * as mutations from './store/mutation';
-  import CurrentNetwork from './components/ui-controls/CurrentNetwork';
+  import CurrentNetwork from './components/ui-controls/generic/CurrentNetwork';
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
-  import NetworkWarningBanner from './components/ui-controls/NetworkWarningBanner';
+  import NetworkWarningBanner from './components/ui-controls/generic/NetworkWarningBanner';
 
   export default {
     name: 'app',
@@ -106,8 +107,8 @@
       CurrentNetwork
     },
     computed: {
-      ...mapGetters([]),
-      ...mapState(['assetsPurchasedByAccount']),
+      ...mapGetters(['totalPurchases']),
+      ...mapState([]),
     },
     methods: {},
     mounted () {
@@ -138,12 +139,7 @@
 
   @import url('https://fonts.googleapis.com/css?family=Poppins:400,500,700');
 
-  $body-bg: #f2f5fb;
-  $body-color: #545454;
-  $primary: #132cc4;
-  $secondary: #545454;
-
-  $font-family-base: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;
+  @import './ko-colours.scss';
 
   @import '../node_modules/bootstrap/scss/bootstrap.scss';
   @import '../node_modules/bootstrap-vue/dist/bootstrap-vue.css';
@@ -185,6 +181,14 @@
 
   .navbar-light .navbar-brand:hover, .navbar-light .navbar-brand:focus {
     color: $primary;
+  }
+
+  .navbar-light .badge {
+    position: relative;
+    top: -10px;
+    right: 0px;
+    opacity: 0.75;
+    font-size: 0.65rem;
   }
 
   .floating-nav {
@@ -270,5 +274,25 @@
   .badge-nav {
     background-color: rgba(255, 255, 255, 0.5);
     color: $primary;
+  }
+
+  .card-desc {
+    font-size: 0.75rem;
+  }
+
+  .artist-name {
+    font-size: 0.7rem;
+  }
+
+  .artist-name-lg {
+    font-size: 1rem;
+  }
+
+  .artist-avatar {
+    max-width: 30px;
+  }
+
+  .tag {
+    font-size: 0.75rem;
   }
 </style>

@@ -1,100 +1,144 @@
 <template>
   <div class="container">
 
-    <loading-spinner v-if="!asset"></loading-spinner>
+    <loading-section v-if="!edition" :page="PAGES.COMPLETE_PURCHASE"></loading-section>
 
-    <div class="row justify-content-sm-center" v-if="!asset">
-      <div class="col text-center mt-5">
-        <p>We are loading assets from the Blockchain.</p>
-        <p>Please be patient as we are fully decentralised.</p>
-      </div>
-    </div>
-
-    <div v-else-if="asset" class="row justify-content-sm-center">
+    <div v-if="edition" class="row justify-content-sm-center">
       <div class="col col-sm-6">
         <div class="card shadow-sm">
 
-          <img class="card-img-top" :src="asset.lowResImg"/>
+          <img class="card-img-top" :src="edition.lowResImg"/>
 
           <div class="card-body">
 
-            <div class="text-center mb-2" v-if="isPurchaseTriggered(asset.id)">
+            <div class="text-center mb-2" v-if="isPurchaseTriggered(edition.edition, account)">
               <loading-spinner></loading-spinner>
-              <p class="card-text text-muted mt-4">Your purchase has been initiated</p>
-              <p class="card-text text-muted mt-4">Please be patient. Blockchains need to be mined.</p>
+              <p class="card-text text-dark mt-4">Your purchase has been initiated</p>
+              <p class="card-text text-dark mt-4">Please be patient. Blockchains need to be mined.</p>
+              <hr/>
             </div>
 
-            <div class="text-center mb-2" v-if="isPurchaseStarted(asset.id)">
+            <div class="text-center mb-2" v-if="isPurchaseStarted(edition.edition, account)">
               <loading-spinner></loading-spinner>
-              <p class="card-text text-muted mt-4">Your purchase is being confirmed...</p>
+              <p class="card-text text-dark mt-4">Your purchase is being confirmed...</p>
               <small class="text-muted">
-                <clickable-transaction :transaction="getTransactionForAsset(asset.id)"></clickable-transaction>
+                <clickable-transaction
+                  :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>
               </small>
+              <hr/>
             </div>
 
-            <div class="text-center mb-2" v-if="isPurchaseSuccessful(asset.id)">
+            <div class="text-center mb-2" v-if="isPurchaseSuccessful(edition.edition, account)">
               <img src="../../../static/GreenTick.svg" style="width: 100px"/>
               <p class="card-text text-success mt-4">Your purchase was successful!</p>
               <small class="text-muted">
-                <clickable-transaction :transaction="getTransactionForAsset(asset.id)"></clickable-transaction>
+                <clickable-transaction
+                  :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>
               </small>
-              <div class="mt-2">
-                <tweet-purchase-button :asset-id="asset.id"></tweet-purchase-button>
-              </div>
+              <hr/>
             </div>
 
-            <div class="text-center mb-2" v-if="isPurchaseFailed(asset.id)">
+            <div class="text-center mb-2" v-if="isPurchaseFailed(edition.edition, account)">
               <img src="../../../static/Failure.svg" style="width: 100px"/>
               <p class="card-text text-danger mt-4">Your purchase failed!</p>
+              <hr/>
             </div>
 
-            <p class="card-text">
-              <token-id :value="asset.id"></token-id>
+            <p class="card-title">{{ edition.name }}</p>
+            <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
+            <span class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
 
-              <high-res-label :asset="asset"></high-res-label>
-
-              <rarity-indicator :assets-in-edition="assetsForEdition(asset.edition)"></rarity-indicator>
-
-              <span class="badge badge-light">1 of {{ assetsForEdition(asset.edition).length }}</span>
-
-              <metadata-attributes :attributes="asset.attributes"></metadata-attributes>
-            </p>
-
-            <edition-name-by-artist :edition="asset"></edition-name-by-artist>
           </div>
 
-          <ul class="list-group list-group-flush" v-if="!assetPurchaseState(asset.id)">
+          <ul class="list-group list-group-flush" v-if="isNotSoldOut() && account">
+            <li class="list-group-item">
+              <div class="d-inline-block">
+                <high-res-label :high-res-available="edition.highResAvailable"></high-res-label>
+                <rarity-indicator :total-available="edition.totalAvailable"></rarity-indicator>
+                <metadata-attributes :attributes="edition.attributes"></metadata-attributes>
+              </div>
+            </li>
             <li class="list-group-item">
               <div class="d-inline-block"><img src="/../../static/Account_You_icn.svg" style="height: 50px"/></div>
               <div class="d-inline-block">
-                <span class="pl-2 text-muted">You:</span>
+                <small class="pl-2 text-muted">You:</small>
                 <clickable-address :eth-address="account"></clickable-address>
               </div>
             </li>
             <li class="list-group-item">
-              <div class="d-inline-block"><img src="/../../static/ETH_icn.svg" style="height: 50px"/></div>
-              <div class="d-inline-block">
-                <span class="pl-2 text-muted">Amount:</span> <strong>{{ asset.priceInEther }} ETH</strong>
-              </div>
-            </li>
-            <li class="list-group-item">
               <div class="d-inline-block"><img src="/../../static/Account_You_icn.svg" style="height: 50px"/></div>
               <div class="d-inline-block">
-                <span class="pl-2 text-muted">To:</span>
-                <clickable-address :eth-address="asset.owner"></clickable-address>
+                <small class="pl-2 text-muted">Artist:</small>
+                <clickable-address :eth-address="edition.artistAccount"></clickable-address>
               </div>
             </li>
-            <li class="list-group-item text-right no-bottom-border">
-              <price-in-eth :value="asset.priceInEther"></price-in-eth>
+            <li class="list-group-item text-right no-bottom-border font-weight-bold">
+              <price-in-eth :value="edition.priceInEther"></price-in-eth>
             </li>
           </ul>
 
-          <div class="card-footer" v-if="!isPurchaseFailed(asset.id)">
-            <complete-purchase-button :asset="asset" class="pad-bottom"
-                                      @purchaseInitiated="onPurchaseInitiated"></complete-purchase-button>
+          <div class="card-footer"
+               v-if="!isPurchaseFailed(edition.edition, account) && haveNotPurchasedEditionBefore(edition.edition)">
+            <form v-if="account">
+
+              <div v-if="edition || !editionPurchaseState(edition.edition)">
+
+                <div class="form-check mb-2" v-if="isNotSoldOut">
+                  <label class="form-check-label" :for="'confirm_terms'">
+                    <input type="checkbox" :id="'confirm_terms'" v-model="confirm_terms">
+                    <span class="pl-2">I agree with the KODA terms of service</span>
+                  </label>
+                </div>
+
+                <div v-if="isNotSoldOut" class="mb-2">
+                  <small>
+                    By choosing <strong>I agree</strong>, you understand and agree to KnownOrigin's term of service and
+                    usage license.
+                    <router-link :to="{ name: 'terms' }" target="_blank">Terms of Service</router-link>
+                  </small>
+                </div>
+
+                <div class="btn-group-vertical btn-block">
+                  <button type="button" class="btn btn-success btn-block text-white"
+                          :disabled="!confirm_terms || isPurchaseTriggered(edition.edition, account) || isPurchaseSuccessful(edition.edition, account)"
+                          v-on:click="completePurchase"
+                          v-if="isNotSoldOut || !isPurchaseSuccessful(edition.edition, account)">
+                    Confirm
+                  </button>
+
+                  <router-link :to="{ name: 'gallery'}" tag="button" class="btn btn-outline-primary btn-block">
+                    Back to gallery
+                  </router-link>
+                </div>
+
+              </div>
+
+              <router-link :to="{ name: 'account'}"
+                           v-if="isPurchaseSuccessful(edition.edition, account)"
+                           tag="button" class="btn btn-outline-primary btn-block">
+                View account
+              </router-link>
+
+            </form>
+
+            <p v-if="!account" class="text-center pt-2">
+              Your account is locked!
+            </p>
+
           </div>
 
-          <div v-if="isPurchaseFailed(asset.id)" class="card-footer">
+          <div class="card-footer"
+               v-if="!haveNotPurchasedEditionBefore(edition.edition) && !isPurchaseSuccessful(edition.edition, account)">
+            <p class="text-center pt-2">
+              It looks like you have already purchased this edition!
+            </p>
+
+            <router-link :to="{ name: 'account'}" tag="button" class="btn btn-outline-primary btn-block">
+              View account
+            </router-link>
+          </div>
+
+          <div v-if="isPurchaseFailed(edition.edition, account)" class="card-footer">
             <div class="btn-group-vertical btn-block">
               <button type="button" v-on:click="retryPurchase" class="btn btn-outline-primary btn-block">
                 Retry
@@ -110,45 +154,37 @@
 
 <script>
   import {mapGetters, mapState} from 'vuex';
-  import Artist from '../Artist';
-  import Asset from '../Asset';
-  import CompletePurchaseButton from '../ui-controls/CompletePurchaseButton';
   import _ from 'lodash';
-  import AddressIcon from '../ui-controls/AddressIcon';
-  import PurchaseState from '../ui-controls/PurchaseState';
-  import PriceInEth from '../ui-controls/PriceInEth';
-  import TokenId from '../ui-controls/TokenId.vue';
-  import EditionNameByArtist from '../ui-controls/EditionNameByArtist';
-  import * as mutations from '../../store/mutation';
+  import AddressIcon from '../ui-controls/generic/AddressIcon';
+  import PriceInEth from '../ui-controls/generic/PriceInEth';
   import * as actions from '../../store/actions';
-  import ClickableTransaction from "../ui-controls/ClickableTransaction";
-  import ClickableAddress from "../ui-controls/ClickableAddress";
-  import TweetPurchaseButton from "../ui-controls/TweetPurchasedAssetButton";
-  import LoadingSpinner from "../ui-controls/LoadingSpinner";
-  import RarityIndicator from "../ui-controls/RarityIndicator";
-  import HighResLabel from "../ui-controls/HighResLabel.vue";
-  import MetadataAttributes from "../ui-controls/MetadataAttributes.vue";
+  import {PAGES} from '../../store/loadingPageState';
+  import ClickableTransaction from "../ui-controls/generic/ClickableTransaction";
+  import ClickableAddress from "../ui-controls/generic/ClickableAddress";
+  import LoadingSpinner from "../ui-controls/generic/LoadingSpinner";
+  import RarityIndicator from "../ui-controls/v2/RarityIndicator";
+  import HighResLabel from "../ui-controls/generic/HighResLabel.vue";
+  import MetadataAttributes from "../ui-controls/v2/MetadataAttributes.vue";
+  import TweetEditionButton from "../ui-controls/v2/TweetEditionButton";
+  import LoadingSection from "../ui-controls/generic/LoadingSection";
 
   export default {
     name: 'completePurchase',
     components: {
+      LoadingSection,
+      TweetEditionButton,
       MetadataAttributes,
       HighResLabel,
       RarityIndicator,
-      TweetPurchaseButton,
       ClickableTransaction,
-      PurchaseState,
-      Asset,
       AddressIcon,
-      CompletePurchaseButton,
       PriceInEth,
-      EditionNameByArtist,
-      TokenId,
       LoadingSpinner,
       ClickableAddress
     },
     data() {
       return {
+        PAGES: PAGES,
         confirm_terms: false
       };
     },
@@ -156,47 +192,76 @@
       ...mapState([
         'account'
       ]),
-      ...mapGetters('contract', [
-        'isKnownOrigin',
-      ]),
-      ...mapGetters('assets', [
-        'assetById',
-        'assetsForEdition',
-        'firstAssetForEdition',
-      ]),
       ...mapGetters('purchase', [
-        'assetPurchaseState',
+        'editionPurchaseState',
         'isPurchaseTriggered',
         'isPurchaseStarted',
         'isPurchaseSuccessful',
         'isPurchaseFailed',
-        'getTransactionForAsset',
+        'getTransactionForEdition',
+      ]),
+      ...mapGetters('kodaV2', [
+        'haveNotPurchasedEditionBefore',
+        'findEdition',
+      ]),
+      ...mapGetters('loading', [
+        'isLoading'
+      ]),
+      ...mapGetters([
+        'findArtistsForAddress'
       ]),
       title: function () {
         return `${this.$route.params.edition} - ID ${this.$route.params.tokenId}`;
       },
-      asset: function () {
-        return this.assetById(this.$route.params.tokenId);
-      },
-      soldAsFiat: function () {
-        return this.asset.purchased === 2;
+      edition: function () {
+        return this.findEdition(this.$route.params.editionNumber);
       }
     },
     methods: {
-      onPurchaseInitiated: function () {
-        console.log('onPurchaseInitiated');
+      completePurchase: function () {
+        this.$store.dispatch(`purchase/${actions.PURCHASE_EDITION}`, {
+          edition: this.edition,
+          account: this.account
+        });
       },
       retryPurchase: function () {
-        this.$store.dispatch(`purchase/${actions.RESET_PURCHASE_STATE}`, this.asset);
+        this.$store.dispatch(`purchase/${actions.RESET_PURCHASE_STATE}`, {
+          edition: this.edition
+        });
+      },
+      isNotSoldOut: function () {
+        return this.edition.totalAvailable - this.edition.totalSupply > 0;
       }
     },
-    mounted() {
+    created() {
+      this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.COMPLETE_PURCHASE);
+
+      const loadData = function () {
+        this.$store.dispatch(`kodaV2/${actions.LOAD_INDIVIDUAL_EDITION}`, {editionNumber: this.$route.params.editionNumber})
+          .then(() => {
+            return this.$store.dispatch(`kodaV2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account: this.account});
+          })
+          .finally(() => {
+            this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.COMPLETE_PURCHASE);
+          });
+      }.bind(this);
+
+      this.$store.watch(
+        () => this.$store.state.KnownOriginDigitalAssetV2,
+        () => loadData());
+
+      if (this.$store.state.KnownOriginDigitalAssetV2) {
+        loadData();
+      }
+
       // Dont' perform the no-web3 check immediately, allow the chain time to respond
       setTimeout(function () {
         if (!this.account) {
           this.$modal.show('no-web3-found');
         }
-      }.bind(this), 5000);
+      }.bind(this), 10000);
+    },
+    destroyed() {
     }
   };
 </script>
@@ -204,5 +269,17 @@
 <style scoped>
   li.no-bottom-border {
     border-bottom: 0 none;
+  }
+
+  li.no-top-border {
+    border-top: 0 none;
+  }
+
+  .edition-data {
+    font-size: 0.75rem;
+  }
+
+  .form-check {
+    padding-left: 0;
   }
 </style>

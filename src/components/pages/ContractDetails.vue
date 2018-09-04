@@ -1,61 +1,60 @@
 <template>
   <div class="container">
     <h1>Contract</h1>
-    <div class="row justify-content-center">
-      <div class="col-sm-8">
+    <div class="row justify-content-center mt-4">
+      <div class="col-sm-6 text-center">
+        <h2>KODA V1</h2>
         <table class="table table-striped bg-white">
           <tbody>
-          <tr v-if="contractSymbol">
+          <tr v-if="v1.contractAddress">
             <td>Contract</td>
-            <td>
-              <clickable-address :eth-address="contractAddress"></clickable-address>
-            </td>
+            <td><clickable-address :eth-address="v1.contractAddress"></clickable-address></td>
           </tr>
-          <tr v-if="contractSymbol">
-            <td>Symbol</td>
-            <td>{{ contractSymbol }}</td>
-          </tr>
-          <tr v-if="curatorAddress">
-            <td>Curator</td>
-            <td>
-              <clickable-address :eth-address="curatorAddress"></clickable-address>
-            </td>
-          </tr>
-          <tr v-if="contractDeveloperAddress">
-            <td>Developer</td>
-            <td>
-              <clickable-address :eth-address="contractDeveloperAddress"></clickable-address>
-            </td>
-          </tr>
-          <tr v-if="totalSupply">
+          <tr v-if="v1.totalSupply">
             <td>Supply</td>
-            <td>
-              <router-link :to="{ name: 'assets' }">{{ totalSupply }}</router-link>
-            </td>
+            <td>{{ v1.totalSupply }}</td>
           </tr>
-          <tr v-if="totalNumberOfPurchases">
+          <tr v-if="v1.totalNumberOfPurchases">
             <td>Sales</td>
-            <td>{{ totalNumberOfPurchases }}</td>
+            <td>{{ v1.totalNumberOfPurchases }}</td>
           </tr>
-          <tr v-if="totalPurchaseValueInEther">
+          <tr v-if="v1.totalPurchaseValueInEther">
             <td>Total</td>
-            <td>{{ totalPurchaseValueInEther }} ETH</td>
+            <td>{{ v1.totalPurchaseValueInEther }} ETH</td>
           </tr>
-          <tr v-if="totalEditions()">
-            <td>Number of editions</td>
-            <td>{{totalEditions()}}</td>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="col-sm-6 text-center">
+        <h2>KODA V2</h2>
+        <table class="table table-striped bg-white">
+          <tbody>
+          <tr v-if="v2.contractAddress">
+            <td>Contract</td>
+            <td><clickable-address :eth-address="v2.contractAddress"></clickable-address></td>
           </tr>
-          <tr v-if="totalListedArtists()">
-            <td>Number of artists</td>
-            <td>{{totalListedArtists()}}</td>
+          <tr v-if="v2.totalSupply">
+            <td>Purchases</td>
+            <td>{{ v2.totalSupply }}</td>
           </tr>
-          <tr v-if="mostExpensivePiece()">
-            <td>Most expensive asset</td>
-            <td>{{mostExpensivePiece().priceInEther}} ETH</td>
+          <tr v-if="v2.totalNumberAvailable">
+            <td>Artworks Available</td>
+            <td>{{ v2.totalNumberAvailable }}</td>
           </tr>
-          <tr v-if="cheapestPiece()">
-            <td>Best value asset</td>
-            <td>{{cheapestPiece().priceInEther}} ETH</td>
+          <tr v-if="v2.totalNumberMinted">
+            <td>Artworks Minted</td>
+            <td>{{ v2.totalNumberMinted }}</td>
+          </tr>
+          <tr v-if="v2.totalPurchaseValueInEther">
+            <td>Total</td>
+            <td>{{ v2.totalPurchaseValueInEther }} ETH</td>
+          </tr>
+          <tr v-if="v2.koCommissionAccount">
+            <td>Commission Account</td>
+            <td>
+              <clickable-address :eth-address="v2.koCommissionAccount"></clickable-address>
+            </td>
           </tr>
           </tbody>
         </table>
@@ -66,32 +65,48 @@
 
 <script>
 
-  import { mapGetters, mapState } from 'vuex';
-  import AddressIcon from '../ui-controls/AddressIcon';
-  import ClickableAddress from '../ui-controls/ClickableAddress';
+  import ClickableAddress from '../ui-controls/generic/ClickableAddress';
+  import * as actions from '../../store/actions';
 
   export default {
     name: 'contractDetails',
-    components: {AddressIcon, ClickableAddress},
+    components: {ClickableAddress},
     computed: {
-      ...mapGetters('assets', [
-        'totalEditions',
-        'totalListedArtists',
-        'cheapestPiece',
-        'mostExpensivePiece',
-      ]),
-      ...mapState('contract', [
-        'curatorAddress',
-        'contractDeveloperAddress',
-        'commissionAddress',
-        'totalSupply',
-        'totalPurchaseValueInWei',
-        'totalNumberOfPurchases',
-        'totalPurchaseValueInEther',
-        'contractName',
-        'contractSymbol',
-        'contractAddress'
-      ])
+      v1: function () {
+        return {
+          contractAddress: this.$store.state.kodaV1.contractAddress,
+          totalSupply: this.$store.state.kodaV1.totalSupply,
+          totalNumberOfPurchases: this.$store.state.kodaV1.totalNumberOfPurchases,
+          totalPurchaseValueInEther: this.$store.state.kodaV1.totalPurchaseValueInEther,
+        };
+      },
+      v2: function () {
+        return {
+          contractAddress: this.$store.state.kodaV2.contractAddress,
+          totalSupply: this.$store.state.kodaV2.totalSupply,
+          totalPurchaseValueInEther: this.$store.state.kodaV2.totalPurchaseValueInEther,
+          totalNumberMinted: this.$store.state.kodaV2.totalNumberMinted,
+          totalNumberAvailable: this.$store.state.kodaV2.totalNumberAvailable,
+          koCommissionAccount: this.$store.state.kodaV2.koCommissionAccount,
+        };
+      }
+    },
+    created() {
+      this.$store.watch(
+        () => this.$store.state.KnownOriginDigitalAssetV2,
+        () => this.$store.dispatch(`kodaV2/${actions.REFRESH_CONTRACT_DETAILS}`)
+      );
+      this.$store.watch(
+        () => this.$store.state.KnownOriginDigitalAssetV1,
+        () => this.$store.dispatch(`kodaV1/${actions.REFRESH_CONTRACT_DETAILS}`)
+      );
+
+      if (this.$store.state.KnownOriginDigitalAssetV1) {
+        this.$store.dispatch(`kodaV1/${actions.REFRESH_CONTRACT_DETAILS}`);
+      }
+      if (this.$store.state.KnownOriginDigitalAssetV2) {
+        this.$store.dispatch(`kodaV2/${actions.REFRESH_CONTRACT_DETAILS}`);
+      }
     }
   };
 </script>

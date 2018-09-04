@@ -41,60 +41,30 @@ const highResStateModule = {
     },
   },
   actions: {
-    [actions.HIGH_RES_DOWNLOAD]({commit, state, getters, rootState}, asset) {
+    [actions.HIGH_RES_DOWNLOAD]({commit, state, getters, rootState}, {edition, contractVersion}) {
 
       // if we already have it, don't pop again
-      if (getters.isHighResDownloadSuccess(asset.id)) {
+      if (getters.isHighResDownloadSuccess(edition.tokenId)) {
         return;
       }
 
-      commit(mutations.HIGH_RES_DOWNLOAD_TRIGGERED, {tokenId: asset.id});
+      commit(mutations.HIGH_RES_DOWNLOAD_TRIGGERED, {tokenId: edition.tokenId});
 
-      const requestHighResDownload = ({originalMessage, signedMessage}) => {
-        return rootState.web3.eth.net.getId()
-          .then((networkId) => {
+      const highResConfig = {
+        local: "http://localhost:5000/known-origin-io/us-central1/highResDownload",
+        // beta: "https://us-central1-beta-known-origin-io.cloudfunctions.net/highResDownload",
+        live: "https://us-central1-known-origin-io.cloudfunctions.net/highResDownload"
+      };
 
-            const highResConfig = {
-              local: "http://localhost:5000/known-origin-io/us-central1/highResDownload",
-              // beta: "https://us-central1-beta-known-origin-io.cloudfunctions.net/highResDownload",
-              live: "https://us-central1-known-origin-io.cloudfunctions.net/highResDownload"
-            };
-
-            const getDownloadApi = () => {
-              switch (window.location.hostname) {
-                case "localhost":
-                case "127.0.0.1":
-                  // return highResConfig.local;
-                default:
-                  // For now point all to live
-                  return highResConfig.live;
-              }
-            };
-
-            return axios({
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-              },
-              data: {
-                address: rootState.account,
-                tokenId: asset.id,
-                originalMessage,
-                signedMessage,
-                networkId
-              },
-              url: getDownloadApi(),
-            })
-              .then((response) => validateResponse(response))
-              .catch((error) => {
-                console.log('Failed to download', error);
-                commit(mutations.HIGH_RES_DOWNLOAD_FAILURE, {
-                  message: _.get(error, 'response.data.message', error.message),
-                  tokenId: asset.id
-                });
-              });
-          });
+      const getDownloadApi = () => {
+        switch (window.location.hostname) {
+          case "localhost":
+          case "127.0.0.1":
+            // return highResConfig.local;
+          default:
+            // For now point all to live
+            return highResConfig.live;
+        }
       };
 
       const validateResponse = (response) => {
@@ -102,18 +72,47 @@ const highResStateModule = {
         if (response.status === 202 && response.data.url) {
           commit(mutations.HIGH_RES_DOWNLOAD_SUCCESS, {
             ...response.data,
-            tokenId: asset.id
+            tokenId: edition.tokenId
           });
         } else {
           console.log('Invalid status code');
           commit(mutations.HIGH_RES_DOWNLOAD_FAILURE, {
             message: "Unexpected response status",
-            tokenId: asset.id
+            tokenId: edition.tokenId
           });
         }
       };
 
-      let message = `I verify that I, ${rootState.account}, have purchased this asset, #${asset.id}, of edition, ${asset.edition}, from KnownOrigin.io. By signing this transaction you agree to adhere to the KnownOrigin license agreement. ${Date.now()}`;
+      const requestHighResDownload = async ({originalMessage, signedMessage}) => {
+        const networkId = await rootState.web3.eth.net.getId();
+
+        return axios({
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          },
+          data: {
+            address: rootState.account,
+            tokenId: edition.tokenId,
+            contractVersion,
+            originalMessage,
+            signedMessage,
+            networkId
+          },
+          url: getDownloadApi(),
+        })
+          .then((response) => validateResponse(response))
+          .catch((error) => {
+            console.log('Failed to download', error);
+            commit(mutations.HIGH_RES_DOWNLOAD_FAILURE, {
+              message: _.get(error, 'response.data.message', error.message),
+              tokenId: edition.tokenId
+            });
+          });
+      };
+
+      let message = `I verify that I, ${rootState.account}, have purchased token #${edition.tokenId}, of edition ${edition.edition}, from KnownOrigin.io. By signing this transaction you agree to adhere to the KnownOrigin terms of service. ${Date.now()}`;
 
       rootState.web3.eth.personal
         .sign(message, rootState.account)
@@ -123,9 +122,8 @@ const highResStateModule = {
         }))
         .catch((error) => {
           console.log('Failed to sign message');
-          // rejected
           commit(mutations.HIGH_RES_DOWNLOAD_FAILURE, {
-            tokenId: asset.id,
+            tokenId: edition.tokenId,
             message: _.get(error, 'message'),
           });
         });

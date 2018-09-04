@@ -14,8 +14,8 @@ export const SET_USD_PRICE = 'SET_USD_PRICE';
 ///////////////////
 export const SET_ACCOUNT = 'SET_ACCOUNT';
 export const SET_ASSETS_PURCHASED_FROM_ACCOUNT = 'SET_ASSETS_PURCHASED_FROM_ACCOUNT';
+export const SET_LEGACY_ASSET = 'SET_LEGACY_ASSET';
 
-export const SET_ASSETS = 'SET_ASSETS';
 export const SET_ARTISTS = 'SET_ARTISTS';
 
 export const SET_CONTRACT_DETAILS = 'SET_CONTRACT_DETAILS';
@@ -38,3 +38,19 @@ export const PURCHASE_STARTED = 'PURCHASE_STARTED'; // metamask transaction subm
 export const PURCHASE_FAILED = 'PURCHASE_FAILED'; // a failure
 export const PURCHASE_SUCCESSFUL = 'PURCHASE_SUCCESSFUL'; // transaction mined and Purchase event heard
 export const RESET_PURCHASE_STATE = 'RESET_PURCHASE_STATE';
+
+/////////////
+// KODA V2 //
+/////////////
+
+export const SET_EDITION = 'SET_EDITION';
+export const SET_EDITIONS = 'SET_EDITIONS';
+
+export const SET_ACCOUNT_EDITIONS = 'SET_ACCOUNT_EDITIONS';
+export const SET_ACCOUNT_EDITION = 'SET_ACCOUNT_EDITION';
+export const SET_ACCOUNT_TOKENS = 'SET_ACCOUNT_TOKENS';
+
+export const SET_LOADING_STARTED_STATE = 'SET_LOADING_STARTED_STATE';
+export const SET_LOADING_FINISHED_STATE = 'SET_LOADING_FINISHED_STATE';
+export const SET_CONTRACT_ADDRESS_V2 = 'SET_CONTRACT_ADDRESS_V2';
+

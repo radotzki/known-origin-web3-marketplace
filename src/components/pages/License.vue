@@ -1,147 +1,119 @@
 <template>
   <div class="container">
-    <h1>License</h1>
-
-    <h2>KnownOrigin.io 4.0 International Public License</h2>
-
-    <p>By exercising the Licensed Rights (defined below), You accept and agree to be bound by the terms and conditions of this KnownOrigin.io 4.0 International Public License (“Public License”). To the extent this Public License may be interpreted as a contract, You are granted the Licensed Rights in consideration of Your acceptance of these terms and conditions, and the Licensor grants You such rights in consideration of benefits the Licensor receives from making the Licensed Material available under these terms and conditions.</p>
-
-    <h3>Section 1 – Definitions.</h3>
-
-    <p><strong>Adapted Material</strong> means material subject to Copyright and Similar Rights that is derived from or based upon the Licensed Material and in which the Licensed Material is translated, altered, arranged, transformed, or otherwise modified in a manner requiring permission under the Copyright and Similar Rights held by the Licensor. For purposes of this Public License, where the Licensed Material is a musical work, performance, or sound recording, Adapted Material is always produced where the Licensed Material is synched in timed relation with a moving image.
-
-    <p><strong>Copyright and Similar Rights</strong>  means copyright and/or similar rights closely related to copyright including, without limitation, performance, broadcast, sound recording, and Sui Generis Database Rights, without regard to how the rights are labeled or categorized. For purposes of this Public License, the rights specified in Section 2(b)(1)-(2) are not Copyright and Similar Rights.
-
-    <p><strong>Effective Technological Measures</strong>  means those measures that, in the absence of proper authority, may not be circumvented under laws fulfilling obligations under Article 11 of the WIPO Copyright Treaty adopted on December 20, 1996, and/or similar international agreements.</p>
-
-    <p><strong>Exceptions and Limitations</strong>  means fair use, fair dealing, and/or any other exception or limitation to Copyright and Similar Rights that applies to Your use of the Licensed Material.</p>
-
-    <p><strong>Licensed Material</strong> means the artistic or literary work, database, or other material to which the Licensor applied this Public License.</p>
-
-    <p><strong>Licensed Rights</strong> means the rights granted to You subject to the terms and conditions of this Public License, which are limited to all Copyright and Similar Rights that apply to Your use of the Licensed Material and that the Licensor has authority to license. Licensor means the individual(s) or entity(ies) granting rights under this Public License.</p>
-
-    <p><strong>NonCommercial</strong> means not primarily intended for or directed towards commercial advantage or monetary compensation. For purposes of this Public License, the exchange of the Licensed Material for other material subject to Copyright and Similar Rights by digital file-sharing or similar means is NonCommercial provided there is no payment of monetary compensation in connection with the exchange.</p>
-
-    <p><strong>Ownership of digital assets</strong> means misrepresentation of assets for resale is a breach of the KODA license agreement. Duplication of artwork/assets for resale is not a the true and authentic digital asset associated to the smart contract. Any change of ownership should be done via the Ethereum blockchain/smart contract. Any commercial usage should credit the original artists/curator.</p>
-
-    <p><strong>Share</strong> means to provide material to the public by any means or process that requires permission under the Licensed Rights, such as reproduction, public display, public performance, distribution, dissemination, communication, or importation, and to make material available to the public including in ways that members of the public may access the material from a place and at a time individually chosen by them.</p>
-
-    <p><strong>Sui Generis Database Rights</strong> means rights other than copyright resulting from Directive 96/9/EC of the European Parliament and of the Council of 11 March 1996 on the legal protection of databases, as amended and/or succeeded, as well as other essentially equivalent rights anywhere in the world.</p>
-
-    <p><strong>You</strong> means the individual or entity exercising the Licensed Rights under this Public License. Your has a corresponding meaning.</p>
-
-    <h3>Section 2 – Scope.</h3>
-
-    <p>License grant.</p>
-
-    <p>(1) Subject to the terms and conditions of this Public License, the Licensor hereby grants You a worldwide, royalty-free, non-sublicensable, non-exclusive, irrevocable license to exercise the Licensed Rights in the Licensed Material to:
-
-    <p>(a) reproduce and Share the Licensed Material, in whole or in part, for NonCommercial purposes only; and</p>
-
-    <p>(b) produce and reproduce, but not Share, Adapted Material for NonCommercial purposes only.</p>
-
-    <p>(2) Exceptions and Limitations. For the avoidance of doubt, where Exceptions and Limitations apply to Your use, this Public License does not apply, and You do not need to comply with its terms and conditions.</p>
-
-    <p>(3) Term. The term of this Public License is specified in Section 6(a).</p>
-
-    <p>(4) Media and formats; technical modifications allowed. The Licensor authorizes You to exercise the Licensed Rights in all media and formats whether now known or hereafter created, and to make technical modifications necessary to do so. The Licensor waives and/or agrees not to assert any right or authority to forbid You from making technical modifications necessary to exercise the Licensed Rights, including technical modifications necessary to circumvent Effective Technological Measures. For purposes of this Public License, simply making modifications authorized by this Section 2(a)(4) never produces Adapted Material.</p>
-
-    <p>(5) Downstream recipients.</p>
-
-    <p>(a) Offer from the Licensor – Licensed Material. Every recipient of the Licensed Material automatically receives an offer from the Licensor to exercise the Licensed Rights under the terms and conditions of this Public License.</p>
-
-    <p>(b) No downstream restrictions. You may not offer or impose any additional or different terms or conditions on, or apply any Effective Technological Measures to, the Licensed Material if doing so restricts exercise of the Licensed Rights by any recipient of the Licensed Material.</p>
-
-    <p>(6) No endorsement. Nothing in this Public License constitutes or may be construed as permission to assert or imply that You are, or that Your use of the Licensed Material is, connected with, or sponsored, endorsed, or granted official status by, the Licensor or others designated to receive attribution as provided in Section 3(a)(1)(A)(i).</p>
-
-    <h3>Other rights.</h3>
-
-    <p>1. Moral rights, such as the right of integrity, are not licensed under this Public License, nor are publicity, privacy, and/or other similar personality rights; however, to the extent possible, the Licensor waives and/or agrees not to assert any such rights held by the Licensor to the limited extent necessary to allow You to exercise the Licensed Rights, but not otherwise.</p>
-
-    <p>2. Patent and trademark rights are not licensed under this Public License.</p>
-
-    <p>3. To the extent possible, the Licensor waives any right to collect royalties from You for the exercise of the Licensed Rights, whether directly or through a collecting society under any voluntary or waivable statutory or compulsory licensing scheme. In all other cases the Licensor expressly reserves any right to collect such royalties, including when the Licensed Material is used other than for NonCommercial purposes.</p>
-
-    <h3>Section 3 – License Conditions.</h3>
-
-    <p>Your exercise of the Licensed Rights is expressly made subject to the following conditions.</p>
-
-    <p>*Attribution*.</p>
-
-    <p>(1) If You Share the Licensed Material, You must:</p>
-
-    <p>(A) retain the following if it is supplied by the Licensor with the Licensed Material:</p>
-    <p>i identification of the creator(s) of the Licensed Material and any others designated to receive attribution, in any reasonable manner requested by the Licensor (including by pseudonym if designated);</p>
-
-    <p>ii a copyright notice;</p>
-
-    <p>iii a notice that refers to this Public License;</p>
-
-    <p>iv a notice that refers to the disclaimer of warranties;</p>
-
-    <p>v a URI or hyperlink to the Licensed Material to the extent reasonably practicable;</p>
-
-    <p>(B) indicate if You modified the Licensed Material and retain an indication of any previous modifications; and</p>
-
-    <p>(C) indicate the Licensed Material is licensed under this Public License, and include the text of, or the URI or hyperlink to, this Public License.</p>
-
-    <p>For the avoidance of doubt, You do not have permission under this Public License to Share Adapted Material.</p>
-
-    <p>(2) You may satisfy the conditions in Section 3(a)(1) in any reasonable manner based on the medium, means, and context in which You Share the Licensed Material. For example, it may be reasonable to satisfy the conditions by providing a URI or hyperlink to a resource that includes the required information.</p>
-
-    <p>(3) If requested by the Licensor, You must remove any of the information required by Section 3(a)(1)(A) to the extent reasonably practicable.</p>
-
-    <h3>Section 4 – Sui Generis Database Rights.</h3>
-
-    <p>Where the Licensed Rights include Sui Generis Database Rights that apply to Your use of the Licensed Material:</p>
-
-    <p>(a) for the avoidance of doubt, Section 2(a)(1) grants You the right to extract, reuse, reproduce, and Share all or a substantial portion of the contents of the database for NonCommercial purposes only and provided You do not Share Adapted Material;</p>
-
-    <p>(b) if You include all or a substantial portion of the database contents in a database in which You have Sui Generis Database Rights, then the database in which You have Sui Generis Database Rights (but not its individual contents) is Adapted Material; and</p>
-
-    <p>(c) You must comply with the conditions in Section 3(a) if You Share all or a substantial portion of the contents of the database.</p>
-
-    <p>For the avoidance of doubt, this Section 4 supplements and does not replace Your obligations under this Public License where the Licensed Rights include other Copyright and Similar Rights.</p>
-
-    <h3>Section 5 – Disclaimer of Warranties and Limitation of Liability.</h3>
-
-    <p>(a) Unless otherwise separately undertaken by the Licensor, to the extent possible, the Licensor offers the Licensed Material as-is and as-available, and makes no representations or warranties of any kind concerning the Licensed Material, whether express, implied, statutory, or other. This includes, without limitation, warranties of title, merchantability, fitness for a particular purpose, non-infringement, absence of latent or other defects, accuracy, or the presence or absence of errors, whether or not known or discoverable. Where disclaimers of warranties are not allowed in full or in part, this disclaimer may not apply to You.</p>
-
-    <p>(b) To the extent possible, in no event will the Licensor be liable to You on any legal theory (including, without limitation, negligence) or otherwise for any direct, special, indirect, incidental, consequential, punitive, exemplary, or other losses, costs, expenses, or damages arising out of this Public License or use of the Licensed Material, even if the Licensor has been advised of the possibility of such losses, costs, expenses, or damages. Where a limitation of liability is not allowed in full or in part, this limitation may not apply to You.</p>
-
-    <p>(C) The disclaimer of warranties and limitation of liability provided above shall be interpreted in a manner that, to the extent possible, most closely approximates an absolute disclaimer and waiver of all liability.</p>
-
-    <h3>Section 6 – Term and Termination.</h3>
-
-    <p>(a) This Public License applies for the term of the Copyright and Similar Rights licensed here. However, if You fail to comply with this Public License, then Your rights under this Public License terminate automatically.</p>
-
-    <p>(b) Where Your right to use the Licensed Material has terminated under Section 6(a), it reinstates:</p>
-
-    <p>1. automatically as of the date the violation is cured, provided it is cured within 30 days of Your discovery of the violation; or</p>
-
-    <p>2. upon express reinstatement by the Licensor.</p>
-
-    <p>For the avoidance of doubt, this Section 6(b) does not affect any right the Licensor may have to seek remedies for Your violations of this Public License.</p>
-
-    <p>(c) For the avoidance of doubt, the Licensor may also offer the Licensed Material under separate terms or conditions or stop distributing the Licensed Material at any time; however, doing so will not terminate this Public License.</p>
-
-    <p>(d) Sections 1, 5, 6, 7, and 8 survive termination of this Public License.</p>
-
-    <h3>Section 7 – Other Terms and Conditions.</h3>
-
-    <p>(a) The Licensor shall not be bound by any additional or different terms or conditions communicated by You unless expressly agreed.</p>
-
-    <p>(b) Any arrangements, understandings, or agreements regarding the Licensed Material not stated herein are separate from and independent of the terms and conditions of this Public License.</p>
-
-    <h3>Section 8 – Interpretation.</h3>
-
-    <p>(a) For the avoidance of doubt, this Public License does not, and shall not be interpreted to, reduce, limit, restrict, or impose conditions on any use of the Licensed Material that could lawfully be made without permission under this Public License.</p>
-
-    <p>(b) To the extent possible, if any provision of this Public License is deemed unenforceable, it shall be automatically reformed to the minimum extent necessary to make it enforceable. If the provision cannot be reformed, it shall be severed from this Public License without affecting the enforceability of the remaining terms and conditions.</p>
-
-    <p>(c) No term or condition of this Public License will be waived and no failure to comply consented to unless expressly agreed to by the Licensor.</p>
-
-    <p>(d) Nothing in this Public License constitutes or may be interpreted as a limitation upon, or waiver of, any privileges and immunities that apply to the Licensor or You, including from the legal processes of any jurisdiction or authority.</p>
+    <h1>KnownOrigin.io</h1>
+
+    <h2>Terms of service</h2>
+
+    <h3>Last Updated: 25 August, 2018</h3>
+
+    <p>Please read these Terms of Service (this “Agreement”) carefully. Your use or access of the Site or the Smart Contracts (as defined below) constitutes your consent to this Agreement.</p>
+    <p>This Agreement is between you (the “User” and collectively with others using the Site - “Users”) and KnownOrigin.io, “KnownOrigin.io” or “we”, “our” or “us” and together with you, the “Parties”) concerning your use of (including any access to) the KnownOrigin.io websites, currently located at KnownOrigin.io.co, mobile applications, web applications, decentralized applications, smart contracts and API located at any of KnownOrigin.io websites (together with any materials and services available therein, and successor website(s) or application(s) thereto, the “Site”). This Agreement hereby incorporates by this reference any additional terms and conditions with respect to the Site posted by KnownOrigin.io to the Site, or otherwise made available to you by KnownOrigin.io.</p>
+    <p>By clicking or tapping any button or box marked “accept” or “agree” (or a similar term) in connection with this Agreement, or by accessing or using the App (defined below as the Site and the Smart Contracts), you agree to be bound by this Agreement, a current version of which is available at the Site, and which may be modified from time to time at our sole discretion in accordance with section 3 below.</p>
+    <p>PLEASE READ THESE TERMS CAREFULLY BEFORE USING THE APP, THE SMART CONTRACTS, OR THE SITE. THESE TERMS GOVERN YOUR USE OF THE APP, THE SMART CONTRACTS, AND THE SITE, UNLESS WE HAVE EXECUTED A SEPARATE WRITTEN AGREEMENT WITH YOU FOR THAT PURPOSE. WE ARE ONLY WILLING TO MAKE THE APP, THE SMART CONTRACTS, AND THE SITE AVAILABLE TO YOU IF YOU ACCEPT ALL OF THESE TERMS. BY USING THE APP, THE SMART CONTRACTS, THE SITE, OR ANY PART OF THEM, OR BY CLICKING “I ACCEPT” BELOW OR INDICATING YOUR ACCEPTANCE IN AN ADJOINING BOX, YOU ARE CONFIRMING THAT YOU UNDERSTAND AND AGREE TO BE BOUND BY ALL OF THESE TERMS. IF YOU ARE ACCEPTING THESE TERMS ON BEHALF OF A COMPANY OR OTHER LEGAL ENTITY, YOU REPRESENT THAT YOU HAVE THE LEGAL AUTHORITY TO ACCEPT THESE TERMS ON THAT ENTITY’S BEHALF, IN WHICH CASE “YOU” WILL MEAN THAT ENTITY. IF YOU DO NOT HAVE SUCH AUTHORITY, OR IF YOU DO NOT ACCEPT ALL OF THESE TERMS, THEN WE ARE UNWILLING TO MAKE THE APP, THE SMART CONTRACTS, OR THE SITE AVAILABLE TO YOU. IF YOU DO NOT AGREE TO THESE TERMS, YOU MAY NOT ACCESS OR USE THE APP, THE SMART CONTRACTS, OR THE SITE.</p>
+
+    <hr />
+
+    <h3>1. The KnownOrigin.io Items</h3>
+    <p>KnownOrigin.io (“KnownOrigin.io”) is a distributed application that runs on the Ethereum network, using specially-developed smart contracts (each, a “Smart Contract”) to enable users to create, buy, transfer and trade unique digital art, which can then be visualized on a website that the user can interact with the Site. The Smart Contracts and the Site are collectively referred to in these Terms as the “App”. Using the App, users can view their art and use the Smart Contracts to create, acquire, and trade art with other App users.</p>
+    <p>You affirm that you are aware and acknowledge that KnownOrigin.io is a non-custodial provider of software services that has developed this distributed and decentralized environment where the App can be autonomously and directly accessed by the Users without any involvement or actions taken by KnownOrigin.io or any third-party.</p>
+
+    <h4>A. Creation</h4>
+    <p>KnownOrigin.io is an open platform for the creation of limited-edition digital items, (“KnownOrigin.io Items). These items include but are not limited to: visual artwork, animations, audio, photographs, or other original content.</p>
+    <p>The KnownOrigin.io platform allows users to exchange blockchain-based cryptographic, unique digital items between one another.</p>
+    <p>Original content creators can apply to be in our Artist Network. We make no guarantees that they will be accepted.</p>
+    <p>If accepted, they will be whitelisted as an allowed contributor in our Smart Contracts, and can then issue unique tokens to represent their original KnownOrigin.io Items.</p>
+    <p>The KnownOrigin.io Items can then be sold or transferred to other people.</p>
+    <p>When a KnownOrigin.io Item is purchased or transferred by a person, the Ethereum token that represents it is automatically transferred to the person’s Ethereum address.</p>
+
+    <h4>B. Ownership</h4>
+    <p>Owning a KnownOrigin.io item is analogous to owning a physical artwork, like an original painting or print.</p>
+    <p>Ownership does not include intellectual property rights such as copyright claims, ability to produce commercially, and create merchandise therefrom, etc.</p>
+    <p>The intellectual property remains the possession of the creator</p>
+    <p>KnownOrigin.io attempts our best to make sure that all KnownOrigin.io Items created on the platform are done so by their original creator, but we are not liable if someone breaks our terms and creates items of which they are not the original creator.</p>
+
+    <h3>2. The App</h3>
+    <p>A. To most easily use the App, you must first install the Google Chrome or Brave web browser. Once you have installed Chrome or Brave, you will need to install a browser extension called MetaMask. MetaMask is an electronic wallet, which allows you to purchase (either directly via Coinbase if you are in the United States, or via other third party sites), store, and engage in transactions using the Ethereum cryptocurrency, ether. You will not be able to engage in any transactions on the App other than through MetaMask (or other Ethereum-compatible browsers). The App will only recognize you as a user, and you will only be able to interact with the App, if your Ethereum electronic wallet is connected and unlocked through your MetaMask account. There is no other way to sign up as a user, or to interact directly with the App.</p>
+    <p>B. Transactions that take place on the App are managed and confirmed via the Ethereum blockchain. You understand that your Ethereum public address will be made publicly visible whenever you engage in a transaction on the App.</p>
+    <p>C. We neither own nor control MetaMask, Coinbase, Google Chrome, the Ethereum network, or any other third party site, product, or service that you might access, visit, or use for the purpose of enabling you to use the various features of the App. We will not be liable for the acts or omissions of any such third parties, nor will we be liable for any damage that you may suffer as a result of your transactions or any other interaction with any such third parties.</p>
+    <p>D. You must provide accurate and complete registration information when you create an account for the App. By creating an account, you agree to provide accurate, current and complete account information about yourself, and to maintain and promptly update as necessary your account information. You are responsible for the security of your account and your MetaMask wallet (and other Ethereum wallets and accounts). If you become aware of any unauthorized use of your password or of your account with us, you agree to notify us immediately at hello@KnownOrigin.io.io.</p>
+
+    <h3>3. Modification of Agreement and Transfer</h3>
+    <p>This Agreement may be discretionarily modified or replaced at any time, unless stated otherwise herein. The most current version of this Agreement will be posted on the Site with the “Last Revised” date at the top of the Agreement changed. Any changes or modifications will be effective immediately upon posting the revisions to the Site. You shall be responsible for reviewing and becoming familiar with any such modifications. You waive any right you may have to receive specific notice of such changes or modifications. Use of the App by you after any modification to the Agreement constitutes your acceptance of the Agreement as modified. If you do not agree to the Agreement in effect when you access or use the App, you App. We may, at any time and without liability or prior notice, modify or discontinue all or part of the App (including access to the App via any third-party links).</p>
+    <p>Neither party may assign or transfer any rights or obligations under this Agreement without the prior written consent of the other party, provided that KnownOrigin.io may assign this Agreement without your prior consent to any of KnownOrigin.io affiliates, or to its successors in interest of any business associated with the services provided by KnownOrigin.io. This Agreement shall be binding upon the permitted assigns or transferees of each party.</p>
+
+    <h3>4. Fees and Payment</h3>
+    <p>A. If you elect to purchase, trade, or create art on the App, or with or from other users via the App, any financial transactions that you engage in will be conducted solely through the Ethereum network via MetaMask (or other Ethereum-compatible wallets and browsers). We will have no insight into or control over these payments or transactions, nor do we have the ability to reverse any transactions. With that in mind, we will have no liability to you or to any third party for any claims or damages that may arise as a result of any transactions that you engage in via the App, or using the Smart Contracts, or any other transactions that you conduct via the Ethereum network or MetaMask.</p>
+    <p>B. Ethereum requires the payment of a transaction fee (a “Gas Fee”) for every transaction that occurs on the Ethereum network. The Gas Fee funds the network of computers that run the decentralized Ethereum network. This means that you will need to pay a Gas Fee for each transaction that occurs via the App.</p>
+    <p>C. In addition to the Gas Fee, each time you utilize a Smart Contract to conduct a transaction with another user via the App, unless that transaction is the first sale of an artwork by its creator, you authorize us to collect a commission of 3% of the total value of that transaction (each, a “Commission”). You acknowledge and agree that the Commission will be transferred directly to us through the Ethereum network as part of your payment. We will not collect a Commission for interactions that do not involve our App marketplace.</p>
+    <p>D. As between us, you will be solely responsible to pay any and all sales, use, value-added and other taxes, duties, and assessments (except taxes on our net income) now or hereafter claimed or imposed by any governmental authority (collectively, “Taxes”) associated with your use of the App (including, without limitation, any Taxes that may become payable as the result of your ownership, transfer, or creation of any artworks). Except for income taxes levied on KnownOrigin.io, you: (i) will pay or reimburse us for all national, federal, state, local or other taxes and assessments of any jurisdiction, including value added taxes and taxes as required by international tax treaties, customs or other import or export taxes, and amounts levied in lieu thereof based on charges set, services performed or payments made hereunder, as are now or hereafter may be imposed under the authority of any national, state, local or any other taxing jurisdiction; and (ii) shall not be entitled to deduct the amount of any such taxes, duties or assessments from payments made to us pursuant to these Terms.</p>
+
+    <h3>5. Ownership; Restrictions</h3>
+    <p>Buying digital art on KnownOrigin.io is just like buying an original painting or print from an artist:</p>
+    <p>
+      <i>It does not transfer the Artist’s copyright to the Collector.</i>
+    </p>
+    <p>The Collector receives true ownership, that is, he or she acquires the right to display and resell the digital art to another collector if they wish.</p>
+    <p>But the Artist does not give up copyright, meaning Collector cannot prevent artist from using it for further commercial work, and Collector has _no right_ to use it for commercial purposes.</p>
+    <p>A. You acknowledge and agree that we (or, as applicable, our licensors) own all legal right, title and interest in and to all elements of the App.</p>
+    <p>The graphics, design, systems, methods, information, computer code, software, services, “look and feel”, organization, compilation of the content, code, data, and all other elements of the App (collectively, the “KnownOrigin.io Materials”) are owned by KnownOrigin.io, and are protected by copyright, trade dress, patent, and trademark laws, international conventions, other relevant intellectual property and proprietary rights, and applicable laws. All KnownOrigin.io Materials are the copyrighted property of KnownOrigin.io or its licensors, and all trademarks, service marks, and trade names contained in the KnownOrigin.io Materials are proprietary to KnownOrigin.io or its licensors. Except as expressly set forth herein, your use of the App does not grant you ownership of or any other rights with respect to any content, code, data, or other materials that you may access on or through the App. We reserve all rights in and to the KnownOrigin.io Materials not expressly granted to you in the Terms.</p>
+    <p>For the sake of clarity, you understand and agree: (i) that your purchase of an artwork is like buying a print or original painting from an artist. It is yours to keep and enjoy, but it does not give you any rights or licenses in or to the artwork (including, without limitation, the copyright in and to the art and drawings associated with it) other than those expressly contained in these Terms; and (ii) that you do not have the right to reproduce, distribute, or otherwise commercialize any elements of the artwork (including, without limitation, the creator’s copyright in and to the art and drawings associated with it) in any way without the creator’s prior written consent in each case, which consent the creator may hold in their sole and absolute discretion.</p>
+    <p>B. You may choose to submit comments, bug reports, ideas or other feedback about the App, including without limitation about how to improve the App (collectively, “Feedback”). By submitting any Feedback, you agree that we are free to use such Feedback at our discretion and without additional compensation to you, and to disclose such Feedback to third parties (whether on a non-confidential basis, or otherwise). You hereby grant us a perpetual, irrevocable, non-exclusive, worldwide license under all rights necessary for us to incorporate and use your Feedback for any purpose.</p>
+    <p>C. You agree that you are responsible for your own conduct while accessing or using the App, and for any consequences thereof. You agree to use the App only for purposes that are legal, proper and in accordance with these Terms and any applicable laws or regulations. By way of example, and not as a limitation, you may not, and may not allow any third party to: (i) send, upload, distribute or disseminate any unlawful, defamatory, harassing, abusive, fraudulent, obscene, or otherwise objectionable content; (ii) undertake any unlawful activity which would violate, or assist in violation of, any law, statute, ordinance, or regulation, sanctions program administred in any relevant country, including but not limited to the U.S. Department of Treasury’s Office of Foreign Assets Control (“OFAC”), or which would involve proceeds of any unlawful activity; (iii) distribute viruses, worms, defects, Trojan horses, corrupted files, hoaxes, or any other items of a destructive or deceptive nature; (iv) impersonate another person (via the use of an email address or otherwise); (v) upload, post, transmit or otherwise make available through the App any content that infringes the intellectual proprietary rights of any party; (vi) operate to defraud KnownOrigin.io, other users, or any other person or provide false, inaccurate or misleading information; (vii) use the App to violate the legal rights (such as rights of privacy and publicity) of others; (viii) engage in, promote, or encourage illegal activity (including, without limitation, terrorism, tax evasion or money laundering); (ix) interfere with another individual’s or entity’s access to or use of the App; defame, abuse, extort, harass, stalk, threaten or otherwise violate or infringe the legal rights (such as, but not limited to, rights or privacy, publicity and intellectual property) of others; incite, threaten, facilitate, promote, or encourage hate, racial intolerance or violent acts against others; harvest or otherwise collect information from the App about others, including without limitation email addresses, without proper consent; ; (x) exploit the App for any unauthorized commercial purpose; (xi) modify, adapt, translate, or reverse engineer any portion of the App; (xii) remove any copyright, trademark or other proprietary rights notices contained in or on the App or any part of it; (xiii) reformat or frame any portion of the App; (xiv) display any content on the App that contains any hate-related or violent content or contains any other material, products or services that violate or encourage conduct that would violate any criminal laws, any other applicable laws, or any third party rights; (xv) use any robot, spider, site search/retrieval application, or other device to retrieve or index any portion of the App or the content posted on the App, or to collect information about its users for any unauthorized purpose; (xvi) create user accounts by automated means or under false or fraudulent pretenses; or (xvii) access or use the App for the purpose of creating a product or service that is competitive with any of our products or services.</p>
+
+    <h3>6. Termination</h3>
+    <p>You may terminate these Terms at any time by canceling your account on the App and discontinuing your access to and use of the App. You will not receive any refunds if you cancel your account, or otherwise terminate these Terms. You agree that we, in our sole discretion and for any or no reason, may terminate these Terms and suspend and/or terminate your account(s) for the App. You agree that any suspension or termination of your access to the App may be without prior notice, and that we will not be liable to you or to any third party for any such suspension or termination. If we terminate these Terms or suspend or terminate your access to or use of the App due to your breach of these Terms or any suspected fraudulent, abusive, or illegal activity, then termination of these Terms will be in addition to any other remedies we may have at law or in equity. Upon any termination or expiration of these Terms, whether by you or us, you may no longer have access to information that you have posted on the App or that is related to your account, and you acknowledge that we will have no obligation to maintain any such information in our databases or to forward any such information to you or to any third party. Sections 2.C and 3 through 17 will survive the termination or expiration of these Terms for any reason.</p>
+
+    <h3>7. Disclaimers</h3>
+    <p>A. YOU EXPRESSLY UNDERSTAND AND AGREE THAT YOUR ACCESS TO AND USE OF THE APP IS AT YOUR SOLE RISK, AND THAT THE APP IS PROVIDED “AS IS” AND “AS AVAILABLE” WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR IMPLIED. TO THE FULLEST EXTENT PERMISSIBLE PURSUANT TO APPLICABLE LAW, WE, OUR SUBSIDIARIES, AFFILIATES, AND LICENSORS MAKE NO EXPRESS WARRANTIES AND HEREBY DISCLAIM ALL IMPLIED WARRANTIES REGARDING THE APP AND ANY PART OF IT (INCLUDING, WITHOUT LIMITATION, THE SITE, ANY SMART CONTRACT, OR ANY EXTERNAL WEBSITES), INCLUDING THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, CORRECTNESS, ACCURACY, OR RELIABILITY. WITHOUT LIMITING THE GENERALITY OF THE FOREGOING, WE, OUR SUBSIDIARIES, AFFILIATES, AND LICENSORS DO NOT REPRESENT OR WARRANT TO YOU THAT: (I) YOUR ACCESS TO OR USE OF THE APP WILL MEET YOUR REQUIREMENTS, (II) YOUR ACCESS TO OR USE OF THE APP WILL BE UNINTERRUPTED, TIMELY, SECURE OR FREE FROM ERROR, (III) USAGE DATA PROVIDED THROUGH THE APP WILL BE ACCURATE, (IV) THE APP OR ANY CONTENT, SERVICES, OR FEATURES MADE AVAILABLE ON OR THROUGH THE APP ARE FREE OF VIRUSES OR OTHER HARMFUL COMPONENTS, OR (V) THAT ANY DATA THAT YOU DISCLOSE WHEN YOU USE THE APP WILL BE SECURE. SOME JURISDICTIONS DO NOT ALLOW THE EXCLUSION OF IMPLIED WARRANTIES IN CONTRACTS WITH CONSUMERS, SO SOME OR ALL OF THE ABOVE EXCLUSIONS MAY NOT APPLY TO YOU.</p>
+    <p>B. YOU ACCEPT THE INHERENT SECURITY RISKS OF PROVIDING INFORMATION AND DEALING ONLINE OVER THE INTERNET, AND AGREE THAT WE HAVE NO LIABILITY OR RESPONSIBILITY FOR ANY BREACH OF SECURITY UNLESS IT IS DUE TO OUR GROSS NEGLIGENCE.</p>
+    <p>C. WE WILL NOT BE RESPONSIBLE OR LIABLE TO YOU FOR ANY LOSSES YOU INCUR AS THE RESULT OF YOUR USE OF THE ETHEREUM NETWORK OR THE METAMASK ELECTRONIC WALLET, INCLUDING BUT NOT LIMITED TO ANY LOSSES, DAMAGES OR CLAIMS ARISING FROM: (A) USER ERROR, SUCH AS FORGOTTEN PASSWORDS OR INCORRECTLY CONSTRUED SMART CONTRACTS OR OTHER TRANSACTIONS; (B) SERVER FAILURE OR DATA LOSS; (C) CORRUPTED WALLET FILES; (D) UNAUTHORIZED ACCESS OR ACTIVITIES BY THIRD PARTIES, INCLUDING BUT NOT LIMITED TO THE USE OF VIRUSES, PHISHING, BRUTEFORCING OR OTHER MEANS OF ATTACK AGAINST THE APP, ETHEREUM NETWORK, THE METAMASK ELECTRONIC WALLET OR ETHEREUM-COMPATIBLE BROWSER OR WALLET.</p>
+    <p>D. KnownOrigin.io Items ARE INTANGIBLE DIGITAL ASSETS THAT EXIST ONLY BY VIRTUE OF THE OWNERSHIP RECORD MAINTAINED IN THE ETHEREUM NETWORK. ALL SMART CONTRACTS ARE CONDUCTED AND OCCUR ON THE DECENTRALIZED LEDGER WITHIN THE ETHEREUM PLATFORM. WE HAVE NO CONTROL OVER AND MAKE NO GUARANTEES OR PROMISES WITH RESPECT TO SMART CONTRACTS.</p>
+    <p>E. KnownOrigin.io IS NOT RESPONSIBLE FOR LOSSES DUE TO BLOCKCHAINS OR ANY OTHER FEATURES OF THE ETHEREUM NETWORK OR THE METAMASK ELECTRONIC WALLET OR ANY ETHEREUM-COMPATIBLE BROWSER OR WALLET, INCLUDING BUT NOT LIMITED TO LATE REPORT BY DEVELOPERS OR REPRESENTATIVES (OR NO REPORT AT ALL) OF ANY ISSUES WITH THE BLOCKCHAIN SUPPORTING THE ETHEREUM NETWORK, INCLUDING FORKS, TECHNICAL NODE ISSUES, OR ANY OTHER ISSUES HAVING FUND LOSSES AS A RESULT.</p>
+    <p>F. TO THE FULLEST EXTENT PERMITTED BY LAW AND NOTWITHSTANDING ANY OTHER PROVISION OF THIS AGREEMENT OR ANY OTHER AGREEMENT CONTEMPLATED HEREIN OR APPLICABLE PROVISIONS OF LAW OR EQUITY OR OTHERWISE, THE PARTIES HERETO HEREBY AGREE TO ELIMINATE ANY AND ALL FIDUCIARY DUTIES THE KnownOrigin.io MAY HAVE TO THE USER, ITS AFFILIATES, OR THE END USERS OF THE APP OR ITS CONTENT, PROVIDED THAT SUCH EXCLUSION OR LIMITATION OF LIABILITY SHALL NOT EXTEND TO KnownOrigin.io MISAPPROPRIATION OF ASSETS OR FUNDS OF ITS USERS OR ITS AFFILIATES, OR THE END USERS OF THE APP OR CONTENT PROVIDED BY KnownOrigin.io OR OTHER ACTS OR OMISSIONS THAT CONSTITUTE A BAD FAITH VIOLATION OF THE IMPLIED CONTRACTUAL COVENANT OF GOOD FAITH AND FAIR DEALING.</p>
+
+    <h3>8. Limitation of Liability</h3>
+    <p>A. YOU ACKNOWLEDGE AND AGREE THAT YOU ASSUME FULL RESPONSIBILITY FOR YOUR USE OF THE APP. YOU ACKNOWLEDGE AND AGREE THAT ANY INFORMATION YOU SEND OR RECEIVE DURING YOUR USE OF THE APP MAY NOT BE SECURE AND MAY BE INTERCEPTED OR LATER ACQUIRED BY UNAUTHORIZED PARTIES. YOU UNDERSTAND AND AGREE THAT WE, OUR SUBSIDIARIES, AFFILIATES, AND LICENSORS WILL NOT BE LIABLE TO YOU OR TO ANY THIRD PARTY FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR EXEMPLARY DAMAGES WHICH YOU MAY INCUR, HOWSOEVER CAUSED AND UNDER ANY THEORY OF LIABILITY, INCLUDING, WITHOUT LIMITATION, ANY LOSS OF PROFITS (WHETHER INCURRED DIRECTLY OR INDIRECTLY), LOSS OF GOODWILL OR BUSINESS REPUTATION, LOSS OF DATA, COST OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR ANY OTHER INTANGIBLE LOSS, EVEN IF WE HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.</p>
+    <p>B. YOU AGREE THAT OUR TOTAL, AGGREGATE LIABILITY TO YOU FOR ANY AND ALL CLAIMS ARISING OUT OF OR RELATING TO THESE TERMS OR YOUR ACCESS TO OR USE OF (OR YOUR INABILITY TO ACCESS OR USE) ANY PORTION OF THE APP, WHETHER IN CONTRACT, TORT, STRICT LIABILITY, OR ANY OTHER LEGAL THEORY, IS LIMITED TO THE GREATER OF (A) THE AMOUNTS YOU ACTUALLY PAID US UNDER THESE TERMS IN THE 12 MONTH PERIOD PRECEDING THE DATE THE CLAIM AROSE, OR (B) $100.</p>
+    <p>C. YOU ACKNOWLEDGE AND AGREE THAT WE HAVE MADE THE APP AVAILABLE TO YOU AND ENTERED INTO THESE TERMS IN RELIANCE UPON THE WARRANTY DISCLAIMERS AND LIMITATIONS OF LIABILITY SET FORTH HEREIN, WHICH REFLECT A REASONABLE AND FAIR ALLOCATION OF RISK BETWEEN THE PARTIES AND FORM AN ESSENTIAL BASIS OF THE BARGAIN BETWEEN US. WE WOULD NOT BE ABLE TO PROVIDE THE APP TO YOU WITHOUT THESE LIMITATIONS.</p>
+
+    <h3>9. Assumption of Risk</h3>
+    <p>You accept and acknowledge each of the following:</p>
+    <p>A. The prices of blockchain assets are extremely volatile. Fluctuations in the price of other digital assets could materially and adversely affect the value of your KnownOrigin.io Items, which may also be subject to significant price volatility. We cannot guarantee that any purchasers of KnownOrigin.io Items will not lose money. You also acknowledge that the cost of transacting on such technologies is variable and may increase at any time causing impact to any activities taking place on the Ethereum blockchain. You acknowledge these risks and represent that KnownOrigin.io cannot be held liable for such fluctuations or increased costs.</p>
+    <p>B. You are solely responsible for determining what, if any, taxes apply to your KnownOrigin.io-related transactions. KnownOrigin.io is not responsible for determining the taxes that apply to your transactions on the App.</p>
+    <p>C. The App does not store, send, or receive KnownOrigin.io Items. This is because KnownOrigin.io Items exist only by virtue of the ownership record maintained on the App’s supporting blockchain in the Ethereum network. Any transfer of KnownOrigin.io Items occurs within the supporting blockchain in the Ethereum network, and not on the App.</p>
+    <p>D. There are risks associated with using an Internet-based currency, including, but not limited to, the risk of hardware, software and Internet connections, the risk of malicious software introduction, and the risk that third parties may obtain unauthorized access to information stored within your wallet. You accept and acknowledge that KnownOrigin.io will not be responsible for any communication failures, disruptions, errors, distortions or delays you may experience when using the Ethereum network, however caused.</p>
+    <p>E. A lack of use or public interest in the creation and development of distributed ecosystems could negatively impact the development of the KnownOrigin.io ecosystem, and therefore the potential utility or value of KnownOrigin.io Items.</p>
+    <p>F. The App, ETH and digital assets could be impacted by one or more regulatory inquiries or regulatory action, which could impede or limit the ability of KnownOrigin.io to continue to develop, or which could impede or limit your ability to access or use the App or Ethereum blockchain, including access to your digital assets or other funds, and new regulations or policies may materially adversely affect the development of the KnownOrigin.io ecosystem, and therefore the potential utility or value of KnownOrigin.io.</p>
+    <p>G. Upgrades by Ethereum to the Ethereum platform, a hard fork in the Ethereum platform, or a change in how transactions are confirmed on the Ethereum platform may have unintended, adverse effects on all blockchains using the ERC-20 or ERC-721 standards, including the KnownOrigin.io ecosystem.</p>
+    <p>H. You acknowledge and understand that Cryptography is a progressing field. Advances in code cracking or technical advances such as the development of quantum computers may present risks to cryptocurrencies, digital assets and the App, which could result in the theft or loss of your digital assets or KnownOrigin.io items. To the extent possible, it is intended to update the protocol underlying the App to account for any advances in cryptography and to incorporate additional security measures, but does not guarantee or otherwise represent full security of the system. By using the App, you acknowledge these inherent risks.</p>
+    <p>I. You acknowledge that the App is subject to flaws and acknowledge that you are solely responsible for evaluating any code provided by the App. This warning and others provided in this Agreement by KnownOrigin.io in no way evidence or represent an ongoing duty to alert you to all of the potential risks of utilizing or accessing the App.</p>
+    <p>J. Any use or interaction with the App requires a comprehensive understanding of applied cryptography and computer science in order to appreciate inherent risks, including those listed above. You represent and warrant that you possess relevant knowledge and skills. Any reference to a type of digital asset on the App does not indicate our approval or disapproval of the underlying technology regarding such type of digital asset, and should not be used as a substitute for your own understanding of the risks specific to each type of digital asset. We make no warranty as to the suitability of the digital assets referenced on the App and assume no fiduciary duty in our relations with you.</p>
+    <p>K. Use of the App, in particular for creating, buying or selling trading digital assets, may carry financial risk. digital assets are, by their nature, highly experimental, risky, volatile and transactions carried through the App are irreversible, final and there are no refunds. You acknowledge and agree that you will access and use the App at your own risk. The risk of loss in trading digital assets can be substantial. You should, therefore, carefully consider whether such creating, buying or selling digital assets is suitable for you in light of your circumstances and financial resources. By using the App, you represent that you have been, are and will be solely responsible for making your own independent appraisal and investigations into the risks of a given transaction and the underlying digital assets. You represent that you have sufficient knowledge, market sophistication, professional advice and experience to make your own evaluation of the merits and risks of any transaction conducted via the App or any underlying digital asset. You accept all consequences of using the App, including the risk that you may lose access to your digital assets indefinitely. All transaction decisions are made solely by you. Notwithstanding anything in this Agreement, we accept no responsibility whatsoever for and will in no circumstances be liable to you in connection with use of the App for performing digital asset transactions. Under no circumstances will the operation of all or any portion of the App be deemed to create a relationship that includes the provision or tendering of investment advice.</p>
+    <p>L. You are aware of and accept the risk of operational challenges. The App may experience sophisticated cyber-attacks, unexpected surges in activity or other operational or technical difficulties that may cause interruptions to or delays on the App. You agree to accept the risk of the App failure resulting from unanticipated or heightened technical difficulties, including those resulting from sophisticated attacks, and you agree not to hold us accountable for any related losses. We will not bear any liability, whatsoever, for any damage or interruptions caused by any viruses that may affect your computer or other equipment, or any phishing, spoofing or other attack. We advise the regular use of a reputable and readily available virus screening and prevention software. We do not guarantee that the App is or will remain updated, complete, correct or secure, or that access to the App will be uninterrupted. The App may include inaccuracies, errors and materials that violate or conflict with this Agreement. Additionally, third parties may make unauthorized alterations to the App or the software underlying the App. Accordingly, you should verify all information on the App before relying on it, and all decisions based on information contained on the App are your sole responsibility and we will have no liability for such decisions.</p>
+
+    <h3>10. Indemnification</h3>
+    <p>You agree to indemnify, defend and hold harmless KnownOrigin.io and its subsidiaries, affiliates, officers, agents, employees, advertisers, licensors, suppliers or partners from and against any claim, liability, loss, damage (actual and consequential) of any kind or nature, suit, judgment, litigation cost, and attorneys’ fees arising out of or in any way related to (i) your breach of these Terms, (ii) your misuse of the App, (iii) your violation of applicable laws, rules, regulations or the rights of any third party and (iv) any of your acts or omissions that implicate publicity rights, defamation or invasion of privacy in connection with your access to or use of the App. KnownOrigin.io reserves the right, at its own expense, to assume exclusive defense and control aof any matter otherwise subject to indemnification by you and, in such case, you agree to cooperate with KnownOrigin.io in the defense of such matter.</p>
+
+    <h3>11. External Sites</h3>
+    <p>The App may include hyperlinks to other websites or resources (collectively, “External Sites”), which are provided solely as a convenience to our users. We have no control over any External Sites. You acknowledge and agree that we are not responsible for the availability of any External Sites, and that we do not endorse any advertising, products or other materials on or made available from any External Sites. Furthermore, you acknowledge and agree that we are not liable for any loss or damage which may be incurred as a result of the availability or unavailability of the External Sites, or as a result of any reliance placed by you upon the completeness, accuracy or existence of any advertising, products or other materials on, or made available from, any External Sites.</p>
+
+    <h3>12. Changes to the Terms</h3>
+    <p>We may make changes to the Terms from time to time. When we make changes, we will make the updated Terms available on the App and update the “Last Updated” date at the beginning of these Terms accordingly. Please check these Terms periodically for changes. Any changes to the Terms will apply on the date that they are made, and your continued access to or use of the App after the Terms have been updated will constitute your binding acceptance of the updates. If you do not agree to any revised Terms, you may not access or use the App.</p>
+
+    <h3>13. Children</h3>
+    <p>You affirm that you are over the age of 13, as the App is not intended for children under 13. IF YOU ARE 13 OR OLDER BUT UNDER THE AGE OF 18, OR THE LEGAL AGE OF MAJORITY WHERE YOU RESIDE IF THAT JURISDICTION HAS AN OLDER AGE OF MAJORITY, THEN YOU AGREE TO REVIEW THESE TERMS WITH YOUR PARENT OR GUARDIAN TO MAKE SURE THAT BOTH YOU AND YOUR PARENT OR GUARDIAN UNDERSTAND AND AGREE TO THESE TERMS. YOU AGREE TO HAVE YOUR PARENT OR GUARDIAN REVIEW AND ACCEPT THESE TERMS ON YOUR BEHALF. IF YOU ARE A PARENT OR GUARDIAN AGREEING TO THE TERMS FOR THE BENEFIT OF A CHILD OVER 13, THEN YOU AGREE TO AND ACCEPT FULL RESPONSIBILITY FOR THAT CHILD’S USE OF THE APP, INCLUDING ALL FINANCIAL CHARGES AND LEGAL LIABILITY THAT HE OR SHE MAY INCUR.</p>
+
+    <h3>14. Privacy Policy</h3>
+    <p>Our Privacy Policy [hyperlink to privacy policy] describes the ways we collect, use, store and disclose your personal information, and is hereby incorporated by this reference into these Terms. You agree to the collection, use, storage, and disclosure of your data in accordance with our Privacy Policy</p>
+
+    <hr/>
+
+    <p>Users with questions, complaints or claims with respect to the App may contact us at <a href="mailto:hello@KnownOrigin.io">hello@KnownOrigin.io</a></p>
+    <p>© 2018 KnownOrigin.io</p>
+    <p>Terms of Service <a href="https://KnownOrigin.io/terms">https://KnownOrigin.io/terms</a><p>
+    <p>Privacy Policy <a href="https://KnownOrigin.io/privacy">https://KnownOrigin.io/privacy</a></p>
+    <p><a href="mailto:hello@KnownOrigin.io">hello@KnownOrigin.io</a></p>
+    <p>Made with ETH & IPFS - with love from Manchester, UK</p>
 
   </div>
 
@@ -150,11 +122,9 @@
 <script>
 
   import {mapGetters, mapState} from 'vuex';
-  import Artist from '../Artist';
-  import Gallery from './Gallery';
 
   export default {
-    name: 'license',
+    name: 'terms',
     components: {},
     computed: {
       ...mapState([
