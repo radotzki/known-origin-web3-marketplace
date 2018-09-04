@@ -1,18 +1,6 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.24;
 
-// File: contracts/ERC165.sol
-
-interface ERC165 {
-  /// @notice Query if a contract implements an interface
-  /// @param interfaceID The interface identifier, as specified in ERC-165
-  /// @dev Interface identification is specified in ERC-165. This function
-  ///  uses less than 30,000 gas.
-  /// @return `true` if the contract implements `interfaceID` and
-  ///  `interfaceID` is not 0xffffffff, `false` otherwise
-  function supportsInterface(bytes4 interfaceID) external pure returns (bool);
-}
-
-// File: contracts/ERC721Basic.sol
+// File: contracts/v1/ERC721Basic.sol
 
 /**
  * @title ERC721 Non-Fungible Token Standard basic interface
@@ -38,7 +26,7 @@ contract ERC721Basic {
   function safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes _data) public;
 }
 
-// File: contracts/ERC721.sol
+// File: contracts/v1/ERC721.sol
 
 /**
  * @title ERC-721 Non-Fungible Token Standard, optional enumeration extension
@@ -67,7 +55,7 @@ contract ERC721Metadata is ERC721Basic {
 contract ERC721 is ERC721Basic, ERC721Enumerable, ERC721Metadata {
 }
 
-// File: contracts/ERC721Receiver.sol
+// File: contracts/v1/ERC721Receiver.sol
 
 /**
  * @title ERC721 token receiver interface
@@ -97,29 +85,7 @@ contract ERC721Receiver {
   function onERC721Received(address _from, uint256 _tokenId, bytes _data) public returns(bytes4);
 }
 
-// File: zeppelin-solidity/contracts/AddressUtils.sol
-
-/**
- * Utility library of inline functions on addresses
- */
-library AddressUtils {
-
-  /**
-   * Returns whether there is code in the target address
-   * @dev This function will return false if invoked during the constructor of a contract,
-   *  as the code is not actually created until after the constructor finishes.
-   * @param addr address address to check
-   * @return whether there is code in the target address
-   */
-  function isContract(address addr) internal view returns (bool) {
-    uint256 size;
-    assembly { size := extcodesize(addr) }
-    return size > 0;
-  }
-
-}
-
-// File: zeppelin-solidity/contracts/math/SafeMath.sol
+// File: openzeppelin-solidity/contracts/math/SafeMath.sol
 
 /**
  * @title SafeMath
@@ -130,44 +96,77 @@ library SafeMath {
   /**
   * @dev Multiplies two numbers, throws on overflow.
   */
-  function mul(uint256 a, uint256 b) internal pure returns (uint256) {
-    if (a == 0) {
+  function mul(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
+    // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
+    if (_a == 0) {
       return 0;
     }
-    uint256 c = a * b;
-    assert(c / a == b);
+
+    c = _a * _b;
+    assert(c / _a == _b);
     return c;
   }
 
   /**
   * @dev Integer division of two numbers, truncating the quotient.
   */
-  function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b > 0); // Solidity automatically throws when dividing by 0
-    uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
-    return c;
+  function div(uint256 _a, uint256 _b) internal pure returns (uint256) {
+    // assert(_b > 0); // Solidity automatically throws when dividing by 0
+    // uint256 c = _a / _b;
+    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn't hold
+    return _a / _b;
   }
 
   /**
   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
   */
-  function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b <= a);
-    return a - b;
+  function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
+    assert(_b <= _a);
+    return _a - _b;
   }
 
   /**
   * @dev Adds two numbers, throws on overflow.
   */
-  function add(uint256 a, uint256 b) internal pure returns (uint256) {
-    uint256 c = a + b;
-    assert(c >= a);
+  function add(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
+    c = _a + _b;
+    assert(c >= _a);
     return c;
   }
 }
 
-// File: contracts/ERC721BasicToken.sol
+// File: openzeppelin-solidity/contracts/AddressUtils.sol
+
+/**
+ * Utility library of inline functions on addresses
+ */
+library AddressUtils {
+
+  /**
+   * Returns whether the target address is a contract
+   * @dev This function will return false if invoked during the constructor of a contract,
+   * as the code is not actually created until after the constructor finishes.
+   * @param _addr address to check
+   * @return whether the target address is a contract
+   */
+  function isContract(address _addr) internal view returns (bool) {
+    uint256 size;
+    // XXX Currently there is no better way to check if there is a contract in an address
+    // than to check the size of the code at that address.
+    // See https://ethereum.stackexchange.com/a/14016/36603
+    // for more details about how this works.
+    // TODO Check this again before the Serenity release, because all addresses will be
+    // contracts then.
+    // solium-disable-next-line security/no-inline-assembly
+    assembly { size := extcodesize(_addr) }
+    return size > 0;
+  }
+
+}
+
+// File: contracts/v1/ERC721BasicToken.sol
 
 /**
  * @title ERC721 Non-Fungible Token Standard basic implementation
@@ -433,7 +432,7 @@ contract ERC721BasicToken is ERC721Basic {
   }
 }
 
-// File: contracts/ERC721Token.sol
+// File: contracts/v1/ERC721Token.sol
 
 /**
  * @title Full ERC721 Token
@@ -615,7 +614,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
 
 }
 
-// File: contracts/Strings.sol
+// File: contracts/v1/Strings.sol
 
 library Strings {
   // via https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI_0.5.sol
@@ -659,10 +658,22 @@ library Strings {
   }
 }
 
-// File: contracts/KnownOriginDigitalAsset.sol
+// File: contracts/v1/ERC165.sol
+
+interface ERC165 {
+  /// @notice Query if a contract implements an interface
+  /// @param interfaceID The interface identifier, as specified in ERC-165
+  /// @dev Interface identification is specified in ERC-165. This function
+  ///  uses less than 30,000 gas.
+  /// @return `true` if the contract implements `interfaceID` and
+  ///  `interfaceID` is not 0xffffffff, `false` otherwise
+  function supportsInterface(bytes4 interfaceID) external pure returns (bool);
+}
+
+// File: contracts/v1/KnownOriginDigitalAsset.sol
 
 /**
-* @title KnownOriginDigitalAsset
+* @title KnownOriginDigitalAssetV1
 *
 * http://www.knownorigin.io/
 *
@@ -705,7 +716,7 @@ contract KnownOriginDigitalAsset is ERC721Token, ERC165 {
     bytes4(keccak256('safeTransferFrom(address,address,uint256,bytes)'));
     */
 
-  bytes4 public constant InterfaceSignature_ERC721Optional =- 0x4f558e79;
+  bytes4 public constant InterfaceSignature_ERC721Optional = 0x4f558e79;
     /*
     bytes4(keccak256('exists(uint256)'));
     */
@@ -1034,7 +1045,7 @@ contract KnownOriginDigitalAsset is ERC721Token, ERC165 {
    */
   function editionInfo(uint256 _tokenId) public view returns (
     uint256 _tokId,
-    bytes16 _edition0x0f48669b1681d41357eac232f516b77d0c10f0f1,
+    bytes16 _edition,
     uint256 _editionNumber,
     string _tokenURI,
     address _artistAccount

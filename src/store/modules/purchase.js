@@ -9,71 +9,64 @@ const purchaseStateModule = {
     purchaseState: {},
   },
   getters: {
-    assetPurchaseState: (state) => (assetId) => {
-      return _.get(state.purchaseState, assetId);
+    editionPurchaseState: (state) => (editionNumber, account) => {
+      return _.get(state.purchaseState, editionNumber);
     },
-    isPurchaseTriggered: (state, getters) => (assetId) => {
-      return _.get(getters.assetPurchaseState(assetId), 'state') === mutations.PURCHASE_TRIGGERED;
+    isPurchaseTriggered: (state, getters) => (editionNumber, account) => {
+      return _.get(getters.editionPurchaseState(editionNumber), 'state') === mutations.PURCHASE_TRIGGERED;
     },
-    isPurchaseStarted: (state, getters) => (assetId) => {
-      return _.get(getters.assetPurchaseState(assetId), 'state') === mutations.PURCHASE_STARTED;
+    isPurchaseStarted: (state, getters) => (editionNumber, account) => {
+      return _.get(getters.editionPurchaseState(editionNumber), 'state') === mutations.PURCHASE_STARTED;
     },
-    isPurchaseSuccessful: (state, getters) => (assetId) => {
-      return _.get(getters.assetPurchaseState(assetId), 'state') === mutations.PURCHASE_SUCCESSFUL;
+    isPurchaseSuccessful: (state, getters) => (editionNumber, account) => {
+      return _.get(getters.editionPurchaseState(editionNumber), 'state') === mutations.PURCHASE_SUCCESSFUL;
     },
-    isPurchaseFailed: (state, getters) => (assetId) => {
-      return _.get(getters.assetPurchaseState(assetId), 'state') === mutations.PURCHASE_FAILED;
+    isPurchaseFailed: (state, getters) => (editionNumber, account) => {
+      return _.get(getters.editionPurchaseState(editionNumber), 'state') === mutations.PURCHASE_FAILED;
     },
-    getTransactionForAsset: (state, getters) => (assetId) => {
-      return getters.assetPurchaseState(assetId).transaction;
+    getTransactionForEdition: (state, getters) => (editionNumber, account) => {
+      return getters.editionPurchaseState(editionNumber).transaction;
     },
   },
   mutations: {
-    [mutations.PURCHASE_TRIGGERED](state, {tokenId, buyer}) {
+    [mutations.PURCHASE_TRIGGERED](state, {editionNumber, account}) {
       state.purchaseState = {
         ...state.purchaseState,
-        [tokenId]: {
-          tokenId: tokenId.toString(10),
-          buyer,
-          state: 'PURCHASE_TRIGGERED'
+        [editionNumber]: {
+          editionNumber, account, state: 'PURCHASE_TRIGGERED'
         }
       };
     },
-    [mutations.PURCHASE_FAILED](state, {tokenId, buyer}) {
+    [mutations.PURCHASE_FAILED](state, {editionNumber, account}) {
       // Guard against the timed account check winner and the event coming through as failed
-      if (state.purchaseState[tokenId] && state.purchaseState[tokenId].state === 'PURCHASE_SUCCESSFUL') {
+      if (state.purchaseState[editionNumber] && state.purchaseState[editionNumber].state === 'PURCHASE_SUCCESSFUL') {
         return;
       }
       state.purchaseState = {
         ...state.purchaseState,
-        [tokenId]: {
-          tokenId: tokenId.toString(10),
-          buyer,
-          state: 'PURCHASE_FAILED'
+        [editionNumber]: {
+          editionNumber, account, state: 'PURCHASE_FAILED'
         }
       };
     },
-    [mutations.PURCHASE_SUCCESSFUL](state, {tokenId, buyer}) {
+    [mutations.PURCHASE_SUCCESSFUL](state, {editionNumber, account}) {
       state.purchaseState = {
         ...state.purchaseState,
-        [tokenId]: {
-          tokenId: tokenId.toString(10),
-          buyer,
-          transaction: state.purchaseState[tokenId].transaction,
+        [editionNumber]: {
+          editionNumber,
+          account,
+          transaction: state.purchaseState[editionNumber].transaction,
           state: 'PURCHASE_SUCCESSFUL'
         }
       };
     },
-    [mutations.PURCHASE_STARTED](state, {tokenId, buyer, transaction}) {
+    [mutations.PURCHASE_STARTED](state, {editionNumber, account, transaction}) {
       // Guard against the timed account check beating the event callbacks
-      if (state.purchaseState[tokenId].state === 'PURCHASE_SUCCESSFUL') {
+      if (state.purchaseState[editionNumber].state === 'PURCHASE_SUCCESSFUL') {
         state.purchaseState = {
           ...state.purchaseState,
-          [tokenId]: {
-            tokenId: tokenId.toString(),
-            buyer,
-            transaction,
-            state: 'PURCHASE_SUCCESSFUL'
+          [editionNumber]: {
+            editionNumber, account, transaction, state: 'PURCHASE_SUCCESSFUL'
           }
         };
         return;
@@ -81,210 +74,68 @@ const purchaseStateModule = {
 
       state.purchaseState = {
         ...state.purchaseState,
-        [tokenId]: {
-          tokenId: tokenId.toString(),
-          buyer,
-          transaction,
-          state: 'PURCHASE_STARTED'
+        [editionNumber]: {
+          editionNumber, account, transaction, state: 'PURCHASE_STARTED'
         }
       };
     },
-    [mutations.RESET_PURCHASE_STATE](state, {tokenId}) {
-      delete state.purchaseState[tokenId];
+    [mutations.RESET_PURCHASE_STATE](state, {editionNumber}) {
+      delete state.purchaseState[editionNumber];
       state.purchaseState = {...state.purchaseState};
     },
   },
   actions: {
-    [actions.PURCHASE_ASSET]: function ({commit, dispatch, state, rootState}, assetToPurchase) {
-      Vue.$log.debug(`Attempting purchase of ${assetToPurchase.type} asset - ID ${assetToPurchase.id}`);
+    [actions.PURCHASE_EDITION]: async function ({commit, dispatch, state, rootState}, {edition, account}) {
+      Vue.$log.debug(`Attempting purchase of [${edition.edition}] from account [${account}]`);
 
-      rootState.KnownOriginDigitalAsset.deployed()
-        .then((contract) => {
+      let contract = await rootState.KnownOriginDigitalAssetV2.deployed();
 
-          let _buyer = rootState.account;
-          let _tokenId = assetToPurchase.id;
+      commit(mutations.PURCHASE_TRIGGERED, {editionNumber: edition.edition, account});
 
-          let purchaseEvent = contract.PurchasedWithEther({_tokenId: _tokenId, _buyer: _buyer}, {
-            fromBlock: web3.eth.blockNumber,
-            toBlock: 'latest' // wait until event comes through
-          });
+      let purchase = contract.purchase(edition.edition, {
+        from: account,
+        value: edition.priceInWei
+      });
 
-          // Trigger a timer to check the accounts purchases - can provide update faster waiting for the event
-          const timer = setInterval(function () {
-            console.log("Dispatching GET_ASSETS_PURCHASED_FOR_ACCOUNT");
-            dispatch(actions.GET_ASSETS_PURCHASED_FOR_ACCOUNT, null, {root: true});
-          }, 1000);
+      // TODO this isnt going to work
 
-          purchaseEvent.watch(function (error, result) {
-            if (!error) {
-              // 3) Purchase succeeded
-              console.log('Purchase successful', result);
-              dispatch(`contract/${actions.REFRESH_CONTRACT_DETAILS}`, null, {root: true});
-              dispatch(actions.GET_ASSETS_PURCHASED_FOR_ACCOUNT, null, {root: true});
-              commit(mutations.PURCHASE_SUCCESSFUL, {tokenId: _tokenId, buyer: _buyer});
-            } else {
-              console.log('Failure', error);
-              // Purchase failure
-              commit(mutations.PURCHASE_FAILED, {tokenId: _tokenId, buyer: _buyer});
-              purchaseEvent.stopWatching();
-            }
-            if (timer) clearInterval(timer);
-          });
+      let mintedEvent = contract.Minted({_editionNumber: edition.edition, _buyer: account}, {
+        fromBlock: web3.eth.blockNumber,
+        toBlock: 'latest' // wait until event comes through
+      });
 
-          // 1) Initial purchase flow
-          commit(mutations.PURCHASE_TRIGGERED, {tokenId: _tokenId, buyer: _buyer});
+      // Trigger a timer to check the accounts purchases - can provide update faster waiting for the event
+      const timer = setInterval(function () {
+        dispatch(`kodaV2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account}, {root: true});
+      }, 1000);
 
-          let purchase = contract.purchaseWithEther(_tokenId, {
-            from: _buyer,
-            value: assetToPurchase.priceInWei
-          });
+      mintedEvent.watch(function (error, event) {
+        if (!error) {
+          console.log('Purchase successful', event);
+          dispatch(`kodaV2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account}, {root: true});
+          commit(mutations.PURCHASE_SUCCESSFUL, {editionNumber: edition.edition, account});
+        } else {
+          console.log('Failure', error);
+          commit(mutations.PURCHASE_FAILED, {editionNumber: edition.edition, account});
+          mintedEvent.stopWatching();
+        }
+        if (timer) clearInterval(timer);
+      });
 
-          purchase
-            .then((data) => {
-              // 2) Purchase transaction submitted
-              console.log('Purchase transaction submitted', data);
-              commit(mutations.PURCHASE_STARTED, {tokenId: _tokenId, buyer: _buyer, transaction: data.tx});
-            })
-            .catch((error) => {
-              // Purchase failure
-              console.log('Purchase rejection/error', error);
-              commit(mutations.PURCHASE_FAILED, {tokenId: _tokenId, buyer: _buyer});
-              if (timer) clearInterval(timer);
-            });
+      purchase
+        .then((data) => {
+          console.log('Purchase transaction submitted', data);
+          commit(mutations.PURCHASE_STARTED, {editionNumber: edition.edition, account, transaction: data.tx});
         })
-        .catch((e) => {
-          console.log('Failure', e);
-          commit(mutations.PURCHASE_FAILED, {tokenId: assetToPurchase.id, buyer: rootState.account});
+        .catch((error) => {
+          console.log('Purchase rejection/error', error);
+          commit(mutations.PURCHASE_FAILED, {editionNumber: edition.edition, account});
+          if (timer) clearInterval(timer);
         });
     },
-    [actions.PURCHASE_ASSET_WITH_FIAT]({commit, dispatch, state, rootState}, assetToPurchase) {
-
-      let _buyer = rootState.account;
-      let _tokenId = assetToPurchase.id;
-
-      return rootState.KnownOriginDigitalAsset.deployed()
-        .then((contract) => {
-
-          let purchaseEvent = contract.PurchasedWithFiat({_tokenId: _tokenId}, {
-            fromBlock: web3.eth.blockNumber,
-            toBlock: 'latest' // wait until event comes through
-          });
-
-          purchaseEvent.watch(function (error, result) {
-            if (!error) {
-              // 3) Purchase succeeded
-              dispatch(`contract/${actions.REFRESH_CONTRACT_DETAILS}`, null, {root: true});
-              dispatch(actions.GET_ASSETS_PURCHASED_FOR_ACCOUNT, null, {root: true});
-              commit(mutations.PURCHASE_SUCCESSFUL, {tokenId: _tokenId, buyer: _buyer});
-            } else {
-              // Purchase failure
-              commit(mutations.PURCHASE_FAILED, {tokenId: _tokenId, buyer: _buyer});
-              purchaseEvent.stopWatching();
-              console.log('Failure', error);
-            }
-          });
-
-          // 1) Initial purchase flow
-          commit(mutations.PURCHASE_TRIGGERED, {tokenId: _tokenId, buyer: _buyer});
-
-          let purchase = contract.purchaseWithFiat(_tokenId, {from: _buyer});
-
-          purchase
-            .then((data) => {
-              // 2) Purchase transaction submitted
-              console.log('Purchase transaction submitted', data);
-              commit(mutations.PURCHASE_STARTED, {tokenId: _tokenId, buyer: _buyer, transaction: data.tx});
-            })
-            .catch((error) => {
-              // Purchase failure
-              console.log('Purchase rejection/error', error);
-              commit(mutations.PURCHASE_FAILED, {tokenId: _tokenId, buyer: _buyer});
-            });
-        })
-        .catch((e) => {
-          console.log('Failure', e);
-          commit(mutations.PURCHASE_FAILED, {tokenId: assetToPurchase.id, buyer: rootState.account});
-        });
-    },
-    [actions.REVERSE_PURCHASE_ASSET_WITH_FIAT]({commit, dispatch, state, rootState}, assetToPurchase) {
-
-      let _buyer = rootState.account;
-      let _tokenId = assetToPurchase.id;
-
-      return rootState.KnownOriginDigitalAsset.deployed()
-        .then((contract) => {
-
-          let purchaseEvent = contract.PurchasedWithFiatReversed({_tokenId: _tokenId}, {
-            fromBlock: web3.eth.blockNumber,
-            toBlock: 'latest' // wait until event comes through
-          });
-
-          purchaseEvent.watch(function (error, result) {
-            if (!error) {
-              // 3) Purchase succeeded
-              dispatch(`contract/${actions.REFRESH_CONTRACT_DETAILS}`, null, {root: true});
-              dispatch(actions.GET_ASSETS_PURCHASED_FOR_ACCOUNT, null, {root: true});
-              commit(mutations.PURCHASE_SUCCESSFUL, {tokenId: _tokenId, buyer: _buyer});
-            } else {
-              // Purchase failure
-              commit(mutations.PURCHASE_FAILED, {tokenId: _tokenId, buyer: _buyer});
-              purchaseEvent.stopWatching();
-              console.log('Failure', error);
-            }
-          });
-
-          // 1) Initial purchase flow
-          commit(mutations.PURCHASE_TRIGGERED, {tokenId: _tokenId, buyer: _buyer});
-
-          let purchase = contract.reverseFiatPurchase(_tokenId, {from: _buyer});
-
-          purchase
-            .then((data) => {
-              // 2) Purchase transaction submitted
-              console.log('Purchase transaction submitted', data);
-              commit(mutations.PURCHASE_STARTED, {tokenId: _tokenId, buyer: _buyer, transaction: data.tx});
-            })
-            .catch((error) => {
-              // Purchase failure
-              console.log('Purchase rejection/error', error);
-              commit(mutations.PURCHASE_FAILED, {tokenId: _tokenId, buyer: _buyer});
-            });
-        })
-        .catch((e) => {
-          console.log('Failure', e);
-          commit(mutations.PURCHASE_FAILED, {tokenId: assetToPurchase.id, buyer: rootState.account});
-        });
-    },
-    [actions.UPDATE_PURCHASE_STATE_FOR_ACCOUNT]({commit, dispatch, state, rootState}) {
-
-      // Get the tokens which are currently in the process of being purchased
-      let currentAssetsBeingPurchased = _.keys(state.purchaseState);
-
-      Vue.$log.debug(`Currently owned assets [${rootState.assetsPurchasedByAccount}] - accounts purchase state [${currentAssetsBeingPurchased}]`);
-
-      // Match all which the assets which are current being purchased against the accounts balance from the blockchain
-      let accountOwnedAssetsBeingPurchased = _.intersection(rootState.assetsPurchasedByAccount, currentAssetsBeingPurchased);
-
-      if (accountOwnedAssetsBeingPurchased.length > 0) {
-
-        _.forEach(accountOwnedAssetsBeingPurchased, function (asset) {
-          // If the asset is not marked as PURCHASE_SUCCESSFUL force state to move to this
-          if (state.purchaseState[asset].state !== 'PURCHASE_SUCCESSFUL') {
-            Vue.$log.debug(`Purchase state for token [${asset}] is [${state.purchaseState[asset].state}] - updating state to [PURCHASE_SUCCESSFUL]`);
-            commit(mutations.PURCHASE_SUCCESSFUL, {
-              tokenId: asset,
-              buyer: rootState.account,
-              force: true // mark this as a force transaction for debugging
-            });
-
-            dispatch(`contract/${actions.REFRESH_CONTRACT_DETAILS}`, null, {root: true}); // update state of asserts etc
-          }
-        });
-      }
-    },
-    [actions.RESET_PURCHASE_STATE]: function ({commit, dispatch, state}, asset) {
-      dispatch(`assets/${actions.GET_ALL_ASSETS}`, null, {root: true});
-      commit(mutations.RESET_PURCHASE_STATE, {tokenId: asset.id});
+    [actions.RESET_PURCHASE_STATE]: function ({commit, dispatch, state}, {edition}) {
+      dispatch(`kodaV2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account: state.account}, {root: true});
+      commit(mutations.RESET_PURCHASE_STATE, {editionNumber: edition.edition});
     },
   },
 };

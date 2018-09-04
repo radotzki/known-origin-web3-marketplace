@@ -7,22 +7,40 @@ export const GET_CURRENT_NETWORK = 'GET_CURRENT_NETWORK';
 // External API calls
 export const GET_USD_PRICE = 'GET_USD_PRICE';
 
-// Contract lookup calls
-export const GET_ALL_ASSETS = 'GET_ALL_ASSETS';
-export const GET_ASSETS_PURCHASED_FOR_ACCOUNT = 'GET_ASSETS_PURCHASED_FOR_ACCOUNT';
-export const REFRESH_CONTRACT_DETAILS = 'REFRESH_CONTRACT_DETAILS';
+///////////////////
+// V2 Page Loads //
+///////////////////
+
+export const LOAD_FEATURED_EDITIONS = 'LOAD_FEATURED_EDITIONS';
+export const LOAD_EDITIONS_FOR_TYPE = 'LOAD_EDITIONS_FOR_TYPE';
+export const LOAD_EDITIONS_FOR_ARTIST = 'LOAD_EDITIONS_FOR_ARTIST';
+export const LOAD_INDIVIDUAL_EDITION = 'LOAD_INDIVIDUAL_EDITION';
+export const LOAD_INDIVIDUAL_TOKEN = 'LOAD_INDIVIDUAL_TOKEN';
+
+/////////////
+// V1 Page //
+/////////////
+
+export const LOAD_LEGACY_TOKEN = 'LOAD_LEGACY_TOKEN';
 
 ///////////////////
-// Purchase flow //
+// LOADING STATE //
 ///////////////////
-export const PURCHASE_ASSET = 'PURCHASE_ASSET';
-export const PURCHASE_ASSET_WITH_FIAT = 'PURCHASE_ASSET_WITH_FIAT';
-export const REVERSE_PURCHASE_ASSET_WITH_FIAT = 'REVERSE_PURCHASE_ASSET_WITH_FIAT';
-export const UPDATE_PURCHASE_STATE_FOR_ACCOUNT = 'UPDATE_PURCHASE_STATE_FOR_ACCOUNT';
+
+export const LOADING_STARTED = 'LOADING_STARTED';
+export const LOADING_FINISHED = 'LOADING_FINISHED';
+
+//////////////////////
+// Purchase flow V2 //
+//////////////////////
+
 export const RESET_PURCHASE_STATE = 'RESET_PURCHASE_STATE';
+export const PURCHASE_EDITION = 'PURCHASE_EDITION';
 
-//////////////
-// High-res //
-//////////////
-export const HIGH_RES_DOWNLOAD = 'HIGH_RES_DOWNLOAD';
+////////////////////
+// Shared V1 & V2 //
+////////////////////
+export const HIGH_RES_DOWNLOAD = 'HIGH_RES_DOWNLOAD'; // TODO
+export const REFRESH_CONTRACT_DETAILS = 'REFRESH_CONTRACT_DETAILS';
+export const LOAD_ASSETS_PURCHASED_BY_ACCOUNT = 'LOAD_ASSETS_PURCHASED_BY_ACCOUNT';
 

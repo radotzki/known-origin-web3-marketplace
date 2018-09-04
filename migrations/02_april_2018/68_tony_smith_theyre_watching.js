@@ -8,7 +8,7 @@ const blocktimestampPlusOne = require('../../scripts/migrations/blocktimestampPl
 
 const ARTWORK = {
   "ipfsPath": "tony_smith_theyre_watching",
-  "edition": "TSMTHEYWATCH0DIG", // Live = TSMTHEYWATCH0001
+  "edition": "TSMTHEYWATCH0001", // Live = TSMTHEYWATCH0001
   "costInEth": 1.1
 };
 

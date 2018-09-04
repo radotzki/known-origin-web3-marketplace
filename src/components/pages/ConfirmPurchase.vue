@@ -1,17 +1,11 @@
 <template>
   <div class="container">
-    <loading-spinner v-if="!edition"></loading-spinner>
 
-    <div class="row justify-content-sm-center" v-if="!edition">
-      <div class="col text-center mt-5">
-        <p>We are loading assets from the Blockchain.</p>
-        <p>Please be patient as we are fully decentralised.</p>
-      </div>
-    </div>
+    <loading-section v-if="!edition" :page="PAGES.CONFIRM_PURCHASE"></loading-section>
 
-    <div v-else-if="edition" class="row justify-content-sm-center">
-      <div class="col col-sm-6">
-        <gallery-edition :edition="edition" :purchase="true"></gallery-edition>
+    <div class="row justify-content-sm-center">
+      <div class="col-sm-6">
+        <gallery-edition :edition="edition"></gallery-edition>
       </div>
     </div>
   </div>
@@ -19,41 +13,63 @@
 
 <script>
   import {mapGetters, mapState} from 'vuex';
-  import Artist from '../Artist';
-  import GalleryEdition from '../GalleryEdition';
-  import ConfirmPurchaseButton from '../ui-controls/ConfirmPurchaseButton';
+  import GalleryEdition from '../ui-controls/cards/GalleryEdition';
   import _ from 'lodash';
-  import EditionQrCode from '../ui-controls/EditionQrCode';
-  import LoadingSpinner from "../ui-controls/LoadingSpinner.vue";
+  import * as actions from '../../store/actions';
+  import LoadingSection from "../ui-controls/generic/LoadingSection";
+  import {PAGES} from '../../store/loadingPageState';
 
   export default {
     name: 'confirmPurchase',
     components: {
-      LoadingSpinner,
-      EditionQrCode,
+      LoadingSection,
       GalleryEdition,
-      ConfirmPurchaseButton
+    },
+    data() {
+      return {
+        PAGES: PAGES
+      };
     },
     computed: {
-      ...mapGetters('assets', [
-        'firstAssetForEdition'
+      ...mapState([
+        'account'
+      ]),
+      ...mapGetters('kodaV2', [
+        'findEdition'
       ]),
       edition: function () {
-        return this.firstAssetForEdition(this.$route.params.edition);
+        return this.findEdition(this.$route.params.editionNumber);
       },
       title: function () {
         return `${this.edition.editionName} #${this.edition.edition}`;
       },
     },
     methods: {
-      countPurchased: (assets) => {
-        return _.filter(assets, (val) => {
-          return val.purchased === 1 || val.purchased === 2;
-        });
-      },
-      countAvailable: (assets) => {
-        return _.filter(assets, {'purchased': 0});
-      },
+    },
+    created() {
+      this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.CONFIRM_PURCHASE);
+
+      const loadData = function () {
+        this.$store.dispatch(`kodaV2/${actions.LOAD_INDIVIDUAL_EDITION}`, {editionNumber: this.$route.params.editionNumber})
+          .then(() => {
+            console.log(this.account);
+            return this.$store.dispatch(`kodaV2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account: this.account});
+          })
+          .finally(() => {
+            this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.CONFIRM_PURCHASE);
+          });
+      }.bind(this);
+
+      this.$store.watch(
+        () => this.$store.state.KnownOriginDigitalAssetV2,
+        () => loadData()
+      );
+
+      if (this.$store.state.KnownOriginDigitalAssetV2) {
+        loadData();
+      }
+    },
+    destroyed() {
     }
   };
 </script>

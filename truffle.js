@@ -6,7 +6,12 @@ let mnemonic = require('./mnemonic');
 
 module.exports = {
   mocha: {
-    useColors: true
+    useColors: true,
+    reporter: 'eth-gas-reporter',
+    reporterOptions : {
+      currency: 'USD',
+      gasPrice: 3
+    }
   },
   solc: {
     optimizer: {
@@ -18,12 +23,14 @@ module.exports = {
     development: {
       host: '127.0.0.1',
       port: 8545,
-      network_id: '*' // Match any network id
+      network_id: '*', // Match any network id
+      gas: 0xfffffffffff,
+      gasPrice: 0x01
     },
     ganache: {
       host: "127.0.0.1",
       port: 7545,
-      network_id: "*"
+      network_id: "*",
     },
     testrpc: {
       host: '127.0.0.1',
@@ -36,8 +43,8 @@ module.exports = {
         return new HDWalletProvider(mnemonic_live, `https://mainnet.infura.io/${infuraApikey}`);
       },
       network_id: 1,
-      gas: 4075039, // default = 4712388
-      gasPrice: 1500000000 // default = 100 gwei = 100000000000
+      gas: 6075039, // default = 4712388
+      gasPrice: 3000000000 // default = 100 gwei = 100000000000
     },
     coverage: {
       host: "localhost",
@@ -51,16 +58,16 @@ module.exports = {
         return new HDWalletProvider(mnemonic, `https://ropsten.infura.io/${infuraApikey}`);
       },
       network_id: 3,
-      gas: 4075039, // default = 4712388
-      gasPrice: 20000000000 // default = 100 gwei = 100000000000
+      gas: 7000000, // default = 4712388
+      gasPrice: 2000000000 // default = 100 gwei = 100000000000
     },
     rinkeby: {
       provider: function () {
         return new HDWalletProvider(mnemonic, `https://rinkeby.infura.io/${infuraApikey}`);
       },
       network_id: 4,
-      gas: 7000000, // default = 4712388
-      gasPrice: 35000000000 // default = 100 gwei = 100000000000
+      gas: 6500000, // default = 4712388
+      gasPrice: 10000000000 // default = 100 gwei = 100000000000
     }
   }
 };

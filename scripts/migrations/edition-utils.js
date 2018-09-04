@@ -7,7 +7,7 @@ function validateEdition(edition) {
   }
 
   let assetType = edition.substring(13, 16);
-  if (['DIG', 'PHY'].indexOf(assetType) < 0) {
+  if (['DIG', 'PHY', '001', 'D01'].indexOf(assetType) < 0) {
     throw new Error(`Edition [${edition}] asset type [${assetType}] not recognised`);
   }
 

@@ -1,0 +1,63 @@
+.editions-wrap {
+
+  margin-left: 50px;
+  margin-right: 50px;
+
+  .card-img-top {
+    object-fit: cover;
+    height: 12rem;
+  }
+
+  .card {
+    width: 14rem;
+    height: 21.5rem;
+  }
+
+  .card-title {
+    font-size: 0.9rem;
+  }
+
+  .card-body {
+    padding: 1rem;
+  }
+
+  .card-footer {
+    padding: 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .card-target {
+    color: inherit;
+  }
+
+  a:hover {
+    text-decoration: none;
+  }
+
+  .sub-filter {
+    cursor: pointer;
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+
+
+  /* mobile only */
+  @media screen and (max-width: 767px) {
+    margin-left: -30px;
+    margin-right: -30px;
+
+    .card-deck {
+      flex-flow: row wrap;
+    }
+
+    .card-img-top {
+      object-fit: cover;
+      height: 15rem;
+    }
+
+    .card {
+      width: 18.5rem;
+      height: 25rem;
+    }
+  }
+}

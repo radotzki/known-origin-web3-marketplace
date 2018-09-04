@@ -6,7 +6,7 @@ const blocktimestampPlusOne = require('../../scripts/migrations/blocktimestampPl
 
 const ARTWORK = {
   "ipfsPath": "tony_smith_depressed",
-  "edition": "TSMDEPRESSED0DIG", // Live = TSMDEPRESSED0001
+  "edition": "TSMDEPRESSED0001", // Live = TSMDEPRESSED0001
   "costInEth": 1.1
 };
 

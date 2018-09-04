@@ -2,17 +2,16 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import Artists from '@/components/pages/Artists';
 import ContractDetails from '@/components/pages/ContractDetails';
-import Gallery from '@/components/pages/Gallery';
-import GalleryV2 from '@/components/pages/GalleryV2';
 import Account from '@/components/pages/Account';
 import License from '@/components/pages/License';
-import Assets from '@/components/pages/Assets';
-import ConfirmPurchase from '@/components/pages/ConfirmPurchase';
-import ConfirmPurchaseQr from '@/components/pages/ConfirmPurchaseQr';
+import Gallery from '@/components/pages/Gallery';
 import ArtistPage from '@/components/pages/ArtistPage';
+import ConfirmPurchase from '@/components/pages/ConfirmPurchase';
 import CompletePurchase from '@/components/pages/CompletePurchase';
-import AssetDetailView from '@/components/pages/AssetDetailView';
-import Home from '@/components/pages/Home';
+import EditionTokenOverview from '@/components/pages/EditionTokenOverview';
+import LegacyDeepLinkToken from '@/components/pages/legacy/LegacyDeepLinkToken';
+
+import store from '../store';
 
 Vue.use(Router);
 
@@ -30,27 +29,12 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: GalleryV2
-    },
-    {
-      path: '/artists',
-      name: 'artists',
-      component: Artists
-    },
-    {
-      path: '/contractDetails',
-      name: 'details',
-      component: ContractDetails
-    },
-    {
-      path: '/gallery',
-      name: 'gallery',
-      component: GalleryV2
-    },
-    {
-      path: '/editions',
-      name: 'editions',
       component: Gallery
+    },
+    {
+      path: '/contracts',
+      name: 'contracts',
+      component: ContractDetails
     },
     {
       path: '/account',
@@ -58,50 +42,74 @@ export default new Router({
       component: Account
     },
     {
-      path: '/license',
-      name: 'license',
+      path: '/terms',
+      name: 'terms',
       component: License
     },
     {
-      path: '/assets',
-      name: 'assets',
-      component: Assets
+      path: '/gallery',
+      name: 'gallery',
+      component: Gallery
     },
     {
-      path: '/assets/:tokenId',
-      name: 'assetDetailView',
-      component: AssetDetailView,
+      path: '/artists',
+      name: 'artists',
+      component: Artists
+    },
+    {
+      path: '/token/:tokenId',
+      name: 'edition-token',
+      component: EditionTokenOverview,
       props: true
     },
     {
-      path: '/artists/:artistCode',
-      name: 'artist',
+      path: '/artists-v2/:artistAccount',
+      name: 'artist-v2',
       component: ArtistPage,
       props: true
     },
     {
-      path: '/artists/:artistCode/editions/:edition',
+      path: '/artists-v2/:artistAccount/editions/:editionNumber',
       name: 'confirmPurchase',
       component: ConfirmPurchase,
       props: true
     },
     {
-      path: '/artists/:artistCode/editions/:edition/qr',
-      name: 'confirmPurchaseQr',
-      component: ConfirmPurchaseQr,
-      props: true
-    },
-    {
-      path: '/editions/:edition',
-      name: 'confirmPurchaseShort',
-      component: ConfirmPurchase,
-      props: true
-    },
-    {
-      path: '/artists/:artistCode/editions/:edition/assets/:tokenId',
+      path: '/artists-v2/:artistAccount/editions/:editionNumber/buy',
       name: 'completePurchase',
       component: CompletePurchase,
       props: true
-    }
+    },
+    {
+      path: '/artists/:legacyArtistsCode',
+      name: 'artists-legacy',
+      beforeEnter: (to, from, next) => {
+        const legacyArtistsCode = to.params.legacyArtistsCode;
+        let artist = store.getters.findArtist(legacyArtistsCode);
+        if (artist && artist.ethAddress) {
+          next({
+            name: 'artist-v2',
+            params: {
+              artistAccount: artist.ethAddress
+            }
+          });
+        } else {
+          next({name: 'gallery'});
+        }
+      }
+    },
+    {
+      path: '/assets/:legacyTokenId',
+      name: 'legacy-asset',
+      component: LegacyDeepLinkToken,
+      props: true
+    },
+    // TODO missing legacy paths V1
+    // '/artists/:legacyArtistCode/editions/:legacyEditionCode',
+    // TODO missing V2 paths
+    // /editions
+    // /editions/:typeId
+    // /editions/qr
+    // -------------------------- //
   ]
 });

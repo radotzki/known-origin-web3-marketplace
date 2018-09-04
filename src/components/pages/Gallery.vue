@@ -1,128 +1,162 @@
 <template>
-  <div class="container">
-    <h1>Gallery</h1>
-
-
-    <loading-spinner v-if="!hasFinishedLoading()"></loading-spinner>
-
-    <div class="row justify-content-sm-center" v-if="!hasFinishedLoading()">
-      <div class="col text-center mt-5">
-        <p>We are loading assets from the Blockchain.</p>
-        <p>Please be patient as we are fully decentralised.</p>
+  <div>
+    <div class="row bg-secondary text-white full-banner">
+      <div class="col text-center m-5">
+        <p>Showcase and Discover Rare Digital Art</p>
+      </div>
+    </div>
+    <div class="row bg-white full-banner-secondary pt-3">
+      <div class="col text-center">
+        <p>
+          <span @click="onSubFilter('featured')"
+                class="sub-filter"
+                v-bind:class="{'font-weight-bold': priceFilter === 'featured'}">Featured Artists</span>
+          <span @click="onSubFilter('asc')"
+                class="sub-filter"
+                v-bind:class="{'font-weight-bold': priceFilter === 'asc'}">Low - High</span>
+          <span @click="onSubFilter('desc')"
+                class="sub-filter d-none d-md-inline"
+                v-bind:class="{'font-weight-bold': priceFilter === 'desc'}">High - Low</span>
+        </p>
       </div>
     </div>
 
-    <div class="form-row mb-4" v-if="hasFinishedLoading()">
-      <div class="col">
-        <select class="form-control" title="price filter" v-model="priceFilter">
-          <option value="asc">Low to high</option>
-          <option value="desc">High to low</option>
-          <option value="high-res">High-res</option>
-          <option value="sold">Sold</option>
-          <option value="featured">Featured artwork</option>
-          <option value="nifty">0xCert & Nifty Collaboration</option>
-        </select>
-      </div>
-      <div class="col d-none d-md-block">
-        <select class="form-control" title="artist filter" v-model="artistFilter">
-          <option value="all">Artists...</option>
-          <option v-for="{artistCode, name} in orderedArtists" :value="artistCode">{{name}}</option>
-        </select>
-      </div>
-      <div class="col">
-        <input type="text" class="form-control" v-model="search" placeholder="Search assets..."/>
+    <div class="container-fluid mt-4">
+
+      <loading-section :page="PAGES.GALLERY"></loading-section>
+
+      <div class="row editions-wrap">
+        <div class="card-deck">
+          <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions" :key="editionNumber" v-if="edition.active">
+            <router-link class="card-target"
+                         :to="{ name: 'confirmPurchase', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
+              <div class="card shadow-sm">
+                <img class="card-img-top" :src="edition.lowResImg"/>
+                <div class="card-body">
+                  <p class="card-title">{{ edition.name }}</p>
+                  <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
+                  <a class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name }}</a>
+                </div>
+                <div class="card-footer">
+                  <div class="row">
+                    <div class="col">
+                      <availability :total-available="edition.totalAvailable" :total-supply="edition.totalSupply"></availability>
+                    </div>
+                    <div class="col text-right">{{ edition.priceInEther }} ETH</div>
+                  </div>
+                </div>
+              </div>
+            </router-link>
+          </div>
+        </div>
       </div>
     </div>
-
-    <h4 class="text-primary pb-4 pt-2" v-if="hasFinishedLoading() && priceFilter === 'featured'">KnownOrigin.io x 0xCert Creative Challenge <br/>for Nifty Conference + Hackathon (July 24-26, 2018)</h4>
-
-    <div class="card-columns" v-if="editions.length > 0">
-      <galleryEdition
-        v-for="edition in editions"
-        :edition="edition"
-        :key="edition.edition">
-      </galleryEdition>
-    </div>
-
   </div>
 </template>
 
 <script>
 
   import {mapGetters, mapState} from 'vuex';
-  import GalleryEdition from '../GalleryEdition';
-  import LoadingSpinner from "../ui-controls/LoadingSpinner.vue";
+  import GalleryEdition from '../ui-controls/cards/GalleryEdition';
   import _ from 'lodash';
+  import * as actions from '../../store/actions';
+  import {PAGES} from '../../store/loadingPageState';
+  import LoadingSection from "../ui-controls/generic/LoadingSection";
+  import Availability from "../ui-controls/v2/Availability";
 
   export default {
-    name: 'gallery',
+    name: 'galleryKODAV2',
     components: {
-      LoadingSpinner,
-      GalleryEdition
+      LoadingSection,
+      GalleryEdition,
+      Availability
     },
     data() {
       return {
-        finishedLoading: false,
-        priceFilter: 'asc',
-        artistFilter: 'all',
-        search: ''
+        PAGES,
+        priceFilter: 'featured'
       };
     },
     methods: {
-      onSoldToggleChanged: function ({value}) {
-        this.showSold = value;
+      onSubFilter: function (value) {
+        this.priceFilter = value;
       },
-      hasFinishedLoading: function () {
-        // Use the lack of assets in the store to determine initial loading state
-        if (!this.assets || this.assets.length === 0) {
-          return false;
-        }
-        return this.editions.length > 0 || this.finishedLoading === true;
-      },
+      goToArtist: function (artistAccount) {
+        console.log(artistAccount);
+        this.$router.push({name: 'artist-v2', params: {artistAccount}});
+      }
     },
     computed: {
-      ...mapState([
-        'artists',
-      ]),
-      ...mapState('assets', [
-        'assets',
-        'editionSummary',
+      ...mapGetters('kodaV2', [
+        'filterEditions'
       ]),
       ...mapGetters([
-        'liveArtists',
+        'findArtistsForAddress'
       ]),
-      ...mapGetters('assets', [
-        'editionSummaryFilter',
-      ]),
-      orderedArtists: function () {
-        return _.orderBy(this.liveArtists, 'name');
-      },
       editions: function () {
-        this.finishedLoading = false;
-
-        let results = this.editionSummaryFilter(this.priceFilter, this.artistFilter)
-          .filter(function (item) {
-
-            if (this.search.length === 0) {
-              return true;
-            }
-
-            const searchString = this.search.toLowerCase();
-
-            let matchesName = item.artworkName.toLowerCase().indexOf(searchString) >= 0;
-            let matchesDescription = item.description.toLowerCase().indexOf(searchString) >= 0;
-            let matchesArtist = item.otherMeta.artist.toLowerCase().indexOf(searchString) >= 0;
-            let matchesTokenId = `${item.id}`.indexOf(searchString) >= 0;
-            let matchesEdition = item.edition.toLowerCase().indexOf(searchString) >= 0;
-
-            return matchesName || matchesDescription || matchesArtist || matchesTokenId || matchesEdition;
-          }.bind(this));
-        this.finishedLoading = true;
-        return results;
+        return this.filterEditions(this.priceFilter);
       }
+    },
+    created() {
+      this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.GALLERY);
+
+      const loadData = function () {
+        this.$store.dispatch(`kodaV2/${actions.LOAD_FEATURED_EDITIONS}`)
+          .then(() => {
+            this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.GALLERY);
+            setTimeout(function () {
+              this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS_FOR_TYPE}`, {editionType: 1});
+            }.bind(this), 3000);
+          });
+      }.bind(this);
+
+      this.$store.watch(
+        () => this.$store.state.KnownOriginDigitalAssetV2,
+        () => loadData()
+      );
+
+      if (this.$store.state.KnownOriginDigitalAssetV2) {
+        loadData();
+      }
+    },
+    destroyed() {
     }
   };
 </script>
 
 <style scoped lang="scss">
+  .full-banner {
+    p {
+      margin-bottom: 0;
+    }
+  }
+
+  .full-banner-secondary {
+
+  }
+
+  .sub-filter {
+    cursor: pointer;
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+
+  .editions-wrap {
+    margin-left: 50px;
+    margin-right: 50px;
+  }
+
+  /* mobile only */
+  @media screen and (max-width: 767px) {
+    .full-banner {
+      font-size: 1.5rem;
+    }
+
+    .sub-filter {
+      padding-left: 0.7rem;
+      padding-right: 0.7rem;
+    }
+  }
+
+  @import '../../ko-card.scss';
 </style>
