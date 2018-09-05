@@ -22,12 +22,12 @@
 
       <div class="row editions-wrap">
         <div class="card-deck">
-          <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions" v-if="edition.active">
+          <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions" :key="editionNumber" v-if="edition.active">
             <div class="card-target">
               <router-link class="card-target"
                            :to="{ name: 'confirmPurchase', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
                 <div class="card shadow-sm">
-                  <img class="card-img-top" :src="edition.lowResImg"/>
+                  <img class="card-img-top" :src="edition.lowResImg" :id="editionNumber"/>
                   <div class="card-body">
                     <p class="card-title">{{ edition.name }}</p>
                     <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
@@ -105,6 +105,9 @@
     methods: {
       lookupArtist: function () {
         return this.findArtistsForAddress(this.$route.params.artistAccount);
+      },
+      goToArtist: function (artistAccount) {
+        this.$router.push({name: 'artist-v2', params: {artistAccount}});
       }
     },
     created () {

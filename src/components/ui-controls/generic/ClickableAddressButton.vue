@@ -1,6 +1,6 @@
 <template>
   <span v-if="ethAddress">
-    <a class="token-id" :href="buildLink" target="_blank">{{ dotDotDot }}</a>
+    <a class="btn btn-primary" :href="buildLink" target="_blank">{{ label || dotDotDot }}</a>
   </span>
 </template>
 
@@ -10,10 +10,13 @@
   import { mapGetters, mapState } from 'vuex';
 
   export default {
-    name: 'clickableAddress',
+    name: 'clickableAddressButton',
     components: {EthAddress},
     props: {
       ethAddress: {
+        type: String
+      },
+      label: {
         type: String
       }
     },

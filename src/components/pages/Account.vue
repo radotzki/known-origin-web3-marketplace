@@ -42,7 +42,7 @@
         <div class="col-auto mx-auto mb-5" v-for="edition in accountOwnedEditions" :key="edition.tokenId">
           <router-link :to="{ name: 'edition-token', params: { tokenId: edition.tokenId }, props: { edition: edition } }" class="card-target">
             <div class="card shadow-sm">
-              <img class="card-img-top" :src="edition.lowResImg"/>
+              <img class="card-img-top" :src="edition.lowResImg" :id="edition.tokenId"/>
               <div class="card-body">
                 <p class="card-title">{{ edition.name }}</p>
                 <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
