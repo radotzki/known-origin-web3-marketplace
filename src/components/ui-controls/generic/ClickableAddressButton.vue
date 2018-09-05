@@ -1,6 +1,6 @@
 <template>
   <span v-if="ethAddress">
-    <a class="btn btn-primary" :href="buildLink" target="_blank">{{ label || dotDotDot }}</a>
+    <a class="btn btn-outline-primary btn-sm" :href="buildLink" target="_blank">{{ label || dotDotDot }}</a>
   </span>
 </template>
 
