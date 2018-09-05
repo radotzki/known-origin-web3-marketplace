@@ -31,7 +31,7 @@
             <router-link class="card-target"
                          :to="{ name: 'confirmPurchase', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
               <div class="card shadow-sm">
-                <img class="card-img-top" :src="edition.lowResImg"/>
+                <img class="card-img-top" :src="edition.lowResImg" :id="editionNumber"/>
                 <div class="card-body">
                   <p class="card-title">{{ edition.name }}</p>
                   <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>

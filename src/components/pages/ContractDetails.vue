@@ -1,39 +1,20 @@
 <template>
   <div class="container">
     <h1>Contract</h1>
-    <div class="row justify-content-center mt-4">
-      <div class="col-sm-6 text-center">
-        <h2>KODA V1</h2>
-        <table class="table table-striped bg-white">
-          <tbody>
-          <tr v-if="v1.contractAddress">
-            <td>Contract</td>
-            <td><clickable-address :eth-address="v1.contractAddress"></clickable-address></td>
-          </tr>
-          <tr v-if="v1.totalSupply">
-            <td>Supply</td>
-            <td>{{ v1.totalSupply }}</td>
-          </tr>
-          <tr v-if="v1.totalNumberOfPurchases">
-            <td>Sales</td>
-            <td>{{ v1.totalNumberOfPurchases }}</td>
-          </tr>
-          <tr v-if="v1.totalPurchaseValueInEther">
-            <td>Total</td>
-            <td>{{ v1.totalPurchaseValueInEther }} ETH</td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
 
-      <div class="col-sm-6 text-center">
-        <h2>KODA V2</h2>
-        <table class="table table-striped bg-white">
+    <div class="row">
+      <div class="col-sm-6">
+        <h3>KODA v2
+          <small>04-09-2018 - Present</small>
+        </h3>
+        <p v-if="v2.contractAddress">
+          <clickable-address-button :eth-address="v2.contractAddress" :label="'View Contract'"></clickable-address-button>
+          <span class="float-right">
+            <clickable-address :eth-address="v2.contractAddress"></clickable-address>
+          </span>
+        </p>
+        <table class="table table-striped bg-white text-center">
           <tbody>
-          <tr v-if="v2.contractAddress">
-            <td>Contract</td>
-            <td><clickable-address :eth-address="v2.contractAddress"></clickable-address></td>
-          </tr>
           <tr v-if="v2.totalSupply">
             <td>Purchases</td>
             <td>{{ v2.totalSupply }}</td>
@@ -60,6 +41,39 @@
         </table>
       </div>
     </div>
+
+    <br />
+
+    <div class="row">
+      <div class="col-sm-6">
+        <h3>KODA v1
+          <small>02-04-2018 - 04-09-2018</small>
+        </h3>
+        <p v-if="v1.contractAddress">
+          <clickable-address-button :eth-address="v1.contractAddress" :label="'View Contract'"></clickable-address-button>
+          <span class="float-right">
+            <clickable-address :eth-address="v1.contractAddress"></clickable-address>
+          </span>
+        </p>
+        <table class="table table-striped bg-white text-center">
+          <tbody>
+          <tr v-if="v1.totalSupply">
+            <td>Supply</td>
+            <td>{{ v1.totalSupply }}</td>
+          </tr>
+          <tr v-if="v1.totalNumberOfPurchases">
+            <td>Sales</td>
+            <td>{{ v1.totalNumberOfPurchases }}</td>
+          </tr>
+          <tr v-if="v1.totalPurchaseValueInEther">
+            <td>Total</td>
+            <td>{{ v1.totalPurchaseValueInEther }} ETH</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -67,10 +81,11 @@
 
   import ClickableAddress from '../ui-controls/generic/ClickableAddress';
   import * as actions from '../../store/actions';
+  import ClickableAddressButton from "../ui-controls/generic/ClickableAddressButton";
 
   export default {
     name: 'contractDetails',
-    components: {ClickableAddress},
+    components: {ClickableAddressButton, ClickableAddress},
     computed: {
       v1: function () {
         return {

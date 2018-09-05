@@ -14,7 +14,7 @@
     <div class="card-body">
       <p class="card-title">{{ edition.name }}</p>
       <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
-      <span class="pl-1 artist-name-lg">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
+      <span class="pl-1 artist-name-lg" v-on:click="goToArtist(edition.artistAccount)">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
 
       <p class="card-full-desc pt-4">
         {{ edition.description }}
@@ -105,6 +105,9 @@
             editionNumber: this.edition.edition
           }
         });
+      },
+      goToArtist: function (artistAccount) {
+        this.$router.push({name: 'artist-v2', params: {artistAccount}});
       }
     },
   };
