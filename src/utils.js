@@ -68,14 +68,14 @@ const isHighRes = (editionNumber) => {
     6400, //FKADAFFY0RAINDIG
   ];
 
-  // TODO re-enable this once V2 is live and update KO serverless API to check edition number not edition data
   const V2Editions = [
-    // 11000,
-    // 12000,
-    // 13000,
-    // 14000,
-    // 15000,
-    // 16000
+    12000,
+    13000,
+    14000,
+    15000,
+    16000,
+    17000,
+    18000,
   ];
 
   const HIGH_RES_EDITIONS = [

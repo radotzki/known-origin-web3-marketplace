@@ -101,14 +101,17 @@ const contractStateModule = {
       return !found;
     },
     featuredEditions: (state, getters, rootState) => () => {
+      const artworks = featureArtworks(rootState.currentNetwork);
       return _.pickBy(state.assets, function (value, key) {
-        return featureArtworks(rootState.currentNetwork).indexOf(_.toNumber(key)) > 0;
+        return artworks.indexOf(_.toNumber(key)) > -1;
       });
     },
     filterEditions: (state, getters, rootState) => (priceFilter = 'asc') => {
+      const artworks = featureArtworks(rootState.currentNetwork);
+
       const soldOutEditions = (edition) => edition.totalSupply === edition.totalAvailable;
       const availableEditions = (edition) => edition.totalSupply !== edition.totalAvailable;
-      const featuredEditions = (edition) => featureArtworks(rootState.currentNetwork).indexOf(edition.edition) > 0;
+      const featuredEditions = (edition) => artworks.indexOf(_.toNumber(edition.edition)) > -1;
 
       const results = _.pickBy(state.assets, function (value, key) {
         if (priceFilter === 'featured') {

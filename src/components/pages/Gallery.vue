@@ -24,7 +24,7 @@
     <div class="container-fluid mt-4">
 
       <loading-section :page="PAGES.GALLERY"></loading-section>
-
+      
       <div class="row editions-wrap">
         <div class="card-deck">
           <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions" :key="editionNumber" v-if="edition.active">
@@ -82,7 +82,6 @@
         this.priceFilter = value;
       },
       goToArtist: function (artistAccount) {
-        console.log(artistAccount);
         this.$router.push({name: 'artist-v2', params: {artistAccount}});
       }
     },
