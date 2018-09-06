@@ -9,73 +9,28 @@ import {isHighRes} from '../../utils';
 function featureArtworks(network) {
   switch (network) {
     case 'Main':
-      return [
-        12000,
-        13000,
-        14000,
-        15000,
-        16000,
-        17000,
-        18000,
-        11000, // Oficinas TK
-        9200, // Hackateo
-        10900, //Drawingly Willingly
-        9600, // MLO
-        8800, // Lev
-        7900, // L O S E V A
-        7500, // obxium
-        8300, // Lee Holland
-        5900, // Stina
-        8200, // Stan regats
-        7700  //Manolide
-      ];
     case 'Rinkeby':
-      return [
-        12000,
-        13000,
-        14000,
-        15000,
-        16000,
-        17000,
-        18000,
-        9200, // Hackateo
-        9600, // MLO
-        8800, // Lev
-        7900, // L O S E V A
-        7500, // obxium
-        8300, // Lee Holland
-        5900, // Stina
-        8200, // Stan regats
-        7700, //Manolide
-        7600 //Takahiro Okawa
-      ];
     case 'Ropsten':
+    case 'Local':
       return [
-        12000,
-        13000,
-        14000,
-        15000,
-        16000,
-        17000,
-        18000,
-        11000, // Oficinas TK
-        9200, // Hackateo
-        10900, //Drawingly Willingly
-        8800, // Lev
-        7900, // L O S E V A
-        5900, // Stina
-        8200, // Stan regats
+        7700,   // NEOPLA
+        14000,  // L1s4 51Mp50N
+        8300,   // Bitopian
+        13000,  // Emoji Love
+        7800,   // Reflection of the forms. Series #01
+        6500,   // Treating the Symptoms
+        9500,   // B.
+        10300,  // Melt
+        10900,  // Drawingly Willingly
+        12000,  // Nonfungible tokens
+        9000,   // Tamed Lines Two (Diptych)
+        9300,   // DDF3
+        4600,   // Blue
+        8400,   // Ethereum Inside
+        9200   // They Live
       ];
     default:
-      return [
-        12000,
-        13000,
-        14000,
-        15000,
-        16000,
-        17000,
-        18000
-      ];
+      return [];
   }
 }
 
@@ -283,18 +238,21 @@ const editionOfTokenId = async (contract, tokenId) => {
 };
 
 const loadEditionData = async (contract, edition) => {
-  const rawData = await contract.detailsOfEdition(edition);
-  const allEditionData = mapData(rawData);
-  const ipfsData = await lookupIPFSData(allEditionData.tokenURI);
-
-  const editionNumber = typeof edition === 'number' ? edition : _.toNumber(edition);
-
-  return {
-    edition: editionNumber,
-    ...ipfsData,
-    ...allEditionData,
-    highResAvailable: isHighRes(editionNumber)
-  };
+  try {
+    const rawData = await contract.detailsOfEdition(edition);
+    const allEditionData = mapData(rawData);
+    const ipfsData = await lookupIPFSData(allEditionData.tokenURI);
+    const editionNumber = typeof edition === 'number' ? edition : _.toNumber(edition);
+    return {
+      edition: editionNumber,
+      ...ipfsData,
+      ...allEditionData,
+      highResAvailable: isHighRes(editionNumber)
+    };
+  } catch (e) {
+    // Catch all errors and simply assume an inactive edition which should not be viewable anywhere
+    return {active: false};
+  }
 };
 
 const mapTokenData = async (contract, tokenId) => {
