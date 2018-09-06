@@ -51,19 +51,28 @@ const highResStateModule = {
       commit(mutations.HIGH_RES_DOWNLOAD_TRIGGERED, {tokenId: edition.tokenId});
 
       const highResConfig = {
-        local: "http://localhost:5000/known-origin-io/us-central1/highResDownload",
-        // beta: "https://us-central1-beta-known-origin-io.cloudfunctions.net/highResDownload",
-        live: "https://us-central1-known-origin-io.cloudfunctions.net/highResDownload"
+        local: {
+          v1: "http://localhost:5000/known-origin-io/us-central1/api/download/highres/v1",
+          v2: "http://localhost:5000/known-origin-io/us-central1/api/download/highres/v2"
+        },
+        live: {
+          v1: "https://us-central1-known-origin-io.cloudfunctions.net/api/download/highres/v1",
+          v2: "https://us-central1-known-origin-io.cloudfunctions.net/api/download/highres/v2"
+        }
       };
 
       const getDownloadApi = () => {
         switch (window.location.hostname) {
           case "localhost":
           case "127.0.0.1":
-            // return highResConfig.local;
+            return contractVersion === 1
+              ? highResConfig.local.v1
+              : highResConfig.local.v2;
           default:
             // For now point all to live
-            return highResConfig.live;
+            return contractVersion === 1
+              ? highResConfig.live.v1
+              : highResConfig.live.v2;
         }
       };
 
@@ -95,7 +104,6 @@ const highResStateModule = {
           data: {
             address: rootState.account,
             tokenId: edition.tokenId,
-            contractVersion,
             originalMessage,
             signedMessage,
             networkId
