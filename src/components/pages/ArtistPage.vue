@@ -41,7 +41,7 @@
                   <div class="card-footer">
                     <div class="row">
                       <div class="col">
-                        {{ edition.totalAvailable }} available
+                        <availability :total-available="edition.totalAvailable" :total-supply="edition.totalSupply"></availability>
                       </div>
                       <div class="col text-right">{{ edition.priceInEther }} ETH</div>
                     </div>
@@ -71,10 +71,12 @@
   import { PAGES } from '../../store/loadingPageState';
   import LoadingSection from '../ui-controls/generic/LoadingSection';
   import ClickableAddress from '../ui-controls/generic/ClickableAddress';
+  import Availability from "../ui-controls/v2/Availability";
 
   export default {
     name: 'artistPage',
     components: {
+      Availability,
       LoadingSection,
       HighResLabel,
       TweetEditionButton,
