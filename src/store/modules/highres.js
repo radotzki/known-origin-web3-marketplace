@@ -65,9 +65,9 @@ const highResStateModule = {
         switch (window.location.hostname) {
           case "localhost":
           case "127.0.0.1":
-            return contractVersion === 1
-              ? highResConfig.local.v1
-              : highResConfig.local.v2;
+            // return contractVersion === 1
+            //   ? highResConfig.local.v1
+            //   : highResConfig.local.v2;
           default:
             // For now point all to live
             return contractVersion === 1

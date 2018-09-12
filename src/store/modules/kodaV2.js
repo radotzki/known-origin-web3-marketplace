@@ -27,7 +27,11 @@ function featureArtworks(network) {
         9300,   // DDF3
         4600,   // Blue
         8400,   // Ethereum Inside
-        9200   // They Live
+        9200,   // They Live
+        18100,
+        18200,
+        18300,
+        18400
       ];
     default:
       return [];
