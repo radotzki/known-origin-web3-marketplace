@@ -77,7 +77,6 @@ const highResStateModule = {
       };
 
       const validateResponse = (response) => {
-        console.log(response);
         if (response.status === 202 && response.data.url) {
           commit(mutations.HIGH_RES_DOWNLOAD_SUCCESS, {
             ...response.data,

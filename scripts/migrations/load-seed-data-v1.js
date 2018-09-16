@@ -40,7 +40,7 @@ module.exports = function (instance, _artistAccount, _openingTime, galleryData, 
 
       return instance.mint(
         tokenUri,
-        edition,
+        require('Web3').utils.asciiToHex(edition),
         costInWei,
         openingTime,
         _artistAccount,

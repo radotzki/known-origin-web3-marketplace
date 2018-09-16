@@ -31,7 +31,11 @@ module.exports = (network, accounts, artistAccount, artistCode) => {
   if (artistCode) {
     const artistMeta = _.find(artistData, (artist) => artist.artistCode === artistCode);
     if (artistMeta && artistMeta.ethAddress) {
-      _artistAccount = artistMeta.ethAddress;
+      if (_.isArray(artistMeta.ethAddress)) {
+        _artistAccount = artistMeta.ethAddress[0];
+      } else {
+        _artistAccount = artistMeta.ethAddress;
+      }
     }
   }
 

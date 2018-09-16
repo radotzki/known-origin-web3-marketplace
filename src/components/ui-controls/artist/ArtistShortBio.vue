@@ -1,6 +1,6 @@
 <template>
   <div v-if="artist" class="clearfix">
-    <p><img :src="artist.img"/> {{ artist.name }}</p>
+    <p class="small-artist-name"><img :src="artist.img"/> {{ artist.name }}</p>
   </div>
 </template>
 
@@ -27,6 +27,14 @@
 
     .lead {
       font-size: 1rem;
+    }
+
+    .lead {
+      font-size: 1rem;
+    }
+
+    .small-artist-name {
+      font-size: 0.75em;
     }
   }
 </style>

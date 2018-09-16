@@ -60,9 +60,16 @@ const store = new Vuex.Store({
       if (state.artistLookupCache[artistAddress]) {
         return state.artistLookupCache[artistAddress];
       }
+
+      const artistsAddress = Web3.utils.toChecksumAddress(artistAddress);
+
       const artist = _.find(state.artists, (artist) => {
-        return Web3.utils.toChecksumAddress(artist.ethAddress) === Web3.utils.toChecksumAddress(artistAddress);
+        if (_.isArray(artist.ethAddress)) {
+          return _.find(artist.ethAddress, (address) => Web3.utils.toChecksumAddress(address) === artistsAddress);
+        }
+        return Web3.utils.toChecksumAddress(artist.ethAddress) === artistsAddress;
       });
+
       if (!artist) {
         console.error(`Unable to find artists [${artistAddress}]`);
       }

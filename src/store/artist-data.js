@@ -64,7 +64,10 @@ const artists = [
     strapline: 'Independent digital artists',
     img: '/static/artists/AktivProtesk_@x2.png',
     live: true,
-    ethAddress: '0x7DEc37c03ea5ca2C47ad2509BE6abAf8C63CDB39'
+    ethAddress: [
+      '0xa2cD656f8461d2C186D69fFB8A4a5c10EFF0914d', // new - Note: the new address must always be at index zero
+      '0x7DEc37c03ea5ca2C47ad2509BE6abAf8C63CDB39' // old
+    ]
   },
   {
     artistCode: 'LHD',
@@ -313,6 +316,17 @@ const artists = [
     live: true,
     twitter: '@jygraphicdesign',
     ethAddress: '0x7EC1b3d17EC7Ff05B4dA25a0bE8636d5E5C3D7cD'
+  },
+  {
+    artistCode: 'FAB',
+    name: 'Fabiano',
+    bio: 'Half industrial designer half artist, i like use different media. Pop art, colors and minimalism are the guides of my work.',
+    strapline: 'Half industrial designer half artist, i like use different media. Pop art, colors and minimalism are the guides of my work.',
+    img: '/static/artists/Fabiano_Profile@x2.png',
+    live: true,
+    twitter: '@fabianospeziari',
+    website: 'http://www.fabianospeziari.com',
+    ethAddress: '0x36BD6221c2016371C3aF00071726578b91AcB007'
   }
 ];
 

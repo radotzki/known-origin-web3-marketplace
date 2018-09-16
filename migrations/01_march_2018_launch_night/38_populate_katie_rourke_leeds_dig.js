@@ -128,7 +128,7 @@ const loadSeedData = (instance, _curatorAccount, _openingTime) => {
     return Promise.map(insertsForEditionArray, function ({tokenUri, edition, costInWei, openingTime}) {
       return instance.mint(
         tokenUri,
-        edition,
+        require('Web3').utils.asciiToHex(edition),
         costInWei,
         openingTime,
         _curatorAccount
