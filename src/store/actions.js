@@ -40,7 +40,7 @@ export const PURCHASE_EDITION = 'PURCHASE_EDITION';
 ////////////////////
 // Shared V1 & V2 //
 ////////////////////
-export const HIGH_RES_DOWNLOAD = 'HIGH_RES_DOWNLOAD'; // TODO
+export const HIGH_RES_DOWNLOAD = 'HIGH_RES_DOWNLOAD';
 export const REFRESH_CONTRACT_DETAILS = 'REFRESH_CONTRACT_DETAILS';
 export const LOAD_ASSETS_PURCHASED_BY_ACCOUNT = 'LOAD_ASSETS_PURCHASED_BY_ACCOUNT';
 

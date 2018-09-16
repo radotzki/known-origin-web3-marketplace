@@ -47,7 +47,7 @@ const getEtherscanAddress = () => {
       }
     })
     .then((etherScanAddress) => {
-      console.log(`Setting etherscan address as ${etherScanAddress}`);
+      console.log(`Setting etherscan address as [${etherScanAddress}]`);
       return etherScanAddress;
     });
 };
@@ -79,7 +79,13 @@ const isHighRes = (editionNumber) => {
     18100,
     18200,
     18300,
-    18400
+    18400,
+    18500,
+    18600,
+    18700,
+    18800,
+    18900,
+    19000
   ];
 
   const HIGH_RES_EDITIONS = [

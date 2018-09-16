@@ -52,7 +52,6 @@
       const loadData = function () {
         this.$store.dispatch(`kodaV2/${actions.LOAD_INDIVIDUAL_EDITION}`, {editionNumber: this.$route.params.editionNumber})
           .then(() => {
-            console.log(this.account);
             return this.$store.dispatch(`kodaV2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account: this.account});
           })
           .finally(() => {
