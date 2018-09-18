@@ -69,6 +69,12 @@ const isHighRes = (editionNumber) => {
   ];
 
   const V2Editions = [
+    4800,
+    4900,
+    5000,
+    5100,
+    10300,
+    10400, 
     12000,
     13000,
     14000,
