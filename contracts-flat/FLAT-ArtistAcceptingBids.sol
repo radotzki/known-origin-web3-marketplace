@@ -64,6 +64,52 @@ contract Ownable {
   }
 }
 
+// File: openzeppelin-solidity/contracts/lifecycle/Pausable.sol
+
+/**
+ * @title Pausable
+ * @dev Base contract which allows children to implement an emergency stop mechanism.
+ */
+contract Pausable is Ownable {
+  event Pause();
+  event Unpause();
+
+  bool public paused = false;
+
+
+  /**
+   * @dev Modifier to make a function callable only when the contract is not paused.
+   */
+  modifier whenNotPaused() {
+    require(!paused);
+    _;
+  }
+
+  /**
+   * @dev Modifier to make a function callable only when the contract is paused.
+   */
+  modifier whenPaused() {
+    require(paused);
+    _;
+  }
+
+  /**
+   * @dev called by the owner to pause, triggers stopped state
+   */
+  function pause() public onlyOwner whenNotPaused {
+    paused = true;
+    emit Pause();
+  }
+
+  /**
+   * @dev called by the owner to unpause, returns to normal state
+   */
+  function unpause() public onlyOwner whenPaused {
+    paused = false;
+    emit Unpause();
+  }
+}
+
 // File: openzeppelin-solidity/contracts/math/SafeMath.sol
 
 /**
@@ -123,52 +169,56 @@ library SafeMath {
 
 // base layer
 interface Auction {
-
   event BidAccepted(address indexed _bidder, uint256 indexed _editionNumber, uint256 _bid);
   event BidPlaced(address indexed _bidder, uint256 indexed _editionNumber, uint256 _bid);
+  event BidIncreased(address indexed _bidder, uint256 indexed _editionNumber, uint256 _bid);
   event BidWithdrawn(address indexed _bidder, uint256 indexed _editionNumber);
   event EditionAuctionCanceled(uint256 indexed _editionNumber);
 
-  // Participants
   function placeBid(uint256 _editionNumber) external returns (bool success);
-
+  function increaseBid(uint256 _editionNumber) external returns (bool success);
   function withdrawBid(uint256 _editionNumber) external returns (bool success);
-
-  // Auctioneer & Property Owner
   function acceptBid(uint256 _editionNumber) external returns (bool success);
-
-  // Auctioneer only
   function cancelAuction(uint256 _editionNumber) external returns (bool success);
 }
 
 interface IKODAV2 {
   function mint(address _to, uint256 _editionNumber) external returns (uint256);
-
   function editionExists(uint256 _editionNumber) external returns (bool);
-
   function totalRemaining(uint256 _editionNumber) external view returns (uint256);
-
   function artistCommission(uint256 _editionNumber) external view returns (address _artistAccount, uint256 _artistCommission);
 }
 
 /**
-* @title Artists controlled auctions for KODA V2
+* @title Artists accepting bidding contract for KnownOrigin (KODA)
 *
-* Steps:
-* 1) Config artist, to manage auction - KO managed
-* 2) Enable edition to be part of an auction - KO managed
-* 3) Bob places bid
-* 4) Alice places higher bid, sends Bobs ETH back and takes 1st place
-* 5) Artist accepts high bid
-* 6) Upon accepting, token generated and transferred to Alice, funds are absorbed and split as normal
+* Rules:
+* Can only bid for an edition which is enabled
+* Can only add new bid higher than previous bid plus minimum bid amount (default is 0.01 eth)
+* Can increase your bid, only if you are the top current bidder
+* Once outbid, original bidder has ETH returned
+* Cannot double bid once you are already the highest bidder
+* Only the defined edition address can accept the bid
+* If a bid is revoked, the auction remains open however no highest bid exists
+* If the contract is Paused, no public actions can happen (worst case scenario)
+* Managers of contract have full control over it act as a fallback in-case funds go missing or bugs are found
+* On accepting of any bid, funds are split to KO and Artists - 3rd party split does not work (for now)
+* Contracts checks at various operations to see if edition is sold out, if sold out, auction is stopped, manual refund required by bidder
+* Upon cancelling a bid which is in flight, funds are returned and contract stops further bids on the edition
+* Artists commissions and address are pulled from the KODA contract, not the address who can accept the bid
+*
+* Scenario:
+* 1) Config artist & edition
+* 2) Bob places bid
+* 3) Alice places higher bid, overrides Bobs position as the leader, sends Bobs ETH back and takes 1st place
+* 4) Artist accepts highest bid
+* 5) Upon accepting, token generated and transferred to Alice, funds are absorbed and split as normal
 *
 * https://www.knownorigin.io/
 *
 * BE ORIGINAL. BUY ORIGINAL.
 */
-// TODO Pausable to halt on error
-// TODO fail safe method for extracting stuck ether
-contract ArtistAcceptingBids is Ownable, Auction {
+contract ArtistAcceptingBids is Ownable, Pausable, Auction {
   using SafeMath for uint256;
 
   // A mapping of the control address to the edition number which enabled for auction
@@ -245,16 +295,25 @@ contract ArtistAcceptingBids is Ownable, Auction {
     koCommissionAccount = msg.sender;
   }
 
-  // Ability to create bid
-  // Allow artists to confirm the bid (checking KOV2 artist against the caller)
-  // Users can - CreateBid, RetractBid, AlterBid
-  // Artist can - AcceptBid
-  // Contract can - verify artists, manage bids, enforce rules, underMint edition to winner
+  //////////////////////////
+  // Core Auction Methods //
+  //////////////////////////
 
-  // Public
+  /**
+   * @dev Public method for placing a bid, reverts if:
+   * - Contract is Paused
+   * - Edition provided is not valid
+   * - Edition provided is not configured for auctions
+   * - Edition provided is sold out
+   * - msg.sender is already the highest bidder
+   * - msg.value is not greater than highest bid + minimum amount
+   * @dev refunds the previous bidders ether if the bid is overwritten
+   * @return true on success
+   */
   function placeBid(uint256 _editionNumber)
   public
   payable
+  whenNotPaused
   onlyWhenEditionExists(_editionNumber) // Prevent invalid editions
   onlyWhenAuctionEnabled(_editionNumber) // Prevent bids for editions not enabled
   onlyBidAboveMinAmount(_editionNumber) // Prevent bids below current price + min bid
@@ -277,10 +336,45 @@ contract ArtistAcceptingBids is Ownable, Auction {
     return true;
   }
 
+  /**
+   * @dev Public method for increasing your bid, reverts if:
+   * - Contract is Paused
+   * - Edition provided is not valid
+   * - Edition provided is not configured for auctions
+   * - Edition provided is sold out
+   * - msg.sender is not the current highest bidder
+   * @return true on success
+   */
+  function increaseBid(uint256 _editionNumber)
+  public
+  payable
+  whenNotPaused
+  onlyWhenEditionExists(_editionNumber) // Prevent invalid editions
+  onlyWhenAuctionEnabled(_editionNumber) // Prevent bids for editions not enabled
+  onlyWhenEditionNotSoldOut(_editionNumber) // Checks not sold out in KO
+  onlyIfHighestBidder(_editionNumber) // Check caller is the highest bidder
+  returns (bool success)
+  {
+    // Bump the current highest bid by provided amount
+    editionBids[_editionNumber][msg.sender].add(msg.value);
 
+    // Emit event
+    emit BidIncreased(msg.sender, _editionNumber, editionBids[_editionNumber][msg.sender]);
+
+    return true;
+  }
+
+  /**
+   * @dev Public method for withdrawing your bid, reverts if:
+   * - Contract is Paused
+   * - msg.sender is not the current highest bidder
+   * @dev removes current highest bid so there is no current highest bidder
+   * @return true on success
+   */
   function withdrawBid(uint256 _editionNumber)
   public
-  onlyIfHighestBidder(_editionNumber)
+  whenNotPaused
+  onlyIfHighestBidder(_editionNumber) // Check caller is the highest bidder
   returns (bool success)
   {
     // get current highest bid and refund it
@@ -295,7 +389,12 @@ contract ArtistAcceptingBids is Ownable, Auction {
     return true;
   }
 
-
+  /**
+   * @dev Method for cancelling an auction, only called from contract owner
+   * @dev refunds previous highest bidders bid
+   * @dev removes current highest bid so there is no current highest bidder
+   * @return true on success
+   */
   function cancelAuction(uint256 _editionNumber)
   public
   onlyOwner
@@ -316,8 +415,20 @@ contract ArtistAcceptingBids is Ownable, Auction {
     return true;
   }
 
+  /**
+   * @dev Method for accepting the highest bid, only called by edition çreator, reverts if:
+   * - Contract is Paused
+   * - msg.sender is not the edition controller
+   * - Edition provided is not valid
+   * @dev Mints a new token in KODA contract
+   * @dev Splits bid amount to KO and Artist, based on KODA contract defined values
+   * @dev Removes current highest bid so there is no current highest bidder
+   * @dev If no more editions are available the auction is stopped
+   * @return true on success
+   */
   function acceptBid(uint256 _editionNumber)
   public
+  whenNotPaused
   onlyControlAddress(_editionNumber) // Checks only the artist can this this
   onlyWhenAuctionEnabled(_editionNumber) // Checks auction is still enabled
   returns (bool success)
@@ -371,21 +482,18 @@ contract ArtistAcceptingBids is Ownable, Auction {
     currentHighestBidder.transfer(currentHighestBiddersAmount);
   }
 
-  //  /**
-  //   * @dev Returns the total number of bids made for the given edition
-  //   * @dev Use in conjunction with getBid() to enumerate edition bids
-  //   */
-  //  function getNumberOfBids(uint256 _editionNumber) public returns (uint256) {
-  //    return editionBids[_editionNumber].length;
-  //  }
-  //
-  //  /**
-  //   * @dev Looks up the bid for the given edition and position
-  //   */
-  //  function getBid(uint256 _editionNumber, uint256 bidIndex) public returns (address bidder, uint256 value) {
-  //    Bid storage bid = editionBids[_editionNumber][bidIndex];
-  //    return (bid.bidder, bid.value);
-  //  }
+  ///////////////////////////////
+  // Public management methods //
+  ///////////////////////////////
+
+  /**
+   * @dev Last ditch resort to extract ether so we can distribute to the correct bidders accordingly, better safe than stuck
+   * @dev Only callable from owner
+   */
+  function withdrawStuckEther(address _withdrawalAccount) onlyOwner public {
+    require(_withdrawalAccount != address(0), "Invalid address provided");
+    _withdrawalAccount.transfer(address(this).balance);
+  }
 
   /**
    * @dev Enables the edition for auctions
@@ -446,6 +554,24 @@ contract ArtistAcceptingBids is Ownable, Auction {
   function setKoCommissionAccount(address _koCommissionAccount) public onlyOwner {
     require(_koCommissionAccount != address(0), "Invalid address");
     koCommissionAccount = _koCommissionAccount;
+  }
+
+  //////////////////////////
+  // Public query methods //
+  //////////////////////////
+
+  function highestBidForEdition(uint256 _editionNumber) public view returns (address _bidder, uint256 _value) {
+    address highestBidder = editionHighestBid[_editionNumber];
+    uint256 bidValue = editionBids[_editionNumber][highestBidder];
+    return (highestBidder, bidValue);
+  }
+
+  function isEditionEnabled(uint256 _editionNumber) public view returns (bool) {
+    return enabledEditions[_editionNumber];
+  }
+
+  function editionController(uint256 _editionNumber) public view returns (bool) {
+    return enabledEditions[_editionNumber];
   }
 
 }
