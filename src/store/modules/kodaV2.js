@@ -13,21 +13,16 @@ function featureArtworks(network) {
     case 'Ropsten':
     case 'Local':
       return [
-        7700,   // NEOPLA
-        14000,  // L1s4 51Mp50N
-        8300,   // Bitopian
-        13000,  // Emoji Love
-        7800,   // Reflection of the forms. Series #01
-        6500,   // Treating the Symptoms
-        9500,   // B.
-        10300,  // Melt
-        10900,  // Drawingly Willingly
-        12000,  // Nonfungible tokens
-        9000,   // Tamed Lines Two (Diptych)
-        9300,   // DDF3
-        4600,   // Blue
-        8400,   // Ethereum Inside
-        9200   // They Live
+        18100,
+        18200,
+        18300,
+        18400,
+        18500,
+        18600,
+        18700,
+        18800,
+        18900,
+        19000
       ];
     default:
       return [];
@@ -81,10 +76,22 @@ const contractStateModule = {
       return _.orderBy(results, 'priceInEther', priceFilter);
     },
     editionsForArtist: (state) => (artistAccount) => {
-      artistAccount = Web3.utils.toChecksumAddress(artistAccount);
-      return _.pickBy(state.assets, function (value, key) {
-        return value.artistAccount === artistAccount;
-      });
+      if (_.isArray(artistAccount)) {
+        let artistEditions = {};
+        _.forEach(artistAccount, (account) => {
+          let found = _.pickBy(state.assets, function (value, key) {
+            return Web3.utils.toChecksumAddress(value.artistAccount) === Web3.utils.toChecksumAddress(account);
+          });
+          if (found) {
+            _.merge(artistEditions, found);
+          }
+        });
+        return artistEditions;
+      } else {
+        return _.pickBy(state.assets, function (value, key) {
+          return Web3.utils.toChecksumAddress(value.artistAccount) === Web3.utils.toChecksumAddress(artistAccount);
+        });
+      }
     },
     findEdition: (state) => (editionNumber) => {
       return state.assets[editionNumber];
@@ -143,7 +150,16 @@ const contractStateModule = {
     },
     async [actions.LOAD_EDITIONS_FOR_TYPE]({commit, dispatch, state, rootState}, {editionType}) {
       const contract = await rootState.KnownOriginDigitalAssetV2.deployed();
-      const editions = await contract.editionsOfType(editionType);
+
+      let editions = [];
+      try {
+        editions = await contract.editionsOfType(editionType);
+      } catch (e) {
+        console.error(`Unable to load edition of type [${editionType}]`);
+        return;
+      }
+
+      // Basic sanity check that we are not already loaded
       if (_.size(state.assets) === _.size(editions)) {
         return;
       }
@@ -155,8 +171,18 @@ const contractStateModule = {
     },
     async [actions.LOAD_EDITIONS_FOR_ARTIST]({commit, dispatch, state, rootState}, {artistAccount}) {
       const contract = await rootState.KnownOriginDigitalAssetV2.deployed();
-      const editions = await contract.artistsEditions(artistAccount);
 
+      let editions;
+      if (_.isArray(artistAccount)) {
+        let found = await Promise.all(_.map(artistAccount, async (account) => {
+          return await contract.artistsEditions(Web3.utils.toChecksumAddress(account));
+        }));
+        editions = _.flatten(found);
+      } else {
+        editions = await contract.artistsEditions(Web3.utils.toChecksumAddress(artistAccount));
+      }
+
+      // Basic sanity check that we are not already loaded
       if (_.size(state.assets) === _.size(editions)) {
         return;
       }
