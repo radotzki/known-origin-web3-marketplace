@@ -64,7 +64,10 @@ const artists = [
     strapline: 'Independent digital artists',
     img: '/static/artists/AktivProtesk_@x2.png',
     live: true,
-    ethAddress: '0x7DEc37c03ea5ca2C47ad2509BE6abAf8C63CDB39'
+    ethAddress: [
+      '0xa2cD656f8461d2C186D69fFB8A4a5c10EFF0914d', // new - Note: the new address must always be at index zero
+      '0x7DEc37c03ea5ca2C47ad2509BE6abAf8C63CDB39' // old
+    ]
   },
   {
     artistCode: 'LHD',
@@ -293,6 +296,37 @@ const artists = [
     img: '/static/artists/OTK_Profile@x2.png',
     live: true,
     ethAddress: '0xa4aD045d62a493f0ED883b413866448AfB13087C'
+  },
+  {
+    artistCode: 'OXB',
+    name: '0xBull',
+    bio: 'In my younger years I learned to respect nature at the boyscouts. When growing older I got fascinated by computers and their possibilities. In the recent years my interests in (macro)photography and art grew. Combining these characteristics I make my art on the go.',
+    strapline: 'In my younger years I learned to respect nature at the boyscouts. When growing older I got fascinated by computers and their possibilities. In the recent years my interests in (macro)photography and art grew. Combining these characteristics I make my art on the go.',
+    img: '/static/artists/0xBull_Profile@x2.png',
+    live: true,
+    twitter: '@0xbull',
+    ethAddress: '0xceF2bf4aD6D84Aa37Fcc4Cab6530028EB31c8e69'
+  },
+  {
+    artistCode: 'JGP',
+    name: 'JYGRAPHICDESIGN',
+    bio: 'Designer, Illustrator and hopeful animator - When I\'m not designing i\'ll be in the outdoors or eating... sometimes both',
+    strapline: 'Designer, Illustrator and hopeful animator - When I\'m not designing i\'ll be in the outdoors or eating... sometimes both',
+    img: '/static/artists/Jordan-yates_Profile@x2.png',
+    live: true,
+    twitter: '@jygraphicdesign',
+    ethAddress: '0x7EC1b3d17EC7Ff05B4dA25a0bE8636d5E5C3D7cD'
+  },
+  {
+    artistCode: 'FAB',
+    name: 'Fabiano',
+    bio: 'Half industrial designer half artist, i like use different media. Pop art, colors and minimalism are the guides of my work.',
+    strapline: 'Half industrial designer half artist, i like use different media. Pop art, colors and minimalism are the guides of my work.',
+    img: '/static/artists/Fabiano_Profile@x2.png',
+    live: true,
+    twitter: '@fabianospeziari',
+    website: 'http://www.fabianospeziari.com',
+    ethAddress: '0x36BD6221c2016371C3aF00071726578b91AcB007'
   }
 ];
 

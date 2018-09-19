@@ -13,16 +13,13 @@
       <p class="m-5">
         {{ lookupArtist().strapline }}
         <br/>
-        <clickable-address :eth-address="lookupArtist().ethAddress"></clickable-address>
+        <clickable-address :eth-address="getArtistAddress()"></clickable-address>
       </p>
-
-      <!--<small v-if="artist.ethAddress"><br/>-->
-        <!--<clickable-address :eth-address="lookupArtist().ethAddress"></clickable-address>-->
-      <!--</small>-->
 
       <div class="row editions-wrap">
         <div class="card-deck">
-          <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions" :key="editionNumber" v-if="edition.active">
+          <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions" :key="editionNumber"
+               v-if="edition.active">
             <div class="card-target">
               <router-link class="card-target"
                            :to="{ name: 'confirmPurchase', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
@@ -41,7 +38,8 @@
                   <div class="card-footer">
                     <div class="row">
                       <div class="col">
-                        {{ edition.totalAvailable }} available
+                        <availability :total-available="edition.totalAvailable"
+                                      :total-supply="edition.totalSupply"></availability>
                       </div>
                       <div class="col text-right">{{ edition.priceInEther }} ETH</div>
                     </div>
@@ -59,7 +57,7 @@
 
 <script>
 
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import ArtistShortBio from '../ui-controls/artist/ArtistShortBio';
   import LoadingSpinner from '../ui-controls/generic/LoadingSpinner';
   import * as actions from '../../store/actions';
@@ -68,13 +66,16 @@
   import MetadataAttributes from '../ui-controls/v2/MetadataAttributes';
   import TweetEditionButton from '../ui-controls/v2/TweetEditionButton';
   import HighResLabel from '../ui-controls/generic/HighResLabel';
-  import { PAGES } from '../../store/loadingPageState';
+  import {PAGES} from '../../store/loadingPageState';
   import LoadingSection from '../ui-controls/generic/LoadingSection';
   import ClickableAddress from '../ui-controls/generic/ClickableAddress';
+  import Availability from "../ui-controls/v2/Availability";
+  import _ from 'lodash';
 
   export default {
     name: 'artistPage',
     components: {
+      Availability,
       LoadingSection,
       HighResLabel,
       TweetEditionButton,
@@ -85,7 +86,7 @@
       LoadingSpinner,
       ClickableAddress
     },
-    data () {
+    data() {
       return {
         PAGES: PAGES
       };
@@ -99,7 +100,7 @@
         'isStartDateInTheFuture'
       ]),
       editions: function () {
-        return this.editionsForArtist(this.$route.params.artistAccount);
+        return this.editionsForArtist(this.lookupArtist().ethAddress);
       }
     },
     methods: {
@@ -108,13 +109,20 @@
       },
       goToArtist: function (artistAccount) {
         this.$router.push({name: 'artist-v2', params: {artistAccount}});
+      },
+      getArtistAddress: function () {
+        let artists = this.lookupArtist();
+        if (_.isArray(artists.ethAddress)) {
+          return artists.ethAddress[0];
+        }
+        return artists.ethAddress;
       }
     },
-    created () {
+    created() {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.ARTISTS);
 
       const loadData = function () {
-        this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS_FOR_ARTIST}`, {artistAccount: this.$route.params.artistAccount})
+        this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS_FOR_ARTIST}`, {artistAccount: this.lookupArtist().ethAddress})
           .finally(() => {
             this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.ARTISTS);
           });
@@ -129,7 +137,7 @@
         loadData();
       }
     },
-    destroyed () {
+    destroyed() {
     }
   };
 </script>
