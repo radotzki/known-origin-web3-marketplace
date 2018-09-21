@@ -192,14 +192,14 @@
       "type": "function"
     }
   ],
-  "bytecode": "0x608060405234801561001057600080fd5b5060c68061001f6000396000f30060806040526004361060665763ffffffff7c01000000000000000000000000000000000000000000000000000000006000350416630eaaf4c88114606b5780632b1fd58a14606b57806343129de114606b57806396b5a75514606b5780639979ef4514606b575b600080fd5b348015607657600080fd5b5060806004356094565b604080519115158252519081900360200190f35b506001905600a165627a7a723058206c6a8fc4d5794caa5848e37a9cf50b1392929530c39b7164b2999a198958f2270029",
-  "deployedBytecode": "0x60806040526004361060665763ffffffff7c01000000000000000000000000000000000000000000000000000000006000350416630eaaf4c88114606b5780632b1fd58a14606b57806343129de114606b57806396b5a75514606b5780639979ef4514606b575b600080fd5b348015607657600080fd5b5060806004356094565b604080519115158252519081900360200190f35b506001905600a165627a7a723058206c6a8fc4d5794caa5848e37a9cf50b1392929530c39b7164b2999a198958f2270029",
+  "bytecode": "0x608060405234801561001057600080fd5b5060c68061001f6000396000f30060806040526004361060665763ffffffff7c01000000000000000000000000000000000000000000000000000000006000350416630eaaf4c88114606b5780632b1fd58a14606b57806343129de114606b57806396b5a75514606b5780639979ef4514606b575b600080fd5b348015607657600080fd5b5060806004356094565b604080519115158252519081900360200190f35b506001905600a165627a7a72305820a3a0309a3245398abc6403e061b13896538f6355915288ab9ded37d07cc153610029",
+  "deployedBytecode": "0x60806040526004361060665763ffffffff7c01000000000000000000000000000000000000000000000000000000006000350416630eaaf4c88114606b5780632b1fd58a14606b57806343129de114606b57806396b5a75514606b5780639979ef4514606b575b600080fd5b348015607657600080fd5b5060806004356094565b604080519115158252519081900360200190f35b506001905600a165627a7a72305820a3a0309a3245398abc6403e061b13896538f6355915288ab9ded37d07cc153610029",
   "sourceMap": "1043:1998:19:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1043:1998:19;;;;;;;",
   "deployedSourceMap": "1043:1998:19:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1969:272;;8:9:-1;5:2;;;30:1;27;20:12;5:2;-1:-1;1969:272:19;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;2232:4:19;;1969:272::o",
   "source": "// base layer\ninterface Auction {\n\n  event BidPlaced(address indexed _bidder, uint256 indexed _editionNumber, uint256 _bid);\n  event BidUpdated(address indexed _bidder, uint256 indexed _editionNumber, uint256 _bid);\n  event WithdrawBid(address indexed _bidder, uint256 indexed _editionNumber);\n\n  event AuctionClosed(address indexed _winner, uint256 indexed _editionNumber, uint256 _bid);\n  event AuctionCanceled(uint256 indexed _editionNumber);\n\n  // Participants\n  function placeBid(uint256 _editionNumber) returns (bool success);\n  function updateBid(uint256 _editionNumber) returns (bool success);\n  function withdrawBid(uint256 _editionNumber) returns (bool success);\n\n  // Auctioneer\n  function acceptBid(uint256 _editionNumber) returns (bool success);\n  function cancelAuction(uint256 _editionNumber) returns (bool success);\n}\n\ncontract KODAV2 {\n  function underMint(address _to, uint256 _editionNumber) public returns (uint256);\n\n  function editionExists(uint256 _editionNumber) public returns (bool);\n}\n\n// artists controlled auction\ncontract ArtistAcceptingAuction is Auction {\n\n  // mappings\n  // address -> editionNumber\n\n  // Ability to create bid\n  // Allow artists to confirm the bid (checking KOV2 artist against the caller)\n  // Users can - CreateBid, RetractBid, AlterBid\n  // Artist can - AcceptBid\n  // Contract can - verify artists, manage bids, enforce rules, underMint edition to winner\n\n  // Public\n  function placeBid(uint256 _editionNumber)\n  returns (bool success)\n  {\n\n    // confirm edition setup in auction\n    // confirm edition not sold out\n    // place bid\n    // store caller and ether against bid\n    // emit event\n\n    return true;\n  }\n\n  // Public\n  function updateBid(uint256 _editionNumber)\n  returns (bool success)\n  {\n\n    // confirm edition setup in auction\n    // confirm edition not sold out\n    // confirm bid exists for call\n    // update bid - store additional funds\n    // emit event\n\n    return true;\n  }\n\n  // Public\n  function withdrawBid(uint256 _editionNumber)\n  returns (bool success)\n  {\n    // confirm edition setup in auction\n    // confirm edition not sold out\n    // confirm bid exists for call\n    // cancel bid\n    // return funds to caller\n    // emit event\n\n    return true;\n  }\n\n\n  // TODO only callable via KO & Artist\n  function acceptBid(uint256 _editionNumber)\n  returns (bool success)\n  {\n    // confirm edition setup in auction\n    // confirm edition not sold out\n    // confirm caller is KO or artist\n    // Only able to accept the highest offer to be fair\n    // Calls undermint on KODA to the auction winner\n    // split funds accordingly between Artist & KO - TODO should this be done as part of undermint?\n    // emit event\n    // close the auction\n    // sends everyone else monies back\n\n    return true;\n  }\n\n  // TODO only callable via KO\n  function cancelAuction(uint256 _editionNumber)\n  returns (bool success)\n  {\n    // confirm edition setup in auction\n    // confirm caller is KO\n\n    return true;\n  }\n\n  // TODO fail safe method for extracting stuck ether\n}\n",
-  "sourcePath": "/Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/contracts/v2/auctions/ArtistAcceptingAuction.sol",
+  "sourcePath": "/Users/andy/workspace/known-origin-web3-marketplace/contracts/v2/auctions/ArtistAcceptingAuction.sol",
   "ast": {
-    "absolutePath": "/Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/contracts/v2/auctions/ArtistAcceptingAuction.sol",
+    "absolutePath": "/Users/andy/workspace/known-origin-web3-marketplace/contracts/v2/auctions/ArtistAcceptingAuction.sol",
     "exportedSymbols": {
       "ArtistAcceptingAuction": [
         5608
@@ -1862,7 +1862,7 @@
     "src": "14:3028:19"
   },
   "legacyAST": {
-    "absolutePath": "/Users/jamesmorgan/Dropbox/workspace-blockrocket/known-origin-web3-marketplace/contracts/v2/auctions/ArtistAcceptingAuction.sol",
+    "absolutePath": "/Users/andy/workspace/known-origin-web3-marketplace/contracts/v2/auctions/ArtistAcceptingAuction.sol",
     "exportedSymbols": {
       "ArtistAcceptingAuction": [
         5608
@@ -3530,5 +3530,5 @@
   },
   "networks": {},
   "schemaVersion": "3.0.0-beta.0",
-  "updatedAt": "2018-09-14T19:38:33.582Z"
+  "updatedAt": "2018-09-20T19:29:51.118Z"
 }
