@@ -327,6 +327,17 @@ const artists = [
     twitter: '@fabianospeziari',
     website: 'http://www.fabianospeziari.com',
     ethAddress: '0x36BD6221c2016371C3aF00071726578b91AcB007'
+  },
+  {
+    artistCode: 'SHC',
+    name: 'Shortcut',
+    bio: 'I am an artist, crypto-blogger and former TV editor.',
+    strapline: 'I am an artist, crypto-blogger and former TV editor.',
+    img: '/static/artists/ShortCut_Profile@x2.png',
+    live: true,
+    twitter: '@unityofmulti',
+    website: 'https://steemit.com/@shortcut/',
+    ethAddress: '0xe13d4abee4b304b67c52a56871141cad1b833aa7'
   }
 ];
 
