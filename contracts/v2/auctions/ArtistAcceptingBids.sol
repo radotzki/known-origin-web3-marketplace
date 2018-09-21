@@ -1,4 +1,4 @@
-pragma solidity 0.4.25;
+pragma solidity 0.4.24;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
@@ -6,25 +6,64 @@ import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 // For safe maths operations
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
-// base layer
-interface Auction {
-  event BidAccepted(address indexed _bidder, uint256 indexed _editionNumber, uint256 _bid);
-  event BidPlaced(address indexed _bidder, uint256 indexed _editionNumber, uint256 _bid);
-  event BidIncreased(address indexed _bidder, uint256 indexed _editionNumber, uint256 _bid);
-  event BidWithdrawn(address indexed _bidder, uint256 indexed _editionNumber);
-  event EditionAuctionCanceled(uint256 indexed _editionNumber);
+/**
+* Auction interface definition - event and method definitions
+*
+* https://www.knownorigin.io/
+*/
+interface IAuction {
+
+  event BidPlaced(
+    address indexed _bidder,
+    uint256 indexed _editionNumber,
+    uint256 _amount
+  );
+
+  event BidIncreased(
+    address indexed _bidder,
+    uint256 indexed _editionNumber,
+    uint256 _amount
+  );
+
+  event BidWithdrawn(
+    address indexed _bidder,
+    uint256 indexed _editionNumber
+  );
+
+  event BidAccepted(
+    address indexed _bidder,
+    uint256 indexed _editionNumber,
+    uint256 indexed _tokenId,
+    uint256 _amount
+  );
+
+  event EditionAuctionCanceled(
+    uint256 indexed _editionNumber
+  );
 
   function placeBid(uint256 _editionNumber) external returns (bool success);
+
   function increaseBid(uint256 _editionNumber) external returns (bool success);
+
   function withdrawBid(uint256 _editionNumber) external returns (bool success);
+
   function acceptBid(uint256 _editionNumber) external returns (bool success);
+
   function cancelAuction(uint256 _editionNumber) external returns (bool success);
 }
 
+/**
+* Minimal interface definition for KODA V2 contract calls
+*
+* https://www.knownorigin.io/
+*/
 interface IKODAV2 {
   function mint(address _to, uint256 _editionNumber) external returns (uint256);
+
   function editionExists(uint256 _editionNumber) external returns (bool);
+
   function totalRemaining(uint256 _editionNumber) external view returns (uint256);
+
   function artistCommission(uint256 _editionNumber) external view returns (address _artistAccount, uint256 _artistCommission);
 }
 
@@ -57,7 +96,7 @@ interface IKODAV2 {
 *
 * BE ORIGINAL. BUY ORIGINAL.
 */
-contract ArtistAcceptingBids is Ownable, Pausable, Auction {
+contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   using SafeMath for uint256;
 
   // A mapping of the control address to the edition number which enabled for auction
@@ -94,10 +133,16 @@ contract ArtistAcceptingBids is Ownable, Pausable, Auction {
   }
 
   // Checks the bid is higher than the current amount + min bid
-  modifier onlyBidAboveMinAmount(uint256 _editionNumber) {
+  modifier onlyPlaceBidAboveMinAmount(uint256 _editionNumber) {
     address currentHighestBidder = editionHighestBid[_editionNumber];
     uint256 currentHighestBidderAmount = editionBids[_editionNumber][currentHighestBidder];
-    require(currentHighestBidderAmount.add(minBidAmount) < msg.value, "Bids must be higher than previous bids");
+    require(currentHighestBidderAmount.add(minBidAmount) <= msg.value, "Bids must be higher than previous bids");
+    _;
+  }
+
+  // Checks the bid is higher than the min bid
+  modifier onlyIncreasesBidAboveMinAmount() {
+    require(minBidAmount <= msg.value, "Bids must be higher than minimum bid amount");
     _;
   }
 
@@ -155,7 +200,7 @@ contract ArtistAcceptingBids is Ownable, Pausable, Auction {
   whenNotPaused
   onlyWhenEditionExists(_editionNumber) // Prevent invalid editions
   onlyWhenAuctionEnabled(_editionNumber) // Prevent bids for editions not enabled
-  onlyBidAboveMinAmount(_editionNumber) // Prevent bids below current price + min bid
+  onlyPlaceBidAboveMinAmount(_editionNumber) // Prevent bids below current price + min bid
   onlyWhenNotAlreadyTheHighestBidder(_editionNumber) // Prevent double bids byt hte same address
   onlyWhenEditionNotSoldOut(_editionNumber) // Checks not sold out in KO
   returns (bool success)
@@ -188,6 +233,7 @@ contract ArtistAcceptingBids is Ownable, Pausable, Auction {
   public
   payable
   whenNotPaused
+  onlyIncreasesBidAboveMinAmount // Prevent increases less than min amount
   onlyWhenEditionExists(_editionNumber) // Prevent invalid editions
   onlyWhenAuctionEnabled(_editionNumber) // Prevent bids for editions not enabled
   onlyWhenEditionNotSoldOut(_editionNumber) // Checks not sold out in KO
@@ -195,7 +241,7 @@ contract ArtistAcceptingBids is Ownable, Pausable, Auction {
   returns (bool success)
   {
     // Bump the current highest bid by provided amount
-    editionBids[_editionNumber][msg.sender].add(msg.value);
+    editionBids[_editionNumber][msg.sender] = editionBids[_editionNumber][msg.sender].add(msg.value);
 
     // Emit event
     emit BidIncreased(msg.sender, _editionNumber, editionBids[_editionNumber][msg.sender]);
@@ -213,6 +259,7 @@ contract ArtistAcceptingBids is Ownable, Pausable, Auction {
   function withdrawBid(uint256 _editionNumber)
   public
   whenNotPaused
+  onlyWhenEditionExists(_editionNumber) // Prevent invalid editions
   onlyIfHighestBidder(_editionNumber) // Check caller is the highest bidder
   returns (bool success)
   {
@@ -263,31 +310,31 @@ contract ArtistAcceptingBids is Ownable, Pausable, Auction {
    * @dev Splits bid amount to KO and Artist, based on KODA contract defined values
    * @dev Removes current highest bid so there is no current highest bidder
    * @dev If no more editions are available the auction is stopped
-   * @return true on success
+   * @return the generated tokenId on success
    */
   function acceptBid(uint256 _editionNumber)
   public
   whenNotPaused
   onlyControlAddress(_editionNumber) // Checks only the artist can this this
   onlyWhenAuctionEnabled(_editionNumber) // Checks auction is still enabled
-  returns (bool success)
+  returns (uint256 _tokenId)
   {
     // Get total remaining here so we can use it below
     uint256 totalRemaining = kodaAddress.totalRemaining(_editionNumber);
     require(totalRemaining > 0, "Unable to accept any more bids, edition is sold out");
 
     // Get the winner of the bidding action
-    address winner = editionHighestBid[_editionNumber];
-    uint256 winningBidAmount = editionBids[_editionNumber][winner];
+    address winningAccount = editionHighestBid[_editionNumber];
+    uint256 winningBidAmount = editionBids[_editionNumber][winningAccount];
     require(winningBidAmount >= minBidAmount, "Cannot win an auction when bid amount under the minimum");
 
     // Mint a new token to the winner
-    uint256 tokenId = kodaAddress.mint(winner, _editionNumber);
+    uint256 tokenId = kodaAddress.mint(winningAccount, _editionNumber);
     require(tokenId != 0, "Failed to mint new token");
 
     // Get the commission and split bid amount accordingly
-    address artistAccount = address(0);
-    uint256 artistCommission = 0;
+    address artistAccount;
+    uint256 artistCommission;
     (artistAccount, artistCommission) = kodaAddress.artistCommission(_editionNumber);
 
     // Extract the artists commission and send it
@@ -309,9 +356,9 @@ contract ArtistAcceptingBids is Ownable, Pausable, Auction {
     }
 
     // Fire event
-    emit BidAccepted(winner, _editionNumber, winningBidAmount);
+    emit BidAccepted(winningAccount, _editionNumber, tokenId, winningBidAmount);
 
-    return true;
+    return tokenId;
   }
 
   function _refundHighestBidder(uint256 _editionNumber) internal {
@@ -357,6 +404,16 @@ contract ArtistAcceptingBids is Ownable, Pausable, Auction {
    * @dev Only callable from owner
    */
   function setArtistsControlAddress(uint256 _editionNumber, address _address) onlyOwner public returns (bool) {
+    controlAddressToEditionNumber[_editionNumber] = _address;
+    return true;
+  }
+
+  /**
+   * @dev Sets the edition control address and enables the edition for auction
+   * @dev Only callable from owner
+   */
+  function setArtistsAddressAndEnabledEdition(uint256 _editionNumber, address _address) onlyOwner public returns (bool) {
+    enabledEditions[_editionNumber] = true;
     controlAddressToEditionNumber[_editionNumber] = _address;
     return true;
   }
@@ -409,8 +466,8 @@ contract ArtistAcceptingBids is Ownable, Pausable, Auction {
     return enabledEditions[_editionNumber];
   }
 
-  function editionController(uint256 _editionNumber) public view returns (bool) {
-    return enabledEditions[_editionNumber];
+  function editionController(uint256 _editionNumber) public view returns (address) {
+    return controlAddressToEditionNumber[_editionNumber];
   }
 
 }

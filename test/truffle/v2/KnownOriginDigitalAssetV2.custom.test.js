@@ -14,7 +14,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
+contract('KnownOriginDigitalAssetV2 - custom', function (accounts) {
 
   const ROLE_KNOWN_ORIGIN = 1;
   const ROLE_MINTER = 2;
