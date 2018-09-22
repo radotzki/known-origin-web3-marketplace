@@ -327,6 +327,39 @@ const artists = [
     twitter: '@fabianospeziari',
     website: 'http://www.fabianospeziari.com',
     ethAddress: '0x36BD6221c2016371C3aF00071726578b91AcB007'
+  },
+  {
+    artistCode: 'SHC',
+    name: 'Shortcut',
+    bio: 'I am an artist, crypto-blogger and former TV editor.',
+    strapline: 'I am an artist, crypto-blogger and former TV editor.',
+    img: '/static/artists/ShortCut_Profile@x2.png',
+    live: true,
+    twitter: '@unityofmulti',
+    website: 'https://steemit.com/@shortcut/',
+    ethAddress: '0xe13d4abee4b304b67c52a56871141cad1b833aa7'
+  },
+  {
+    artistCode: 'MCU',
+    name: 'Mattia Cuttini',
+    bio: 'Since 1979 I observe the world with curiosity. I studied electronics and worked in the sector for 10 years. I reinvented myself as designer. Musician since forever, I explored the visual and performance arts and I\'ve realized that my research is a matter of layers and overlapping interventions.',
+    strapline: 'Since 1979 I observe the world with curiosity. I studied electronics and worked in the sector for 10 years. I reinvented myself as designer. Musician since forever, I explored the visual and performance arts and I\'ve realized that my research is a matter of layers and overlapping interventions.',
+    img: '/static/artists/mattiac_Profile@x2.png',
+    live: true,
+    twitter: '@mattiac',
+    website: 'http://www.mattiac.it',
+    ethAddress: '0xa2806aD7af94bb0645e493a8dE9CFF583c462717'
+  },
+  {
+    artistCode: 'POM',
+    name: 'Philotimos',
+    bio: 'Philotimos (philótimos) is a new fractal art creator influenced by technology, history, mythology, science and nature. His creations depict individual themes and concepts, eliciting imaginative responses, while conveying a sense of beauty and elegance to the beholder.',
+    strapline: 'Philotimos (philótimos) is a new fractal art creator influenced by technology, history, mythology, science and nature. His creations depict individual themes and concepts, eliciting imaginative responses, while conveying a sense of beauty and elegance to the beholder.',
+    img: '/static/artists/phil_Profile@x2.png',
+    live: true,
+    twitter: '@philotimosart',
+    website: 'https://www.instagram.com/philotimosart/',
+    ethAddress: '0x9Dfe031Be5EE3363D73183D34B1D3F9f6515c952'
   }
 ];
 
