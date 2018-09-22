@@ -1,5 +1,5 @@
 const HDWalletProvider = require('truffle-hdwallet-provider');
-const infuraApikey = 'nbCbdzC6IG9CF6hmvAVQ';
+const infuraApikey = '4396873c00c84479991e58a34a54ebd9';
 let mnemonic = require('./mnemonic');
 
 // Check gas prices before live deploy - https://ethgasstation.info/
@@ -40,7 +40,7 @@ module.exports = {
     live: {
       provider: function () {
         let mnemonic_live = require('./mnemonic_live');
-        return new HDWalletProvider(mnemonic_live, `https://mainnet.infura.io/${infuraApikey}`);
+        return new HDWalletProvider(mnemonic_live, `https://mainnet.infura.io/v3/${infuraApikey}`);
       },
       network_id: 1,
       gas: 6075039, // default = 4712388
@@ -55,7 +55,7 @@ module.exports = {
     },
     ropsten: {
       provider: function () {
-        return new HDWalletProvider(mnemonic, `https://ropsten.infura.io/${infuraApikey}`);
+        return new HDWalletProvider(mnemonic, `https://ropsten.infura.io/v3/${infuraApikey}`);
       },
       network_id: 3,
       gas: 7000000, // default = 4712388
@@ -63,7 +63,7 @@ module.exports = {
     },
     rinkeby: {
       provider: function () {
-        return new HDWalletProvider(mnemonic, `https://rinkeby.infura.io/${infuraApikey}`);
+        return new HDWalletProvider(mnemonic, `https://rinkeby.infura.io/v3/${infuraApikey}`);
       },
       network_id: 4,
       gas: 6500000, // default = 4712388
