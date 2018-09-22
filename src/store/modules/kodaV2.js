@@ -27,7 +27,12 @@ function featureArtworks(network) {
         19200,
         19300,
         19400,
-        19500
+        19500,
+        19600,
+        19700,
+        19800,
+        19900,
+        20000
       ];
     default:
       return [];
