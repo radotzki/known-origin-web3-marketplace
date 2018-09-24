@@ -14,25 +14,17 @@ function featureArtworks(network) {
     case 'Local':
       return [
         18100,
-        18200,
-        18300,
         18400,
-        18500,
-        18600,
         18700,
-        18800,
-        18900,
         19000,
-        // 19100,
-        // 19200,
-        // 19300,
-        // 19400,
-        // 19500,
-        // 19600,
-        // 19700,
-        // 19800,
-        // 19900,
-        // 20000
+        19100,
+        19200,
+        19300,
+        19400,
+        19600,
+        19700,
+        19800,
+        20000
       ];
     default:
       return [];
@@ -54,6 +46,8 @@ const contractStateModule = {
     totalNumberMinted: null,
     totalNumberAvailable: null,
     koCommissionAccount: null,
+
+    featuredArtistAccount: '0x9Dfe031Be5EE3363D73183D34B1D3F9f6515c952'
   },
   getters: {
     haveNotPurchasedEditionBefore: (state) => (editionNumber) => {
@@ -72,16 +66,24 @@ const contractStateModule = {
       const soldOutEditions = (edition) => edition.totalSupply === edition.totalAvailable;
       const availableEditions = (edition) => edition.totalSupply !== edition.totalAvailable;
       const featuredEditions = (edition) => artworks.indexOf(_.toNumber(edition.edition)) > -1;
+      const featuredArtistEditions = (edition) => Web3.utils.toChecksumAddress(state.featuredArtistAccount) === Web3.utils.toChecksumAddress(edition.artistAccount);
 
       const results = _.pickBy(state.assets, function (value, key) {
         if (priceFilter === 'featured') {
           return featuredEditions(value);
+        }
+        if (priceFilter === 'artist') {
+          return featuredArtistEditions(value);
         }
         if (priceFilter === 'sold') {
           return soldOutEditions(value);
         }
         return availableEditions(value);
       });
+
+      if (_.includes(['featured', 'artist', 'sold'], priceFilter)) {
+        return _.shuffle(results);
+      }
 
       return _.orderBy(results, 'priceInEther', priceFilter);
     },
