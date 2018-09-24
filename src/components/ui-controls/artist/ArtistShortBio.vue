@@ -1,7 +1,7 @@
 <template>
   <div v-if="artist" class="text-center mt-2 mb-2">
     <img :src="artist.img"/>
-    <h3>{{ artist.name }}</h3>
+    <h4>{{ artist.name }}</h4>
     <p class="bg-white">
       <clickable-address :eth-address="artist.ethAddress"></clickable-address>
     </p>
@@ -25,7 +25,7 @@
     max-height: 75px;
   }
 
-  h3 {
+  h4 {
     color: $body-color;
   }
 
