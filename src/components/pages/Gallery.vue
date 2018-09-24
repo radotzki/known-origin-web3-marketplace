@@ -8,7 +8,7 @@
 
     <div class="row bg-secondary text-white full-banner" v-if="priceFilter === 'artist'">
       <div class="col text-center m-5">
-        <artist-short-bio :artist="findArtistsForAddress(this.featuredArtistAccount)"></artist-short-bio>
+        <artist-short-bio :artist="findArtistsForAddress(this.featuredArtistAccount())"></artist-short-bio>
       </div>
     </div>
 
@@ -34,6 +34,13 @@
     <div class="container-fluid mt-4">
 
       <loading-section :page="PAGES.GALLERY"></loading-section>
+
+      <p class="m-5" v-if="priceFilter === 'artist'">
+        {{ findArtistsForAddress(this.featuredArtistAccount()).strapline }}
+        <br/>
+        <clickable-address :eth-address="findArtistsForAddress(this.featuredArtistAccount()).ethAddress"></clickable-address>
+      </p>
+
 
       <div class="row editions-wrap">
         <div class="card-deck">
@@ -69,6 +76,7 @@
   import {mapGetters, mapState} from 'vuex';
   import GalleryEdition from '../ui-controls/cards/GalleryEdition';
   import ArtistShortBio from '../ui-controls/artist/ArtistShortBio';
+  import ClickableAddress from '../ui-controls/generic/ClickableAddress';
   import _ from 'lodash';
   import * as actions from '../../store/actions';
   import {PAGES} from '../../store/loadingPageState';
@@ -81,7 +89,8 @@
       LoadingSection,
       GalleryEdition,
       Availability,
-      ArtistShortBio
+      ArtistShortBio,
+      ClickableAddress
     },
     data() {
       return {
@@ -98,9 +107,9 @@
       }
     },
     computed: {
-      ...mapState('kodaV2', ['featuredArtistAccount']),
       ...mapGetters('kodaV2', [
         'filterEditions',
+        'featuredArtistAccount'
       ]),
       ...mapGetters([
         'findArtistsForAddress'
