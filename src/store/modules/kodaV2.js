@@ -70,7 +70,7 @@ const contractStateModule = {
       });
     },
     featuredArtistAccount: (state, getters, rootState) => () => {
-      return state.featuredArtistAccounts[new Date().getDay()];
+      return state.featuredArtistAccounts[new Date().getDay() + 2];
     },
     filterEditions: (state, getters, rootState) => (priceFilter = 'asc') => {
       const artworks = featureArtworks(rootState.currentNetwork);
@@ -221,6 +221,8 @@ const contractStateModule = {
       let contract = await rootState.KnownOriginDigitalAssetV2.deployed();
 
       // Find the token IDs the account owns
+      if (!account) return;
+
       const tokenIds = await contract.tokensOf(account);
       const tokenAndEditions = await Promise.all(
         _.map(tokenIds, (tokenId) => editionOfTokenId(contract, tokenId.toString("10")))

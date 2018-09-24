@@ -41,7 +41,6 @@
         <clickable-address :eth-address="findArtistsForAddress(this.featuredArtistAccount()).ethAddress"></clickable-address>
       </p>
 
-
       <div class="row editions-wrap">
         <div class="card-deck">
           <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions" :key="editionNumber" v-if="edition.active">
