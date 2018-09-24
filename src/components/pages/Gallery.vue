@@ -1,16 +1,26 @@
 <template>
   <div>
-    <div class="row bg-secondary text-white full-banner">
+    <div class="row bg-secondary text-white full-banner" v-if="priceFilter !== 'artist'">
       <div class="col text-center m-5">
         <p>Showcase and Discover Rare Digital Art</p>
       </div>
     </div>
+
+    <div class="row bg-secondary text-white full-banner" v-if="priceFilter === 'artist'">
+      <div class="col text-center m-5">
+        <artist-short-bio :artist="findArtistsForAddress(this.featuredArtistAccount)"></artist-short-bio>
+      </div>
+    </div>
+
     <div class="row bg-white full-banner-secondary pt-3">
       <div class="col text-center">
         <p>
           <span @click="onSubFilter('featured')"
                 class="sub-filter"
-                v-bind:class="{'font-weight-bold': priceFilter === 'featured'}">Featured Artists</span>
+                v-bind:class="{'font-weight-bold': priceFilter === 'featured'}">Featured Artwork</span>
+          <span @click="onSubFilter('artist')"
+                class="sub-filter d-none d-md-inline"
+                v-bind:class="{'font-weight-bold': priceFilter === 'artist'}">Featured Artist</span>
           <span @click="onSubFilter('asc')"
                 class="sub-filter"
                 v-bind:class="{'font-weight-bold': priceFilter === 'asc'}">Low - High</span>
@@ -58,6 +68,7 @@
 
   import {mapGetters, mapState} from 'vuex';
   import GalleryEdition from '../ui-controls/cards/GalleryEdition';
+  import ArtistShortBio from '../ui-controls/artist/ArtistShortBio';
   import _ from 'lodash';
   import * as actions from '../../store/actions';
   import {PAGES} from '../../store/loadingPageState';
@@ -69,7 +80,8 @@
     components: {
       LoadingSection,
       GalleryEdition,
-      Availability
+      Availability,
+      ArtistShortBio
     },
     data() {
       return {
@@ -86,8 +98,9 @@
       }
     },
     computed: {
+      ...mapState('kodaV2', ['featuredArtistAccount']),
       ...mapGetters('kodaV2', [
-        'filterEditions'
+        'filterEditions',
       ]),
       ...mapGetters([
         'findArtistsForAddress'
@@ -103,6 +116,7 @@
         this.$store.dispatch(`kodaV2/${actions.LOAD_FEATURED_EDITIONS}`)
           .then(() => {
             this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.GALLERY);
+
             setTimeout(function () {
               this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS_FOR_TYPE}`, {editionType: 1});
             }.bind(this), 3000);
