@@ -47,7 +47,16 @@ const contractStateModule = {
     totalNumberAvailable: null,
     koCommissionAccount: null,
 
-    featuredArtistAccount: '0x9Dfe031Be5EE3363D73183D34B1D3F9f6515c952'
+    // must be 7 as rotated daily
+    featuredArtistAccounts: [
+      '0x9Dfe031Be5EE3363D73183D34B1D3F9f6515c952',
+      '0xe13d4abee4b304b67c52a56871141cad1b833aa7',
+      '0x7EC1b3d17EC7Ff05B4dA25a0bE8636d5E5C3D7cD',
+      '0xa4aD045d62a493f0ED883b413866448AfB13087C',
+      '0x6F7fC56461F1Be9d430037f714AF67E641e5f6cF',
+      '0xe0F228070D8F7b5C25E9375Fa70FA418f8dfEDf8',
+      '0xa2cD656f8461d2C186D69fFB8A4a5c10EFF0914d'
+    ]
   },
   getters: {
     haveNotPurchasedEditionBefore: (state) => (editionNumber) => {
@@ -60,13 +69,17 @@ const contractStateModule = {
         return artworks.indexOf(_.toNumber(key)) > -1;
       });
     },
+    featuredArtistAccount: (state, getters, rootState) => () => {
+      return state.featuredArtistAccounts[new Date().getDay() + 2];
+    },
     filterEditions: (state, getters, rootState) => (priceFilter = 'asc') => {
       const artworks = featureArtworks(rootState.currentNetwork);
+      const todaysArtist = Web3.utils.toChecksumAddress(getters.featuredArtistAccount());
 
       const soldOutEditions = (edition) => edition.totalSupply === edition.totalAvailable;
       const availableEditions = (edition) => edition.totalSupply !== edition.totalAvailable;
       const featuredEditions = (edition) => artworks.indexOf(_.toNumber(edition.edition)) > -1;
-      const featuredArtistEditions = (edition) => Web3.utils.toChecksumAddress(state.featuredArtistAccount) === Web3.utils.toChecksumAddress(edition.artistAccount);
+      const featuredArtistEditions = (edition) => todaysArtist === Web3.utils.toChecksumAddress(edition.artistAccount);
 
       const results = _.pickBy(state.assets, function (value, key) {
         if (priceFilter === 'featured') {
@@ -208,6 +221,8 @@ const contractStateModule = {
       let contract = await rootState.KnownOriginDigitalAssetV2.deployed();
 
       // Find the token IDs the account owns
+      if (!account) return;
+
       const tokenIds = await contract.tokensOf(account);
       const tokenAndEditions = await Promise.all(
         _.map(tokenIds, (tokenId) => editionOfTokenId(contract, tokenId.toString("10")))
