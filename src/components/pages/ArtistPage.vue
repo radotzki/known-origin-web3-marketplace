@@ -3,20 +3,8 @@
     <div class="container-fluid mt-4">
       <div class="row editions-wrap">
 
-        <div class="col-sm-3 side-banner">
-          <div class="shadow-sm bg-white p-4 mb-5">
-            <artist-short-bio :artist="lookupArtist()"></artist-short-bio>
-
-            <div class="text-center mb-4">
-              <button class="btn btn-sm mr-2 btn-twitter">Twitter</button>
-              <button class="btn btn-sm btn-telegram">Telegram</button>
-            </div>
-
-            <h6>Artist Bio</h6>
-            <p class="bio">
-              {{ lookupArtist().strapline }}
-            </p>
-          </div>
+        <div class="col-sm-3">
+          <artist-panel :artist="lookupArtist()"></artist-panel>
         </div>
 
         <div class="col-sm-9">
@@ -58,7 +46,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -66,6 +53,7 @@
 
   import { mapGetters, mapState } from 'vuex';
   import ArtistShortBio from '../ui-controls/artist/ArtistShortBio';
+  import ArtistPanel from '../ui-controls/artist/ArtistPanel';
   import LoadingSpinner from '../ui-controls/generic/LoadingSpinner';
   import * as actions from '../../store/actions';
   import GalleryEdition from '../ui-controls/cards/GalleryEdition';
@@ -89,6 +77,7 @@
       MetadataAttributes,
       RarityIndicator,
       ArtistShortBio,
+      ArtistPanel,
       GalleryEdition,
       LoadingSpinner,
       ClickableAddress
@@ -155,30 +144,6 @@
   .editions-wrap {
     margin-left: 50px;
     margin-right: 50px;
-  }
-
-  .side-banner {
-    color: rgba(0, 0, 0, 0.03);
-    /*background-image: url("../../../static/kodo_pattern.jpeg");*/
-  }
-
-  .bio {
-    font-size: 0.75rem;
-    color: $body-color;
-  }
-
-  h6 {
-    color: $body-color;
-  }
-
-  .btn-twitter {
-    background-color: #20a2eb;
-    color: $body-bg;
-  }
-
-  .btn-telegram {
-    background-color: #0088cc;
-    color: $body-bg;
   }
 
   @import '../../ko-card.scss';
