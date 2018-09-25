@@ -7,10 +7,21 @@
       <a class="btn btn-sm btn-telegram" href="https://t.me/knownorigin_io">Telegram</a>
     </div>
 
-    <h6>Artist Bio</h6>
-    <p class="bio">
-      {{ artist.strapline }}
-    </p>
+    <div class="mt-4">
+      <h6>Artist bio</h6>
+      <p class="bio">
+        {{ artist.strapline }}
+      </p>
+    </div>
+
+    <hr/>
+
+    <div v-if="artist.website" class="mt-2">
+      <h6>Artist website</h6>
+      <p class="website">
+        <a :href="artist.website" target="_blank">{{artist.website}}</a>
+      </p>
+    </div>
   </div>
 </template>
 
@@ -30,6 +41,10 @@
   .bio {
     font-size: 0.75rem;
     color: $body-color;
+  }
+
+  .website {
+    font-size: 0.65rem;
   }
 
   h6 {
