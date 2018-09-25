@@ -10,6 +10,7 @@ import {getEtherscanAddress, getNetIdString} from '../utils';
 import truffleContract from 'truffle-contract';
 import knownOriginDigitalAssetJson from '../../build/contracts/KnownOriginDigitalAsset.json';
 import knownOriginDigitalAssetJsonV2 from '../../build/contracts/KnownOriginDigitalAssetV2.json';
+import ArtistAcceptingBidsJson from '../../build/contracts/ArtistAcceptingBids.json';
 
 import createLogger from 'vuex/dist/logger';
 
@@ -18,9 +19,11 @@ import highres from './modules/highres';
 import kodaV1 from './modules/kodaV1';
 import kodaV2 from './modules/kodaV2';
 import loading from './modules/loading';
+import auction from './modules/auction';
 
 const KnownOriginDigitalAssetV1 = truffleContract(knownOriginDigitalAssetJson);
 const KnownOriginDigitalAssetV2 = truffleContract(knownOriginDigitalAssetJsonV2);
+const ArtistAcceptingBids = truffleContract(ArtistAcceptingBidsJson);
 
 Vue.use(Vuex);
 
@@ -34,6 +37,7 @@ const store = new Vuex.Store({
     purchase,
     highres,
     loading,
+    auction,
   },
   state: {
     // connectivity
@@ -51,6 +55,7 @@ const store = new Vuex.Store({
 
     KnownOriginDigitalAssetV1: null,
     KnownOriginDigitalAssetV2: null,
+    ArtistAcceptingBids: null,
   },
   getters: {
     findArtist: (state) => (artistCode) => {
@@ -118,9 +123,10 @@ const store = new Vuex.Store({
     [mutations.SET_WEB3](state, web3) {
       state.web3 = web3;
     },
-    [mutations.SET_KODA_CONTRACT](state, {v1, v2}) {
+    [mutations.SET_KODA_CONTRACT](state, {v1, v2, auction}) {
       state.KnownOriginDigitalAssetV1 = v1;
       state.KnownOriginDigitalAssetV2 = v2;
+      state.ArtistAcceptingBids = auction;
     },
   },
   actions: {
@@ -152,6 +158,7 @@ const store = new Vuex.Store({
       // NON-ASYNC action - set web3 provider on init
       KnownOriginDigitalAssetV1.setProvider(web3.currentProvider);
       KnownOriginDigitalAssetV2.setProvider(web3.currentProvider);
+      ArtistAcceptingBids.setProvider(web3.currentProvider);
 
       //dirty hack for web3@1.0.0 support for localhost testrpc, see https://github.com/trufflesuite/truffle-contract/issues/56#issuecomment-331084530
       if (typeof KnownOriginDigitalAssetV1.currentProvider.sendAsync !== "function") {
@@ -171,12 +178,22 @@ const store = new Vuex.Store({
         };
       }
 
+      //dirty hack for web3@1.0.0 support for localhost testrpc, see https://github.com/trufflesuite/truffle-contract/issues/56#issuecomment-331084530
+      if (typeof ArtistAcceptingBids.currentProvider.sendAsync !== "function") {
+        ArtistAcceptingBids.currentProvider.sendAsync = function () {
+          return ArtistAcceptingBids.currentProvider.send.apply(
+            ArtistAcceptingBids.currentProvider, arguments
+          );
+        };
+      }
+
       // Set the web3 instance
       commit(mutations.SET_WEB3, web3);
 
       commit(mutations.SET_KODA_CONTRACT, {
         v1: KnownOriginDigitalAssetV1,
-        v2: KnownOriginDigitalAssetV2
+        v2: KnownOriginDigitalAssetV2,
+        auction: ArtistAcceptingBids,
       });
 
       // Find current network

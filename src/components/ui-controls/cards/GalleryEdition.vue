@@ -47,6 +47,8 @@
       <a v-on:click="proceedWithPurchase" class="btn btn-primary btn-block text-white">Buy Now</a>
     </div>
 
+    <artist-accepting-bids :edition="edition"></artist-accepting-bids>
+
     <div class="card-footer" v-if="!haveNotPurchasedEditionBefore(edition.edition)">
       <p class="text-center pt-2">
         It looks like you have already purchased this edition!
@@ -70,10 +72,12 @@
   import HighResLabel from '../generic/HighResLabel';
   import Availability from "../v2/Availability";
   import TweetEditionButton from "../v2/TweetEditionButton";
+  import ArtistAcceptingBids from "../auction/ArtistAcceptingBids";
 
   export default {
     name: 'galleryEdition',
     components: {
+      ArtistAcceptingBids,
       Availability,
       HighResLabel,
       UsdPrice,
