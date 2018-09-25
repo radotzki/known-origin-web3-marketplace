@@ -129,7 +129,7 @@
 
       // Bootstrap the full app
       this.$store.dispatch(actions.INIT_APP, bootStrappedWeb3);
-    },
+    }
   };
 
 
