@@ -13,8 +13,11 @@
 
     <div class="card-body">
       <p class="card-title">{{ edition.name }}</p>
-      <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
-      <span class="pl-1 artist-name-lg" v-on:click="goToArtist(edition.artistAccount)">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
+
+      <router-link :to="{ name: 'artist-v2', params: { artistAccount: findArtistsForAddress(edition.artistAccount).ethAddress } }">
+        <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
+        <span class="pl-1 artist-name-lg" v-on:click="goToArtist(edition.artistAccount)">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
+      </router-link>
 
       <p class="card-full-desc pt-4">
         {{ edition.description }}
@@ -60,7 +63,7 @@
 </template>
 
 <script>
-  import {mapGetters, mapState} from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
   import _ from 'lodash';
   import * as actions from '../../../store/actions';
   import PriceInEth from '../generic/PriceInEth';
@@ -68,8 +71,8 @@
   import RarityIndicator from '../v2/RarityIndicator';
   import MetadataAttributes from '../v2/MetadataAttributes';
   import HighResLabel from '../generic/HighResLabel';
-  import Availability from "../v2/Availability";
-  import TweetEditionButton from "../v2/TweetEditionButton";
+  import Availability from '../v2/Availability';
+  import TweetEditionButton from '../v2/TweetEditionButton';
 
   export default {
     name: 'galleryEdition',
@@ -132,5 +135,9 @@
 
   li.no-top-border {
     border-top: 0 none;
+  }
+
+  a {
+    text-decoration: none;
   }
 </style>
