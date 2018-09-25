@@ -14,7 +14,7 @@ const auctionStateModule = {
     isEditionAuctionEnabled: (state, getters) => (edition) => {
       return _.get(state.auction[edition], 'enabled') === true;
     },
-    editionMinimumBid: (state, getters) => (edition) => {
+    nextMinimumNewBid: (state, getters) => (edition) => {
       let currentEditionHighestBid = _.get(state.auction[edition], 'highestBidWei', 0);
       let minBid = _.get(state, 'minBidAmountWei', 0);
 
@@ -90,13 +90,28 @@ const auctionStateModule = {
       const contract = await rootState.ArtistAcceptingBids.deployed();
 
       try {
-        // TODO handle tracking
-        await contract.increaseBid(edition, {
-          from: rootState.account,
-          value: Web3.utils.toWei(value, 'ether')
-        });
+        await contract
+          .increaseBid(edition, {
+            from: rootState.account,
+            value: Web3.utils.toWei(value, 'ether')
+          })
+          .on('transactionHash', hash => {
+            console.log("transactionHash", hash);
+          })
+          .on('receipt', receipt => {
+            console.log("receipt", receipt);
+          })
+          .on('error', error => {
+            console.log("error", error);
+          })
+          .on('confirmation', (num, receipt) => {
+            console.log("confirmation", num, receipt);
+          })
+          .then(receipt => {
+            console.log("receipt", receipt);
+          });
       } catch (err) {
-        console.log(err);
+        console.log("err", err);
         // assert(err.reason === 'not authorized');
         // assert(err.message.includes('not authorized');
       }

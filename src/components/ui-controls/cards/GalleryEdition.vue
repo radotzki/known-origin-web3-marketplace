@@ -47,7 +47,9 @@
       <a v-on:click="proceedWithPurchase" class="btn btn-primary btn-block text-white">Buy Now</a>
     </div>
 
-    <artist-accepting-bids :edition="edition"></artist-accepting-bids>
+    <div  v-if="haveNotPurchasedEditionBefore(edition.edition)" >
+      <artist-accepting-bids :edition="edition"></artist-accepting-bids>
+    </div>
 
     <div class="card-footer" v-if="!haveNotPurchasedEditionBefore(edition.edition)">
       <p class="text-center pt-2">

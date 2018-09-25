@@ -1,59 +1,98 @@
 <template>
-  <div v-if="edition && editionMinimumBid(edition.edition)">
+  <div v-if="edition && nextMinimumNewBid(edition.edition)">
     <div class="card-footer text-center">
       <div>
-        <form class="form-inline">
-          <div class="form-group row align-top">
-            <label for="bidValue" class="col-sm-3 col-form-label">
-              Make a bid
-            </label>
-            <div class="col-sm-5">
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <div class="input-group-text">ETH</div>
-                </div>
-                <input type="number" class="form-control" id="bidValue"
-                       step="0.01" placeholder="0.1"
-                       v-model="form.bid"
-                       :min="editionMinimumBid(edition.edition)">
+        <fieldset :disabled="isLoading(PAGES.ARTIST_ACCEPTING_BID)">
+          <form class="form-inline">
+
+            <!-- When you are NOT the top bidder -->
+            <div class="form-group row align-top" v-if="!accountIsHighestBidder(edition.edition)">
+              <div class="col-sm-3">
+                <label for="makeBidValue" class="col-form-label">
+                  Make a bid
+                </label>
+                <p></p>
               </div>
-              <small class="form-text text-muted">
-                Next minimum bid: {{editionMinimumBid(edition.edition)}} ETH
-              </small>
+              <div class="col-sm-5">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <div class="input-group-text">ETH</div>
+                  </div>
+                  <input type="number" class="form-control" id="makeBidValue" step="0.01" placeholder="0.1"
+                         v-model="form.bid" :min="nextMinimumNewBid(edition.edition)">
+                </div>
+                <small class="form-text text-muted">
+                  Next minimum bid: {{nextMinimumNewBid(edition.edition)}} ETH
+                </small>
+              </div>
+              <div class="col-sm-3">
+                <button class="btn btn-primary"
+                        v-if="!accountIsHighestBidder(edition.edition)" v-on:click="placeBid"
+                        :disabled="form.bid < nextMinimumNewBid(edition.edition)">
+                  Place Bid
+                </button>
+                <p></p>
+              </div>
             </div>
-            <div class="col-sm-3">
-              <button class="btn btn-primary"
-                      v-if="!accountIsHighestBidder(edition.edition)"
-                      v-on:click="placeBid"
-                      :disabled="form.bid < editionMinimumBid(edition.edition)">
-                Place Bid
-              </button>
-              <button class="btn btn-primary"
-                      v-if="accountIsHighestBidder(edition.edition)"
-                      v-on:click="increaseBid"
-                      :disabled="form.bid < editionMinimumBid(edition.edition)">
-                Increase Bid
-              </button>
+
+            <!-- When you are top bidder -->
+            <div class="form-group row align-top" v-if="accountIsHighestBidder(edition.edition)">
+              <div class="col-sm-3">
+                <label for="increaseBidValue" class="col-form-label">
+                  Increase bid
+                </label>
+                <p></p>
+              </div>
+              <div class="col-sm-5">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <div class="input-group-text">ETH</div>
+                  </div>
+                  <input type="number" class="form-control" id="increaseBidValue" step="0.01" placeholder="0.1"
+                         v-model="form.bid" :min="minBidAmount">
+                </div>
+                <small class="form-text text-muted">
+                  Minimum increase: {{minBidAmount}} ETH
+                </small>
+              </div>
+              <div class="col-sm-3">
+                <button class="btn btn-primary"
+                        v-if="accountIsHighestBidder(edition.edition)" v-on:click="increaseBid"
+                        :disabled="form.bid < minBidAmount">
+                  Increase Bid
+                </button>
+                <p></p>
+              </div>
             </div>
-          </div>
-        </form>
-        <!--<p class="small text-muted pt-1">Next minimum bid: {{editionMinimumBid(edition.edition)}} ETH</p>-->
+          </form>
+        </fieldset>
       </div>
       <div v-if="auction[edition.edition] && auction[edition.edition].highestBid !== '0'">
         <hr/>
-        <span class="font-weight-light">Current highest</span>
-        <span class="font-weight-bold">From:</span>
-        <clickable-address :eth-address="auction[edition.edition].highestBidder"></clickable-address>
-        <span class="font-weight-bold">for</span>
-        <price-in-eth :value="auction[edition.edition].highestBid"></price-in-eth>
+        <div v-if="!accountIsHighestBidder(edition.edition)">
+          <span class="font-weight-light">Current highest</span>
+          <clickable-address :eth-address="auction[edition.edition].highestBidder"></clickable-address>
+          @
+          <span class="font-weight-bold">
+            <price-in-eth :value="auction[edition.edition].highestBid"></price-in-eth>
+          </span>
+        </div>
+        <div v-if="accountIsHighestBidder(edition.edition)">
+          <span class="text-success">
+            You are currently the highest bidder <font-awesome-icon :icon="['fas', 'check']" size="md"></font-awesome-icon>
+          </span>
+          <br/>
+          <clickable-address :eth-address="auction[edition.edition].highestBidder"></clickable-address>
+          @
+          <span class="font-weight-bold">
+            <price-in-eth :value="auction[edition.edition].highestBid"></price-in-eth>
+          </span>
+        </div>
       </div>
       <hr/>
       <p class="text-muted">
-        When you place a bid the ether is escrow's.<br/>
-        On being out-bid you receive your monies back.<br/>
-        On winning you will receive the artwork.<br/>
-        Any issues please contact us <a href="mailto:hello@knownorigin.io" target="_blank"
-                                        title="Artist Auction">email</a>
+        The winning bid will receive the artwork & all other bids will be refunded automatically.
+        <a href="mailto:hello@knownorigin.io" target="_blank" title="Artist Auction">Report an issue</a>
       </p>
     </div>
   </div>
@@ -66,10 +105,15 @@
   import {PAGES} from "../../../store/loadingPageState";
   import ClickableAddress from "../generic/ClickableAddress";
   import PriceInEth from "../generic/PriceInEth";
+  import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 
   export default {
     name: 'artistAcceptingBids',
-    components: {PriceInEth, ClickableAddress},
+    components: {
+      PriceInEth,
+      ClickableAddress,
+      FontAwesomeIcon
+    },
     props: {
       edition: {
         type: Object
@@ -77,24 +121,26 @@
     },
     data() {
       return {
+        PAGES: PAGES,
         form: {
           bid: null
         }
       };
     },
     computed: {
-      ...mapGetters('kodaV2', []),
       ...mapGetters('auction', [
         'accountIsHighestBidder',
         'isEditionAuctionEnabled',
-        'editionMinimumBid',
+        'nextMinimumNewBid',
       ]),
       ...mapState('auction', [
         'auction',
         'minBidAmount',
         'minBidAmountWei',
       ]),
-      ...mapGetters([]),
+      ...mapGetters('loading', [
+        'isLoading'
+      ]),
     },
     methods: {
       placeBid: function (e) {
@@ -122,7 +168,9 @@
       const loadData = () => {
         this.$store.dispatch(`auction/${actions.GET_AUCTION_DETAILS}`, this.edition)
           .then(() => {
-            this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.ARTIST_ACCEPTING_BID);
+            this.$nextTick(function () {
+              this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.ARTIST_ACCEPTING_BID);
+            });
           });
       };
 
