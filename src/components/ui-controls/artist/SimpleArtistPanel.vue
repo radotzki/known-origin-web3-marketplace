@@ -1,5 +1,5 @@
 <template>
-  <div class="shadow-sm bg-white p-4 mb-5">
+  <div class="shadow-sm bg-white p-4 mb-4 card">
     <artist-short-bio :artist="artist" :nolinks="true"></artist-short-bio>
 
     <h6>Artist Bio</h6>
