@@ -488,6 +488,16 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   // Public query methods //
   //////////////////////////
 
+  function auctionDetails(uint256 _editionNumber) public view returns (bool _enabled, address _bidder, uint256 _value) {
+    address highestBidder = editionHighestBid[_editionNumber];
+    uint256 bidValue = editionBids[_editionNumber][highestBidder];
+    return (
+    enabledEditions[_editionNumber],
+    highestBidder,
+    bidValue
+    );
+  }
+
   function highestBidForEdition(uint256 _editionNumber) public view returns (address _bidder, uint256 _value) {
     address highestBidder = editionHighestBid[_editionNumber];
     uint256 bidValue = editionBids[_editionNumber][highestBidder];
