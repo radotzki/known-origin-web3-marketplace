@@ -70,7 +70,7 @@ const contractStateModule = {
       });
     },
     featuredArtistAccount: (state, getters, rootState) => () => {
-      return state.featuredArtistAccounts[new Date().getDay() + 2];
+      return state.featuredArtistAccounts[new Date().getDay() + 3];
     },
     filterEditions: (state, getters, rootState) => (priceFilter = 'asc') => {
       const artworks = featureArtworks(rootState.currentNetwork);
