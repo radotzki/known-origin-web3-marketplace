@@ -1,14 +1,8 @@
 <template>
   <div>
-    <div class="row bg-secondary text-white full-banner" v-if="priceFilter !== 'artist'">
+    <div class="row bg-secondary text-white full-banner">
       <div class="col text-center m-5">
         <p>Showcase and Discover Rare Digital Art</p>
-      </div>
-    </div>
-
-    <div class="row bg-secondary text-white full-banner" v-if="priceFilter === 'artist'">
-      <div class="col text-center m-5">
-        <artist-short-bio :artist="findArtistsForAddress(this.featuredArtistAccount())"></artist-short-bio>
       </div>
     </div>
 
@@ -35,14 +29,40 @@
 
       <loading-section :page="PAGES.GALLERY"></loading-section>
 
-      <p class="m-5" v-if="priceFilter === 'artist'">
-        {{ findArtistsForAddress(this.featuredArtistAccount()).strapline }}
-        <br/>
-        <clickable-address :eth-address="findArtistsForAddress(this.featuredArtistAccount()).ethAddress"></clickable-address>
-      </p>
-
       <div class="row editions-wrap">
-        <div class="card-deck">
+
+        <div class="col-sm-3" v-if="priceFilter === 'artist'">
+          <artist-panel :artist="findArtistsForAddress(this.featuredArtistAccount())"></artist-panel>
+        </div>
+
+        <div class="col-sm-9" v-if="priceFilter === 'artist'">
+          <div class="card-deck">
+            <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions" :key="editionNumber" v-if="edition.active">
+              <router-link class="card-target"
+                           :to="{ name: 'confirmPurchase', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
+                <div class="card shadow-sm">
+                  <img class="card-img-top" :src="edition.lowResImg" :id="editionNumber"/>
+                  <div class="card-body">
+                    <p class="card-title">{{ edition.name }}</p>
+                    <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
+                    <a class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name }}</a>
+                  </div>
+                  <div class="card-footer">
+                    <div class="row">
+                      <div class="col">
+                        <availability :total-available="edition.totalAvailable" :total-supply="edition.totalSupply"></availability>
+                      </div>
+                      <div class="col text-right">{{ edition.priceInEther }} ETH</div>
+                    </div>
+                  </div>
+                </div>
+              </router-link>
+            </div>
+          </div>
+        </div>
+
+        <!-- extract cards out to prevent duplication -->
+        <div class="card-deck" v-else>
           <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions" :key="editionNumber" v-if="edition.active">
             <router-link class="card-target"
                          :to="{ name: 'confirmPurchase', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
@@ -65,22 +85,22 @@
             </router-link>
           </div>
         </div>
+
       </div>
     </div>
   </div>
 </template>
-
 <script>
 
-  import {mapGetters, mapState} from 'vuex';
-  import GalleryEdition from '../ui-controls/cards/GalleryEdition';
-  import ArtistShortBio from '../ui-controls/artist/ArtistShortBio';
-  import ClickableAddress from '../ui-controls/generic/ClickableAddress';
   import _ from 'lodash';
+  import { mapGetters, mapState } from 'vuex';
+  import GalleryEdition from '../ui-controls/cards/GalleryEdition';
+  import ArtistPanel from '../ui-controls/artist/ArtistPanel';
+  import ClickableAddress from '../ui-controls/generic/ClickableAddress';
   import * as actions from '../../store/actions';
-  import {PAGES} from '../../store/loadingPageState';
-  import LoadingSection from "../ui-controls/generic/LoadingSection";
-  import Availability from "../ui-controls/v2/Availability";
+  import { PAGES } from '../../store/loadingPageState';
+  import LoadingSection from '../ui-controls/generic/LoadingSection';
+  import Availability from '../ui-controls/v2/Availability';
 
   export default {
     name: 'galleryKODAV2',
@@ -88,10 +108,10 @@
       LoadingSection,
       GalleryEdition,
       Availability,
-      ArtistShortBio,
-      ClickableAddress
+      ClickableAddress,
+      ArtistPanel
     },
-    data() {
+    data () {
       return {
         PAGES,
         priceFilter: 'featured'
@@ -117,7 +137,7 @@
         return this.filterEditions(this.priceFilter);
       }
     },
-    created() {
+    created () {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.GALLERY);
 
       const loadData = function () {
@@ -140,10 +160,11 @@
         loadData();
       }
     },
-    destroyed() {
+    destroyed () {
     }
   };
 </script>
+
 
 <style scoped lang="scss">
   .full-banner {
