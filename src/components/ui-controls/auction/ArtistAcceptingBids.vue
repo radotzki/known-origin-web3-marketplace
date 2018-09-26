@@ -80,7 +80,9 @@
       <hr/>
       <p class="text-muted">
         The winning bid will receive the artwork & all other bids will be refunded automatically.
-        <a href="mailto:hello@knownorigin.io" target="_blank" title="Artist Auction">Report an issue</a>
+      </p>
+      <p class="text-muted">
+        Got any questions, reach us on <a href="https://t.me/knownorigin_io" target="_blank" title="Telegram">telegram</a> or via <a href="mailto:hello@knownorigin.io" target="_blank" title="Mail">email</a>
       </p>
     </div>
   </div>
