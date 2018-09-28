@@ -550,10 +550,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        7168,
-                        7169
+                        7965,
+                        7966
                       ],
-                      "referencedDeclaration": 7168,
+                      "referencedDeclaration": 7965,
                       "src": "457:7:4",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -629,7 +629,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 7165,
+                          "referencedDeclaration": 7962,
                           "src": "516:3:4",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -1333,10 +1333,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        7168,
-                        7169
+                        7965,
+                        7966
                       ],
-                      "referencedDeclaration": 7168,
+                      "referencedDeclaration": 7965,
                       "src": "457:7:4",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -1412,7 +1412,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 7165,
+                          "referencedDeclaration": 7962,
                           "src": "516:3:4",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -1649,5 +1649,5 @@
   },
   "networks": {},
   "schemaVersion": "3.0.0-beta.0",
-  "updatedAt": "2018-09-22T07:03:07.865Z"
+  "updatedAt": "2018-09-25T08:05:10.376Z"
 }

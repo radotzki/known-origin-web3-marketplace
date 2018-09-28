@@ -1,6 +1,6 @@
 <template>
-  <div v-if="edition && nextMinimumNewBid(edition.edition)">
-    <div class="card-footer text-center">
+  <div v-if="edition && nextMinimumNewBid(edition.edition) && isEditionAuctionEnabled(edition.edition)">
+    <div class="card-footer text-center" v-if="account">
       <div>
         <fieldset :disabled="isLoading(PAGES.ARTIST_ACCEPTING_BID)">
           <form>
@@ -67,7 +67,7 @@
         </div>
         <div v-if="accountIsHighestBidder(edition.edition)">
           <span class="text-success">
-            You are currently the highest bidder <font-awesome-icon :icon="['fas', 'check']"></font-awesome-icon>
+            You are currently the highest bidder <img src="../../../../static/GreenTick.svg" style="width: 30px"/>
           </span>
           <br/>
           <clickable-address :eth-address="auction[edition.edition].highestBidder"></clickable-address>
@@ -77,14 +77,59 @@
           </span>
         </div>
       </div>
+      <div class="text-sm-center">
+
+        <div v-if="isAuctionTriggered(edition.edition)">
+          <hr/>
+          <span class="card-text mt-4">
+            Your bid has been initiated.<br/>Please be patient. Blockchains need to be mined.
+            <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
+          </span>
+          <small class="text-muted">
+            <br/><clickable-transaction
+              :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>
+          </small>
+        </div>
+
+        <div v-if="isAuctionStarted(edition.edition)">
+          <hr/>
+          <span class="card-text mt-4">
+           Your purchase is being confirmed...<font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
+          </span>
+          <small class="text-muted">
+            <br/><clickable-transaction
+              :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>
+          </small>
+        </div>
+
+        <div class="text-center mb-2" v-if="isAuctionSuccessful(edition.edition, account)">
+          <hr/>
+          <p class="card-text text-muted mt-4">Your bid was placed successfully...</p>
+          <small class="text-muted">
+            <clickable-transaction
+              :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>
+          </small>
+        </div>
+
+        <div v-if="isAuctionFailed(edition.edition)">
+          <hr/>
+          <span class="card-text text-danger mt-4">Your bid failed!</span>
+          <img src="../../../../static/Failure.svg" style="width: 25px"/>
+        </div>
+      </div>
       <hr/>
       <p class="text-muted">
-        The winning bid will receive the artwork & all other bids will be refunded automatically.
+        The winning bid will receive the artwork and all other bids will be refunded automatically.
       </p>
       <p class="text-muted">
-        Got any questions, reach us on <a href="https://t.me/knownorigin_io" target="_blank" title="Telegram">telegram</a> or via <a href="mailto:hello@knownorigin.io" target="_blank" title="Mail">email</a>
+        Got any questions, reach us on
+        <a href="https://t.me/knownorigin_io" target="_blank" title="Telegram">telegram</a>
+        or via <a href="mailto:hello@knownorigin.io" target="_blank" title="Mail">email</a>
       </p>
     </div>
+    <p v-else class="text-center pt-2">
+      Your account is locked!
+    </p>
   </div>
 </template>
 
@@ -96,10 +141,14 @@
   import ClickableAddress from "../generic/ClickableAddress";
   import PriceInEth from "../generic/PriceInEth";
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
+  import ClickableTransaction from "../generic/ClickableTransaction";
+  import LoadingSpinner from "../generic/LoadingSpinner";
 
   export default {
     name: 'artistAcceptingBids',
     components: {
+      LoadingSpinner,
+      ClickableTransaction,
       PriceInEth,
       ClickableAddress,
       FontAwesomeIcon
@@ -118,13 +167,22 @@
       };
     },
     computed: {
+      ...mapState([
+        'account',
+      ]),
       ...mapGetters('auction', [
         'accountIsHighestBidder',
         'isEditionAuctionEnabled',
         'nextMinimumNewBid',
+        'isAuctionTriggered',
+        'isAuctionStarted',
+        'isAuctionSuccessful',
+        'isAuctionFailed',
+        'getTransactionForEdition',
       ]),
       ...mapState('auction', [
         'auction',
+        'bidState',
         'minBidAmount',
         'minBidAmountWei',
       ]),
