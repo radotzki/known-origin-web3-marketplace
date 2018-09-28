@@ -16,13 +16,13 @@ interface IAuction {
   event BidPlaced(
     address indexed _bidder,
     uint256 indexed _editionNumber,
-    uint256 _amount
+    uint256 indexed _amount
   );
 
   event BidIncreased(
     address indexed _bidder,
     uint256 indexed _editionNumber,
-    uint256 _amount
+    uint256 indexed _amount
   );
 
   event BidWithdrawn(
@@ -44,7 +44,7 @@ interface IAuction {
   event BidderRefunded(
     uint256 indexed _editionNumber,
     address indexed _bidder,
-    uint256 _amount
+    uint256 indexed _amount
   );
 
   function placeBid(uint256 _editionNumber) external returns (bool success);

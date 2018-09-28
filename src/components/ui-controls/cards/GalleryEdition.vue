@@ -47,7 +47,7 @@
       <a v-on:click="proceedWithPurchase" class="btn btn-primary btn-block text-white">Buy Now</a>
     </div>
 
-    <div  v-if="haveNotPurchasedEditionBefore(edition.edition)" >
+    <div v-if="(edition.totalAvailable - edition.totalSupply > 0) && haveNotPurchasedEditionBefore(edition.edition)">
       <artist-accepting-bids :edition="edition"></artist-accepting-bids>
     </div>
 

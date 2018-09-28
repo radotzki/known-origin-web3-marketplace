@@ -60,3 +60,10 @@ export const SET_CONTRACT_ADDRESS_V2 = 'SET_CONTRACT_ADDRESS_V2';
 export const SET_AUCTION_DETAILS = 'SET_AUCTION_DETAILS';
 export const SET_MINIMUM_BID = 'SET_MINIMUM_BID';
 
+// Auction Flow
+export const AUCTION_TRIGGERED = 'AUCTION_TRIGGERED'; // metamask opened
+export const AUCTION_STARTED = 'AUCTION_STARTED'; // metamask transaction submitted
+export const AUCTION_FAILED = 'AUCTION_FAILED'; // a failure
+export const AUCTION_PLACED_SUCCESSFUL = 'AUCTION_PLACED_SUCCESSFUL'; // transaction mined and event found
+export const RESET_BID_STATE = 'RESET_BID_STATE';
+
