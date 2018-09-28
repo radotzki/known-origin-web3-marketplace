@@ -31,7 +31,7 @@
 
 <style scoped>
   img {
-    width: 50%;
+    width: 35%;
   }
 
   a {

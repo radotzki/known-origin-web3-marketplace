@@ -1,6 +1,10 @@
 <template>
-  <div v-if="artist" class="clearfix">
-    <p class="small-artist-name"><img :src="artist.img"/> {{ artist.name }}</p>
+  <div v-if="artist" class="text-center mt-2 mb-2">
+    <img :src="artist.img"/>
+    <h4>{{ artist.name }}</h4>
+    <p v-if="!nolinks">
+      <clickable-address :eth-address="artist.ethAddress"></clickable-address>
+    </p>
   </div>
 </template>
 
@@ -10,13 +14,19 @@
   export default {
     name: 'artistShortBio',
     components: {ClickableAddress},
-    props: ['artist']
+    props: ['artist', 'nolinks']
   };
 </script>
 
 <style scoped lang="scss">
+  @import '../../../ko-colours.scss';
+
   img {
-    max-height: 125px;
+    max-height: 75px;
+  }
+
+  h4 {
+    color: $body-color;
   }
 
   /* mobile only */
@@ -25,16 +35,10 @@
       max-height: 75px;
     }
 
-    .lead {
+    .artist-name {
       font-size: 1rem;
     }
 
-    .lead {
-      font-size: 1rem;
-    }
 
-    .small-artist-name {
-      font-size: 0.75em;
-    }
   }
 </style>

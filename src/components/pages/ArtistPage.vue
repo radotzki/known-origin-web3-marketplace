@@ -1,64 +1,59 @@
 <template>
   <div>
-    <div class="row bg-secondary text-white full-banner">
-      <div class="col text-center m-5">
-        <artist-short-bio :artist="lookupArtist()"></artist-short-bio>
-      </div>
-    </div>
-
     <div class="container-fluid mt-4">
-
-      <loading-section :page="PAGES.ARTISTS"></loading-section>
-
-      <p class="m-5">
-        {{ lookupArtist().strapline }}
-        <br/>
-        <clickable-address :eth-address="getArtistAddress()"></clickable-address>
-      </p>
-
       <div class="row editions-wrap">
-        <div class="card-deck">
-          <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions" :key="editionNumber"
-               v-if="edition.active">
-            <div class="card-target">
-              <router-link class="card-target"
-                           :to="{ name: 'confirmPurchase', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
-                <div class="card shadow-sm">
-                  <img class="card-img-top" :src="edition.lowResImg" :id="editionNumber"/>
-                  <div class="card-body">
-                    <p class="card-title">{{ edition.name }}</p>
-                    <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
-                    <span class="pl-1 artist-name" v-on:click="goToArtist(edition.artistAccount)">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
 
-                    <small class="text-danger" v-if="isStartDateInTheFuture(edition)">
-                      <span>Available {{ edition.startDate | moment('from') }}</span>
-                    </small>
+        <div class="col-sm-3">
+          <artist-panel :artist="lookupArtist()"></artist-panel>
+        </div>
 
-                  </div>
-                  <div class="card-footer">
-                    <div class="row">
-                      <div class="col">
-                        <availability :total-available="edition.totalAvailable"
-                                      :total-supply="edition.totalSupply"></availability>
+        <div class="col-sm-9">
+
+          <loading-section :page="PAGES.ARTISTS"></loading-section>
+
+          <div class="card-deck">
+            <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions" :key="editionNumber"
+                 v-if="edition.active">
+              <div class="card-target">
+                <router-link class="card-target"
+                             :to="{ name: 'confirmPurchase', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
+                  <div class="card shadow-sm">
+                    <img class="card-img-top" :src="edition.lowResImg" :id="editionNumber"/>
+                    <div class="card-body">
+                      <p class="card-title">{{ edition.name }}</p>
+                      <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
+                      <span class="pl-1 artist-name" v-on:click="goToArtist(edition.artistAccount)">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
+
+                      <small class="text-danger" v-if="isStartDateInTheFuture(edition)">
+                        <span>Available {{ edition.startDate | moment('from') }}</span>
+                      </small>
+
+                    </div>
+                    <div class="card-footer">
+                      <div class="row">
+                        <div class="col">
+                          <availability :total-available="edition.totalAvailable"
+                                        :total-supply="edition.totalSupply"></availability>
+                        </div>
+                        <div class="col text-right">{{ edition.priceInEther }} ETH</div>
                       </div>
-                      <div class="col text-right">{{ edition.priceInEther }} ETH</div>
                     </div>
                   </div>
-                </div>
-              </router-link>
+                </router-link>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
 <script>
 
-  import {mapGetters, mapState} from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
   import ArtistShortBio from '../ui-controls/artist/ArtistShortBio';
+  import ArtistPanel from '../ui-controls/artist/ArtistPanel';
   import LoadingSpinner from '../ui-controls/generic/LoadingSpinner';
   import * as actions from '../../store/actions';
   import GalleryEdition from '../ui-controls/cards/GalleryEdition';
@@ -66,10 +61,10 @@
   import MetadataAttributes from '../ui-controls/v2/MetadataAttributes';
   import TweetEditionButton from '../ui-controls/v2/TweetEditionButton';
   import HighResLabel from '../ui-controls/generic/HighResLabel';
-  import {PAGES} from '../../store/loadingPageState';
+  import { PAGES } from '../../store/loadingPageState';
   import LoadingSection from '../ui-controls/generic/LoadingSection';
   import ClickableAddress from '../ui-controls/generic/ClickableAddress';
-  import Availability from "../ui-controls/v2/Availability";
+  import Availability from '../ui-controls/v2/Availability';
   import _ from 'lodash';
 
   export default {
@@ -82,11 +77,12 @@
       MetadataAttributes,
       RarityIndicator,
       ArtistShortBio,
+      ArtistPanel,
       GalleryEdition,
       LoadingSpinner,
       ClickableAddress
     },
-    data() {
+    data () {
       return {
         PAGES: PAGES
       };
@@ -118,7 +114,7 @@
         return artists.ethAddress;
       }
     },
-    created() {
+    created () {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.ARTISTS);
 
       const loadData = function () {
@@ -137,14 +133,13 @@
         loadData();
       }
     },
-    destroyed() {
+    destroyed () {
     }
   };
 </script>
 
-<!-- TODO EXTRACT SASS & COMPONENT -->
-
 <style scoped lang="scss">
+  @import '../../ko-colours.scss';
 
   .editions-wrap {
     margin-left: 50px;
