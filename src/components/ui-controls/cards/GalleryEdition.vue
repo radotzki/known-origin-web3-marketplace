@@ -14,7 +14,7 @@
     <div class="card-body">
       <p class="card-title">{{ edition.name }}</p>
 
-      <router-link :to="{ name: 'artist-v2', params: { artistAccount: findArtistsForAddress(edition.artistAccount).ethAddress } }">
+      <router-link :to="{ name: 'artist-v2', params: { artistAccount: edition.artistAccount } }">
         <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
         <span class="pl-1 artist-name-lg" v-on:click="goToArtist(edition.artistAccount)">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
       </router-link>

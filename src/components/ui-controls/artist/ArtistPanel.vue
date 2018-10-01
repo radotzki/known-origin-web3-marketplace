@@ -36,6 +36,7 @@
 </script>
 
 <style scoped lang="scss">
+  // @andygray why do we need to import this again, are they not global?
   @import '../../../ko-colours.scss';
 
   .bio {
