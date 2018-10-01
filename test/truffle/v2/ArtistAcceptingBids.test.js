@@ -148,6 +148,13 @@ contract.only('ArtistAcceptingBids', function (accounts) {
           details[1].should.be.bignumber.equal(this.minBidAmount);
         });
 
+        it('auction details are populated', async function () {
+          let details = await this.auction.auctionDetails(editionNumber1);
+          details[0].should.be.equal(true); // bool _enabled
+          details[1].should.be.equal(bidder1); // address _bidder
+          details[2].should.be.bignumber.equal(this.minBidAmount); // uint256 _value
+        });
+
         it('another bidder cant place a bid at the same value as you', async function () {
           assertRevert(this.auction.placeBid(editionNumber1, {from: bidder2, value: this.minBidAmount}));
         });
@@ -176,13 +183,19 @@ contract.only('ArtistAcceptingBids', function (accounts) {
             });
 
             // Check still highest bid
-            let details = await this.auction.highestBidForEdition(editionNumber1);
-            details[0].should.be.equal(bidder1);
-            details[1].should.be.bignumber.equal(this.minBidAmount.mul(2));
+            let highestbidder = await this.auction.highestBidForEdition(editionNumber1);
+            highestbidder[0].should.be.equal(bidder1);
+            highestbidder[1].should.be.bignumber.equal(this.minBidAmount.mul(2));
 
             // contract balance updated
             let auctionBalance = await web3.eth.getBalance(this.auction.address);
             auctionBalance.should.be.bignumber.equal(this.minBidAmount.mul(2));
+
+            // details are updated
+            let details = await this.auction.auctionDetails(editionNumber1);
+            details[0].should.be.equal(true); // bool _enabled
+            details[1].should.be.equal(bidder1); // address _bidder
+            details[2].should.be.bignumber.equal(this.minBidAmount.mul(2)); // uint256 _value
           });
         });
 
@@ -222,6 +235,13 @@ contract.only('ArtistAcceptingBids', function (accounts) {
             let details = await this.auction.highestBidForEdition(editionNumber1);
             details[0].should.be.equal(ZERO_ADDRESS);
             details[1].should.be.bignumber.equal(0);
+          });
+
+          it('auction details are populated', async function () {
+            let details = await this.auction.auctionDetails(editionNumber1);
+            details[0].should.be.equal(true); // bool _enabled
+            details[1].should.be.equal(ZERO_ADDRESS); // address _bidder
+            details[2].should.be.bignumber.equal(0); // uint256 _value
           });
         });
 
@@ -266,6 +286,13 @@ contract.only('ArtistAcceptingBids', function (accounts) {
               let details = await this.auction.highestBidForEdition(editionNumber1);
               details[0].should.be.equal(ZERO_ADDRESS);
               details[1].should.be.bignumber.equal(0);
+            });
+
+            it('auction details are populated', async function () {
+              let details = await this.auction.auctionDetails(editionNumber1);
+              details[0].should.be.equal(false); // bool _enabled
+              details[1].should.be.equal(ZERO_ADDRESS); // address _bidder
+              details[2].should.be.bignumber.equal(0); // uint256 _value
             });
           });
 
@@ -363,6 +390,12 @@ contract.only('ArtistAcceptingBids', function (accounts) {
               bidderBalanceBefore.should.be.bignumber.equal(bidderBalanceAfter);
             });
 
+            it('auction details are populated', async function () {
+              let details = await this.auction.auctionDetails(editionNumber1);
+              details[0].should.be.equal(true); // bool _enabled
+              details[1].should.be.equal(ZERO_ADDRESS); // address _bidder
+              details[2].should.be.bignumber.equal(0); // uint256 _value
+            });
           });
         });
       });
@@ -549,20 +582,22 @@ contract.only('ArtistAcceptingBids', function (accounts) {
 
   describe('multiple bidders on one edition', async function () {
 
-    let txGasCosts;
+    let bidder1_BalanceBeforeBid;
+    let bidder1_BalanceAfterBid;
 
-    let previousBiddersBeforeBalance;
-    let previousBiddersAfterBalance;
+    let txGasCosts;
 
     beforeEach(async function () {
       await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount1, {from: _owner});
+      bidder1_BalanceBeforeBid = await web3.eth.getBalance(bidder1);
+
       let tx = await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
 
+      bidder1_BalanceAfterBid = await web3.eth.getBalance(bidder1);
       txGasCosts = await getGasCosts(tx);
-      previousBiddersBeforeBalance = await web3.eth.getBalance(bidder1);
     });
 
-    it('Bidder 1 is highest bidder', async function () {
+    it('bidder 1 is highest bidder', async function () {
       let details = await this.auction.highestBidForEdition(editionNumber1);
       details[0].should.be.equal(bidder1);
       details[1].should.be.bignumber.equal(this.minBidAmount);
@@ -573,39 +608,77 @@ contract.only('ArtistAcceptingBids', function (accounts) {
       balanceAfter.should.be.bignumber.equal(this.minBidAmount);
     });
 
+    it('bidder 1 balance has been deducted the bid amount & gas costs', async function () {
+      bidder1_BalanceAfterBid.should.be.bignumber.equal(
+        bidder1_BalanceBeforeBid
+          .sub(this.minBidAmount) // the bid amount
+          .sub(txGasCosts) // paid the transaction
+      );
+    });
+
     describe('Bidder 1 is outbid but Bidder 2', async function () {
+
+      let _2ndBid;
+      let bidder1_BalanceAfterBeingOutBid;
+
+      let bidder2_BalanceBeforeBid;
+      let bidder2_BalanceAfterBid;
+
       beforeEach(async function () {
-        // Bidder 2 doubles the amount
-        let tx = await this.auction.placeBid(editionNumber1, {from: bidder2, value: this.minBidAmount.mul(2)});
+        _2ndBid = this.minBidAmount.mul(2);
+
+        bidder2_BalanceBeforeBid = await web3.eth.getBalance(bidder2);
+
+        let tx = await this.auction.placeBid(editionNumber1, {from: bidder2, value: _2ndBid});
         txGasCosts = await getGasCosts(tx);
 
-        previousBiddersAfterBalance = await web3.eth.getBalance(bidder1);
+        bidder2_BalanceAfterBid = await web3.eth.getBalance(bidder2);
+        bidder1_BalanceAfterBeingOutBid = await web3.eth.getBalance(bidder1);
       });
 
-      it('Bidder 2 is highest bidder', async function () {
+      it('bidder 2 is highest bidder', async function () {
         let details = await this.auction.highestBidForEdition(editionNumber1);
         details[0].should.be.equal(bidder2);
-        details[1].should.be.bignumber.equal(this.minBidAmount.mul(2));
+        details[1].should.be.bignumber.equal(_2ndBid);
       });
 
       it('contract balance is correct', async function () {
         let balanceAfter = await web3.eth.getBalance(this.auction.address);
-        balanceAfter.should.be.bignumber.equal(this.minBidAmount.mul(2));
+        balanceAfter.should.be.bignumber.equal(_2ndBid);
       });
 
-      it.skip('previous bidder is refunded', async function () {
-        let balance = await web3.eth.getBalance(bidder1);
-        previousBiddersAfterBalance.should.be.bignumber.equal(
-          previousBiddersBeforeBalance.sub(txGasCosts)
+      it('bidder 2 balance has been deducted the bid amount & gas costs', async function () {
+        bidder2_BalanceAfterBid.should.be.bignumber.equal(
+          bidder2_BalanceBeforeBid
+            .sub(_2ndBid) // the bid amount
+            .sub(txGasCosts) // paid the transaction
         );
       });
 
-      describe.skip('Bidder 2 is outbid but Bidder 3', async function () {
+      it('bidder 1 is refunded his previous bid', async function () {
+        bidder1_BalanceAfterBeingOutBid.should.be.bignumber.equal(
+          bidder1_BalanceAfterBid.add(this.minBidAmount) // original funds are set back to the original bidder
+        );
+      });
+
+      describe('Bidder 2 is outbid but Bidder 3', async function () {
+
+        let _3rdBid; // Bidder 3 doubles the amount again
+
+        let bidder2_BalanceAfterBeingOutBid;
+
+        let bidder3_BalanceBeforeBid;
+        let bidder3_BalanceAfterBid;
+
         beforeEach(async function () {
-          previousBiddersBeforeBalance = await web3.eth.getBalance(bidder2);
-          // Bidder 3 doubles the amount again
-          let tx = await this.auction.placeBid(editionNumber1, {from: bidder3, value: this.minBidAmount.mul(4)});
+          _3rdBid = this.minBidAmount.mul(4);
+          bidder3_BalanceBeforeBid = await web3.eth.getBalance(bidder3);
+
+          let tx = await this.auction.placeBid(editionNumber1, {from: bidder3, value: _3rdBid});
           txGasCosts = await getGasCosts(tx);
+
+          bidder3_BalanceAfterBid = await web3.eth.getBalance(bidder3);
+          bidder2_BalanceAfterBeingOutBid = await web3.eth.getBalance(bidder2);
         });
 
         it('Bidder 3 is highest bidder', async function () {
@@ -619,41 +692,71 @@ contract.only('ArtistAcceptingBids', function (accounts) {
           balanceAfter.should.be.bignumber.equal(this.minBidAmount.mul(4));
         });
 
-        it('previous bidder is refunded', async function () {
-          let balance = await web3.eth.getBalance(bidder2);
-          balance.should.be.bignumber.equal(
-            previousBiddersBeforeBalance.sub(txGasCosts)
+        it('bidder 3 balance has been deducted the bid amount & gas costs', async function () {
+          bidder3_BalanceAfterBid.should.be.bignumber.equal(
+            bidder3_BalanceBeforeBid
+              .sub(_3rdBid) // the bid amount
+              .sub(txGasCosts) // paid the transaction
+          );
+        });
+
+        it('bidder 2 is refunded his previous bid', async function () {
+          bidder2_BalanceAfterBeingOutBid.should.be.bignumber.equal(
+            bidder2_BalanceAfterBid.add(_2ndBid) // original funds are set back to the original bidder
           );
         });
 
         describe('Bidder 3 is outbid but Bidder 4', async function () {
+
+          let _4thBid;
+
+          let bidder3_BalanceAfterBeingOutBid;
+
+          let bidder4_BalanceBeforeBid;
+          let bidder4_BalanceAfterBid;
+
           beforeEach(async function () {
-            previousBiddersBeforeBalance = await web3.eth.getBalance(bidder2);
-            // Bidder 4 mins x 6 original price
-            let tx = await this.auction.placeBid(editionNumber1, {from: bidder4, value: this.minBidAmount.mul(6)});
+            _4thBid = this.minBidAmount.mul(5);
+            bidder4_BalanceBeforeBid = await web3.eth.getBalance(bidder4);
+
+            let tx = await this.auction.placeBid(editionNumber1, {from: bidder4, value: _4thBid});
             txGasCosts = await getGasCosts(tx);
+
+            bidder4_BalanceAfterBid = await web3.eth.getBalance(bidder4);
+            bidder3_BalanceAfterBeingOutBid = await web3.eth.getBalance(bidder3);
           });
 
           it('Bidder 3 is highest bidder', async function () {
             let details = await this.auction.highestBidForEdition(editionNumber1);
             details[0].should.be.equal(bidder4);
-            details[1].should.be.bignumber.equal(this.minBidAmount.mul(6));
+            details[1].should.be.bignumber.equal(_4thBid);
           });
 
           it('contract balance is correct', async function () {
             let balanceAfter = await web3.eth.getBalance(this.auction.address);
-            balanceAfter.should.be.bignumber.equal(this.minBidAmount.mul(6));
+            balanceAfter.should.be.bignumber.equal(_4thBid);
           });
 
-          it('previous bidder is refunded', async function () {
-            let balance = await web3.eth.getBalance(bidder3);
-            balance.should.be.bignumber.equal(
-              previousBiddersBeforeBalance.sub(txGasCosts)
+          it('bidder 4 balance has been deducted the bid amount & gas costs', async function () {
+            bidder4_BalanceAfterBid.should.be.bignumber.equal(
+              bidder4_BalanceBeforeBid
+                .sub(_4thBid) // the bid amount
+                .sub(txGasCosts) // paid the transaction
+            );
+          });
+
+          it('bidder 3 is refunded his previous bid', async function () {
+            bidder3_BalanceAfterBeingOutBid.should.be.bignumber.equal(
+              bidder3_BalanceAfterBid.add(_3rdBid) // original funds are set back to the original bidder
             );
           });
         });
       });
     });
+  });
+
+  describe('', async function () {
+
   });
 });
 
