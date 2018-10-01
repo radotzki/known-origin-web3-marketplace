@@ -22,7 +22,9 @@
                     <div class="card-body">
                       <p class="card-title">{{ edition.name }}</p>
                       <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
-                      <span class="pl-1 artist-name" v-on:click="goToArtist(edition.artistAccount)">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
+                      <span class="pl-1 artist-name" v-on:click="goToArtist(edition.artistAccount)">
+                        {{ findArtistsForAddress(edition.artistAccount).name }}
+                      </span>
 
                       <small class="text-danger" v-if="isStartDateInTheFuture(edition)">
                         <span>Available {{ edition.startDate | moment('from') }}</span>
@@ -63,7 +65,6 @@
   import HighResLabel from '../ui-controls/generic/HighResLabel';
   import { PAGES } from '../../store/loadingPageState';
   import LoadingSection from '../ui-controls/generic/LoadingSection';
-  import ClickableAddress from '../ui-controls/generic/ClickableAddress';
   import Availability from '../ui-controls/v2/Availability';
   import _ from 'lodash';
 
@@ -80,7 +81,6 @@
       ArtistPanel,
       GalleryEdition,
       LoadingSpinner,
-      ClickableAddress
     },
     data () {
       return {
