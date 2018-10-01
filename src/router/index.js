@@ -90,7 +90,7 @@ export default new Router({
           next({
             name: 'artist-v2',
             params: {
-              artistAccount: artist.ethAddress
+              artistAccount: _.isArray(artist.ethAddress) ? artist.ethAddress[0] : artist.ethAddress
             }
           });
         } else {

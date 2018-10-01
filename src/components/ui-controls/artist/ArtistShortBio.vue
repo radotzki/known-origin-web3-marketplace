@@ -3,7 +3,7 @@
     <img :src="artist.img"/>
     <h4>{{ artist.name }}</h4>
     <p v-if="!nolinks">
-      <clickable-address :eth-address="artist.ethAddress"></clickable-address>
+      <clickable-address :eth-address="getArtistAddress(artist)"></clickable-address>
     </p>
   </div>
 </template>
@@ -14,7 +14,15 @@
   export default {
     name: 'artistShortBio',
     components: {ClickableAddress},
-    props: ['artist', 'nolinks']
+    props: ['artist', 'nolinks'],
+    methods: {
+      getArtistAddress: function (artist) {
+        if (_.isArray(artist.ethAddress)) {
+          return artist.ethAddress[0];
+        }
+        return artist.ethAddress;
+      }
+    }
   };
 </script>
 
@@ -38,7 +46,6 @@
     .artist-name {
       font-size: 1rem;
     }
-
 
   }
 </style>

@@ -286,7 +286,10 @@ const artists = [
     strapline: 'HEX0x6C in my artistic nickname. It is the hexadecimal code for 108, which is the number of grains of the mala, which is a strand of grains that many Buddhists use when reciting mantras. In summary, HEX0x6C digests my dual nature: rational and spiritual.',
     img: '/static/artists/HEX0x6C_Profile@x2.png',
     live: true,
-    ethAddress: '0x6F7fC56461F1Be9d430037f714AF67E641e5f6cF'
+    ethAddress: [
+      '0xf8b32D30aC6Ab3030595432533D7836FD76B078d', // new
+      '0x6F7fC56461F1Be9d430037f714AF67E641e5f6cF', // old
+    ]
   },
   {
     artistCode: 'OTK',
