@@ -7,6 +7,7 @@ const latestTime = require('../../helpers/latestTime');
 const _ = require('lodash');
 
 const BigNumber = web3.BigNumber;
+const ForceEther = artifacts.require('ForceEther');
 const KnownOriginDigitalAssetV2 = artifacts.require('KnownOriginDigitalAssetV2');
 const ArtistAcceptingBids = artifacts.require('ArtistAcceptingBids');
 
@@ -755,7 +756,89 @@ contract.only('ArtistAcceptingBids', function (accounts) {
     });
   });
 
-  describe('', async function () {
+  describe.only('management controls', async function () {
+
+    describe('global auction', async function () {
+
+      describe('setting min bid', async function () {
+        it('is possible when you are the owner', async function () {
+          const originalMinBid = await this.auction.minBidAmount();
+          originalMinBid.should.be.bignumber.equal(this.minBidAmount);
+
+          await this.auction.setMinBidAmount(1, {from: _owner});
+
+          const updatedMinBid = await this.auction.minBidAmount();
+          updatedMinBid.should.be.bignumber.equal(1);
+        });
+
+        it('fails when you are NOT the owner', async function () {
+          await assertRevert(this.auction.setMinBidAmount(1, {from: bidder1}));
+        });
+      });
+
+      it('can set a new KODA address', async function () {
+        it('is possible when you are the owner', async function () {
+          const originalAddress = await this.auction.kodaAddress();
+          originalAddress.should.be.equal(this.minBidAmount);
+
+          await this.auction.setKodavV2(ZERO_ADDRESS, {from: _owner});
+
+          const updatedAddress = await this.auction.kodaAddress();
+          updatedAddress.should.be.equal(ZERO_ADDRESS);
+        });
+        it('fails when you are NOT the owner', async function () {
+          await assertRevert(this.auction.setKodavV2(ZERO_ADDRESS, {from: bidder1}));
+        });
+      });
+    });
+
+    describe('stuck ether', async function () {
+      // TODO
+      // function withdrawStuckEther(address _withdrawalAccount) onlyOwner public {
+      // function withdrawStuckEtherOfAmount(address _withdrawalAccount, uint256 _amount) onlyOwner public {
+
+      describe('withdrawing everything', async function () {
+
+        it('only possible when owner', async function () {
+
+        });
+
+        it('fails when NOT owner', async function () {
+
+        });
+
+        it('force ether can still be withdrawn', async function () {
+          // const forceEther = await ForceEther.new({value: amount});
+          // await forceEther.destroyAndSend(this.hasNoEther.address);
+          // const forcedBalance = await ethGetBalance(this.hasNoEther.address);
+          // assert.equal(forcedBalance, amount);
+        });
+      });
+
+      describe('withdrawing specific amount', async function () {
+
+      });
+    });
+
+    describe('override functions', async function () {
+      // TODO
+      // function manualOverrideEditionBid(uint256 _editionNumber, address _bidder, uint256 _amount) onlyOwner public returns (bool) {
+      // function manualOverrideEditionHighestBidder(uint256 _editionNumber, address _bidder) onlyOwner public returns (bool) {
+      // function manualOverrideEditionHighestBidAndBidder(uint256 _editionNumber, address _bidder, uint256 _amount) onlyOwner public returns (bool) {
+    });
+
+    describe('edition controls', async function () {
+      // TODO
+      // function enableEdition(uint256 _editionNumber) onlyOwner public returns (bool) {
+      // function disableEdition(uint256 _editionNumber) onlyOwner public returns (bool) {
+      // function setArtistsControlAddress(uint256 _editionNumber, address _address) onlyOwner public returns (bool) {
+      // function setArtistsAddressAndEnabledEdition(uint256 _editionNumber, address _address) onlyOwner public returns (bool) {
+      // function removeEditionControlAddress(uint256 _editionNumber) onlyOwner public returns (bool) {
+    });
+
+  });
+
+  describe('TODO EVENTS', async function () {
 
   });
 });

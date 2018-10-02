@@ -460,6 +460,34 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   }
 
   /**
+   * @dev Manual override (last resort) method for overriding an edition bid
+   * @dev Only callable from owner
+   */
+  function manualOverrideEditionBid(uint256 _editionNumber, address _bidder, uint256 _amount) onlyOwner public returns (bool) {
+    editionBids[_editionNumber][_bidder] = _amount;
+    return true;
+  }
+
+  /**
+   * @dev Manual override (last resort) method for setting edition highest bid
+   * @dev Only callable from owner
+   */
+  function manualOverrideEditionHighestBidder(uint256 _editionNumber, address _bidder) onlyOwner public returns (bool) {
+    editionHighestBid[_editionNumber] = _bidder;
+    return true;
+  }
+
+  /**
+   * @dev Manual override (last resort) method for setting edition highest bid & the highest bidder to the provided address
+   * @dev Only callable from owner
+   */
+  function manualOverrideEditionHighestBidAndBidder(uint256 _editionNumber, address _bidder, uint256 _amount) onlyOwner public returns (bool) {
+    editionBids[_editionNumber][_bidder] = _amount;
+    editionHighestBid[_editionNumber] = _bidder;
+    return true;
+  }
+
+  /**
    * @dev Sets the minimum bid amount
    * @dev Only callable from owner
    */
