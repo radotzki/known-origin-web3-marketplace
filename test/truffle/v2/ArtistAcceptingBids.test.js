@@ -3,6 +3,7 @@ const etherToWei = require('../../helpers/etherToWei');
 const advanceBlock = require('../../helpers/advanceToBlock');
 const {duration, increaseTimeTo} = require('../../helpers/increaseTime');
 const latestTime = require('../../helpers/latestTime');
+const {ethSendTransaction, ethGetBalance} = require('../../helpers/web3');
 
 const _ = require('lodash');
 
@@ -793,30 +794,75 @@ contract.only('ArtistAcceptingBids', function (accounts) {
     });
 
     describe('stuck ether', async function () {
-      // TODO
-      // function withdrawStuckEther(address _withdrawalAccount) onlyOwner public {
-      // function withdrawStuckEtherOfAmount(address _withdrawalAccount, uint256 _amount) onlyOwner public {
-
       describe('withdrawing everything', async function () {
-
         it('only possible when owner', async function () {
-
+          await this.auction.withdrawStuckEther(_owner, {from: _owner});
         });
 
         it('fails when NOT owner', async function () {
-
+          await assertRevert(this.auction.withdrawStuckEther(_owner, {from: bidder1}));
         });
 
         it('force ether can still be withdrawn', async function () {
-          // const forceEther = await ForceEther.new({value: amount});
-          // await forceEther.destroyAndSend(this.hasNoEther.address);
-          // const forcedBalance = await ethGetBalance(this.hasNoEther.address);
-          // assert.equal(forcedBalance, amount);
+          const forceEther = await ForceEther.new({value: this.minBidAmount});
+          await forceEther.destroyAndSend(this.auction.address);
+          const forcedBalance = await web3.eth.getBalance(this.auction.address);
+          forcedBalance.should.be.bignumber.equal(this.minBidAmount);
+
+          const ownerPreBalance = await web3.eth.getBalance(_owner);
+
+          const tx = await this.auction.withdrawStuckEther(_owner, {from: _owner});
+          const txGasCosts = await getGasCosts(tx);
+
+          const ownerPostBalance = await web3.eth.getBalance(_owner);
+
+          const postWithdrawalAuctionBalance = await web3.eth.getBalance(this.auction.address);
+          postWithdrawalAuctionBalance.should.be.bignumber.equal(0);
+
+          ownerPostBalance.should.be.bignumber.equal(
+            ownerPreBalance
+              .sub(txGasCosts) // owner pays fee
+              .add(this.minBidAmount) // gets all stuck ether sent to them
+          );
         });
       });
 
       describe('withdrawing specific amount', async function () {
 
+        const PARTIAL_WITHDRAWAL_AMOUNT = 10;
+
+        it('only possible when owner', async function () {
+          await this.auction.withdrawStuckEtherOfAmount(_owner, PARTIAL_WITHDRAWAL_AMOUNT, {from: _owner});
+        });
+
+        it('fails when NOT owner', async function () {
+          await assertRevert(this.auction.withdrawStuckEtherOfAmount(_owner, PARTIAL_WITHDRAWAL_AMOUNT, {from: bidder1}));
+        });
+
+        it('force ether can still be withdrawn', async function () {
+          const forceEther = await ForceEther.new({value: this.minBidAmount});
+          await forceEther.destroyAndSend(this.auction.address);
+          const forcedBalance = await web3.eth.getBalance(this.auction.address);
+          forcedBalance.should.be.bignumber.equal(this.minBidAmount);
+
+          const ownerPreBalance = await web3.eth.getBalance(_owner);
+
+          const tx = await this.auction.withdrawStuckEtherOfAmount(_owner, PARTIAL_WITHDRAWAL_AMOUNT, {from: _owner});
+          const txGasCosts = await getGasCosts(tx);
+
+          const ownerPostBalance = await web3.eth.getBalance(_owner);
+
+          const postWithdrawalAuctionBalance = await web3.eth.getBalance(this.auction.address);
+          postWithdrawalAuctionBalance.should.be.bignumber.equal(
+            this.minBidAmount.sub(PARTIAL_WITHDRAWAL_AMOUNT)
+          );
+
+          ownerPostBalance.should.be.bignumber.equal(
+            ownerPreBalance
+              .sub(txGasCosts) // owner pays fee
+              .add(PARTIAL_WITHDRAWAL_AMOUNT) // gets partial stuck ether sent to them
+          );
+        });
       });
     });
 
