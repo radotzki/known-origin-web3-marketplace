@@ -1,62 +1,64 @@
 <template>
   <div v-if="edition && nextMinimumNewBid(edition.edition) && isEditionAuctionEnabled(edition.edition)">
-    <div class="card-footer text-center" v-if="account">
-      <div>
-        <fieldset :disabled="isLoading(PAGES.ARTIST_ACCEPTING_BID)">
-          <form>
+    <div v-if="account">
 
-            <!-- When you are NOT the top bidder -->
-            <div class="form-group row" v-if="!accountIsHighestBidder(edition.edition)">
-              <div class="col-sm-7">
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <div class="input-group-text">ETH</div>
-                  </div>
-                  <input type="number" class="form-control" id="makeBidValue" step="0.01" placeholder="0.1"
-                         v-model="form.bid" :min="nextMinimumNewBid(edition.edition)">
+      <fieldset :disabled="isLoading(PAGES.ARTIST_ACCEPTING_BID)">
+        <form>
+
+          <!-- When you are NOT the top bidder -->
+          <div class="form-group row" v-if="!accountIsHighestBidder(edition.edition)">
+
+            <div class="col-sm-12">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <div class="input-group-text">ETH</div>
                 </div>
-                <small class="form-text text-muted">
-                  Next minimum bid: {{nextMinimumNewBid(edition.edition)}} ETH
-                </small>
+                <input type="number" class="form-control" id="makeBidValue" step="0.01" placeholder="0.1"
+                       v-model="form.bid" :min="nextMinimumNewBid(edition.edition)">
               </div>
-              <div class="col-sm-5">
-                <button class="btn btn-primary btn-block"
-                        v-if="!accountIsHighestBidder(edition.edition)" v-on:click="placeBid"
-                        :disabled="form.bid < nextMinimumNewBid(edition.edition)">
-                  Place Bid
-                </button>
-                <p></p>
-              </div>
+              <small class="form-text text-muted text-center">
+                Next minimum bid: {{nextMinimumNewBid(edition.edition)}} ETH
+              </small>
             </div>
 
-            <!-- When you are top bidder -->
-            <div class="form-group row" v-if="accountIsHighestBidder(edition.edition)">
-              <div class="col-sm-7">
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <div class="input-group-text">ETH</div>
-                  </div>
-                  <input type="number" class="form-control" id="increaseBidValue" step="0.01" placeholder="0.1"
-                         v-model="form.bid" :min="minBidAmount">
-                </div>
-                <small class="form-text text-muted">
-                  Minimum increase: {{minBidAmount}} ETH
-                </small>
-              </div>
-              <div class="col-sm-5">
-                <button class="btn btn-primary btn-block"
-                        v-if="accountIsHighestBidder(edition.edition)" v-on:click="increaseBid"
-                        :disabled="form.bid < minBidAmount">
-                  Increase Bid
-                </button>
-                <p></p>
-              </div>
+            <div class="col-sm-12">
+              <button class="btn btn-primary btn-block"
+                      v-if="!accountIsHighestBidder(edition.edition)" v-on:click="placeBid"
+                      :disabled="form.bid < nextMinimumNewBid(edition.edition)">
+                Place Bid
+              </button>
+              <p></p>
             </div>
-          </form>
-        </fieldset>
-      </div>
-      <div v-if="auction[edition.edition] && auction[edition.edition].highestBid !== '0'">
-        <hr/>
+          </div>
+
+          <!-- When you are top bidder -->
+          <div class="form-group row" v-if="accountIsHighestBidder(edition.edition)">
+            <div class="col-sm-12">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <div class="input-group-text">ETH</div>
+                </div>
+                <input type="number" class="form-control" id="increaseBidValue" step="0.01" placeholder="0.1"
+                       v-model="form.bid" :min="minBidAmount">
+              </div>
+              <small class="form-text text-muted text-center">
+                Minimum increase: {{minBidAmount}} ETH
+              </small>
+            </div>
+            <div class="col-sm-12">
+              <button class="btn btn-primary btn-block"
+                      v-if="accountIsHighestBidder(edition.edition)" v-on:click="increaseBid"
+                      :disabled="form.bid < minBidAmount">
+                Increase Bid
+              </button>
+              <p></p>
+            </div>
+          </div>
+        </form>
+      </fieldset>
+
+      <!-- Auction - Bid complete -->
+      <div v-if="auction[edition.edition] && auction[edition.edition].highestBid !== '0'" class="text-center">
         <div v-if="!accountIsHighestBidder(edition.edition)">
           <span class="font-weight-light">Current highest</span>
           <clickable-address :eth-address="auction[edition.edition].highestBidder"></clickable-address>
@@ -67,7 +69,7 @@
         </div>
         <div v-if="accountIsHighestBidder(edition.edition)">
           <span class="text-success">
-            You are currently the highest bidder <img src="../../../../static/GreenTick.svg" style="width: 30px"/>
+            You are the highest bidder <img src="../../../../static/GreenTick.svg" style="width: 15px"/>
           </span>
           <br/>
           <clickable-address :eth-address="auction[edition.edition].highestBidder"></clickable-address>
@@ -77,6 +79,8 @@
           </span>
         </div>
       </div>
+
+      <!-- Auction - Bid submitted -->
       <div class="text-sm-center">
 
         <div v-if="isAuctionTriggered(edition.edition)">
@@ -86,7 +90,8 @@
             <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
           </span>
           <small class="text-muted">
-            <br/><clickable-transaction
+            <br/>
+            <clickable-transaction
               :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>
           </small>
         </div>
@@ -97,14 +102,14 @@
            Your purchase is being confirmed...<font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
           </span>
           <small class="text-muted">
-            <br/><clickable-transaction
+            <br/>
+            <clickable-transaction
               :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>
           </small>
         </div>
 
         <div class="text-center mb-2" v-if="isAuctionSuccessful(edition.edition, account)">
           <hr/>
-          <p class="card-text text-muted mt-4">Your bid was placed successfully...</p>
           <small class="text-muted">
             <clickable-transaction
               :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>
@@ -117,11 +122,14 @@
           <img src="../../../../static/Failure.svg" style="width: 25px"/>
         </div>
       </div>
+
       <hr/>
-      <p class="text-muted">
+
+      <p class="text-muted text-center">
         The winning bid will receive the artwork and all other bids will be refunded automatically.
       </p>
-      <p class="text-muted">
+
+      <p class="text-muted text-center">
         Got any questions, reach us on
         <a href="https://t.me/knownorigin_io" target="_blank" title="Telegram">telegram</a>
         or via <a href="mailto:hello@knownorigin.io" target="_blank" title="Mail">email</a>
@@ -236,4 +244,8 @@
 
 <style scoped lang="scss">
 
+  .hr-sm {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
 </style>

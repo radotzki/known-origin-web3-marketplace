@@ -757,7 +757,7 @@ contract.only('ArtistAcceptingBids', function (accounts) {
     });
   });
 
-  describe.only('management controls', async function () {x
+  describe.only('management controls', async function () {
 
     describe('global auction', async function () {
 
@@ -893,23 +893,65 @@ contract.only('ArtistAcceptingBids', function (accounts) {
     });
 
     describe('edition controls', async function () {
-      // TODO
-      // function enableEdition(uint256 _editionNumber) onlyOwner public returns (bool) {
-      // function disableEdition(uint256 _editionNumber) onlyOwner public returns (bool) {
-      // function setArtistsControlAddress(uint256 _editionNumber, address _address) onlyOwner public returns (bool) {
-      // function setArtistsAddressAndEnabledEdition(uint256 _editionNumber, address _address) onlyOwner public returns (bool) {
-      // function removeEditionControlAddress(uint256 _editionNumber) onlyOwner public returns (bool) {
 
-      describe('enabled/disable editions', async function () {
+      describe('enabled editions', async function () {
         it('is possible when you are the owner', async function () {
+          await this.auction.enableEdition(editionNumber1, {from: _owner});
+          let enabled = await this.auction.isEditionEnabled(editionNumber1);
+          enabled.should.be.equal(true);
 
+          await this.auction.disableEdition(editionNumber1, {from: _owner});
+          enabled = await this.auction.isEditionEnabled(editionNumber1);
+          enabled.should.be.equal(false);
         });
 
         it('fails when you are NOT the owner', async function () {
-
+          await assertRevert(this.auction.enableEdition(editionNumber1, {from: bidder1}));
         });
       });
 
+      describe('disable editions', async function () {
+        it('is possible when you are the owner', async function () {
+          await this.auction.enableEdition(editionNumber1, {from: _owner});
+          let enabled = await this.auction.isEditionEnabled(editionNumber1);
+          enabled.should.be.equal(true);
+
+          await this.auction.disableEdition(editionNumber1, {from: _owner});
+          enabled = await this.auction.isEditionEnabled(editionNumber1);
+          enabled.should.be.equal(false);
+        });
+
+        it('fails when you are NOT the owner', async function () {
+          await this.auction.enableEdition(editionNumber1, {from: _owner});
+          let enabled = await this.auction.isEditionEnabled(editionNumber1);
+          enabled.should.be.equal(true);
+
+          await assertRevert(this.auction.disableEdition(editionNumber1, {from: bidder1}));
+
+          enabled = await this.auction.isEditionEnabled(editionNumber1);
+          enabled.should.be.equal(true);
+        });
+      });
+
+      describe('setting artists control address', async function () {
+        it('is possible when you are the owner', async function () {
+          let editionController = await this.auction.editionController(editionNumber1);
+          editionController.should.be.equal(ZERO_ADDRESS);
+
+          await this.auction.setArtistsControlAddress(editionNumber1, artistAccount2, {from: _owner});
+
+          editionController = await this.auction.editionController(editionNumber1);
+          editionController.should.be.equal(artistAccount2);
+        });
+
+        it('fails when you are NOT the owner', async function () {
+          await assertRevert(this.auction.setArtistsControlAddress(editionNumber1, artistAccount2, {from: bidder1}));
+
+          // Still zero
+          const editionController = await this.auction.editionController(editionNumber1);
+          editionController.should.be.equal(ZERO_ADDRESS);
+        });
+      });
     });
 
     describe('override functions', async function () {

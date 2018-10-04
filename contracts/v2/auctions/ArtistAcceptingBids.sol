@@ -453,12 +453,28 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   }
 
   /**
-   * @dev Removes the mapping for the edition to control address
+   * @dev Sets the minimum bid amount
    * @dev Only callable from owner
    */
-  function removeEditionControlAddress(uint256 _editionNumber) onlyOwner public returns (bool) {
-    delete controlAddressToEditionNumber[_editionNumber];
-    return true;
+  function setMinBidAmount(uint256 _minBidAmount) onlyOwner public {
+    minBidAmount = _minBidAmount;
+  }
+
+  /**
+   * @dev Sets the KODA address
+   * @dev Only callable from owner
+   */
+  function setKodavV2(IKODAV2 _kodaAddress) onlyOwner public {
+    kodaAddress = _kodaAddress;
+  }
+
+  /**
+   * @dev Sets the KODA address
+   * @dev Only callable from owner
+   */
+  function setKoCommissionAccount(address _koCommissionAccount) public onlyOwner {
+    require(_koCommissionAccount != address(0), "Invalid address");
+    koCommissionAccount = _koCommissionAccount;
   }
 
   /**
@@ -487,31 +503,6 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
     editionBids[_editionNumber][_bidder] = _amount;
     editionHighestBid[_editionNumber] = _bidder;
     return true;
-  }
-
-  /**
-   * @dev Sets the minimum bid amount
-   * @dev Only callable from owner
-   */
-  function setMinBidAmount(uint256 _minBidAmount) onlyOwner public {
-    minBidAmount = _minBidAmount;
-  }
-
-  /**
-   * @dev Sets the KODA address
-   * @dev Only callable from owner
-   */
-  function setKodavV2(IKODAV2 _kodaAddress) onlyOwner public {
-    kodaAddress = _kodaAddress;
-  }
-
-  /**
-   * @dev Sets the KODA address
-   * @dev Only callable from owner
-   */
-  function setKoCommissionAccount(address _koCommissionAccount) public onlyOwner {
-    require(_koCommissionAccount != address(0), "Invalid address");
-    koCommissionAccount = _koCommissionAccount;
   }
 
   //////////////////////////
