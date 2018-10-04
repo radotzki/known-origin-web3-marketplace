@@ -777,10 +777,10 @@ contract.only('ArtistAcceptingBids', function (accounts) {
         });
       });
 
-      it('can set a new KODA address', async function () {
+      describe('can set a new KODA address', async function () {
         it('is possible when you are the owner', async function () {
           const originalAddress = await this.auction.kodaAddress();
-          originalAddress.should.be.equal(this.minBidAmount);
+          originalAddress.should.be.equal(this.koda.address);
 
           await this.auction.setKodavV2(ZERO_ADDRESS, {from: _owner});
 
@@ -795,8 +795,21 @@ contract.only('ArtistAcceptingBids', function (accounts) {
 
     describe('stuck ether', async function () {
       describe('withdrawing everything', async function () {
-        it('only possible when owner', async function () {
+        it('fails when no ether left to withdraw', async function () {
+          await assertRevert(this.auction.withdrawStuckEther(_owner, {from: _owner}));
+        });
+
+        it('is successful when owner and eth present to withdraw', async function () {
+          await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
+          await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
+
+          const auctionBalance = await web3.eth.getBalance(this.auction.address);
+          auctionBalance.should.be.bignumber.equal(this.minBidAmount);
+
           await this.auction.withdrawStuckEther(_owner, {from: _owner});
+
+          const newAuctionBalance = await web3.eth.getBalance(this.auction.address);
+          newAuctionBalance.should.be.bignumber.equal(0);
         });
 
         it('fails when NOT owner', async function () {
@@ -829,10 +842,23 @@ contract.only('ArtistAcceptingBids', function (accounts) {
 
       describe('withdrawing specific amount', async function () {
 
-        const PARTIAL_WITHDRAWAL_AMOUNT = 10;
+        const PARTIAL_WITHDRAWAL_AMOUNT = etherToWei(0.0001);
 
-        it('only possible when owner', async function () {
+        it('fails when no ether left to withdraw', async function () {
+          await assertRevert(this.auction.withdrawStuckEtherOfAmount(_owner, PARTIAL_WITHDRAWAL_AMOUNT, {from: _owner}));
+        });
+
+        it('is successful when owner and eth present to withdraw', async function () {
+          await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
+          await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
+
+          const auctionBalance = await web3.eth.getBalance(this.auction.address);
+          auctionBalance.should.be.bignumber.equal(this.minBidAmount);
+
           await this.auction.withdrawStuckEtherOfAmount(_owner, PARTIAL_WITHDRAWAL_AMOUNT, {from: _owner});
+
+          const newAuctionBalance = await web3.eth.getBalance(this.auction.address);
+          newAuctionBalance.should.be.bignumber.equal(this.minBidAmount.sub(PARTIAL_WITHDRAWAL_AMOUNT));
         });
 
         it('fails when NOT owner', async function () {
@@ -866,13 +892,6 @@ contract.only('ArtistAcceptingBids', function (accounts) {
       });
     });
 
-    describe('override functions', async function () {
-      // TODO
-      // function manualOverrideEditionBid(uint256 _editionNumber, address _bidder, uint256 _amount) onlyOwner public returns (bool) {
-      // function manualOverrideEditionHighestBidder(uint256 _editionNumber, address _bidder) onlyOwner public returns (bool) {
-      // function manualOverrideEditionHighestBidAndBidder(uint256 _editionNumber, address _bidder, uint256 _amount) onlyOwner public returns (bool) {
-    });
-
     describe('edition controls', async function () {
       // TODO
       // function enableEdition(uint256 _editionNumber) onlyOwner public returns (bool) {
@@ -880,6 +899,13 @@ contract.only('ArtistAcceptingBids', function (accounts) {
       // function setArtistsControlAddress(uint256 _editionNumber, address _address) onlyOwner public returns (bool) {
       // function setArtistsAddressAndEnabledEdition(uint256 _editionNumber, address _address) onlyOwner public returns (bool) {
       // function removeEditionControlAddress(uint256 _editionNumber) onlyOwner public returns (bool) {
+    });
+
+    describe('override functions', async function () {
+      // TODO
+      // function manualOverrideEditionBid(uint256 _editionNumber, address _bidder, uint256 _amount) onlyOwner public returns (bool) {
+      // function manualOverrideEditionHighestBidder(uint256 _editionNumber, address _bidder) onlyOwner public returns (bool) {
+      // function manualOverrideEditionHighestBidAndBidder(uint256 _editionNumber, address _bidder, uint256 _amount) onlyOwner public returns (bool) {
     });
 
   });
