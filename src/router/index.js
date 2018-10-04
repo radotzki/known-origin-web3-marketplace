@@ -63,6 +63,12 @@ export default new Router({
       props: true
     },
     {
+      path: '/edition/:editionNumber',
+      name: 'confirmPurchase',
+      component: ConfirmPurchase,
+      props: true
+    },
+    {
       path: '/artists-v2/:artistAccount',
       name: 'artist-v2',
       component: ArtistPage,
