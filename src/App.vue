@@ -294,5 +294,12 @@
 
   .tag {
     font-size: 0.75rem;
+    display: inline-block;
   }
+
+  .editions-wrap {
+    margin-left: 50px;
+    margin-right: 50px;
+  }
+
 </style>

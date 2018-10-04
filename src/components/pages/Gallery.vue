@@ -32,7 +32,7 @@
       <div class="row editions-wrap">
 
         <div class="col-sm-3" v-if="priceFilter === 'artist'">
-          <artist-panel :artist="findArtistsForAddress(this.featuredArtistAccount())"></artist-panel>
+          <artist-panel :artist="findArtistsForAddress(featuredArtistAccount())"></artist-panel>
         </div>
 
         <div class="col-sm-9" v-if="priceFilter === 'artist'">
@@ -94,7 +94,6 @@
 
   import _ from 'lodash';
   import { mapGetters, mapState } from 'vuex';
-  import GalleryEdition from '../ui-controls/cards/GalleryEdition';
   import ArtistPanel from '../ui-controls/artist/ArtistPanel';
   import ClickableAddress from '../ui-controls/generic/ClickableAddress';
   import * as actions from '../../store/actions';
@@ -106,7 +105,6 @@
     name: 'galleryKODAV2',
     components: {
       LoadingSection,
-      GalleryEdition,
       Availability,
       ClickableAddress,
       ArtistPanel
