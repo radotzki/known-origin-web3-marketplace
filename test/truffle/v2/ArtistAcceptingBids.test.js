@@ -757,7 +757,7 @@ contract.only('ArtistAcceptingBids', function (accounts) {
     });
   });
 
-  describe.only('management controls', async function () {
+  describe.only('management controls', async function () {x
 
     describe('global auction', async function () {
 
@@ -899,6 +899,17 @@ contract.only('ArtistAcceptingBids', function (accounts) {
       // function setArtistsControlAddress(uint256 _editionNumber, address _address) onlyOwner public returns (bool) {
       // function setArtistsAddressAndEnabledEdition(uint256 _editionNumber, address _address) onlyOwner public returns (bool) {
       // function removeEditionControlAddress(uint256 _editionNumber) onlyOwner public returns (bool) {
+
+      describe('enabled/disable editions', async function () {
+        it('is possible when you are the owner', async function () {
+
+        });
+
+        it('fails when you are NOT the owner', async function () {
+
+        });
+      });
+
     });
 
     describe('override functions', async function () {

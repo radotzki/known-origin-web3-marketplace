@@ -1,21 +1,12 @@
 
 <template>
-  <span class="attributes">
-
-    <!--<span v-if="attributes">-->
-        <!--<button class="btn btn-link" v-on:click="isActive = !isActive" v-if="!isActive">more</button>-->
-    <!--</span>-->
-
-    <span v-for="(value, key) in attributes">
-      <span v-if="isArray(value)">
-        <span v-for="v in value" class="tag pl-2 pr-2" v-if="v !== 'high res'">#{{v}}</span>
-      </span>
-      <!--<span v-else>-->
-        <!--<span class="badge badge-light" v-if="value !== 'high res'">#{{value}}</span>-->
-      <!--</span>-->
-    </span>
-
-  </span>
+  <div>
+    <div v-for="(value, key) in attributes">
+      <div v-if="isArray(value) && v !== 'high res'"
+            v-for="v in value" class="tag">#{{v}} &nbsp;
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -45,8 +36,5 @@
 </script>
 
 <style scoped lang="scss">
-  button {
-    font-size: 0.7rem;
-    padding: 0;
-  }
+
 </style>
