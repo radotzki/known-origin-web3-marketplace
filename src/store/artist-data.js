@@ -363,6 +363,39 @@ const artists = [
     twitter: '@philotimosart',
     website: 'https://www.instagram.com/philotimosart/',
     ethAddress: '0x9Dfe031Be5EE3363D73183D34B1D3F9f6515c952'
+  },
+  {
+    artistCode: 'MAC',
+    name: 'Maarten Corpel',
+    bio: 'Digital designer of things',
+    strapline: 'Digital designer of things',
+    img: '/static/artists/Maarten_AProfile@x2.png',
+    live: true,
+    twitter: '@maartencorpel',
+    website: 'https://maartencorpel.com',
+    ethAddress: '0xE9c57276EF46324d8144b3E759Ab0AC59F75513F'
+  },
+  {
+    artistCode: 'KJG',
+    name: 'Kjetil Golid',
+    bio: 'Making generative graphics',
+    strapline: 'Making generative graphics',
+    img: '/static/artists/Kjetil_GProfile@x2.png',
+    live: true,
+    twitter: '@kGolid',
+    website: 'https://generated.space/',
+    ethAddress: '0x08f950816358F4306B70fB319E4F35c592d1B8a8'
+  },
+  {
+    artistCode: 'RAD',
+    name: 'Rare Designer',
+    bio: 'Hello pepe community active. I am Pepe Designer, creator of rare pepes innovators, also illustrator and lover of crypto coins. Passionate about the MEME economy',
+    strapline: 'Hello pepe community active. I am Pepe Designer, creator of rare pepes innovators, also illustrator and lover of crypto coins. Passionate about the MEME economy',
+    img: '/static/artists/Rare_D.png',
+    live: true,
+    twitter: '@rare_designer',
+    website: 'https://digirare.com/artists/rare-designer',
+    ethAddress: '0x43a7634eb14c12b59be599487c1d7898a3d864c1'
   }
 ];
 
