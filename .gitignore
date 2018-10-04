@@ -22,3 +22,5 @@ selenium-debug.log
 /coverageEnv/
 scTopics
 allFiredEvents
+/mythril-output.log
+.firebase
