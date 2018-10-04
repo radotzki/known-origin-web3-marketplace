@@ -411,7 +411,7 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   function withdrawStuckEtherOfAmount(address _withdrawalAccount, uint256 _amount) onlyOwner public {
     require(_withdrawalAccount != address(0), "Invalid address provided");
     require(_amount != 0, "Invalid amount to withdraw");
-    require(address(this).balance <= _amount, "No more ether to withdraw");
+    require(address(this).balance >= _amount, "No more ether to withdraw");
     _withdrawalAccount.transfer(_amount);
   }
 
