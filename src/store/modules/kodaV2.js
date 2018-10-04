@@ -13,18 +13,25 @@ function featureArtworks(network) {
     case 'Ropsten':
     case 'Local':
       return [
-        18100,
-        18400,
-        18700,
-        19000,
-        19100,
-        19200,
+        // 18100,
+        // 18400,
+        // 18700,
+        // 19000,
+        // 19100,
+        // 19200,
         19300,
         19400,
         19600,
         19700,
         19800,
-        20000
+        20000,
+        20000,
+        20100,
+        20200,
+        20300,
+        20400,
+        20500,
+        20600
       ];
     default:
       return [];
@@ -49,11 +56,11 @@ const contractStateModule = {
 
     // must be 7 as rotated daily
     featuredArtistAccounts: [
-      '0x9Dfe031Be5EE3363D73183D34B1D3F9f6515c952',
-      '0xe13d4abee4b304b67c52a56871141cad1b833aa7',
-      '0x7EC1b3d17EC7Ff05B4dA25a0bE8636d5E5C3D7cD',
+      '0x43a7634eb14c12b59be599487c1d7898a3d864c1',
+      '0x08f950816358F4306B70fB319E4F35c592d1B8a8',
+      '0xE9c57276EF46324d8144b3E759Ab0AC59F75513F',
       '0xa4aD045d62a493f0ED883b413866448AfB13087C',
-      '0x6F7fC56461F1Be9d430037f714AF67E641e5f6cF',
+      '0xf8b32D30aC6Ab3030595432533D7836FD76B078d',
       '0xe0F228070D8F7b5C25E9375Fa70FA418f8dfEDf8',
       '0xa2cD656f8461d2C186D69fFB8A4a5c10EFF0914d'
     ]
