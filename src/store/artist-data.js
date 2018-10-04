@@ -393,7 +393,7 @@ const artists = [
     strapline: 'Hello pepe community active. I am Pepe Designer, creator of rare pepes innovators, also illustrator and lover of crypto coins. Passionate about the MEME economy',
     img: '/static/artists/Rare_D.png',
     live: true,
-    twitter: '@rare_designer',
+    twitter: '@Pepe_Designer',
     website: 'https://digirare.com/artists/rare-designer',
     ethAddress: '0x43a7634eb14c12b59be599487c1d7898a3d864c1'
   }
