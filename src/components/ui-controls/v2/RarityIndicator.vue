@@ -1,9 +1,9 @@
 <template>
-  <span class="tag">
+  <div class="tag">
     <span v-if="totalAvailable === 1">#ultrarare</span>
     <span v-else-if="totalAvailable > 1 && totalAvailable <= 5">#rare</span>
     <span v-else-if="totalAvailable > 5">#common</span>
-  </span>
+  </div>
 </template>
 
 <script>
