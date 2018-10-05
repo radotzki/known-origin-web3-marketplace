@@ -58,6 +58,7 @@ export const SET_CONTRACT_ADDRESS_V2 = 'SET_CONTRACT_ADDRESS_V2';
 // Auction //
 /////////////
 export const SET_AUCTION_DETAILS = 'SET_AUCTION_DETAILS';
+export const SET_AUCTION_DETAILS_FOR_MANY = 'SET_AUCTION_DETAILS_FOR_MANY';
 export const SET_MINIMUM_BID = 'SET_MINIMUM_BID';
 
 // Auction Flow

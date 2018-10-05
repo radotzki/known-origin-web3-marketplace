@@ -4,7 +4,7 @@
 
       <loading-section v-if="!edition" :page="PAGES.CONFIRM_PURCHASE"></loading-section>
 
-      <div class="col-sm-3">
+      <div class="col-sm-3" v-if="edition" >
         <div class="shadow-sm bg-white p-4 mb-5">
 
           <router-link

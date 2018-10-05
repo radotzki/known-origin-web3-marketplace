@@ -116,24 +116,30 @@ const auctionStateModule = {
   },
   actions: {
     [actions.GET_AUCTION_DETAILS]: async function ({commit, state, getters, rootState}, edition) {
-      const transform = (value) => {
-        return {
-          enabled: value[0],
-          highestBidder: value[1],
-          highestBid: Web3.utils.fromWei(value[2].toString("10"), 'ether'),
-          highestBidWei: value[2],
-        };
-      };
-
       const contract = await rootState.ArtistAcceptingBids.deployed();
 
-      const result = transform(await contract.auctionDetails(edition.edition));
+      const result = transformAuctionDetails(await contract.auctionDetails(edition.edition), edition.edition);
       commit(mutations.SET_AUCTION_DETAILS, {
         [edition.edition]: result
       });
 
       const minBidAmount = await contract.minBidAmount();
       commit(mutations.SET_MINIMUM_BID, minBidAmount);
+    },
+    [actions.GET_AUCTION_DETAILS_FOR_EDITION_NUMBERS]: async function ({commit, state, getters, rootState}, {editions}) {
+      const contract = await rootState.ArtistAcceptingBids.deployed();
+
+      const allData = await Promise.all(_.map(editions, async (edition) => {
+        const data = await contract.auctionDetails(edition);
+        return transformAuctionDetails(data, edition);
+      }));
+
+      const editionData = _.reduce(allData, (result, data) => {
+        result[data.edition] = data;
+        return result;
+      }, {});
+
+      commit(mutations.SET_AUCTION_DETAILS, editionData);
     },
     [actions.PLACE_BID]: async function ({commit, dispatch, state, getters, rootState}, {edition, value}) {
       commit(mutations.RESET_BID_STATE, {edition});
@@ -236,5 +242,17 @@ const auctionStateModule = {
     }
   }
 };
+
+const transformAuctionDetails = (value, edition) => {
+  return {
+    edition,
+    enabled: value[0],
+    highestBidder: value[1],
+    highestBid: Web3.utils.fromWei(value[2].toString("10"), 'ether'),
+    highestBidWei: value[2],
+    controller: value[3],
+  };
+};
+
 
 export default auctionStateModule;
