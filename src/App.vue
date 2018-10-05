@@ -225,6 +225,10 @@
     h1 {
       font-size: 1.5rem;
     }
+
+    .editions-wrap {
+      margin: 0 !important;
+    }
   }
 
   .footer {

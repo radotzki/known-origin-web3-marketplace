@@ -4,20 +4,14 @@
 
       <loading-section v-if="!edition" :page="PAGES.CONFIRM_PURCHASE"></loading-section>
 
-      <div class="col-sm-3">
-        <div class="shadow-sm bg-white p-4 mb-5">
+      <div class="col-sm-3 order-2 order-sm-1 mb-5">
+        <div class="shadow-sm bg-white p-4">
 
           <router-link
             :to="{ name: 'artist-v2', params: { artistAccount: findArtistsForAddress(edition.artistAccount).ethAddress } }">
             <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
             <span class="pl-1 artist-name-lg" v-on:click="goToArtist(edition.artistAccount)">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
           </router-link>
-
-          <!--<router-link-->
-          <!--:to="{ name: 'artist-v2', params: { artistAccount: findArtistsForAddress(edition.artistAccount).ethAddress } }"-->
-          <!--tag="button" class="btn btn-sm btn-secondary float-right">-->
-          <!--Follow-->
-          <!--</router-link>-->
 
           <div class="clearfix"></div>
 
@@ -84,7 +78,7 @@
         </div>
       </div>
 
-      <div class="col-sm-6">
+      <div class="col-sm-6 order-1 order-sm-2 mb-5">
         <div class="card shadow-sm" v-if="edition">
           <img class="card-img-top" :src="edition.lowResImg"/>
         </div>
