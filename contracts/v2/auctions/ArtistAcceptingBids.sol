@@ -106,7 +106,8 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   using SafeMath for uint256;
 
   // A mapping of the control address to the edition number which enabled for auction
-  mapping(uint256 => address) internal controlAddressToEditionNumber;
+  mapping(uint256 => address) internal editionNumberToControlAddress;
+  mapping(address => uint256[]) internal controlAddressToEditionNumbers;
 
   // Enabled/disable an editionNumber to be part of an auction
   mapping(uint256 => bool) internal enabledEditions;
@@ -134,7 +135,7 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
 
   // Checks the msg.sender is the control address
   modifier onlyControlAddress(uint256 _editionNumber) {
-    require(controlAddressToEditionNumber[_editionNumber] == msg.sender, "Edition not managed by calling address");
+    require(editionNumberToControlAddress[_editionNumber] == msg.sender, "Edition not managed by calling address");
     _;
   }
 
@@ -438,7 +439,7 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
    * @dev Only callable from owner
    */
   function setArtistsControlAddress(uint256 _editionNumber, address _address) onlyOwner public returns (bool) {
-    controlAddressToEditionNumber[_editionNumber] = _address;
+    editionNumberToControlAddress[_editionNumber] = _address;
     return true;
   }
 
@@ -448,7 +449,7 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
    */
   function setArtistsAddressAndEnabledEdition(uint256 _editionNumber, address _address) onlyOwner public returns (bool) {
     enabledEditions[_editionNumber] = true;
-    controlAddressToEditionNumber[_editionNumber] = _address;
+    editionNumberToControlAddress[_editionNumber] = _address;
     return true;
   }
 
@@ -509,13 +510,15 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   // Public query methods //
   //////////////////////////
 
-  function auctionDetails(uint256 _editionNumber) public view returns (bool _enabled, address _bidder, uint256 _value) {
+  function auctionDetails(uint256 _editionNumber) public view returns (bool _enabled, address _bidder, uint256 _value, address _controller) {
     address highestBidder = editionHighestBid[_editionNumber];
     uint256 bidValue = editionBids[_editionNumber][highestBidder];
+    address controlAddress = editionNumberToControlAddress[_editionNumber];
     return (
     enabledEditions[_editionNumber],
     highestBidder,
-    bidValue
+    bidValue,
+    controlAddress
     );
   }
 
@@ -530,7 +533,7 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   }
 
   function editionController(uint256 _editionNumber) public view returns (address) {
-    return controlAddressToEditionNumber[_editionNumber];
+    return editionNumberToControlAddress[_editionNumber];
   }
 
 }
