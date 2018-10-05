@@ -10,7 +10,7 @@
     <div class="mt-4">
       <h6>Artist bio</h6>
       <p class="bio">
-        {{ artist.strapline }}
+        {{ artist.bio }}
       </p>
     </div>
 

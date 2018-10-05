@@ -1,9 +1,8 @@
 <template>
-  <div class="shadow-sm bg-white p-4 mb-4 card">
+  <div class="shadow-sm bg-white p-4 mb-4 card simple-artist-panel">
     <artist-short-bio :artist="artist" :nolinks="true"></artist-short-bio>
 
-    <h6>Artist Bio</h6>
-    <p class="bio">
+    <p class="bio mt-4">
       {{ artist.strapline }}
     </p>
   </div>
@@ -21,6 +20,10 @@
 
 <style scoped lang="scss">
   @import '../../../ko-colours.scss';
+
+  .simple-artist-panel {
+    min-height: 250px;
+  }
 
   .bio {
     font-size: 0.75rem;
