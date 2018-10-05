@@ -1,7 +1,7 @@
 <template>
-  <div v-if="artist" class="text-center mt-2 mb-2">
+  <div v-if="artist" class="text-center mt-4 mb-2">
     <img :src="artist.img"/>
-    <h4>{{ artist.name }}</h4>
+    <h4 class="mt-4">{{ artist.name }}</h4>
     <p v-if="!nolinks">
       <clickable-address :eth-address="getArtistAddress(artist)"></clickable-address>
     </p>
