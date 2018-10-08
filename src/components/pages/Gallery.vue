@@ -45,7 +45,7 @@
                   <div class="card-body">
                     <p class="card-title">{{ edition.name }}</p>
                     <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
-                    <a class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name }}</a>
+                    <a class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name | truncate(18) }}</a>
                   </div>
                   <div class="card-footer">
                     <div class="row">
@@ -71,7 +71,7 @@
                 <div class="card-body">
                   <p class="card-title">{{ edition.name }}</p>
                   <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
-                  <a class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name }}</a>
+                  <a class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name | truncate(18) }}</a>
                 </div>
                 <div class="card-footer">
                   <div class="row">
