@@ -182,7 +182,7 @@
   .navbar-light .navbar-brand:hover, .navbar-light .navbar-brand:focus {
     color: $primary;
   }
-  
+
   .floating-nav {
     box-shadow: 0px 1px 3px #999;
   }

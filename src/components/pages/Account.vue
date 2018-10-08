@@ -26,7 +26,9 @@
               <div class="card shadow-sm">
                 <img class="card-img-top" :src="asset.lowResImg"/>
                 <div class="card-body">
-                  <p class="card-title">{{ asset.artworkName }}</p>
+                  <p class="card-title">
+                    {{ asset.artworkName }}
+                  </p>
                   <img :src="findArtist(asset.artistCode).img" class="artist-avatar"/>
                   <span class="pl-1 artist-name">{{ asset.otherMeta.artist }}</span>
                 </div>
@@ -71,8 +73,8 @@
         v-if="totalPurchases() === 0"
         class="row justify-content-sm-center">
         <div class="col col-sm-6 text-center">
-          <div class="alert alert-secondary" role="alert">You don't have any digital assets yet.</div>
-          <router-link :to="{ name: 'gallery' }" class="btn btn-outline-primary btn-lg">Open gallery</router-link>
+          <div class="alert alert-secondary" role="alert">You don't own any digital assets yet.</div>
+          <router-link :to="{ name: 'gallery' }" class="btn btn-outline-primary btn-lg">Gallery</router-link>
         </div>
       </div>
 
