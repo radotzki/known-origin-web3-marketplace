@@ -118,8 +118,7 @@
     data () {
       return {
         PAGES,
-        priceFilter: 'featured',
-        highResOn: false,
+        priceFilter: 'featured'
       };
     },
     methods: {
@@ -128,9 +127,6 @@
       },
       goToArtist: function (artistAccount) {
         this.$router.push({name: 'artist-v2', params: {artistAccount}});
-      },
-      showHighRes: function () {
-        this.highResOn = true;
       }
     },
     computed: {
@@ -209,8 +205,8 @@
   }
 
   .high-res {
-    position: relative;
-    top: -22px;
+    position: absolute;
+    top: -4px;
   }
 
   @import '../../ko-card.scss';
