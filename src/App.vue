@@ -182,15 +182,7 @@
   .navbar-light .navbar-brand:hover, .navbar-light .navbar-brand:focus {
     color: $primary;
   }
-
-  .navbar-light .badge {
-    position: relative;
-    top: -10px;
-    right: 0px;
-    opacity: 0.75;
-    font-size: 0.65rem;
-  }
-
+  
   .floating-nav {
     box-shadow: 0px 1px 3px #999;
   }
