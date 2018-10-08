@@ -207,6 +207,7 @@
   .high-res {
     position: absolute;
     top: -4px;
+    opacity: 0.9;
   }
 
   @import '../../ko-card.scss';
