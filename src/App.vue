@@ -285,11 +285,15 @@
   }
 
   .artist-name {
-    font-size: 0.7rem;
+    font-size: 0.9rem;
   }
 
   .artist-name-lg {
-    font-size: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .artist-link {
+    color: $secondary;
   }
 
   .artist-avatar {
