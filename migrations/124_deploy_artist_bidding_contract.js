@@ -10,11 +10,11 @@ module.exports = async function (deployer, network, accounts) {
 
   // Load in other accounts for different networks
   if (network === 'ropsten' || network === 'rinkeby') {
-    _koAccount = new HDWalletProvider(require('../../mnemonic'), `https://${network}.infura.io/${infuraApikey}`, 0).getAddress();
+    _koAccount = new HDWalletProvider(require('../mnemonic'), `https://${network}.infura.io/${infuraApikey}`, 0).getAddress();
   }
 
   if (network === 'live') {
-    _koAccount = new HDWalletProvider(require('../../mnemonic_live'), `https://mainnet.infura.io/${infuraApikey}`, 0).getAddress();
+    _koAccount = new HDWalletProvider(require('../mnemonic_live'), `https://mainnet.infura.io/${infuraApikey}`, 0).getAddress();
   }
 
   console.log(`Running within network = ${network}`);

@@ -72,9 +72,8 @@
 
           <hr/>
 
-          <div class="mt-2"
-               v-if="(edition.totalAvailable - edition.totalSupply > 0) && haveNotPurchasedEditionBefore(edition.edition)">
-            <artist-accepting-bids :edition="edition"></artist-accepting-bids>
+          <div class="mt-2" v-if="(edition.totalAvailable - edition.totalSupply > 0) && haveNotPurchasedEditionBefore(edition.edition)">
+            <place-edition-bid :edition="edition"></place-edition-bid>
           </div>
 
           <!--<div class="mt-2">-->
@@ -104,10 +103,12 @@
   import MetadataAttributes from '../ui-controls/v2/MetadataAttributes';
   import HighResLabel from '../ui-controls/generic/HighResLabel';
   import Availability from "../ui-controls/v2/Availability";
+  import PlaceEditionBid from "../ui-controls/auction/PlaceEditionBid";
 
   export default {
     name: 'confirmPurchase',
     components: {
+      PlaceEditionBid,
       Availability,
       LoadingSection,
       PriceInEth,
