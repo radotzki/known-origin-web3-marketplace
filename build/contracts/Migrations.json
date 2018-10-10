@@ -1401,10 +1401,10 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x3F4dA9e2Ee75114d3AF357d470Bbe5001B671516",
-      "transactionHash": "0x9d25417e2c6bf404615057a7bca201f09e3d4ec514ed787843d6455416d53062"
+      "address": "0x2a9083430b8cC20F85530db38fC9d22092413eC2",
+      "transactionHash": "0xbe59a7957be0b2ca27d529bf7dff7e360d772ed0fde566262da5fb1ca6e927f4"
     }
   },
-  "schemaVersion": "3.0.0-beta.0",
-  "updatedAt": "2018-10-04T13:41:42.915Z"
+  "schemaVersion": "3.0.0-beta.1",
+  "updatedAt": "2018-10-10T11:05:50.667Z"
 }

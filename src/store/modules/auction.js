@@ -334,7 +334,7 @@ const auctionStateModule = {
 
       commit(mutations.BID_ACCEPTED_TRIGGERED, {auction, account});
 
-      const acceptBid = contract.acceptBid(18500, {from: account});
+      const acceptBid = contract.acceptBid(auction.edition, {from: account});
 
       bidAcceptedEvent.watch(function (error, event) {
         if (!error) {
