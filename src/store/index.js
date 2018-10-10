@@ -196,6 +196,9 @@ const store = new Vuex.Store({
         auction: ArtistAcceptingBids,
       });
 
+      // Load the auction owner
+      dispatch(`auction/${actions.GET_AUCTION_OWNER}`);
+
       // Find current network
       dispatch(actions.GET_CURRENT_NETWORK);
 

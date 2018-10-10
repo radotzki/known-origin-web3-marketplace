@@ -1,4 +1,3 @@
-const KnownOriginDigitalAssetV2 = artifacts.require('KnownOriginDigitalAssetV2');
 const ArtistAcceptingBids = artifacts.require('ArtistAcceptingBids');
 
 const HDWalletProvider = require('truffle-hdwallet-provider');
@@ -20,7 +19,7 @@ module.exports = async function (deployer, network, accounts) {
   console.log(`Running within network = ${network}`);
   console.log(`_koAccount = ${_koAccount}`);
 
-  let koda = await KnownOriginDigitalAssetV2.deployed();
+  let auction = await ArtistAcceptingBids.deployed();
 
-  return deployer.deploy(ArtistAcceptingBids, koda.address, {from: _koAccount});
+  return auction.setArtistsAddressAndEnabledEdition(18600, "0xa2cD656f8461d2C186D69fFB8A4a5c10EFF0914d");
 };

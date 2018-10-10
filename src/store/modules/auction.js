@@ -6,8 +6,10 @@ import Web3 from "web3";
 const auctionStateModule = {
   namespaced: true,
   state: {
+    owner: null,
     auction: {},
     bidState: {},
+    acceptingBidState: {},
     minBidAmount: 0,
     minBidAmountWei: 0,
   },
@@ -34,6 +36,9 @@ const auctionStateModule = {
       }
       return Web3.utils.toChecksumAddress(currentHighestBidder) === Web3.utils.toChecksumAddress(rootState.account);
     },
+    /////////////////////////
+    // Accepting Bid State //
+    /////////////////////////
     editionAuctionState: (state) => (editionNumber) => {
       return _.get(state.bidState, editionNumber);
     },
@@ -52,8 +57,32 @@ const auctionStateModule = {
     getTransactionForEdition: (state, getters) => (editionNumber) => {
       return getters.editionAuctionState(editionNumber).transaction;
     },
+    /////////////////////////
+    // Accepting Bid State //
+    /////////////////////////
+    editionAcceptingBidState: (state) => (editionNumber) => {
+      return _.get(state.acceptingBidState, editionNumber);
+    },
+    isAcceptingBidTriggered: (state, getters) => (editionNumber) => {
+      return _.get(getters.editionAcceptingBidState(editionNumber), 'state') === mutations.BID_ACCEPTED_TRIGGERED;
+    },
+    isAcceptingBidStarted: (state, getters) => (editionNumber) => {
+      return _.get(getters.editionAcceptingBidState(editionNumber), 'state') === mutations.BID_ACCEPTED_STARTED;
+    },
+    isAcceptingBidSuccessful: (state, getters) => (editionNumber) => {
+      return _.get(getters.editionAcceptingBidState(editionNumber), 'state') === mutations.BID_ACCEPTED_SUCCESSFUL;
+    },
+    isAcceptingBidFailed: (state, getters) => (editionNumber) => {
+      return _.get(getters.editionAcceptingBidState(editionNumber), 'state') === mutations.BID_ACCEPTED_FAILED;
+    },
+    getAcceptingBidTransactionForEdition: (state, getters) => (editionNumber) => {
+      return getters.editionAcceptingBidState(editionNumber).transaction;
+    },
   },
   mutations: {
+    [mutations.SET_AUCTION_OWNER](state, owner) {
+      state.owner = Web3.utils.toChecksumAddress(owner);
+    },
     [mutations.SET_AUCTION_DETAILS](state, data) {
       state.auction = {
         ...data
@@ -113,8 +142,60 @@ const auctionStateModule = {
         }
       };
     },
+    [mutations.RESET_BID_ACCEPTED_STATE](state, {auction}) {
+      delete state.acceptingBidState[auction.edition];
+      state.acceptingBidState = {...state.acceptingBidState};
+    },
+    [mutations.BID_ACCEPTED_FAILED](state, {auction, account}) {
+      state.acceptingBidState = {
+        ...state.acceptingBidState,
+        [auction.edition]: {
+          ...auction,
+          account,
+          transaction: state.acceptingBidState[auction.edition].transaction,
+          state: 'BID_ACCEPTED_FAILED'
+        }
+      };
+    },
+    [mutations.BID_ACCEPTED_STARTED](state, {auction, account, transaction}) {
+      state.acceptingBidState = {
+        ...state.acceptingBidState,
+        [auction.edition]: {
+          ...auction,
+          account,
+          transaction,
+          state: 'BID_ACCEPTED_STARTED'
+        }
+      };
+    },
+    [mutations.BID_ACCEPTED_SUCCESSFUL](state, {auction, account}) {
+      state.acceptingBidState = {
+        ...state.acceptingBidState,
+        [auction.edition]: {
+          ...auction,
+          account,
+          transaction: state.acceptingBidState[auction.edition].transaction,
+          state: 'BID_ACCEPTED_SUCCESSFUL'
+        }
+      };
+    },
+    [mutations.BID_ACCEPTED_TRIGGERED](state, {auction, account}) {
+      state.acceptingBidState = {
+        ...state.acceptingBidState,
+        [auction.edition]: {
+          ...auction,
+          account,
+          state: 'BID_ACCEPTED_TRIGGERED'
+        }
+      };
+    },
   },
   actions: {
+    [actions.GET_AUCTION_OWNER]: async function ({commit, state, getters, rootState}) {
+      const contract = await rootState.ArtistAcceptingBids.deployed();
+      const result = await contract.owner();
+      commit(mutations.SET_AUCTION_OWNER, result);
+    },
     [actions.GET_AUCTION_DETAILS]: async function ({commit, state, getters, rootState}, edition) {
       const contract = await rootState.ArtistAcceptingBids.deployed();
 
@@ -239,18 +320,55 @@ const auctionStateModule = {
           commit(mutations.AUCTION_FAILED, {edition, account});
           if (timer) clearInterval(timer);
         });
+    },
+    [actions.ACCEPT_BID]: async function ({commit, dispatch, state, getters, rootState}, auction) {
+      commit(mutations.RESET_BID_ACCEPTED_STATE, {auction});
+      const account = rootState.account;
+      const contract = await rootState.ArtistAcceptingBids.deployed();
+
+      const blockNumber = await rootState.web3.eth.getBlockNumber();
+      let bidAcceptedEvent = contract.BidAccepted({_bidder: auction.highestBidder, _editionNumber: auction.edition}, {
+        fromBlock: blockNumber,
+        toBlock: 'latest' // wait until event comes through
+      });
+
+      commit(mutations.BID_ACCEPTED_TRIGGERED, {auction, account});
+
+      const acceptBid = contract.acceptBid(18500, {from: account});
+
+      bidAcceptedEvent.watch(function (error, event) {
+        if (!error) {
+          console.log('Auction - accepted bid - successful', event);
+          dispatch(actions.GET_AUCTION_DETAILS, {edition});
+          commit(mutations.BID_ACCEPTED_SUCCESSFUL, {auction, account});
+        } else {
+          console.log('Failure', error);
+          commit(mutations.BID_ACCEPTED_FAILED, {auction, account});
+          bidAcceptedEvent.stopWatching();
+        }
+      });
+
+      acceptBid
+        .then((data) => {
+          console.log('Auction - accepted bid - transaction submitted', data);
+          commit(mutations.BID_ACCEPTED_STARTED, {auction, account, transaction: data.tx});
+        })
+        .catch((error) => {
+          console.log('Auction - accepted bid - rejection/error', error);
+          commit(mutations.BID_ACCEPTED_FAILED, {auction, account});
+        });
     }
   }
 };
 
 const transformAuctionDetails = (value, edition) => {
   return {
-    edition,
+    edition: edition.toString("10"),
     enabled: value[0],
     highestBidder: value[1],
     highestBid: Web3.utils.fromWei(value[2].toString("10"), 'ether'),
     highestBidWei: value[2],
-    controller: value[3],
+    controller: Web3.utils.toChecksumAddress(value[3]),
   };
 };
 

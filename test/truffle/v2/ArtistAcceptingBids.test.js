@@ -757,7 +757,7 @@ contract.only('ArtistAcceptingBids', function (accounts) {
     });
   });
 
-  describe.only('management controls', async function () {
+  describe('management controls', async function () {
 
     describe('global auction', async function () {
 
