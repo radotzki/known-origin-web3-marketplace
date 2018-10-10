@@ -107,7 +107,6 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
 
   // A mapping of the control address to the edition number which enabled for auction
   mapping(uint256 => address) internal editionNumberToControlAddress;
-  mapping(address => uint256[]) internal controlAddressToEditionNumbers;
 
   // Enabled/disable an editionNumber to be part of an auction
   mapping(uint256 => bool) internal enabledEditions;
@@ -128,19 +127,20 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   address public koCommissionAccount;
 
   // Checks the auction is enabled
-  modifier onlyWhenAuctionEnabled(uint256 _editionNumber) {
+  modifier whenAuctionEnabled(uint256 _editionNumber) {
     require(enabledEditions[_editionNumber], "Edition is not enabled for auctions");
     _;
   }
 
-  // Checks the msg.sender is the control address
-  modifier onlyControlAddress(uint256 _editionNumber) {
-    require(editionNumberToControlAddress[_editionNumber] == msg.sender, "Edition not managed by calling address");
+  // TODO test owner
+  // Checks the msg.sender is the control address or the auction owner
+  modifier whenCallerIsController(uint256 _editionNumber) {
+    require(editionNumberToControlAddress[_editionNumber] == msg.sender || msg.sender == owner, "Edition not managed by calling address");
     _;
   }
 
   // Checks the bid is higher than the current amount + min bid
-  modifier onlyWhenBidPlacedIsAboveMinAmount(uint256 _editionNumber) {
+  modifier whenPlacedBidIsAboveMinAmount(uint256 _editionNumber) {
     address currentHighestBidder = editionHighestBid[_editionNumber];
     uint256 currentHighestBidderAmount = editionBids[_editionNumber][currentHighestBidder];
     require(currentHighestBidderAmount.add(minBidAmount) <= msg.value, "Bids must be higher than previous bids plus minimum bid");
@@ -148,33 +148,33 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   }
 
   // Checks the bid is higher than the min bid
-  modifier onlyWhenBidIncreasesAboveMinAmount() {
+  modifier whenBidIncreaseIsAboveMinAmount() {
     require(minBidAmount <= msg.value, "Bids must be higher than minimum bid amount");
     _;
   }
 
   // Check the called in not already the highest bidder
-  modifier onlyWhenNotAlreadyTheHighestBidder(uint256 _editionNumber) {
+  modifier whenNotAlreadyTheHighestBidder(uint256 _editionNumber) {
     address currentHighestBidder = editionHighestBid[_editionNumber];
     require(currentHighestBidder != msg.sender, "Cant bid anymore, you are already the current highest");
     _;
   }
 
   // Checks msg.sender is the highest bidder
-  modifier onlyWhenCallerIsHighestBidder(uint256 _editionNumber) {
+  modifier whenCallerIsHighestBidder(uint256 _editionNumber) {
     require(editionHighestBid[_editionNumber] == msg.sender, "Can only withdraw a bid if you are the highest bidder");
     _;
   }
 
   // Only when editions are not sold out in KO
-  modifier onlyWhenEditionNotSoldOut(uint256 _editionNumber) {
+  modifier whenEditionNotSoldOut(uint256 _editionNumber) {
     uint256 totalRemaining = kodaAddress.totalRemaining(_editionNumber);
     require(totalRemaining > 0, "Unable to accept any more bids, edition is sold out");
     _;
   }
 
   // Only when editions exists
-  modifier onlyWhenEditionExists(uint256 _editionNumber) {
+  modifier whenEditionExists(uint256 _editionNumber) {
     bool editionExists = kodaAddress.editionExists(_editionNumber);
     require(editionExists, "Edition does not exist");
     _;
@@ -205,11 +205,11 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   public
   payable
   whenNotPaused
-  onlyWhenEditionExists(_editionNumber) // Prevent invalid editions
-  onlyWhenAuctionEnabled(_editionNumber) // Prevent bids for editions not enabled
-  onlyWhenBidPlacedIsAboveMinAmount(_editionNumber) // Prevent bids below current price + min bid
-  onlyWhenNotAlreadyTheHighestBidder(_editionNumber) // Prevent double bids by the same address
-  onlyWhenEditionNotSoldOut(_editionNumber) // Checks not sold out in KO
+  whenEditionExists(_editionNumber) // Prevent invalid editions
+  whenAuctionEnabled(_editionNumber) // Prevent bids for editions not enabled
+  whenPlacedBidIsAboveMinAmount(_editionNumber) // Prevent bids below current price + min bid
+  whenNotAlreadyTheHighestBidder(_editionNumber) // Prevent double bids by the same address
+  whenEditionNotSoldOut(_editionNumber) // Checks not sold out in KO
   returns (bool success)
   {
     // Grab the previous holders bid so we can refund it
@@ -240,11 +240,11 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   public
   payable
   whenNotPaused
-  onlyWhenBidIncreasesAboveMinAmount // Prevent increases less than min amount
-  onlyWhenEditionExists(_editionNumber) // Prevent invalid editions
-  onlyWhenAuctionEnabled(_editionNumber) // Prevent bids for editions not enabled
-  onlyWhenEditionNotSoldOut(_editionNumber) // Checks not sold out in KO
-  onlyWhenCallerIsHighestBidder(_editionNumber) // Check caller is the highest bidder
+  whenBidIncreaseIsAboveMinAmount // Prevent increases less than min amount
+  whenEditionExists(_editionNumber) // Prevent invalid editions
+  whenAuctionEnabled(_editionNumber) // Prevent bids for editions not enabled
+  whenEditionNotSoldOut(_editionNumber) // Checks not sold out in KO
+  whenCallerIsHighestBidder(_editionNumber) // Check caller is the highest bidder
   returns (bool success)
   {
     // Bump the current highest bid by provided amount
@@ -256,7 +256,6 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
     return true;
   }
 
-  // TODO prevent user from revoking a bid, make it management only
   /**
    * @dev Public method for withdrawing your bid, reverts if:
    * - Contract is Paused
@@ -267,8 +266,8 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   function withdrawBid(uint256 _editionNumber)
   public
   whenNotPaused
-  onlyWhenEditionExists(_editionNumber) // Prevent invalid editions
-  onlyWhenCallerIsHighestBidder(_editionNumber) // Check caller is the highest bidder
+  whenEditionExists(_editionNumber) // Prevent invalid editions
+  whenCallerIsHighestBidder(_editionNumber) // Check caller is the highest bidder
   returns (bool success)
   {
     // get current highest bid and refund it
@@ -323,8 +322,8 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   function acceptBid(uint256 _editionNumber)
   public
   whenNotPaused
-  onlyControlAddress(_editionNumber) // Checks only the artist can this this
-  onlyWhenAuctionEnabled(_editionNumber) // Checks auction is still enabled
+  whenCallerIsController(_editionNumber) // Checks only the artist can this this
+  whenAuctionEnabled(_editionNumber) // Checks auction is still enabled
   returns (uint256 _tokenId)
   {
     // Get total remaining here so we can use it below
@@ -333,7 +332,7 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
 
     // Get the winner of the bidding action
     address winningAccount = editionHighestBid[_editionNumber];
-    require(winningAccount != address(0), "Cannot win an auction when there is not highest bidder");
+    require(winningAccount != address(0), "Cannot win an auction when there is no highest bidder");
 
     uint256 winningBidAmount = editionBids[_editionNumber][winningAccount];
     require(winningBidAmount >= minBidAmount, "Cannot win an auction when bid amount under the minimum");
@@ -373,17 +372,17 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
     return tokenId;
   }
 
+  /**
+   * Returns funds of the previous highest bidder back to them if present
+   */
   function _refundHighestBidder(uint256 _editionNumber) internal {
     // Get current highest bidder
     address currentHighestBidder = editionHighestBid[_editionNumber];
-    //    require(currentHighestBidder != address(0), "Unable to refund bid to zero address");
 
     // Get current highest bid amount
     uint256 currentHighestBiddersAmount = editionBids[_editionNumber][currentHighestBidder];
-    //    require(currentHighestBiddersAmount != 0, "Unable to refund of zero balance");
 
-    if (currentHighestBiddersAmount > 0) {
-
+    if (currentHighestBidder != address(0) && currentHighestBiddersAmount > 0) {
       // Refund it
       currentHighestBidder.transfer(currentHighestBiddersAmount);
 

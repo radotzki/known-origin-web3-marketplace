@@ -57,8 +57,8 @@ export const SET_CONTRACT_ADDRESS_V2 = 'SET_CONTRACT_ADDRESS_V2';
 /////////////
 // Auction //
 /////////////
+export const SET_AUCTION_OWNER = 'SET_AUCTION_OWNER';
 export const SET_AUCTION_DETAILS = 'SET_AUCTION_DETAILS';
-export const SET_AUCTION_DETAILS_FOR_MANY = 'SET_AUCTION_DETAILS_FOR_MANY';
 export const SET_MINIMUM_BID = 'SET_MINIMUM_BID';
 
 // Auction Flow
@@ -67,4 +67,11 @@ export const AUCTION_STARTED = 'AUCTION_STARTED'; // metamask transaction submit
 export const AUCTION_FAILED = 'AUCTION_FAILED'; // a failure
 export const AUCTION_PLACED_SUCCESSFUL = 'AUCTION_PLACED_SUCCESSFUL'; // transaction mined and event found
 export const RESET_BID_STATE = 'RESET_BID_STATE';
+
+// Auction transaction lookup
+export const RESET_BID_ACCEPTED_STATE = 'RESET_BID_ACCEPTED_STATE';
+export const BID_ACCEPTED_FAILED = 'BID_ACCEPTED_FAILED';
+export const BID_ACCEPTED_STARTED = 'BID_ACCEPTED_STARTED';
+export const BID_ACCEPTED_SUCCESSFUL = 'BID_ACCEPTED_SUCCESS';
+export const BID_ACCEPTED_TRIGGERED = 'BID_ACCEPTED_TRIGGERED';
 

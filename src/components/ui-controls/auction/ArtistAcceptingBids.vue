@@ -125,11 +125,11 @@
 
       <hr/>
 
-      <p class="text-muted text-center">
+      <p class="text-muted text-sm-center">
         The winning bid will receive the artwork and all other bids will be refunded automatically.
       </p>
 
-      <p class="text-muted text-center">
+      <p class="text-muted text-sm-center">
         Got any questions, reach us on
         <a href="https://t.me/knownorigin_io" target="_blank" title="Telegram">telegram</a>
         or via <a href="mailto:hello@knownorigin.io" target="_blank" title="Mail">email</a>
