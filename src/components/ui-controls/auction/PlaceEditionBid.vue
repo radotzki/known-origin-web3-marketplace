@@ -99,7 +99,7 @@
         <div v-if="isAuctionStarted(edition.edition)">
           <hr/>
           <span class="card-text mt-4">
-           Your purchase is being confirmed...<font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
+           Your bid is being confirmed...<font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
           </span>
           <small class="text-muted">
             <br/>
@@ -153,7 +153,7 @@
   import LoadingSpinner from "../generic/LoadingSpinner";
 
   export default {
-    name: 'artistAcceptingBids',
+    name: 'placeEditionBid',
     components: {
       LoadingSpinner,
       ClickableTransaction,

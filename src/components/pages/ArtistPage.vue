@@ -45,84 +45,8 @@
       </div>
     </div>
 
-    <div class="row editions-wrap" v-if="listOpenAuctions.length > 0">
-      <div class="col-12">
-
-        <hr/>
-
-        <p class="h3">
-          Ongoing Auctions
-        </p>
-
-        <p class="lead">
-          Below are list of ongoing auctions which can be actioned by the artists account for each edition.
-        </p>
-
-        <div class="row pb-4" v-for="auction in listOpenAuctions">
-          <div class="col-2 text-center">
-            <router-link :to="{ name: 'confirmPurchaseSimple', params: { editionNumber: auction.edition }}">
-              <img :src="getEdition(auction.edition).lowResImg" class="img-thumbnail" style="width: 150px;"/>
-            </router-link>
-          </div>
-          <div class="col-3">
-            <p>
-              Edition No.
-              <router-link :to="{ name: 'confirmPurchaseSimple', params: { editionNumber: auction.edition }}">
-                <strong>{{auction.edition}}</strong>
-              </router-link>
-            </p>
-            <p>
-              Highest bidder:
-              <clickable-address :eth-address="auction.highestBidder"></clickable-address>
-            </p>
-            <p>
-              Artist account:
-              <clickable-address :eth-address="auction.controller"></clickable-address>
-            </p>
-            <p>
-              <span>Current bid</span>
-              <span class="font-weight-bold">
-                <price-in-eth :value="auction.highestBid"></price-in-eth>
-                <usd-price :price-in-ether="auction.highestBid"></usd-price>
-              </span>
-            </p>
-          </div>
-          <div class="col-7">
-            <p v-if="canAcceptBid(auction) && auction.highestBid > 0">
-              <button class="btn btn-primary" v-on:click="acceptBid(auction)">Accept Bid</button>
-            </p>
-
-            <div v-if="isAcceptingBidTriggered(auction.edition)">
-              Transaction triggered
-              <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
-              <clickable-transaction :transaction="getAcceptingBidTransactionForEdition(auction.edition)">
-              </clickable-transaction>
-            </div>
-
-            <div v-if="isAcceptingBidStarted(auction.edition)">
-               <span class="card-text mt-4">
-                 Your transaction is being confirmed...
-                 <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
-               </span>
-              <clickable-transaction :transaction="getAcceptingBidTransactionForEdition(auction.edition)">
-              </clickable-transaction>
-            </div>
-
-            <div v-if="isAcceptingBidSuccessful(auction.edition)">
-              Bid confirmed
-              <clickable-transaction :transaction="getAcceptingBidTransactionForEdition(auction.edition)">
-              </clickable-transaction>
-            </div>
-
-            <div v-if="isAcceptingBidFailed(auction.edition)">
-              <span class="card-text text-danger mt-4">Your transaction failed!</span>
-              <img src="../../../static/Failure.svg" style="width: 25px"/>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
+    <div class="row editions-wrap">
+      <accept-edition-bids :editions="editions"></accept-edition-bids>
     </div>
 
   </div>
@@ -149,10 +73,12 @@
   import UsdPrice from "../ui-controls/generic/USDPrice";
   import ClickableTransaction from "../ui-controls/generic/ClickableTransaction";
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
+  import AcceptEditionBids from "../ui-controls/auction/AcceptEditionBids";
 
   export default {
     name: 'artistPage',
     components: {
+      AcceptEditionBids,
       FontAwesomeIcon,
       ClickableTransaction,
       UsdPrice,
@@ -178,17 +104,6 @@
       ...mapState([
         'account',
       ]),
-      ...mapState('auction', [
-        'owner',
-        'auction',
-      ]),
-      ...mapGetters('auction', [
-        'isAcceptingBidTriggered',
-        'isAcceptingBidStarted',
-        'isAcceptingBidSuccessful',
-        'isAcceptingBidFailed',
-        'getAcceptingBidTransactionForEdition',
-      ]),
       ...mapGetters([
         'findArtistsForAddress',
       ]),
@@ -198,9 +113,6 @@
       ]),
       editions: function () {
         return this.editionsForArtist(this.getArtistAddress());
-      },
-      listOpenAuctions: function () {
-        return _.filter(this.auction, {enabled: true});
       },
     },
     methods: {
