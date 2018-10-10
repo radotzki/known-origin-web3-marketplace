@@ -14,6 +14,7 @@ import BootstrapVue from 'bootstrap-vue';
 import fontawesome from '@fortawesome/fontawesome';
 import brands from '@fortawesome/fontawesome-free-brands';
 import solid from '@fortawesome/fontawesome-free-solid';
+import Vue2Filters from 'vue2-filters';
 
 fontawesome.library.add(brands, solid);
 
@@ -22,6 +23,7 @@ Vue.use(AsyncComputed);
 Vue.use(ToggleButton);
 Vue.use(BootstrapVue);
 Vue.use(require('vue-moment'));
+Vue.use(Vue2Filters);
 
 Vue.config.productionTip = false;
 

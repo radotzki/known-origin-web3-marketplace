@@ -42,10 +42,13 @@
                            :to="{ name: 'confirmPurchase', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
                 <div class="card shadow-sm">
                   <img class="card-img-top" :src="edition.lowResImg" :id="editionNumber"/>
+                  <div class="high-res">
+                    <high-res-label :high-res-available="edition.highResAvailable"></high-res-label>
+                  </div>
                   <div class="card-body">
                     <p class="card-title">{{ edition.name }}</p>
                     <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
-                    <a class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name }}</a>
+                    <a class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name | truncate(18) }}</a>
                   </div>
                   <div class="card-footer">
                     <div class="row">
@@ -68,10 +71,13 @@
                          :to="{ name: 'confirmPurchase', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
               <div class="card shadow-sm">
                 <img class="card-img-top" :src="edition.lowResImg" :id="editionNumber"/>
+                <div class="high-res">
+                  <high-res-label :high-res-available="edition.highResAvailable"></high-res-label>
+                </div>
                 <div class="card-body">
                   <p class="card-title">{{ edition.name }}</p>
                   <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
-                  <a class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name }}</a>
+                  <a class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name | truncate(18) }}</a>
                 </div>
                 <div class="card-footer">
                   <div class="row">
@@ -100,6 +106,7 @@
   import { PAGES } from '../../store/loadingPageState';
   import LoadingSection from '../ui-controls/generic/LoadingSection';
   import Availability from '../ui-controls/v2/Availability';
+  import HighResLabel from '../ui-controls/generic/HighResLabel';
 
   export default {
     name: 'galleryKODAV2',
@@ -107,7 +114,8 @@
       LoadingSection,
       Availability,
       ClickableAddress,
-      ArtistPanel
+      ArtistPanel,
+      HighResLabel
     },
     data () {
       return {
@@ -196,6 +204,12 @@
       padding-left: 0.7rem;
       padding-right: 0.7rem;
     }
+  }
+
+  .high-res {
+    position: absolute;
+    top: -4px;
+    opacity: 0.9;
   }
 
   @import '../../ko-card.scss';
