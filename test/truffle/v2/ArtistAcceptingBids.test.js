@@ -304,7 +304,7 @@ contract.only('ArtistAcceptingBids', function (accounts) {
 
           describe('when not controlling address', async function () {
             it('fails', async function () {
-              await assertRevert(this.auction.acceptBid(editionNumber1, {from: _owner}));
+              await assertRevert(this.auction.acceptBid(editionNumber1, {from: bidder1}));
             });
           });
 
@@ -399,6 +399,99 @@ contract.only('ArtistAcceptingBids', function (accounts) {
               details[2].should.be.bignumber.equal(0); // uint256 _value
             });
           });
+
+          describe('when is the owner address', async function () {
+            let ownerBalanceBefore;
+            let ownerBalanceAfter;
+
+            let artistAccount1BalanceBefore;
+            let artistAccount1BalanceAfter;
+
+            let koAccount2BalanceBefore;
+            let koAccount2BalanceAfter;
+
+            let contractBalanceBefore;
+            let contractBalanceAfter;
+
+            let bidderBalanceBefore;
+            let bidderBalanceAfter;
+
+            let txGasCosts;
+
+            beforeEach(async function () {
+              artistAccount1BalanceBefore = await web3.eth.getBalance(artistAccount1);
+              ownerBalanceBefore = await web3.eth.getBalance(_owner);
+              bidderBalanceBefore = await web3.eth.getBalance(bidder1);
+              koAccount2BalanceBefore = await web3.eth.getBalance(koCommission);
+              contractBalanceBefore = await web3.eth.getBalance(this.auction.address);
+
+              let tx = await this.auction.acceptBid(editionNumber1, {from: _owner});
+              txGasCosts = await getGasCosts(tx);
+
+              artistAccount1BalanceAfter = await web3.eth.getBalance(artistAccount1);
+              ownerBalanceAfter = await web3.eth.getBalance(_owner);
+              bidderBalanceAfter = await web3.eth.getBalance(bidder1);
+              koAccount2BalanceAfter = await web3.eth.getBalance(koCommission);
+              contractBalanceAfter = await web3.eth.getBalance(this.auction.address);
+            });
+
+            it('tokenId is generated correctly', async function () {
+              let tokens = await this.koda.tokensOf(bidder1);
+              tokens
+                .map(e => e.toNumber())
+                .should.be.deep.equal([editionNumber1 + 1]);
+            });
+
+            it('total minted is correctly updated', async function () {
+              let total = await this.koda.totalSupplyEdition(editionNumber1);
+              total.should.be.bignumber.equal(1);
+            });
+
+            it('funds get sent to the artists based on commission percentage', async function () {
+              const expectedArtistCommission = contractBalanceBefore.div(100).mul(artistCommission);
+
+              artistAccount1BalanceAfter.should.be.bignumber.equal(
+                artistAccount1BalanceBefore.add(expectedArtistCommission)
+              );
+            });
+
+            it('funds get sent to the ko commission account', async function () {
+              const remainingCommission = (100 - artistCommission);
+              remainingCommission.should.be.equal(24); // remaining commission of 24%
+
+              const expectedKoCommission = contractBalanceBefore.div(100).mul(remainingCommission);
+
+              koAccount2BalanceAfter.should.be.bignumber.equal(
+                koAccount2BalanceBefore.add(expectedKoCommission)
+              );
+            });
+
+            it('calling controller address pays the gas', async function () {
+              ownerBalanceAfter.should.be.bignumber.equal(
+                ownerBalanceBefore.sub(txGasCosts)
+              );
+            });
+
+            it('no more funds held in contract', async function () {
+              // Confirm funds originally held
+              contractBalanceBefore.should.be.bignumber.equal(this.minBidAmount);
+
+              // Confirm funds now gone
+              contractBalanceAfter.should.be.bignumber.equal(0);
+            });
+
+            it('bidder balance does not change', async function () {
+              bidderBalanceBefore.should.be.bignumber.equal(bidderBalanceAfter);
+            });
+
+            it('auction details are populated', async function () {
+              let details = await this.auction.auctionDetails(editionNumber1);
+              details[0].should.be.equal(true); // bool _enabled
+              details[1].should.be.equal(ZERO_ADDRESS); // address _bidder
+              details[2].should.be.bignumber.equal(0); // uint256 _value
+            });
+          });
+
         });
       });
     });
@@ -813,7 +906,23 @@ contract.only('ArtistAcceptingBids', function (accounts) {
         });
 
         it('fails when NOT owner', async function () {
+          await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
+          await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
+
+          const auctionBalance = await web3.eth.getBalance(this.auction.address);
+          auctionBalance.should.be.bignumber.equal(this.minBidAmount);
+
           await assertRevert(this.auction.withdrawStuckEther(_owner, {from: bidder1}));
+        });
+
+        it('fails when address is zero', async function () {
+          await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
+          await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
+
+          const auctionBalance = await web3.eth.getBalance(this.auction.address);
+          auctionBalance.should.be.bignumber.equal(this.minBidAmount);
+
+          await assertRevert(this.auction.withdrawStuckEther(ZERO_ADDRESS, {from: _owner}));
         });
 
         it('force ether can still be withdrawn', async function () {
@@ -862,7 +971,33 @@ contract.only('ArtistAcceptingBids', function (accounts) {
         });
 
         it('fails when NOT owner', async function () {
+          await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
+          await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
+
+          const auctionBalance = await web3.eth.getBalance(this.auction.address);
+          auctionBalance.should.be.bignumber.equal(this.minBidAmount);
+
           await assertRevert(this.auction.withdrawStuckEtherOfAmount(_owner, PARTIAL_WITHDRAWAL_AMOUNT, {from: bidder1}));
+        });
+
+        it('fails when amount is zero', async function () {
+          await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
+          await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
+
+          const auctionBalance = await web3.eth.getBalance(this.auction.address);
+          auctionBalance.should.be.bignumber.equal(this.minBidAmount);
+
+          await assertRevert(this.auction.withdrawStuckEtherOfAmount(_owner, 0, {from: _owner}));
+        });
+
+        it('fails when address is zero', async function () {
+          await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
+          await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
+
+          const auctionBalance = await web3.eth.getBalance(this.auction.address);
+          auctionBalance.should.be.bignumber.equal(this.minBidAmount);
+
+          await assertRevert(this.auction.withdrawStuckEtherOfAmount(ZERO_ADDRESS, PARTIAL_WITHDRAWAL_AMOUNT, {from: _owner}));
         });
 
         it('force ether can still be withdrawn', async function () {
@@ -954,11 +1089,48 @@ contract.only('ArtistAcceptingBids', function (accounts) {
       });
     });
 
-    describe('override functions', async function () {
+    describe('setKoCommissionAccount', async function () {
+      it('fails when zero address', async function () {
+        await assertRevert(this.auction.setKoCommissionAccount(ZERO_ADDRESS, {from: _owner}));
+      });
+    });
+
+    describe('TODO override functions', async function () {
       // TODO
       // function manualOverrideEditionBid(uint256 _editionNumber, address _bidder, uint256 _amount) onlyOwner public returns (bool) {
       // function manualOverrideEditionHighestBidder(uint256 _editionNumber, address _bidder) onlyOwner public returns (bool) {
       // function manualOverrideEditionHighestBidAndBidder(uint256 _editionNumber, address _bidder, uint256 _amount) onlyOwner public returns (bool) {
+    });
+
+  });
+
+  describe('TODO when edition sells out', async function () {
+
+    beforeEach(async function () {
+      // update KODA to only have 1 left of that edition
+      await this.koda.updateTotalAvailable(editionNumber1, 1, {from: _owner});
+
+      // Setup controller account for edition in auction
+      await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount1, {from: _owner});
+    });
+
+    describe('when it sells out after a auction', async function () {
+
+
+    });
+
+    describe('when it sells before an auction is complete', async function () {
+
+      //whenEditionNotSoldOut
+
+    });
+
+  });
+
+  describe('TODO accepting bids', async function () {
+
+    describe('when all auctions Are paused', async function () {
+
     });
 
   });

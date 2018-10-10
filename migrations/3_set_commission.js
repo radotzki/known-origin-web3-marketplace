@@ -1,5 +1,3 @@
-const Promise = require('bluebird');
-
 const KnownOriginDigitalAsset = artifacts.require('KnownOriginDigitalAsset');
 
 const HDWalletProvider = require('truffle-hdwallet-provider');

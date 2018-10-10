@@ -19,5 +19,5 @@ module.exports = function (deployer, network, accounts) {
   console.log(`Running within network = ${network}`);
   console.log(`_koAccount = ${_koAccount}`);
 
-  return deployer.deploy(KnownOriginDigitalAssetV2);
+  return deployer.deploy(KnownOriginDigitalAssetV2, {from: _koAccount});
 };
