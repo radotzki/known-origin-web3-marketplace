@@ -8,7 +8,7 @@
         <div class="shadow-sm bg-white p-4">
 
           <router-link
-            :to="{ name: 'artist-v2', params: { artistAccount: getArtistAddress(findArtistsForAddress(edition.artistAccount)) } }">
+            :to="{ name: 'artist-v2', params: { artistAccount: getArtistAddress(findArtistsForAddress(edition.artistAccount)) } }" class="artist-link">
             <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
             <span class="pl-1 artist-name-lg" v-on:click="goToArtist(edition.artistAccount)">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
           </router-link>
@@ -104,12 +104,10 @@
   import MetadataAttributes from '../ui-controls/v2/MetadataAttributes';
   import HighResLabel from '../ui-controls/generic/HighResLabel';
   import Availability from "../ui-controls/v2/Availability";
-  import ArtistAcceptingBids from "../ui-controls/auction/ArtistAcceptingBids";
 
   export default {
     name: 'confirmPurchase',
     components: {
-      ArtistAcceptingBids,
       Availability,
       LoadingSection,
       PriceInEth,
