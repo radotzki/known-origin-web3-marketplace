@@ -291,6 +291,7 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   function cancelAuction(uint256 _editionNumber)
   public
   onlyOwner
+  whenEditionExists(_editionNumber) // Prevent invalid editions
   returns (bool success)
   {
     // get current highest bid and refund it
@@ -328,14 +329,14 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   {
     // Get total remaining here so we can use it below
     uint256 totalRemaining = kodaAddress.totalRemaining(_editionNumber);
-    require(totalRemaining > 0, "Unable to accept any more bids, edition is sold out");
+    require(totalRemaining > 0, "Unable to accept bid, edition is sold out");
 
     // Get the winner of the bidding action
     address winningAccount = editionHighestBid[_editionNumber];
     require(winningAccount != address(0), "Cannot win an auction when there is no highest bidder");
 
     uint256 winningBidAmount = editionBids[_editionNumber][winningAccount];
-    require(winningBidAmount >= minBidAmount, "Cannot win an auction when bid amount under the minimum");
+    require(winningBidAmount > 0, "Cannot win an auction when bid amount under the minimum");
 
     // Mint a new token to the winner
     uint256 tokenId = kodaAddress.mint(winningAccount, _editionNumber);
@@ -393,27 +394,6 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   ///////////////////////////////
   // Public management methods //
   ///////////////////////////////
-
-  /**
-   * @dev Last ditch resort to extract ether so we can distribute to the correct bidders accordingly, better safe than stuck
-   * @dev Only callable from owner
-   */
-  function withdrawStuckEther(address _withdrawalAccount) onlyOwner public {
-    require(_withdrawalAccount != address(0), "Invalid address provided");
-    require(address(this).balance != 0, "No more ether to withdraw");
-    _withdrawalAccount.transfer(address(this).balance);
-  }
-
-  /**
-   * @dev Allows withdrawal of an amount to an address
-   * @dev Only callable from owner
-   */
-  function withdrawStuckEtherOfAmount(address _withdrawalAccount, uint256 _amount) onlyOwner public {
-    require(_withdrawalAccount != address(0), "Invalid address provided");
-    require(_amount != 0, "Invalid amount to withdraw");
-    require(address(this).balance >= _amount, "No more ether to withdraw");
-    _withdrawalAccount.transfer(_amount);
-  }
 
   /**
    * @dev Enables the edition for auctions
@@ -477,6 +457,31 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
     koCommissionAccount = _koCommissionAccount;
   }
 
+  /////////////////////////////
+  // Manual Override methods //
+  /////////////////////////////
+
+  /**
+   * @dev Last ditch resort to extract ether so we can distribute to the correct bidders accordingly, better safe than stuck
+   * @dev Only callable from owner
+   */
+  function withdrawStuckEther(address _withdrawalAccount) onlyOwner public {
+    require(_withdrawalAccount != address(0), "Invalid address provided");
+    require(address(this).balance != 0, "No more ether to withdraw");
+    _withdrawalAccount.transfer(address(this).balance);
+  }
+
+  /**
+   * @dev Allows withdrawal of an amount to an address
+   * @dev Only callable from owner
+   */
+  function withdrawStuckEtherOfAmount(address _withdrawalAccount, uint256 _amount) onlyOwner public {
+    require(_withdrawalAccount != address(0), "Invalid address provided");
+    require(_amount != 0, "Invalid amount to withdraw");
+    require(address(this).balance >= _amount, "No more ether to withdraw");
+    _withdrawalAccount.transfer(_amount);
+  }
+
   /**
    * @dev Manual override (last resort) method for overriding an edition bid
    * @dev Only callable from owner
@@ -502,6 +507,16 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   function manualOverrideEditionHighestBidAndBidder(uint256 _editionNumber, address _bidder, uint256 _amount) onlyOwner public returns (bool) {
     editionBids[_editionNumber][_bidder] = _amount;
     editionHighestBid[_editionNumber] = _bidder;
+    return true;
+  }
+
+  /**
+   * @dev Manual override (last resort) method removing bidding values
+   * @dev Only callable from owner
+   */
+  function manualDeleteEditionBids(uint256 _editionNumber, address _bidder) onlyOwner public returns (bool) {
+    delete editionHighestBid[_editionNumber];
+    delete editionBids[_editionNumber][_bidder];
     return true;
   }
 

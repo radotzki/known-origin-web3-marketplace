@@ -255,6 +255,12 @@ contract.only('ArtistAcceptingBids', function (accounts) {
             });
           });
 
+          describe('when not valid edition address', async function () {
+            it('fails', async function () {
+              await assertRevert(this.auction.cancelAuction(99999, {from: _owner}));
+            });
+          });
+
           describe('when owner', async function () {
             let bidder1BeforeBalance;
             let bidder1AfterBalance;
@@ -305,6 +311,12 @@ contract.only('ArtistAcceptingBids', function (accounts) {
           describe('when not controlling address', async function () {
             it('fails', async function () {
               await assertRevert(this.auction.acceptBid(editionNumber1, {from: bidder1}));
+            });
+          });
+
+          describe('when not valid edition address', async function () {
+            it('fails', async function () {
+              await assertRevert(this.auction.acceptBid(99999, {from: _owner}));
             });
           });
 
@@ -1095,16 +1107,170 @@ contract.only('ArtistAcceptingBids', function (accounts) {
       });
     });
 
-    describe('TODO override functions', async function () {
-      // TODO
-      // function manualOverrideEditionBid(uint256 _editionNumber, address _bidder, uint256 _amount) onlyOwner public returns (bool) {
-      // function manualOverrideEditionHighestBidder(uint256 _editionNumber, address _bidder) onlyOwner public returns (bool) {
-      // function manualOverrideEditionHighestBidAndBidder(uint256 _editionNumber, address _bidder, uint256 _amount) onlyOwner public returns (bool) {
+    describe.only('TODO override functions', async function () {
+
+      beforeEach(async function () {
+        await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount1, {from: _owner});
+        await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
+      });
+
+      describe('manually overriding edition bid', async function () {
+
+        const AMOUNT_BID_OVERRIDDEN_TO = 100;
+
+        beforeEach(async function () {
+          await this.auction.manualOverrideEditionBid(editionNumber1, bidder1, AMOUNT_BID_OVERRIDDEN_TO, {from: _owner});
+        });
+
+        it('fails if not the owner', async function () {
+          // Attempting to lower the bid
+          await assertRevert(this.auction.manualOverrideEditionBid(editionNumber1, bidder1, AMOUNT_BID_OVERRIDDEN_TO, {from: bidder1}));
+        });
+
+        it('contract balance show original balance', async function () {
+          const contractBalance = await web3.eth.getBalance(this.auction.address);
+          contractBalance.should.be.bignumber.equal(this.minBidAmount);
+        });
+
+        it('updates edition data', async function () {
+          let details = await this.auction.auctionDetails(editionNumber1);
+          details[0].should.be.equal(true); // bool _enabled
+          details[1].should.be.equal(bidder1); // address _bidder
+          details[2].should.be.bignumber.equal(AMOUNT_BID_OVERRIDDEN_TO); // uint256 _value
+          details[3].should.be.equal(artistAccount1); // uint256 _value
+        });
+
+        it('can still increase bid', async function () {
+          await this.auction.increaseBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
+
+          let details = await this.auction.auctionDetails(editionNumber1);
+          details[0].should.be.equal(true); // bool _enabled
+          details[1].should.be.equal(bidder1); // address _bidder
+          details[2].should.be.bignumber.equal(this.minBidAmount.add(AMOUNT_BID_OVERRIDDEN_TO)); // _value
+          details[3].should.be.equal(artistAccount1); // uint256 _value
+        });
+
+        it('new bids can still be made', async function () {
+          const beforeBeingOutBidBalance = await web3.eth.getBalance(bidder1);
+
+          // min bid plus the current overridden
+          const newBidValue = this.minBidAmount.add(AMOUNT_BID_OVERRIDDEN_TO);
+          await this.auction.placeBid(editionNumber1, {from: bidder2, value: newBidValue});
+
+          const afterBeingOutBidBalance = await web3.eth.getBalance(bidder1);
+
+          // Post being out bid they should only receive the amount overridden to and not the original balance put in
+          afterBeingOutBidBalance.should.be.bignumber.equal(
+            beforeBeingOutBidBalance.add(AMOUNT_BID_OVERRIDDEN_TO)
+          );
+
+          let details = await this.auction.auctionDetails(editionNumber1);
+          details[0].should.be.equal(true); // bool _enabled
+          details[1].should.be.equal(bidder2); // address _bidder
+          details[2].should.be.bignumber.equal(newBidValue); // uint256 _value
+          details[3].should.be.equal(artistAccount1); // address _controller
+
+          // Contract balance shows the balance of the origianl bid plus the
+          const contractBalance = await web3.eth.getBalance(this.auction.address);
+          contractBalance.should.be.bignumber.equal(
+            this.minBidAmount
+              .add(this.minBidAmount) // overridden value has already be returned so only the two min bids
+          );
+        });
+
+        it('artists can still accept new bids and funds split accordingly', async function () {
+          const artistAccount1BalanceBefore = await web3.eth.getBalance(artistAccount1);
+
+          // Artists accepts the bid
+          let txs = await this.auction.acceptBid(editionNumber1, {from: artistAccount1});
+          let gasSpent = await getGasCosts(txs);
+
+          const artistAccount1BalanceAfter = await web3.eth.getBalance(artistAccount1);
+
+          // Auction reset
+          let details = await this.auction.auctionDetails(editionNumber1);
+          details[0].should.be.equal(true); // bool _enabled
+          details[1].should.be.equal(ZERO_ADDRESS); // address _bidder
+          details[2].should.be.bignumber.equal(0); // uint256 _value
+          details[3].should.be.equal(artistAccount1); // address _controller
+
+          // Check auction still holds balance
+          const postAcceptingBidAuctionBalance = await web3.eth.getBalance(this.auction.address);
+          postAcceptingBidAuctionBalance.should.be.bignumber.equal(
+            this.minBidAmount.sub(AMOUNT_BID_OVERRIDDEN_TO) //  remaining balance
+          );
+
+          // TODO this does work
+          // Artists gets the commission but only to the overridden amount
+          artistAccount1BalanceAfter.should.be.bignumber.equal(
+            artistAccount1BalanceBefore
+              .sub(gasSpent) // artists pays the fee
+              .add(AMOUNT_BID_OVERRIDDEN_TO - 76) // plus 76% of the overridden price
+          );
+        });
+
+      });
+
+      describe('manually overriding edition highest bid', async function () {
+
+        // function manualOverrideEditionHighestBidAndBidder(uint256 _editionNumber, address _bidder, uint256 _amount) onlyOwner public returns (bool) {
+
+        it('fails if not the owner', async function () {
+
+        });
+
+        it('updates edition data', async function () {
+
+        });
+
+        it('can still increase bid', async function () {
+
+        });
+
+        it('new bid can still be made', async function () {
+
+        });
+
+        it('artists can still accept new bids and funds split accordingly', async function () {
+
+        });
+      });
+
+      describe('manually overriding edition highest bid and bidder', async function () {
+
+        // function manualOverrideEditionHighestBidder(uint256 _editionNumber, address _bidder) onlyOwner public returns (bool) {
+
+        it('fails if not the owner', async function () {
+
+        });
+
+        it('updates edition data', async function () {
+
+        });
+
+        it('can still increase bid', async function () {
+
+        });
+
+        it('new bid can still be made', async function () {
+
+        });
+
+        it('artists can still accept new bids and funds split accordingly', async function () {
+
+        });
+      });
+
+      describe('manually deleting the bid values', async function () {
+
+        // function manualDeleteEditionBids(uint256 _editionNumber) onlyOwner public returns (bool) {
+      });
+
     });
 
   });
 
-  describe('TODO when edition sells out', async function () {
+  describe('when edition sells out', async function () {
 
     beforeEach(async function () {
       // update KODA to only have 1 left of that edition
@@ -1112,25 +1278,99 @@ contract.only('ArtistAcceptingBids', function (accounts) {
 
       // Setup controller account for edition in auction
       await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount1, {from: _owner});
+
+      const totalRemaining = await this.koda.totalRemaining(editionNumber1);
+      totalRemaining.should.be.bignumber.equal(1);
     });
 
-    describe('when it sells out after a auction', async function () {
+    describe('when it sells out before a auction is started', async function () {
+      beforeEach(async function () {
+        await this.koda.purchase(editionNumber1, {from: bidder2, value: edition1Price});
+      });
 
-
+      it('is not possible to placeBid', async function () {
+        await assertRevert(this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount}));
+      });
     });
 
-    describe('when it sells before an auction is complete', async function () {
 
-      //whenEditionNotSoldOut
+    describe('when it sells out after a bid has been placed', async function () {
+      beforeEach(async function () {
+        let totalRemaining = await this.koda.totalRemaining(editionNumber1);
+        totalRemaining.should.be.bignumber.equal(1);
+
+        // Place bid
+        await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
+
+        // sell edition out
+        await this.koda.purchase(editionNumber1, {from: bidder2, value: edition1Price});
+
+        totalRemaining = await this.koda.totalRemaining(editionNumber1);
+        totalRemaining.should.be.bignumber.equal(0);
+      });
+
+      it('is not possible to increaseBid', async function () {
+        await assertRevert(this.auction.increaseBid(editionNumber1, {from: bidder1, value: this.minBidAmount}));
+      });
+
+      it('is not possible to acceptBid', async function () {
+        await assertRevert(this.auction.acceptBid(editionNumber1, {from: artistAccount1}));
+      });
+    });
+
+    describe('when the accepting the bid sells out the edition', async function () {
+      beforeEach(async function () {
+        // Place bid
+        await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
+
+        const totalRemaining = await this.koda.totalRemaining(editionNumber1);
+        totalRemaining.should.be.bignumber.equal(1);
+      });
+
+      it('no more new auctions can be made', async function () {
+        // Accept the bid
+        await this.auction.acceptBid(editionNumber1, {from: artistAccount1});
+
+        const totalRemaining = await this.koda.totalRemaining(editionNumber1);
+        totalRemaining.should.be.bignumber.equal(0);
+
+        // fails when making a new bid as its sold out
+        await assertRevert(this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount}));
+      });
+
+      it('edition is automatically set to disabled', async function () {
+        let isEditionEnabled = await this.auction.isEditionEnabled(editionNumber1);
+        isEditionEnabled.should.be.equal(true);
+
+        // Accept the bid
+        await this.auction.acceptBid(editionNumber1, {from: artistAccount1});
+
+        isEditionEnabled = await this.auction.isEditionEnabled(editionNumber1);
+        isEditionEnabled.should.be.equal(false);
+      });
 
     });
 
   });
 
-  describe('TODO accepting bids', async function () {
+  describe('accepting bids', async function () {
+    beforeEach(async function () {
+      // Setup controller account for edition in auction
+      await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount1, {from: _owner});
+    });
 
-    describe('when all auctions Are paused', async function () {
+    it('when all auctions Are paused', async function () {
+      let isEditionEnabled = await this.auction.isEditionEnabled(editionNumber1);
+      isEditionEnabled.should.be.equal(true);
 
+      await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
+
+      await this.auction.disableEdition(editionNumber1, {from: _owner});
+
+      isEditionEnabled = await this.auction.isEditionEnabled(editionNumber1);
+      isEditionEnabled.should.be.equal(false);
+
+      await assertRevert(this.auction.acceptBid(editionNumber1, {from: artistAccount1}));
     });
 
   });
