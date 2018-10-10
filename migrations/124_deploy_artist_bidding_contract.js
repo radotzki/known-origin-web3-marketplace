@@ -20,7 +20,7 @@ module.exports = async function (deployer, network, accounts) {
   console.log(`Running within network = ${network}`);
   console.log(`_koAccount = ${_koAccount}`);
 
-  let koda = await KnownOriginDigitalAssetV2.deployed();
+  const koda = await KnownOriginDigitalAssetV2.deployed();
 
-  return deployer.deploy(ArtistAcceptingBids, koda.address, {from: _koAccount});
+  await deployer.deploy(ArtistAcceptingBids, koda.address, {from: _koAccount});
 };

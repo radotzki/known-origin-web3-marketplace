@@ -15,13 +15,13 @@ module.exports = {
   },
   compilers: {
     solc: {
-      version: "0.4.24", // ex:  "0.4.20". (Default: Truffle's installed solc)
+      version: '0.4.24',
       settings: {
         optimizer: {
-          enabled: true,
-          runs: 1000,
-        }
-      },
+          enabled: true, // Default: false
+          runs: 200      // Default: 200
+        },
+      }
     }
   },
   networks: {
@@ -36,11 +36,22 @@ module.exports = {
       host: "127.0.0.1",
       port: 7545,
       network_id: "*",
+      gas: 0xfffffffffff,
+      gasPrice: 0x01
     },
     testrpc: {
       host: '127.0.0.1',
       port: 8545,
-      network_id: '*'
+      network_id: '*',
+      gas: 0xfffffffffff,
+      gasPrice: 0x01
+    },
+    coverage: {
+      host: "localhost",
+      network_id: "*",
+      port: 8555,         // <-- If you change this, also set the port option in .solcover.js.
+      gas: 0xfffffffffff, // <-- Use this high gas value
+      gasPrice: 0x01      // <-- Use this low gas price
     },
     live: {
       provider: function () {
@@ -50,13 +61,6 @@ module.exports = {
       network_id: 1,
       gas: 6075039, // default = 4712388
       gasPrice: 3000000000 // default = 100 gwei = 100000000000
-    },
-    coverage: {
-      host: "localhost",
-      network_id: "*",
-      port: 8555,         // <-- If you change this, also set the port option in .solcover.js.
-      gas: 0xfffffffffff, // <-- Use this high gas value
-      gasPrice: 0x01      // <-- Use this low gas price
     },
     ropsten: {
       provider: function () {
