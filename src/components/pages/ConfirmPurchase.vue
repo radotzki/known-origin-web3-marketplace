@@ -8,7 +8,7 @@
         <div class="shadow-sm bg-white p-4">
 
           <router-link
-            :to="{ name: 'artist-v2', params: { artistAccount: findArtistsForAddress(edition.artistAccount).ethAddress } }" class="artist-link">
+            :to="{ name: 'artist-v2', params: { artistAccount: getArtistAddress(findArtistsForAddress(edition.artistAccount)) } }" class="artist-link">
             <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
             <span class="pl-1 artist-name-lg" v-on:click="goToArtist(edition.artistAccount)">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
           </router-link>
@@ -147,6 +147,12 @@
       },
       goToArtist: function (artistAccount) {
         this.$router.push({name: 'artist-v2', params: {artistAccount}});
+      },
+      getArtistAddress: function (artist) {
+        if (_.isArray(artist.ethAddress)) {
+          return artist.ethAddress[0];
+        }
+        return artist.ethAddress;
       }
     },
     created() {

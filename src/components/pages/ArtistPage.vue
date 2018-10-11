@@ -92,7 +92,7 @@
         'isStartDateInTheFuture'
       ]),
       editions: function () {
-        return this.editionsForArtist(this.lookupArtist().ethAddress);
+        return this.editionsForArtist(this.getArtistAddress());
       }
     },
     methods: {
@@ -114,7 +114,7 @@
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.ARTISTS);
 
       const loadData = function () {
-        this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS_FOR_ARTIST}`, {artistAccount: this.lookupArtist().ethAddress})
+        this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS_FOR_ARTIST}`, {artistAccount: this.getArtistAddress()})
           .finally(() => {
             this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.ARTISTS);
           });
