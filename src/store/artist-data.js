@@ -351,7 +351,10 @@ const artists = [
     live: true,
     twitter: '@mattiac',
     website: 'http://www.mattiac.it',
-    ethAddress: '0xa2806aD7af94bb0645e493a8dE9CFF583c462717'
+    ethAddress: [
+      '0x576a655161b5502dcf40602be1f3519a89b71658', // new
+      '0xa2806aD7af94bb0645e493a8dE9CFF583c462717' // old
+    ]
   },
   {
     artistCode: 'POM',

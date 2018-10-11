@@ -154,11 +154,11 @@
       goToArtist: function (artistAccount) {
         this.$router.push({name: 'artist-v2', params: {artistAccount}});
       },
-      getArtistAddress: function (artists) {
-        if (_.isArray(artists.ethAddress)) {
-          return artists.ethAddress[0];
+      getArtistAddress: function (artist) {
+        if (_.isArray(artist.ethAddress)) {
+          return artist.ethAddress[0];
         }
-        return artists.ethAddress;
+        return artist.ethAddress;
       }
     },
     created() {
