@@ -113,7 +113,7 @@
       ]),
       editions: function () {
         return this.editionsForArtist(this.getArtistAddress());
-      },
+      }
     },
     methods: {
       canAcceptBid: function (auction) {
