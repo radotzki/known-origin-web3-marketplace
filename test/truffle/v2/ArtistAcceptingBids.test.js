@@ -1116,10 +1116,11 @@ contract.only('ArtistAcceptingBids', function (accounts) {
 
       describe('manually overriding edition bid', async function () {
 
-        const AMOUNT_BID_OVERRIDDEN_TO = 100;
+        // override bid to a lower amount
+        const AMOUNT_BID_OVERRIDDEN_TO = etherToWei(0.0001);
 
         beforeEach(async function () {
-          await this.auction.manualOverrideEditionBid(editionNumber1, bidder1, AMOUNT_BID_OVERRIDDEN_TO, {from: _owner});
+          await this.auction.manualOverrideEditionHighestBidAndBidder(editionNumber1, bidder1, AMOUNT_BID_OVERRIDDEN_TO, {from: _owner});
         });
 
         it('fails if not the owner', async function () {
@@ -1178,62 +1179,53 @@ contract.only('ArtistAcceptingBids', function (accounts) {
           );
         });
 
-        it('artists can still accept new bids and funds split accordingly', async function () {
-          const artistAccount1BalanceBefore = await web3.eth.getBalance(artistAccount1);
+        describe('when accepting bids', async function () {
 
-          // Artists accepts the bid
-          let txs = await this.auction.acceptBid(editionNumber1, {from: artistAccount1});
-          let gasSpent = await getGasCosts(txs);
+          let artistAccount1BalanceBefore;
+          let artistAccount1BalanceAfter;
 
-          const artistAccount1BalanceAfter = await web3.eth.getBalance(artistAccount1);
+          let gasSpent;
 
-          // Auction reset
-          let details = await this.auction.auctionDetails(editionNumber1);
-          details[0].should.be.equal(true); // bool _enabled
-          details[1].should.be.equal(ZERO_ADDRESS); // address _bidder
-          details[2].should.be.bignumber.equal(0); // uint256 _value
-          details[3].should.be.equal(artistAccount1); // address _controller
+          beforeEach(async function () {
+            artistAccount1BalanceBefore = await web3.eth.getBalance(artistAccount1);
 
-          // Check auction still holds balance
-          const postAcceptingBidAuctionBalance = await web3.eth.getBalance(this.auction.address);
-          postAcceptingBidAuctionBalance.should.be.bignumber.equal(
-            this.minBidAmount.sub(AMOUNT_BID_OVERRIDDEN_TO) //  remaining balance
-          );
+            // Artists accepts the bid
+            let txs = await this.auction.acceptBid(editionNumber1, {from: artistAccount1});
+            gasSpent = await getGasCosts(txs);
 
-          // TODO this does work
-          // Artists gets the commission but only to the overridden amount
-          artistAccount1BalanceAfter.should.be.bignumber.equal(
-            artistAccount1BalanceBefore
-              .sub(gasSpent) // artists pays the fee
-              .add(AMOUNT_BID_OVERRIDDEN_TO - 76) // plus 76% of the overridden price
-          );
-        });
+            artistAccount1BalanceAfter = await web3.eth.getBalance(artistAccount1);
+          });
 
-      });
+          it('auction details reset after bid accepted', async function () {
+            // Auction reset
+            let details = await this.auction.auctionDetails(editionNumber1);
+            details[0].should.be.equal(true); // bool _enabled
+            details[1].should.be.equal(ZERO_ADDRESS); // address _bidder
+            details[2].should.be.bignumber.equal(0); // uint256 _value
+            details[3].should.be.equal(artistAccount1); // address _controller
+          });
 
-      describe('manually overriding edition highest bid', async function () {
+          it('auction contract balance is only reduced by overridden amount', async function () {
+            // Check auction still holds balance
+            const postAcceptingBidAuctionBalance = await web3.eth.getBalance(this.auction.address);
+            postAcceptingBidAuctionBalance.should.be.bignumber.equal(
+              this.minBidAmount.sub(AMOUNT_BID_OVERRIDDEN_TO) //  remaining balance
+            );
+          });
 
-        // function manualOverrideEditionHighestBidAndBidder(uint256 _editionNumber, address _bidder, uint256 _amount) onlyOwner public returns (bool) {
+          it('funds split accordingly to artist', async function () {
+            const expectedArtistCommission = AMOUNT_BID_OVERRIDDEN_TO.div(100).mul(artistCommission);
 
-        it('fails if not the owner', async function () {
-
-        });
-
-        it('updates edition data', async function () {
-
-        });
-
-        it('can still increase bid', async function () {
+            // Artists gets the commission but only to the overridden amount
+            artistAccount1BalanceAfter.should.be.bignumber.equal(
+              artistAccount1BalanceBefore
+                .sub(gasSpent) // artists pays the fee
+                .add(expectedArtistCommission) // plus 76% of the overridden price
+            );
+          });
 
         });
 
-        it('new bid can still be made', async function () {
-
-        });
-
-        it('artists can still accept new bids and funds split accordingly', async function () {
-
-        });
       });
 
       describe('manually overriding edition highest bid and bidder', async function () {
