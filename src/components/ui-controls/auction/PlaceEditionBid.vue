@@ -125,11 +125,11 @@
 
       <hr/>
 
-      <p class="text-muted text-sm-center">
+      <p class="text-muted text-center small">
         The winning bid will receive the artwork and all other bids will be refunded automatically.
       </p>
 
-      <p class="text-muted text-sm-center">
+      <p class="text-muted text-center small">
         Got any questions, reach us on
         <a href="https://t.me/knownorigin_io" target="_blank" title="Telegram">telegram</a>
         or via <a href="mailto:hello@knownorigin.io" target="_blank" title="Mail">email</a>
@@ -222,7 +222,7 @@
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.ARTIST_ACCEPTING_BID);
 
       const loadData = () => {
-        this.$store.dispatch(`auction/${actions.GET_AUCTION_DETAILS}`, this.edition)
+        this.$store.dispatch(`auction/${actions.GET_AUCTION_DETAILS}`, this.edition.edition)
           .then(() => {
             this.$nextTick(function () {
               this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.ARTIST_ACCEPTING_BID);
