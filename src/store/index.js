@@ -45,7 +45,7 @@ const store = new Vuex.Store({
     etherscanBase: null,
 
     // non-contract data
-    artists: artistData,
+    artists: _.reverse(artistData),
 
     artistLookupCache: {},
 
