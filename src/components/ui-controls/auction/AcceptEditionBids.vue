@@ -57,23 +57,27 @@
         </p>
 
         <div v-if="isAcceptingBidTriggered(auction.edition)">
-          Transaction triggered
-          <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
+          <div class="card-text mt-4">
+            Transaction triggered
+            <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
+          </div>
           <clickable-transaction :transaction="getAcceptingBidTransactionForEdition(auction.edition)">
           </clickable-transaction>
         </div>
 
         <div v-if="isAcceptingBidStarted(auction.edition)">
-               <span class="card-text mt-4">
-                 Your transaction is being confirmed...
-                 <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
-               </span>
+          <div class="card-text mt-4">
+            Your transaction is being confirmed...
+            <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
+          </div>
           <clickable-transaction :transaction="getAcceptingBidTransactionForEdition(auction.edition)">
           </clickable-transaction>
         </div>
 
         <div v-if="isAcceptingBidSuccessful(auction.edition)">
-          Bid confirmed
+          <div class="card-text mt-4">
+            Bid confirmed
+          </div>
           <clickable-transaction :transaction="getAcceptingBidTransactionForEdition(auction.edition)">
           </clickable-transaction>
         </div>

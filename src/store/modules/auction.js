@@ -199,9 +199,10 @@ const auctionStateModule = {
     [actions.GET_AUCTION_DETAILS]: async function ({commit, state, getters, rootState}, edition) {
       const contract = await rootState.ArtistAcceptingBids.deployed();
 
-      const result = transformAuctionDetails(await contract.auctionDetails(edition.edition), edition.edition);
+      const result = transformAuctionDetails(await contract.auctionDetails(edition), edition);
       commit(mutations.SET_AUCTION_DETAILS, {
-        [edition.edition]: result
+        ...state.auction,
+        [edition]: result
       });
 
       const minBidAmount = await contract.minBidAmount();
@@ -244,13 +245,13 @@ const auctionStateModule = {
       });
 
       const timer = setInterval(function () {
-        dispatch(actions.GET_AUCTION_DETAILS, {edition});
+        dispatch(actions.GET_AUCTION_DETAILS, edition);
       }, 1000);
 
       bidIncreasedEvent.watch(function (error, event) {
         if (!error) {
           console.log('Auction - place bid - successful', event);
-          dispatch(actions.GET_AUCTION_DETAILS, {edition});
+          dispatch(actions.GET_AUCTION_DETAILS, edition);
           commit(mutations.AUCTION_PLACED_SUCCESSFUL, {edition, account});
         } else {
           console.log('Failure', error);
@@ -294,13 +295,13 @@ const auctionStateModule = {
       });
 
       const timer = setInterval(function () {
-        dispatch(actions.GET_AUCTION_DETAILS, {edition});
+        dispatch(actions.GET_AUCTION_DETAILS, edition);
       }, 1000);
 
       bidIncreasedEvent.watch(function (error, event) {
         if (!error) {
           console.log('Auction - increase bid - successful', event);
-          dispatch(actions.GET_AUCTION_DETAILS, {edition});
+          dispatch(actions.GET_AUCTION_DETAILS, edition);
           commit(mutations.AUCTION_PLACED_SUCCESSFUL, {edition, account});
         } else {
           console.log('Failure', error);
@@ -323,6 +324,7 @@ const auctionStateModule = {
     },
     [actions.ACCEPT_BID]: async function ({commit, dispatch, state, getters, rootState}, auction) {
       commit(mutations.RESET_BID_ACCEPTED_STATE, {auction});
+
       const account = rootState.account;
       const contract = await rootState.ArtistAcceptingBids.deployed();
 
@@ -339,7 +341,7 @@ const auctionStateModule = {
       bidAcceptedEvent.watch(function (error, event) {
         if (!error) {
           console.log('Auction - accepted bid - successful', event);
-          dispatch(actions.GET_AUCTION_DETAILS, {auction});
+          dispatch(actions.GET_AUCTION_DETAILS, auction.edition);
           commit(mutations.BID_ACCEPTED_SUCCESSFUL, {auction, account});
         } else {
           console.log('Failure', error);
