@@ -339,7 +339,7 @@ const auctionStateModule = {
       bidAcceptedEvent.watch(function (error, event) {
         if (!error) {
           console.log('Auction - accepted bid - successful', event);
-          dispatch(actions.GET_AUCTION_DETAILS, {edition});
+          dispatch(actions.GET_AUCTION_DETAILS, {auction});
           commit(mutations.BID_ACCEPTED_SUCCESSFUL, {auction, account});
         } else {
           console.log('Failure', error);
