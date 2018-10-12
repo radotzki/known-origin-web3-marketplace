@@ -21,7 +21,7 @@
                   <div class="card-body">
                     <p class="card-title">{{ edition.name }}</p>
                     <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
-                    <span class="pl-1 artist-name" v-on:click="goToArtist(edition.artistAccount)">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
+                    <span class="pl-1 artist-name" v-on:click="goToArtist(edition.artistAccount)">{{ findArtistsForAddress(edition.artistAccount).name | truncate(18)}}</span>
 
                     <small class="text-danger" v-if="isStartDateInTheFuture(edition)">
                       <span>Available {{ edition.startDate | moment('from') }}</span>
