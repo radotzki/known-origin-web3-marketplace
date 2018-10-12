@@ -1107,7 +1107,7 @@ contract.only('ArtistAcceptingBids', function (accounts) {
       });
     });
 
-    describe.only('TODO override functions', async function () {
+    describe('TODO override functions', async function () {
 
       beforeEach(async function () {
         await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount1, {from: _owner});
@@ -1255,7 +1255,93 @@ contract.only('ArtistAcceptingBids', function (accounts) {
 
       describe('manually deleting the bid values', async function () {
 
-        // function manualDeleteEditionBids(uint256 _editionNumber) onlyOwner public returns (bool) {
+        it('fails if not the owner', async function () {
+          await assertRevert(this.auction.manualDeleteEditionBids(editionNumber1, bidder1, {from: bidder1}));
+        });
+
+        describe('once deleted', async function () {
+
+          beforeEach(async function () {
+            await this.auction.manualDeleteEditionBids(editionNumber1, bidder1, {from: _owner});
+          });
+
+          it('contract balance correct balance', async function () {
+            const contractBalance = await web3.eth.getBalance(this.auction.address);
+            contractBalance.should.be.bignumber.equal(this.minBidAmount);
+          });
+
+          it('updates edition data', async function () {
+            let details = await this.auction.auctionDetails(editionNumber1);
+            details[0].should.be.equal(true); // bool _enabled
+            details[1].should.be.equal(ZERO_ADDRESS); // address _bidder
+            details[2].should.be.bignumber.equal(0); // uint256 _value
+            details[3].should.be.equal(artistAccount1); // uint256 _value
+          });
+
+          it('cannot accept the bid as its been removed', async function () {
+            await assertRevert(this.auction.acceptBid(editionNumber1, {from: artistAccount1}));
+          });
+
+          it('bidder cannot increase there previous bid', async function () {
+            await assertRevert(this.auction.increaseBid(editionNumber1, {from: bidder1, value: this.minBidAmount}));
+          });
+
+          it('bidder cannot withdraw there previous bid', async function () {
+            await assertRevert(this.auction.withdrawBid(editionNumber1, {from: bidder1}));
+          });
+
+          it('the same bidder can place a new bid', async function () {
+            // places new bid
+            await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
+
+            // they are then the winner again
+            let details = await this.auction.auctionDetails(editionNumber1);
+            details[0].should.be.equal(true); // bool _enabled
+            details[1].should.be.equal(bidder1); // address _bidder
+            details[2].should.be.bignumber.equal(this.minBidAmount); // uint256 _value
+            details[3].should.be.equal(artistAccount1); // uint256 _value
+
+            // can still be out bid
+            await this.auction.placeBid(editionNumber1, {from: bidder2, value: this.minBidAmount.mul(2)});
+
+            // bidder 2 is the new winner again
+            details = await this.auction.auctionDetails(editionNumber1);
+            details[0].should.be.equal(true); // bool _enabled
+            details[1].should.be.equal(bidder2); // address _bidder
+            details[2].should.be.bignumber.equal(this.minBidAmount.mul(2)); // uint256 _value
+            details[3].should.be.equal(artistAccount1); // uint256 _value
+
+            // Contract balance should show - new bidder plus originally deleted balance
+            const contractBalance = await web3.eth.getBalance(this.auction.address);
+            contractBalance.should.be.bignumber.equal(this.minBidAmount.mul(3));
+          });
+
+          it('a new bidder can place a new bid', async function () {
+            // places new bid
+            await this.auction.placeBid(editionNumber1, {from: bidder2, value: this.minBidAmount});
+
+            // they are then the winner again
+            let details = await this.auction.auctionDetails(editionNumber1);
+            details[0].should.be.equal(true); // bool _enabled
+            details[1].should.be.equal(bidder2); // address _bidder
+            details[2].should.be.bignumber.equal(this.minBidAmount); // uint256 _value
+            details[3].should.be.equal(artistAccount1); // uint256 _value
+
+            // can still be out bid
+            await this.auction.placeBid(editionNumber1, {from: bidder3, value: this.minBidAmount.mul(2)});
+
+            // bidder 3 is the new winner again
+            details = await this.auction.auctionDetails(editionNumber1);
+            details[0].should.be.equal(true); // bool _enabled
+            details[1].should.be.equal(bidder3); // address _bidder
+            details[2].should.be.bignumber.equal(this.minBidAmount.mul(2)); // uint256 _value
+            details[3].should.be.equal(artistAccount1); // uint256 _value
+
+            // Contract balance should show - new bidder plus originally deleted balance
+            const contractBalance = await web3.eth.getBalance(this.auction.address);
+            contractBalance.should.be.bignumber.equal(this.minBidAmount.mul(3));
+          });
+        });
       });
 
     });
@@ -1367,7 +1453,142 @@ contract.only('ArtistAcceptingBids', function (accounts) {
 
   });
 
-  describe('TODO EVENTS', async function () {
+  describe('Event are emit correctly at the right time', async function () {
+
+    beforeEach(async function () {
+      await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount1, {from: _owner});
+    });
+
+    describe('BidPlaced', async function () {
+      let event;
+      beforeEach(async function () {
+        const data = await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
+        event = data.logs[0];
+      });
+
+      it('event populated', async function () {
+        event.event.should.be.equal('BidPlaced');
+        let {_bidder, _editionNumber, _amount} = event.args;
+        _bidder.should.be.equal(bidder1);
+        _editionNumber.should.be.bignumber.equal(editionNumber1);
+        _amount.should.be.bignumber.equal(this.minBidAmount);
+      });
+    });
+
+    describe('BidIncreased', async function () {
+      let event;
+      beforeEach(async function () {
+        await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
+
+        const data = await this.auction.increaseBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
+        event = data.logs[0];
+        console.log(event);
+      });
+
+      it('event populated', async function () {
+        event.event.should.be.equal('BidIncreased');
+        let {_bidder, _editionNumber, _amount} = event.args;
+        _bidder.should.be.equal(bidder1);
+        _editionNumber.should.be.bignumber.equal(editionNumber1);
+        _amount.should.be.bignumber.equal(this.minBidAmount.mul(2));
+      });
+    });
+
+    describe('BidWithdrawn', async function () {
+      let events;
+      beforeEach(async function () {
+        await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
+
+        const {logs} = await this.auction.withdrawBid(editionNumber1, {from: bidder1});
+        events = logs;
+      });
+
+      it('BidderRefunded event populated', async function () {
+        events[0].event.should.be.equal('BidderRefunded');
+        let {_bidder, _editionNumber, _amount} = events[0].args;
+        _bidder.should.be.equal(bidder1);
+        _editionNumber.should.be.bignumber.equal(editionNumber1);
+        _amount.should.be.bignumber.equal(this.minBidAmount);
+      });
+
+      it('BidWithdrawn event populated', async function () {
+        events[1].event.should.be.equal('BidWithdrawn');
+        let {_bidder, _editionNumber} = events[1].args;
+        _bidder.should.be.equal(bidder1);
+        _editionNumber.should.be.bignumber.equal(editionNumber1);
+      });
+    });
+
+    describe('BidAccepted', async function () {
+      let events;
+      beforeEach(async function () {
+        await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
+
+        const {logs} = await this.auction.acceptBid(editionNumber1, {from: artistAccount1});
+        events = logs;
+      });
+
+      it('event populated', async function () {
+        events[0].event.should.be.equal('BidAccepted');
+        let {_bidder, _editionNumber, _tokenId, _amount} = events[0].args;
+        _bidder.should.be.equal(bidder1);
+        _editionNumber.should.be.bignumber.equal(editionNumber1);
+        _tokenId.should.be.bignumber.equal(editionNumber1 + 1);
+        _amount.should.be.bignumber.equal(this.minBidAmount);
+      });
+    });
+
+    describe('EditionAuctionCanceled', async function () {
+
+      let events;
+      beforeEach(async function () {
+        await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
+        const {logs} = await this.auction.cancelAuction(editionNumber1, {from: _owner});
+        events = logs;
+      });
+
+      it('BidderRefunded event populated', async function () {
+        events[0].event.should.be.equal('BidderRefunded');
+        let {_bidder, _editionNumber, _amount} = events[0].args;
+        _bidder.should.be.equal(bidder1);
+        _editionNumber.should.be.bignumber.equal(editionNumber1);
+        _amount.should.be.bignumber.equal(this.minBidAmount);
+      });
+
+      it('EditionAuctionCanceled event populated', async function () {
+        events[1].event.should.be.equal('EditionAuctionCanceled');
+        let {_editionNumber} = events[1].args;
+        _editionNumber.should.be.bignumber.equal(editionNumber1);
+      });
+    });
+
+    describe('BidderRefunded', async function () {
+
+      let events;
+      beforeEach(async function () {
+        await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
+
+        // get out bid
+        const {logs} = await this.auction.placeBid(editionNumber1, {from: bidder2, value: this.minBidAmount.mul(2)});
+        events = logs;
+      });
+
+      it('BidderRefunded event populated', async function () {
+        events[0].event.should.be.equal('BidderRefunded');
+        let {_bidder, _editionNumber, _amount} = events[0].args;
+        _bidder.should.be.equal(bidder1);
+        _editionNumber.should.be.bignumber.equal(editionNumber1);
+        _amount.should.be.bignumber.equal(this.minBidAmount);
+      });
+
+      it('BidPlacedevent populated', async function () {
+        events[1].event.should.be.equal('BidPlaced');
+        let {_bidder, _editionNumber, _amount} = events[1].args;
+        _bidder.should.be.equal(bidder2);
+        _editionNumber.should.be.bignumber.equal(editionNumber1);
+        _amount.should.be.bignumber.equal(this.minBidAmount.mul(2));
+      });
+    });
 
   });
 });
