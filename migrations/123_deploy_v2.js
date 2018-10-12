@@ -8,7 +8,7 @@ module.exports = function (deployer, network, accounts) {
   let _koAccount = accounts[0];
 
   // Load in other accounts for different networks
-  if (network === 'ropsten' || network === 'rinkeby') {
+  if (network === 'ropsten' || network === 'ropsten-fork' || network === 'rinkeby' || network === 'rinkeby-fork') {
     _koAccount = new HDWalletProvider(require('../mnemonic'), `https://${network}.infura.io/${infuraApikey}`, 0).getAddress();
   }
 
