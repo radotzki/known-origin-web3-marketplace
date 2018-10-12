@@ -2,8 +2,6 @@ pragma solidity 0.4.24;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
-
-// For safe maths operations
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 /**
@@ -126,6 +124,10 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   // the KO account which can receive commission
   address public koCommissionAccount;
 
+  ///////////////
+  // Modifiers //
+  ///////////////
+
   // Checks the auction is enabled
   modifier whenAuctionEnabled(uint256 _editionNumber) {
     require(enabledEditions[_editionNumber], "Edition is not enabled for auctions");
@@ -179,6 +181,10 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
     require(editionExists, "Edition does not exist");
     _;
   }
+
+  /////////////////
+  // Constructor //
+  /////////////////
 
   // Set the caller as the default KO account
   constructor(IKODAV2 _kodaAddress) public {
@@ -524,6 +530,10 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   // Public query methods //
   //////////////////////////
 
+  /**
+   * @dev Look up all the known data about the latest edition bidding round
+   * @dev Returns zeros for all values when not valid
+   */
   function auctionDetails(uint256 _editionNumber) public view returns (bool _enabled, address _bidder, uint256 _value, address _controller) {
     address highestBidder = editionHighestBid[_editionNumber];
     uint256 bidValue = editionBids[_editionNumber][highestBidder];
@@ -536,16 +546,26 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
     );
   }
 
+  /**
+   * @dev Look up all the current highest bidder for the latest edition
+   * @dev Returns zeros for all values when not valid
+   */
   function highestBidForEdition(uint256 _editionNumber) public view returns (address _bidder, uint256 _value) {
     address highestBidder = editionHighestBid[_editionNumber];
     uint256 bidValue = editionBids[_editionNumber][highestBidder];
     return (highestBidder, bidValue);
   }
 
+  /**
+   * @dev Check an edition is enabled for auction
+   */
   function isEditionEnabled(uint256 _editionNumber) public view returns (bool) {
     return enabledEditions[_editionNumber];
   }
 
+  /**
+   * @dev Check which address can action a bid for the given edition
+   */
   function editionController(uint256 _editionNumber) public view returns (address) {
     return editionNumberToControlAddress[_editionNumber];
   }
