@@ -1,5 +1,25 @@
 const artists = [
   {
+    artistCode: 'TKO',
+    name: 'Takahiro Okawa',
+    bio: 'He was born and raised in a Japanese seaside town. In teens PUNK · NEWWAVE sounded, fashion was inspired. He entered Tokyo as a department of photography at Nihon University College of Art and moved to Tokyo.',
+    strapline: 'He was born and raised in a Japanese seaside town. In teens PUNK · NEWWAVE sounded, fashion was inspired.',
+    twitter: '@oi_to_up',
+    img: '/static/artists/Takahiro-Okawa@x2.png',
+    live: true,
+    ethAddress: '0x81918C90424235902b0330E4870d2267544421b0'
+  },
+  {
+    artistCode: 'CNJ',
+    name: 'CoinJournal',
+    twitter: '@CoinJournal',
+    bio: 'CoinJournal is a Manchester-based Bitcoin and cryptocurrency news site. The artwork submitted has been produced as a collaboration with several different designers, incorporating the style of 1930s cartoons and celebrating the disruptive nature of cryptocurrencies.',
+    strapline: 'CoinJournal is a Manchester based artist who collaborates with several different designers, incorporating the style of 1930s cartoons',
+    img: '/static/artists/coinjournal_x2.png',
+    live: true,
+    ethAddress: '0x7EdAbC5d4a3E1870b157caB79fAF5731389b07cF'
+  },
+  {
     artistCode: 'HKT',
     name: 'Hackatao',
     bio: 'Hackatao merges the cultured quotations from the past to bold and ultra-contemporary forms, standing out as an innovative exponent of the current artistic scenario. The artistic diptych Hackatao is formed by Sergio Scalet  and Nadia Squarci. “A dense visual texture that immediately catches the aesthetic sensibility of the beholder and expresses two complementary components of this successful artistic alliance.” Julie Kogler',
@@ -38,16 +58,6 @@ const artists = [
     ethAddress: '0x2Eb9b439Ffb7dC587198e1534e465a6242192b24'
   },
   {
-    artistCode: 'TKO',
-    name: 'Takahiro Okawa',
-    bio: 'He was born and raised in a Japanese seaside town. In teens PUNK · NEWWAVE sounded, fashion was inspired. He entered Tokyo as a department of photography at Nihon University College of Art and moved to Tokyo.',
-    strapline: 'He was born and raised in a Japanese seaside town. In teens PUNK · NEWWAVE sounded, fashion was inspired.',
-    twitter: '@oi_to_up',
-    img: '/static/artists/Takahiro-Okawa@x2.png',
-    live: true,
-    ethAddress: '0x81918C90424235902b0330E4870d2267544421b0'
-  },
-  {
     artistCode: 'MNO',
     name: 'Manoloide',
     bio: 'Creative coder and generative designer.',
@@ -79,16 +89,7 @@ const artists = [
     twitter: '@LeeDRHolland',
     ethAddress: '0xf397B52432fE7149Ce74849B15223f4502cdB1d3'
   },
-  {
-    artistCode: 'CNJ',
-    name: 'CoinJournal',
-    twitter: '@CoinJournal',
-    bio: 'CoinJournal is a Manchester-based Bitcoin and cryptocurrency news site. The artwork submitted has been produced as a collaboration with several different designers, incorporating the style of 1930s cartoons and celebrating the disruptive nature of cryptocurrencies.',
-    strapline: 'CoinJournal is a Manchester based artist who collaborates with several different designers, incorporating the style of 1930s cartoons',
-    img: '/static/artists/coinjournal_x2.png',
-    live: true,
-    ethAddress: '0x7EdAbC5d4a3E1870b157caB79fAF5731389b07cF'
-  },
+
   {
     artistCode: 'STJ',
     name: 'Stina Jones',
@@ -399,6 +400,17 @@ const artists = [
     twitter: '@Pepe_Designer',
     website: 'https://digirare.com/artists/rare-designer',
     ethAddress: '0x43a7634eb14c12b59be599487c1d7898a3d864c1'
+  },
+  {
+    artistCode: 'MXO',
+    name: 'Max Osiris',
+    bio: 'Max Osiris is a transdimensional artist, combining and remixing disparate visual styles to create new categories as well as individual pieces. Combining AI and neural network art such as GANism with traditional methods of acrylics or the patterning of indigenous tribal art, Max creates unique remixes of visual flavors to create blockchain-based art that pays homage to DMT inspired imagery and historical masters',
+    strapline: 'Max Osiris is a transdimensional artist, combining and remixing disparate visual styles to create new categories as well as individual pieces.',
+    img: '/static/artists/Max_OProfile@x2.png',
+    live: true,
+    twitter: '@artofosiris',
+    website: 'https://maxosiris.com/',
+    ethAddress: '0x0b715ca8dc39e7f8a480d28d9822ae02f0a57008'
   }
 ];
 
