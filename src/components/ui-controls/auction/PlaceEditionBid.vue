@@ -4,25 +4,39 @@
 
       <h6>Make a bid</h6>
 
+      <!-- Auction - Bid complete -->
+      <div v-if="auction[edition.edition] && auction[edition.edition].highestBid !== '0'" class="">
+
+        Highest bid: <price-in-eth :value="auction[edition.edition].highestBid" class="float-right"></price-in-eth>
+        <!--<div v-if="!accountIsHighestBidder(edition.edition)" class="mt-2">-->
+
+
+          <!--&lt;!&ndash;from <clickable-address :eth-address="auction[edition.edition].highestBidder"></clickable-address>&ndash;&gt;-->
+        <!--</div>-->
+        <div v-if="accountIsHighestBidder(edition.edition)" class="mt-2 text-success small text-center">
+          <strong>Your bid is the highest!</strong>
+          <!--<clickable-address :eth-address="auction[edition.edition].highestBidder"></clickable-address>-->
+        </div>
+      </div>
+
+      <hr/>
+
       <fieldset :disabled="isLoading(PAGES.ARTIST_ACCEPTING_BID)">
-        <form class="form-inline">
+        <form class="form-inline was-validated">
 
           <!-- When you are NOT the top bidder -->
           <div class="input-group" v-if="!accountIsHighestBidder(edition.edition)">
             <div class="input-group-prepend">
               <div class="input-group-text">ETH</div>
             </div>
-            <input type="number" class="form-control mr-sm-2" id="makeBidValue" step="0.01" placeholder="0.1" v-model="form.bid" :min="nextMinimumNewBid(edition.edition)"/>
+            <input type="number" class="form-control is-invalid mr-sm-2" id="makeBidValue" step="0.01" placeholder="0.1" v-model="form.bid" :min="nextMinimumNewBid(edition.edition)"/>
             <button class="btn btn-secondary"
                     v-if="!accountIsHighestBidder(edition.edition)" v-on:click="placeBid"
                     :disabled="form.bid < nextMinimumNewBid(edition.edition)">
               Make Bid
             </button>
+            <div class="invalid-feedback">Minimum bid: {{nextMinimumNewBid(edition.edition)}} ETH</div>
           </div>
-
-          <small class="text-muted text-center mt-2" v-if="!accountIsHighestBidder(edition.edition)">
-            Minimum bid: {{nextMinimumNewBid(edition.edition)}} ETH
-          </small>
 
           <!-- When you are top bidder -->
 
@@ -30,36 +44,19 @@
             <div class="input-group-prepend">
               <div class="input-group-text">ETH</div>
             </div>
-            <input type="number" class="form-control mr-sm-2" id="increaseBidValue" step="0.01" placeholder="0.1"
-                   v-model="form.bid" :min="minBidAmount">
+            <input type="number" class="form-control is-invalid mr-sm-2" id="increaseBidValue" step="0.01" placeholder="0.1" v-model="form.bid" :min="minBidAmount">
             <button class="btn btn-secondary"
                     v-if="accountIsHighestBidder(edition.edition)" v-on:click="increaseBid"
                     :disabled="form.bid < minBidAmount">
               Make Bid
             </button>
+            <div class="invalid-feedback" v-if="accountIsHighestBidder(edition.edition)">
+              Minimum increase: {{minBidAmount}} ETH
+            </div>
           </div>
-
-          <small class="form-text text-muted text-center" v-if="accountIsHighestBidder(edition.edition)">
-            Minimum increase: {{minBidAmount}} ETH
-          </small>
-
         </form>
       </fieldset>
-
-      <!-- Auction - Bid complete -->
-      <div v-if="auction[edition.edition] && auction[edition.edition].highestBid !== '0'" class="text-center">
-        <div v-if="!accountIsHighestBidder(edition.edition)" class="mt-2">
-          <hr/>
-          Highest bid is <price-in-eth :value="auction[edition.edition].highestBid"></price-in-eth> from
-          <clickable-address :eth-address="auction[edition.edition].highestBidder"></clickable-address>
-        </div>
-        <div v-if="accountIsHighestBidder(edition.edition)" class="mt-2 text-success">
-          <hr/>
-          Your bid of <price-in-eth :value="auction[edition.edition].highestBid"></price-in-eth> is the highest!
-          <!--<clickable-address :eth-address="auction[edition.edition].highestBidder"></clickable-address>-->
-        </div>
-      </div>
-
+      
       <!-- Auction - Bid submitted -->
       <div class="text-sm-center">
 
