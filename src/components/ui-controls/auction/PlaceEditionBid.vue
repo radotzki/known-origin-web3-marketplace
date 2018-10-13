@@ -29,34 +29,36 @@
             <div class="input-group-prepend">
               <div class="input-group-text">ETH</div>
             </div>
-            <input type="number" class="form-control is-invalid mr-sm-2" id="makeBidValue" step="0.01" placeholder="0.1" v-model="form.bid" :min="nextMinimumNewBid(edition.edition)"/>
+            <input type="number"
+                   v-bind:class="{'is-invalid': nextMinimumNewBid(edition.edition) > form.bid, 'is-valid': nextMinimumNewBid(edition.edition) < form.bid}"
+                   class="form-control mr-sm-2" id="makeBidValue" step="0.01" placeholder="0.1" v-model="form.bid" :min="nextMinimumNewBid(edition.edition)"/>
             <button class="btn btn-secondary"
                     v-if="!accountIsHighestBidder(edition.edition)" v-on:click="placeBid"
                     :disabled="form.bid < nextMinimumNewBid(edition.edition)">
               Make Bid
             </button>
-            <div class="invalid-feedback">Minimum bid: {{nextMinimumNewBid(edition.edition)}} ETH</div>
+            <div class="invalid-feedback" v-if="nextMinimumNewBid(edition.edition) > form.bid">Minimum bid: {{nextMinimumNewBid(edition.edition)}} ETH</div>
           </div>
 
           <!-- When you are top bidder -->
-
           <div class="input-group" v-if="accountIsHighestBidder(edition.edition)">
             <div class="input-group-prepend">
               <div class="input-group-text">ETH</div>
             </div>
-            <input type="number" class="form-control is-invalid mr-sm-2" id="increaseBidValue" step="0.01" placeholder="0.1" v-model="form.bid" :min="minBidAmount">
+            <input type="number" v-bind:class="{'is-invalid': nextMinimumNewBid(edition.edition) > form.bid, 'is-valid': nextMinimumNewBid(edition.edition) < form.bid}"
+                   class="form-control is-invalid mr-sm-2" id="increaseBidValue" step="0.01" placeholder="0.1" v-model="form.bid" :min="minBidAmount">
             <button class="btn btn-secondary"
                     v-if="accountIsHighestBidder(edition.edition)" v-on:click="increaseBid"
                     :disabled="form.bid < minBidAmount">
               Make Bid
             </button>
-            <div class="invalid-feedback" v-if="accountIsHighestBidder(edition.edition)">
+            <div class="invalid-feedback" v-if="nextMinimumNewBid(edition.edition) > form.bid">
               Minimum increase: {{minBidAmount}} ETH
             </div>
           </div>
         </form>
       </fieldset>
-      
+
       <!-- Auction - Bid submitted -->
       <div class="text-sm-center">
 
