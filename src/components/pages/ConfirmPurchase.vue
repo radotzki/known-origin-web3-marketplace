@@ -18,10 +18,10 @@
           <hr/>
 
           <div>
-            {{ edition.name }}
+            <strong>{{ edition.name }}</strong>
           </div>
 
-          <div class="small">
+          <div class="small mt-2">
             {{ edition.description }}
           </div>
 

@@ -2,7 +2,7 @@
   <div class="shadow-sm bg-white mb-4 card simple-artist-panel">
     <artist-short-bio :artist="artist" :nolinks="true"></artist-short-bio>
 
-    <p class="bio mt-4 ml-3 mr-3">
+    <p class="bio mt-2 ml-3 mr-3">
       {{ artist.strapline }}
     </p>
   </div>
