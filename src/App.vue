@@ -49,15 +49,16 @@
 
     <main role="main" class="container-fluid">
       <router-view></router-view>
+      <current-network class="small text-muted float-right mr-4"></current-network>
     </main>
 
     <footer class="footer">
       <div class="container">
         <div class="row">
-          <div class="col-sm">
+          <div class="col d-none d-md-inline">
             <small class="slogan">BE ORIGINAL. BUY ORIGINAL.</small>
           </div>
-          <div class="col-sm text-center">
+          <div class="col-xs col-sm text-center mb-2">
             <small>
               <router-link :to="{ name: 'gallery' }">Gallery</router-link> &bull;
               <router-link :to="{ name: 'artists' }">Artists</router-link> &bull;
@@ -65,22 +66,19 @@
               <!--<router-link :to="{ name: 'assets' }">Assets</router-link>-->
             </small>
           </div>
-          <div class="col-sm text-center">
-            <a href="mailto:hello@knownorigin.io" target="_blank" class="pr-2" title="Mail">
+          <div class="col-xs col-sm text-center">
+            <a href="mailto:hello@knownorigin.io" target="_blank" class="p-2" title="Mail">
               <font-awesome-icon :icon="['fas', 'envelope-square']" size="lg"></font-awesome-icon>
             </a>
-            <a href="https://twitter.com/knownorigin_io" target="_blank" title="Twitter">
+            <a href="https://twitter.com/knownorigin_io" target="_blank" class="p-2"title="Twitter">
               <font-awesome-icon :icon="['fab', 'twitter']" size="lg"></font-awesome-icon>
             </a>
-            <a href="https://t.me/knownorigin_io" target="_blank" class="pr-2" title="Telegram">
+            <a href="https://t.me/knownorigin_io" target="_blank" class="p-2" title="Telegram">
               <font-awesome-icon :icon="['fab', 'telegram-plane']" size="lg"></font-awesome-icon>
             </a>
-            <a href="https://medium.com/knownorigin" target="_blank" class="pr-2" title="Medium">
+            <a href="https://medium.com/knownorigin" target="_blank" class="p-2" title="Medium">
               <font-awesome-icon :icon="['fab', 'medium']" size="lg"></font-awesome-icon>
             </a>
-            <small class="">
-              <current-network></current-network>
-            </small>
           </div>
         </div>
       </div>
