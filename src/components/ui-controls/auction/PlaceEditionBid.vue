@@ -7,11 +7,15 @@
       <!-- Auction - Bid complete -->
       <div v-if="auction[edition.edition] && auction[edition.edition].highestBid !== '0'" class="">
 
-        Highest bid: <price-in-eth :value="auction[edition.edition].highestBid" class="float-right"></price-in-eth>
+        Highest bid:
+        <div class="float-right">
+          <price-in-eth :value="auction[edition.edition].highestBid" class=""></price-in-eth>
+          <span class="pl-1"><u-s-d-price :price-in-ether="auction[edition.edition].highestBid"></u-s-d-price></span>
+        </div>
         <!--<div v-if="!accountIsHighestBidder(edition.edition)" class="mt-2">-->
 
 
-          <!--&lt;!&ndash;from <clickable-address :eth-address="auction[edition.edition].highestBidder"></clickable-address>&ndash;&gt;-->
+        <!--&lt;!&ndash;from <clickable-address :eth-address="auction[edition.edition].highestBidder"></clickable-address>&ndash;&gt;-->
         <!--</div>-->
         <div v-if="accountIsHighestBidder(edition.edition)" class="mt-2 text-success small text-center">
           <strong>Your bid is the highest!</strong>
@@ -19,6 +23,7 @@
         </div>
       </div>
 
+      <div class="clearfix"></div>
       <hr/>
 
       <fieldset :disabled="isLoading(PAGES.ARTIST_ACCEPTING_BID)">
@@ -123,6 +128,7 @@
   import { PAGES } from '../../../store/loadingPageState';
   import ClickableAddress from '../generic/ClickableAddress';
   import PriceInEth from '../generic/PriceInEth';
+  import USDPrice from '../generic/USDPrice';
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
   import ClickableTransaction from '../generic/ClickableTransaction';
   import LoadingSpinner from '../generic/LoadingSpinner';
@@ -134,7 +140,8 @@
       ClickableTransaction,
       PriceInEth,
       ClickableAddress,
-      FontAwesomeIcon
+      FontAwesomeIcon,
+      USDPrice
     },
     props: {
       edition: {
