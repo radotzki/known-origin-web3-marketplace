@@ -37,7 +37,6 @@
 
           <metadata-attributes :attributes="edition.attributes"></metadata-attributes>
 
-
           <div class="mt-4">
             <hr/>
             <price-in-eth :value="edition.priceInEther"></price-in-eth>
@@ -69,16 +68,13 @@
             <availability class="float-right" :totalAvailable="edition.totalAvailable"
                           :totalSupply="edition.totalSupply"></availability>
           </div>
-
-          <hr/>
-
-          <div class="mt-2" v-if="(edition.totalAvailable - edition.totalSupply > 0) && haveNotPurchasedEditionBefore(edition.edition)">
-            <place-edition-bid :edition="edition"></place-edition-bid>
-          </div>
-
           <!--<div class="mt-2">-->
           <!--<h6>Activity</h6>-->
           <!--</div>-->
+        </div>
+
+        <div class="mt-4 shadow-sm bg-white p-4" v-if="(edition.totalAvailable - edition.totalSupply > 0) && haveNotPurchasedEditionBefore(edition.edition)">
+          <place-edition-bid :edition="edition"></place-edition-bid>
         </div>
       </div>
 
