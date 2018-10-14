@@ -6,6 +6,7 @@ export const GET_CURRENT_NETWORK = 'GET_CURRENT_NETWORK';
 
 // External API calls
 export const GET_USD_PRICE = 'GET_USD_PRICE';
+export const ACTIVITY = 'ACTIVITY';
 
 ///////////////////
 // V2 Page Loads //

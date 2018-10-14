@@ -8,6 +8,7 @@ import Gallery from '@/components/pages/Gallery';
 import ArtistPage from '@/components/pages/ArtistPage';
 import ConfirmPurchase from '@/components/pages/ConfirmPurchase';
 import CompletePurchase from '@/components/pages/CompletePurchase';
+import Activity from '@/components/pages/Activity';
 import EditionTokenOverview from '@/components/pages/EditionTokenOverview';
 import LegacyDeepLinkToken from '@/components/pages/legacy/LegacyDeepLinkToken';
 
@@ -55,6 +56,11 @@ export default new Router({
       path: '/artists',
       name: 'artists',
       component: Artists
+    },
+    {
+      path: '/activity',
+      name: 'activity',
+      component: Activity
     },
     {
       path: '/token/:tokenId',

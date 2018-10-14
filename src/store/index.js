@@ -51,6 +51,8 @@ const store = new Vuex.Store({
 
     KnownOriginDigitalAssetV1: null,
     KnownOriginDigitalAssetV2: null,
+
+    activity: []
   },
   getters: {
     findArtist: (state) => (artistCode) => {
@@ -121,6 +123,9 @@ const store = new Vuex.Store({
     [mutations.SET_KODA_CONTRACT](state, {v1, v2}) {
       state.KnownOriginDigitalAssetV1 = v1;
       state.KnownOriginDigitalAssetV2 = v2;
+    },
+    [mutations.SET_ACTIVITY](state, anEvent) {
+      Vue.set(state, 'activity', state.activity.concat(anEvent));
     },
   },
   actions: {
@@ -219,6 +224,28 @@ const store = new Vuex.Store({
         .catch(function (error) {
           console.log('ERROR - account locked', error);
         });
+    },
+    [actions.ACTIVITY]: function ({commit, dispatch, state}) {
+
+      if (state.KnownOriginDigitalAssetV2) {
+        state.KnownOriginDigitalAssetV2.deployed()
+          .then((contract) => {
+
+            let mintedEvent = contract.Minted({}, {
+              fromBlock: 0,
+              toBlock: 'latest' // wait until event comes through
+            });
+
+            mintedEvent.watch(function (error, anEvent) {
+              if (!error) {
+                commit(mutations.SET_ACTIVITY, anEvent);
+              } else {
+                console.log('Failure', error);
+                mintedEvent.stopWatching();
+              }
+            });
+          });
+      }
     },
   }
 });
