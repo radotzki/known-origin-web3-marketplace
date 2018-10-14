@@ -16,14 +16,14 @@
     <div class="row pb-4" v-for="auction in listOpenAuctions">
 
       <!-- Edition Image -->
-      <div class="col-2 text-center">
+      <div class="col text-center">
         <router-link :to="{ name: 'confirmPurchaseSimple', params: { editionNumber: auction.edition }}">
           <img :src="getEdition(auction.edition).lowResImg" class="img-thumbnail" style="width: 150px;"/>
         </router-link>
       </div>
 
       <!-- Auction Details -->
-      <div class="col-3">
+      <div class="col">
         <p>
           Edition No.
           <router-link :to="{ name: 'confirmPurchaseSimple', params: { editionNumber: auction.edition }}">
@@ -51,7 +51,7 @@
       </div>
 
       <!-- Accept Bid Action & Transaction -->
-      <div class="col-7">
+      <div class="col">
         <p v-if="canAcceptBid(auction) && auction.highestBid > 0">
           <button class="btn btn-primary" v-on:click="acceptBid(auction)">Accept Bid</button>
         </p>
@@ -61,7 +61,9 @@
             Transaction triggered
             <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
           </div>
-          <clickable-transaction :transaction="getAcceptingBidTransactionForEdition(auction.edition)">
+          <clickable-transaction
+            :transaction="getAcceptingBidTransactionForEdition(auction.edition)"
+            :show-label="false">
           </clickable-transaction>
         </div>
 
@@ -70,7 +72,9 @@
             Your transaction is being confirmed...
             <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
           </div>
-          <clickable-transaction :transaction="getAcceptingBidTransactionForEdition(auction.edition)">
+          <clickable-transaction
+            :transaction="getAcceptingBidTransactionForEdition(auction.edition)"
+            :show-label="false">
           </clickable-transaction>
         </div>
 
@@ -78,7 +82,9 @@
           <div class="card-text mt-4">
             Bid confirmed
           </div>
-          <clickable-transaction :transaction="getAcceptingBidTransactionForEdition(auction.edition)">
+          <clickable-transaction
+            :transaction="getAcceptingBidTransactionForEdition(auction.edition)"
+            :show-label="false">
           </clickable-transaction>
         </div>
 
@@ -205,4 +211,11 @@
 <style scoped lang="scss">
   @import '../../../ko-colours.scss';
   @import '../../../ko-card.scss';
+
+  .accepting-bid-card {
+    /*min-height: 275px;*/
+    /*width: 18rem;*/
+  }
+
+
 </style>
