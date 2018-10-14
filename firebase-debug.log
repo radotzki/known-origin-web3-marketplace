@@ -1,0 +1,40 @@
+[debug] [2018-10-13T19:47:26.383Z] ----------------------------------------------------------------------
+[debug] [2018-10-13T19:47:26.385Z] Command:       /usr/local/bin/node /Users/andy/.node/bin/firebase deploy
+[debug] [2018-10-13T19:47:26.386Z] CLI Version:   3.16.0
+[debug] [2018-10-13T19:47:26.386Z] Platform:      darwin
+[debug] [2018-10-13T19:47:26.386Z] Node Version:  v8.9.1
+[debug] [2018-10-13T19:47:26.387Z] Time:          Sat Oct 13 2018 20:47:26 GMT+0100 (BST)
+[debug] [2018-10-13T19:47:26.387Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-10-13T19:47:26.397Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-10-13T19:47:26.397Z] > authorizing via signed-in user
+[debug] [2018-10-13T19:47:26.398Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2018-10-13T19:47:26.399Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ { refresh_token: '1/EmdjCfRZr9l1wfKDfgnkp7SymtJuJsewqnmt1qUI9ug',
+  client_id: '563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com',
+  client_secret: 'j9iVZfS8kkCEFUPaAeJV0sAi',
+  grant_type: 'refresh_token',
+  scope: 'email https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/cloudplatformprojects.readonly https://www.googleapis.com/auth/firebase openid' } 
+ Sat Oct 13 2018 20:47:26 GMT+0100 (BST)
+[debug] [2018-10-13T19:47:26.594Z] <<< HTTP RESPONSE 200
+[debug] [2018-10-13T19:47:26.606Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/beta-known-origin-io  
+  
+ Sat Oct 13 2018 20:47:26 GMT+0100 (BST)
+[debug] [2018-10-13T19:47:27.171Z] <<< HTTP RESPONSE 200
+[debug] [2018-10-13T19:47:27.172Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/beta-known-origin-io/tokens  
+  
+ Sat Oct 13 2018 20:47:27 GMT+0100 (BST)
+[debug] [2018-10-13T19:47:27.695Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Deploying to 'beta-known-origin-io'...
+[info] 
+[info] i  deploying hosting
+[info] i  hosting: preparing ./dist/ directory for upload...
+[debug] [2018-10-13T19:47:29.443Z] >>> HTTP REQUEST PUT https://deploy.firebase.com/v1/hosting/beta-known-origin-io/uploads/-LOiy1JoZLs-LrgXIKCh?fileCount=90&message=  
+  
+ Sat Oct 13 2018 20:47:29 GMT+0100 (BST)
+[debug] [2018-10-14T06:33:21.133Z] Error: write EPIPE
+    at _errnoException (util.js:1024:11)
+    at WriteWrap.afterWrite [as oncomplete] (net.js:867:14)
+[error] 
+[error] Error: Server Error. write EPIPE
