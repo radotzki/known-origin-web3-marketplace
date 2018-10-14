@@ -76,6 +76,10 @@
         <div class="mt-4 shadow-sm bg-white p-4" v-if="(edition.totalAvailable - edition.totalSupply > 0) && haveNotPurchasedEditionBefore(edition.edition)">
           <place-edition-bid :edition="edition"></place-edition-bid>
         </div>
+
+        <div class="mt-4 shadow-sm bg-white p-4">
+          <auction-events-list :edition="edition"></auction-events-list>
+        </div>
       </div>
 
       <div class="col-sm-6 order-1 order-sm-2 mb-5">
@@ -100,10 +104,12 @@
   import HighResLabel from '../ui-controls/generic/HighResLabel';
   import Availability from "../ui-controls/v2/Availability";
   import PlaceEditionBid from "../ui-controls/auction/PlaceEditionBid";
+  import AuctionEventsList from "../ui-controls/auction/AuctionEventsList";
 
   export default {
     name: 'confirmPurchase',
     components: {
+      AuctionEventsList,
       PlaceEditionBid,
       Availability,
       LoadingSection,
