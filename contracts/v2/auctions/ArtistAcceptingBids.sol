@@ -76,25 +76,25 @@ interface IKODAV2 {
 *
 * Rules:
 * Can only bid for an edition which is enabled
-* Can only add new bid higher than previous bid plus minimum bid amount (default is 0.01 eth)
+* Can only add new bids higher than previous highest bid plus minimum bid amount
 * Can increase your bid, only if you are the top current bidder
 * Once outbid, original bidder has ETH returned
-* Cannot double bid once you are already the highest bidder
-* Only the defined edition address can accept the bid
+* Cannot double bid once you are already the highest bidder, can only call increaseBid()
+* Only the defined controller address can accept the bid
 * If a bid is revoked, the auction remains open however no highest bid exists
-* If the contract is Paused, no public actions can happen (worst case scenario)
+* If the contract is Paused, no public actions can happen e.g. bids, increases, withdrawals
 * Managers of contract have full control over it act as a fallback in-case funds go missing or bugs are found
-* On accepting of any bid, funds are split to KO and Artists - 3rd party split does not work (for now)
-* Contracts checks at various operations to see if edition is sold out, if sold out, auction is stopped, manual refund required by bidder
+* On accepting of any bid, funds are split to KO and Artists - 3rd party split does not work
+* Checks happen at throughout to check if an edition is sold out, if sold out, auction is stopped, manual refund required by bidder or owner
 * Upon cancelling a bid which is in flight, funds are returned and contract stops further bids on the edition
-* Artists commissions and address are pulled from the KODA contract, not the address who can accept the bid
+* Artists commissions and address are pulled from the KODA contract and are not based on the controller address
 *
 * Scenario:
 * 1) Config artist & edition
 * 2) Bob places bid
 * 3) Alice places higher bid, overrides Bobs position as the leader, sends Bobs ETH back and takes 1st place
-* 4) Artist accepts highest bid
-* 5) Upon accepting, token generated and transferred to Alice, funds are absorbed and split as normal
+* 4) Artist accepts Alice's bid
+* 5) KODA token generated and transferred to Alice, funds are absorbed and split between KO and Artist of origin edition
 *
 * https://www.knownorigin.io/
 *
@@ -103,13 +103,13 @@ interface IKODAV2 {
 contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   using SafeMath for uint256;
 
-  // A mapping of the control address to the edition number which enabled for auction
+  // A mapping of the control address to the edition number
   mapping(uint256 => address) internal editionNumberToControlAddress;
 
-  // Enabled/disable an editionNumber to be part of an auction
+  // Enabled/disable eht auction for the edition
   mapping(uint256 => bool) internal enabledEditions;
 
-  // Editions to address
+  // Edition to current highest bidders address
   mapping(uint256 => address) internal editionHighestBid;
 
   // Mapping for edition -> bidder -> bid amount
@@ -121,7 +121,7 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   // Interface into the KODA world
   IKODAV2 public kodaAddress;
 
-  // the KO account which can receive commission
+  // KO account which can receive commission
   address public koCommissionAccount;
 
   ///////////////
@@ -134,7 +134,6 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
     _;
   }
 
-  // TODO test owner
   // Checks the msg.sender is the control address or the auction owner
   modifier whenCallerIsController(uint256 _editionNumber) {
     require(editionNumberToControlAddress[_editionNumber] == msg.sender || msg.sender == owner, "Edition not managed by calling address");
@@ -155,7 +154,7 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
     _;
   }
 
-  // Check the called in not already the highest bidder
+  // Check the caller in not already the highest bidder
   modifier whenNotAlreadyTheHighestBidder(uint256 _editionNumber) {
     address currentHighestBidder = editionHighestBid[_editionNumber];
     require(currentHighestBidder != msg.sender, "Cant bid anymore, you are already the current highest");
@@ -168,14 +167,14 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
     _;
   }
 
-  // Only when editions are not sold out in KO
+  // Only when editions are not sold out in KODA
   modifier whenEditionNotSoldOut(uint256 _editionNumber) {
     uint256 totalRemaining = kodaAddress.totalRemaining(_editionNumber);
     require(totalRemaining > 0, "Unable to accept any more bids, edition is sold out");
     _;
   }
 
-  // Only when editions exists
+  // Only when edition exists in KODA
   modifier whenEditionExists(uint256 _editionNumber) {
     bool editionExists = kodaAddress.editionExists(_editionNumber);
     require(editionExists, "Edition does not exist");
@@ -211,11 +210,11 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   public
   payable
   whenNotPaused
-  whenEditionExists(_editionNumber) // Prevent invalid editions
-  whenAuctionEnabled(_editionNumber) // Prevent bids for editions not enabled
-  whenPlacedBidIsAboveMinAmount(_editionNumber) // Prevent bids below current price + min bid
-  whenNotAlreadyTheHighestBidder(_editionNumber) // Prevent double bids by the same address
-  whenEditionNotSoldOut(_editionNumber) // Checks not sold out in KO
+  whenEditionExists(_editionNumber)
+  whenAuctionEnabled(_editionNumber)
+  whenPlacedBidIsAboveMinAmount(_editionNumber)
+  whenNotAlreadyTheHighestBidder(_editionNumber)
+  whenEditionNotSoldOut(_editionNumber)
   returns (bool success)
   {
     // Grab the previous holders bid so we can refund it
@@ -246,11 +245,11 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   public
   payable
   whenNotPaused
-  whenBidIncreaseIsAboveMinAmount // Prevent increases less than min amount
-  whenEditionExists(_editionNumber) // Prevent invalid editions
-  whenAuctionEnabled(_editionNumber) // Prevent bids for editions not enabled
-  whenEditionNotSoldOut(_editionNumber) // Checks not sold out in KO
-  whenCallerIsHighestBidder(_editionNumber) // Check caller is the highest bidder
+  whenBidIncreaseIsAboveMinAmount
+  whenEditionExists(_editionNumber)
+  whenAuctionEnabled(_editionNumber)
+  whenEditionNotSoldOut(_editionNumber)
+  whenCallerIsHighestBidder(_editionNumber)
   returns (bool success)
   {
     // Bump the current highest bid by provided amount
@@ -272,14 +271,14 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   function withdrawBid(uint256 _editionNumber)
   public
   whenNotPaused
-  whenEditionExists(_editionNumber) // Prevent invalid editions
-  whenCallerIsHighestBidder(_editionNumber) // Check caller is the highest bidder
+  whenEditionExists(_editionNumber)
+  whenCallerIsHighestBidder(_editionNumber)
   returns (bool success)
   {
     // get current highest bid and refund it
     _refundHighestBidder(_editionNumber);
 
-    // Clear out highest bidder as there is not long one
+    // Clear out highest bidder as there is no long one
     delete editionHighestBid[_editionNumber];
 
     // Fire event
@@ -297,7 +296,7 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   function cancelAuction(uint256 _editionNumber)
   public
   onlyOwner
-  whenEditionExists(_editionNumber) // Prevent invalid editions
+  whenEditionExists(_editionNumber)
   returns (bool success)
   {
     // get current highest bid and refund it

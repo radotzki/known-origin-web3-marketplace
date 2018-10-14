@@ -55,45 +55,23 @@
 <script>
 
   import {mapGetters, mapState} from 'vuex';
-  import ArtistShortBio from '../ui-controls/artist/ArtistShortBio';
   import ArtistPanel from '../ui-controls/artist/ArtistPanel';
   import LoadingSpinner from '../ui-controls/generic/LoadingSpinner';
   import * as actions from '../../store/actions';
-  import RarityIndicator from '../ui-controls/v2/RarityIndicator';
-  import MetadataAttributes from '../ui-controls/v2/MetadataAttributes';
-  import TweetEditionButton from '../ui-controls/v2/TweetEditionButton';
-  import HighResLabel from '../ui-controls/generic/HighResLabel';
   import {PAGES} from '../../store/loadingPageState';
   import LoadingSection from '../ui-controls/generic/LoadingSection';
-  import ClickableAddress from '../ui-controls/generic/ClickableAddress';
   import Availability from '../ui-controls/v2/Availability';
   import _ from 'lodash';
-  import EthAddress from "../ui-controls/generic/EthAddress";
-  import PriceInEth from "../ui-controls/generic/PriceInEth";
-  import UsdPrice from "../ui-controls/generic/USDPrice";
-  import ClickableTransaction from "../ui-controls/generic/ClickableTransaction";
-  import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
   import AcceptEditionBids from "../ui-controls/auction/AcceptEditionBids";
 
   export default {
     name: 'artistPage',
     components: {
       AcceptEditionBids,
-      FontAwesomeIcon,
-      ClickableTransaction,
-      UsdPrice,
-      PriceInEth,
-      EthAddress,
       Availability,
       LoadingSection,
-      HighResLabel,
-      TweetEditionButton,
-      MetadataAttributes,
-      RarityIndicator,
-      ArtistShortBio,
       ArtistPanel,
       LoadingSpinner,
-      ClickableAddress
     },
     data() {
       return {
