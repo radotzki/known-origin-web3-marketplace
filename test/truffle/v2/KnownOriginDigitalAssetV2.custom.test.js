@@ -368,7 +368,6 @@ contract('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         it('can be updated by whitelist', async function () {
           await this.token.updateArtistCommission(editionNumber1, 10);
           let artistCommission = await this.token.artistCommission(editionNumber1);
-          console.log(artistCommission);
           artistCommission[1].should.be.bignumber.equal(10);
         });
 

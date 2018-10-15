@@ -1,13 +1,10 @@
 const assertRevert = require('../../helpers/assertRevert');
 const etherToWei = require('../../helpers/etherToWei');
-const advanceBlock = require('../../helpers/advanceToBlock');
-const {duration, increaseTimeTo} = require('../../helpers/increaseTime');
-const latestTime = require('../../helpers/latestTime');
-const {ethSendTransaction, ethGetBalance} = require('../../helpers/web3');
 
 const _ = require('lodash');
 
 const BigNumber = web3.BigNumber;
+
 const ForceEther = artifacts.require('ForceEther');
 const KnownOriginDigitalAssetV2 = artifacts.require('KnownOriginDigitalAssetV2');
 const ArtistAcceptingBids = artifacts.require('ArtistAcceptingBids');
@@ -17,13 +14,11 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-contract.only('ArtistAcceptingBids', function (accounts) {
+contract('ArtistAcceptingBids', function (accounts) {
 
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
-  const ROLE_KNOWN_ORIGIN = 1;
   const ROLE_MINTER = 2;
-  const ROLE_UNDER_MINTER = 3;
 
   const _owner = accounts[0];
   const koCommission = accounts[1];
@@ -1482,7 +1477,6 @@ contract.only('ArtistAcceptingBids', function (accounts) {
 
         const data = await this.auction.increaseBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
         event = data.logs[0];
-        console.log(event);
       });
 
       it('event populated', async function () {
