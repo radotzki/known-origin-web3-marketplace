@@ -45,9 +45,7 @@
       </div>
     </div>
 
-    <div class="row editions-wrap">
-      <accept-edition-bids :editions="editions"></accept-edition-bids>
-    </div>
+    <accept-edition-bids :editions="editions"></accept-edition-bids>
 
   </div>
 </template>

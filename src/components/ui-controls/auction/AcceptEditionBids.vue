@@ -1,5 +1,5 @@
 <template>
-  <div class="col" v-if="listOpenAuctions.length > 0">
+  <div class="container-fluid" v-if="listOpenAuctions.length > 0">
 
     <h3>Ongoing auctions</h3>
 
@@ -7,75 +7,90 @@
       Below are list of ongoing auctions which can be actioned by the artists account for each edition.
     </p>
 
-    <div class="card-deck">
-      <div class="col-auto mx-auto mb-5" v-for="auction in listOpenAuctions" :key="auction.edition">
-        <div class="card shadow-sm">
-          <router-link :to="{ name: 'confirmPurchaseSimple', params: { editionNumber: auction.edition }}">
-            <img :src="getEdition(auction.edition).lowResImg" class="card-img-top"/>
-            <div class="accepts-bid">
-              <span class="badge badge-secondary">auction</span>
+    <div class="row">
+
+      <div class="col-4" v-for="auction in listOpenAuctions" :key="auction.edition">
+        <div class="card mb-3">
+
+          <div class="row no-gutters">
+            <div class="col-auto">
+              <router-link :to="{ name: 'confirmPurchaseSimple', params: { editionNumber: auction.edition }}">
+                <img :src="getEdition(auction.edition).lowResImg" class="card-img-top" style="width: 150px;"/>
+              </router-link>
             </div>
-          </router-link>
-          <div class="card-body">
-            <p class="card-title">
-              {{getEdition(auction.edition).name}}
-            </p>
-
-            <p v-if="auction.highestBid > 0" class="card-text">
-              Bid:
-              <span class="float-right">
-                <price-in-eth :value="auction.highestBid"></price-in-eth>
-                <usd-price :price-in-ether="auction.highestBid"></usd-price>
-                <br/>
-                <clickable-address :eth-address="auction.highestBidder" class="float-right small"></clickable-address>
-              </span>
-            </p>
-            <p v-else class="card-text text-center text-primary">
-              No bids yet...
-            </p>
+            <div class="col m-1">
+              <div class="card-block px-2">
+                <h4 class="card-title">{{getEdition(auction.edition).name}}</h4>
+                <div class="card-text">
+                  <div v-if="auction.highestBid > 0">
+                    <p>Current Highest Bid</p>
+                    <p class="strong">
+                      <price-in-eth :value="auction.highestBid"></price-in-eth>
+                      <usd-price :price-in-ether="auction.highestBid"></usd-price>
+                      <clickable-address :eth-address="auction.highestBidder"
+                                         class="float-right">
+                      </clickable-address>
+                    </p>
+                  </div>
+                  <p v-else>
+                    No bids yet...
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="card-footer" v-if="auction.highestBid > 0">
-            <button v-if="canAcceptBid(auction)" class="btn btn-primary btn-sm" v-on:click="acceptBid(auction)">Accept Bid</button>
 
-            <div v-if="isAcceptingBidTriggered(auction.edition)">
-              <div class="card-text mt-4">
+          <div class="card-footer w-100 text-muted">
+
+            <button v-if="canAcceptBid(auction)" class="btn btn-primary btn-sm" v-on:click="acceptBid(auction)">
+              Accept Bid
+            </button>
+
+            <span v-else-if="isAcceptingBidTriggered(auction.edition)">
                 Transaction triggered
                 <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
-              </div>
-              <clickable-transaction :transaction="getAcceptingBidTransactionForEdition(auction.edition)">
-              </clickable-transaction>
-            </div>
+                <clickable-transaction :transaction="getAcceptingBidTransactionForEdition(auction.edition)"
+                                       :show-label="false">
+                </clickable-transaction>
+              </span>
 
-            <div v-if="isAcceptingBidStarted(auction.edition)">
-              <div class="card-text mt-4">
+            <span v-else-if="isAcceptingBidStarted(auction.edition)">
                 Your transaction is being confirmed...
                 <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
-              </div>
-              <clickable-transaction :transaction="getAcceptingBidTransactionForEdition(auction.edition)">
-              </clickable-transaction>
-            </div>
+                <clickable-transaction :transaction="getAcceptingBidTransactionForEdition(auction.edition)"
+                                       :show-label="false">
+                </clickable-transaction>
+              </span>
 
-            <div v-if="isAcceptingBidSuccessful(auction.edition)">
-              <div class="card-text mt-4">
+            <span v-else-if="isAcceptingBidSuccessful(auction.edition)">
                 Bid confirmed
-              </div>
-              <clickable-transaction :transaction="getAcceptingBidTransactionForEdition(auction.edition)"></clickable-transaction>
-            </div>
+                <clickable-transaction :transaction="getAcceptingBidTransactionForEdition(auction.edition)"
+                                       :show-label="false">
+                </clickable-transaction>
+              </span>
 
-            <div v-if="isAcceptingBidFailed(auction.edition)">
-              <span class="card-text text-danger mt-4">Your transaction failed!</span>
-              <img src="../../../../static/Failure.svg" style="width: 25px"/>
-            </div>
+            <span v-else-if="isAcceptingBidFailed(auction.edition)">
+                <span class="card-text text-danger mt-4">Your transaction failed!</span>
+                <img src="../../../../static/Failure.svg" style="width: 25px"/>
+              </span>
+
+            <span v-else>
+                &nbsp;
+              </span>
+
           </div>
         </div>
+
       </div>
+
     </div>
+
   </div>
 </template>
 
 <script>
 
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import ArtistShortBio from '../../ui-controls/artist/ArtistShortBio';
   import ArtistPanel from '../../ui-controls/artist/ArtistPanel';
   import LoadingSpinner from '../../ui-controls/generic/LoadingSpinner';
@@ -84,7 +99,7 @@
   import MetadataAttributes from '../../ui-controls/v2/MetadataAttributes';
   import TweetEditionButton from '../../ui-controls/v2/TweetEditionButton';
   import HighResLabel from '../../ui-controls/generic/HighResLabel';
-  import { PAGES } from '../../../store/loadingPageState';
+  import {PAGES} from '../../../store/loadingPageState';
   import LoadingSection from '../../ui-controls/generic/LoadingSection';
   import ClickableAddress from '../../ui-controls/generic/ClickableAddress';
   import Availability from '../../ui-controls/v2/Availability';
@@ -114,7 +129,7 @@
       LoadingSpinner,
       ClickableAddress
     },
-    data () {
+    data() {
       return {
         PAGES: PAGES,
       };
@@ -177,7 +192,7 @@
         this.$store.dispatch(`auction/${actions.ACCEPT_BID}`, auction);
       },
     },
-    destroyed () {
+    destroyed() {
     }
   };
 </script>
@@ -185,12 +200,6 @@
 <style scoped lang="scss">
   @import '../../../ko-colours.scss';
   @import '../../../ko-card.scss';
-
-  .accepts-bid {
-    position: absolute;
-    top: -4px;
-    opacity: 0.9;
-  }
 
 
 </style>
