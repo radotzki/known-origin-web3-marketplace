@@ -123,8 +123,6 @@ const contractStateModule = {
       }
     },
     findEdition: (state) => (editionNumber) => {
-      console.log(editionNumber);
-      console.log(state.assets[editionNumber]);
       return state.assets[editionNumber];
     },
     findPurchasedEdition: (state) => ({tokenId}) => {

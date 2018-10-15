@@ -6,18 +6,25 @@
       </div>
     </div>
 
+    <div class="text-center mt-5" v-if="!activity || activity.length === 0">
+      <loading-spinner></loading-spinner>
+    </div>
 
     <div class="container-fluid mt-4">
       <div class="row editions-wrap">
-        <!--{{ activity }}-->
+
         <table class="table table-striped">
           <tbody>
           <tr v-for="event in orderBy(activity, 'blockNumber', -1)">
             <td class="w-25 text-center"><img v-if="findEdition(parseInt(event.args._editionNumber))" class="img-thumbnail" :src="findEdition(parseInt(event.args._editionNumber)).lowResImg"/></td>
             <td><span class="badge badge-primary">{{ event.args._tokenId.toString() }}</span></td>
             <td><span class="text-muted small">Block:</span> <code>{{ event.blockNumber }}</code></td>
-            <td><span class="text-muted small">Owner:</span> <clickable-address :eth-address="event.args._buyer"></clickable-address></td>
-            <td><clickable-transaction :transaction="event.transactionHash"></clickable-transaction></td>
+            <td><span class="text-muted small">Owner:</span>
+              <clickable-address :eth-address="event.args._buyer"></clickable-address>
+            </td>
+            <td>
+              <clickable-transaction :transaction="event.transactionHash"></clickable-transaction>
+            </td>
           </tr>
           </tbody>
         </table>
@@ -32,13 +39,13 @@
   import ClickableAddress from '../ui-controls/generic/ClickableAddress';
   import ClickableTransaction from '../ui-controls/generic/ClickableTransaction.vue';
   import * as actions from '../../store/actions';
-  import { PAGES } from '../../store/loadingPageState';
-  import LoadingSection from '../ui-controls/generic/LoadingSection';
   import Availability from '../ui-controls/v2/Availability';
+  import LoadingSpinner from '../ui-controls/generic/LoadingSpinner';
 
   export default {
     name: 'activity',
     components: {
+      LoadingSpinner,
       Availability,
       ClickableAddress,
       ClickableTransaction
@@ -58,9 +65,7 @@
       ...mapState(['activity'])
     },
     mounted () {
-      setTimeout(function () {
-        this.$store.dispatch(actions.ACTIVITY);
-      }.bind(this), 3000);
+      this.$store.dispatch(actions.ACTIVITY);
     }
   };
 </script>
