@@ -23,13 +23,13 @@
                 <h4 class="card-title">{{getEdition(auction.edition).name}}</h4>
                 <div class="card-text">
                   <div v-if="auction.highestBid > 0">
-                    <p>Current Highest Bid</p>
+                    <p>Current highest bidder</p>
                     <p class="strong">
                       <price-in-eth :value="auction.highestBid"></price-in-eth>
                       <usd-price :price-in-ether="auction.highestBid"></usd-price>
-                      <clickable-address :eth-address="auction.highestBidder"
-                                         class="float-right">
-                      </clickable-address>
+                      <span class="float-right">
+                        <span class="small text-muted">address </span> <clickable-address :eth-address="auction.highestBidder"></clickable-address>
+                      </span>
                     </p>
                   </div>
                   <p v-else>
