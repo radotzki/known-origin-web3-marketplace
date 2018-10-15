@@ -35,25 +35,25 @@ interface IAuction {
     uint256 _amount
   );
 
-  event EditionAuctionCanceled(
-    uint256 indexed _editionNumber
-  );
-
   event BidderRefunded(
     uint256 indexed _editionNumber,
     address indexed _bidder,
     uint256 indexed _amount
   );
 
-  function placeBid(uint256 _editionNumber) external returns (bool success);
+  event EditionAuctionCanceled(
+    uint256 indexed _editionNumber
+  );
 
-  function increaseBid(uint256 _editionNumber) external returns (bool success);
+  function placeBid(uint256 _editionNumber) public payable returns (bool success);
 
-  function withdrawBid(uint256 _editionNumber) external returns (bool success);
+  function increaseBid(uint256 _editionNumber) public payable returns (bool success);
 
-  function acceptBid(uint256 _editionNumber) external returns (bool success);
+  function withdrawBid(uint256 _editionNumber) public returns (bool success);
 
-  function cancelAuction(uint256 _editionNumber) external returns (bool success);
+  function acceptBid(uint256 _editionNumber) public returns (uint256 _tokenId);
+
+  function cancelAuction(uint256 _editionNumber) public returns (bool success);
 }
 
 /**
@@ -392,6 +392,7 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
       // Refund it
       currentHighestBidder.transfer(currentHighestBiddersAmount);
 
+      // Emit event
       emit BidderRefunded(_editionNumber, currentHighestBidder, currentHighestBiddersAmount);
     }
   }
