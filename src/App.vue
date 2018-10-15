@@ -62,8 +62,8 @@
             <small>
               <router-link :to="{ name: 'gallery' }">Gallery</router-link> &bull;
               <router-link :to="{ name: 'artists' }">Artists</router-link> &bull;
-              <router-link :to="{ name: 'contracts' }">Contract</router-link>
-              <!--<router-link :to="{ name: 'assets' }">Assets</router-link>-->
+              <router-link :to="{ name: 'contracts' }">Contract</router-link> &bull;
+              <router-link :to="{ name: 'activity' }">Activity</router-link>
             </small>
           </div>
           <div class="col-xs col-sm text-center">

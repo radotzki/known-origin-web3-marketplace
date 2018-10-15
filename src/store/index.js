@@ -52,7 +52,8 @@ const store = new Vuex.Store({
     KnownOriginDigitalAssetV1: null,
     KnownOriginDigitalAssetV2: null,
 
-    activity: []
+    activity: [],
+    activityStarted: false,
   },
   getters: {
     findArtist: (state) => (artistCode) => {
@@ -125,6 +126,7 @@ const store = new Vuex.Store({
       state.KnownOriginDigitalAssetV2 = v2;
     },
     [mutations.SET_ACTIVITY](state, anEvent) {
+      state.activityStarted = true;
       Vue.set(state, 'activity', state.activity.concat(anEvent));
     },
   },
@@ -227,7 +229,7 @@ const store = new Vuex.Store({
     },
     [actions.ACTIVITY]: function ({commit, dispatch, state}) {
 
-      if (state.KnownOriginDigitalAssetV2) {
+      if (state.KnownOriginDigitalAssetV2 && !state.activityStarted) {
         state.KnownOriginDigitalAssetV2.deployed()
           .then((contract) => {
 

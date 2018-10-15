@@ -1,6 +1,6 @@
 <template>
   <span v-if="transaction">
-    View transaction: <a class="token-id" :href="buildLink" target="_blank">{{ dotDotDot }}</a>
+    <span class="small">Transaction:</span> <a class="token-id" :href="buildLink" target="_blank">{{ dotDotDot }}</a>
   </span>
 </template>
 
