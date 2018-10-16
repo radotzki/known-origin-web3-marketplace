@@ -49,38 +49,36 @@
 
     <main role="main" class="container-fluid">
       <router-view></router-view>
+      <current-network class="small text-muted float-right mr-4"></current-network>
     </main>
 
     <footer class="footer">
       <div class="container">
         <div class="row">
-          <div class="col-sm">
+          <div class="col d-none d-md-inline">
             <small class="slogan">BE ORIGINAL. BUY ORIGINAL.</small>
           </div>
-          <div class="col-sm text-center">
+          <div class="col-xs col-sm text-center mb-2">
             <small>
               <router-link :to="{ name: 'gallery' }">Gallery</router-link> &bull;
               <router-link :to="{ name: 'artists' }">Artists</router-link> &bull;
-              <router-link :to="{ name: 'contracts' }">Contract</router-link>
-              <!--<router-link :to="{ name: 'assets' }">Assets</router-link>-->
+              <router-link :to="{ name: 'contracts' }">Contract</router-link> &bull;
+              <router-link :to="{ name: 'activity' }">Activity</router-link>
             </small>
           </div>
-          <div class="col-sm text-center">
-            <a href="mailto:hello@knownorigin.io" target="_blank" class="pr-2" title="Mail">
+          <div class="col-xs col-sm text-center">
+            <a href="mailto:hello@knownorigin.io" target="_blank" class="p-2" title="Mail">
               <font-awesome-icon :icon="['fas', 'envelope-square']" size="lg"></font-awesome-icon>
             </a>
-            <a href="https://twitter.com/knownorigin_io" target="_blank" title="Twitter">
+            <a href="https://twitter.com/knownorigin_io" target="_blank" class="p-2"title="Twitter">
               <font-awesome-icon :icon="['fab', 'twitter']" size="lg"></font-awesome-icon>
             </a>
-            <a href="https://t.me/knownorigin_io" target="_blank" class="pr-2" title="Telegram">
+            <a href="https://t.me/knownorigin_io" target="_blank" class="p-2" title="Telegram">
               <font-awesome-icon :icon="['fab', 'telegram-plane']" size="lg"></font-awesome-icon>
             </a>
-            <a href="https://medium.com/knownorigin" target="_blank" class="pr-2" title="Medium">
+            <a href="https://medium.com/knownorigin" target="_blank" class="p-2" title="Medium">
               <font-awesome-icon :icon="['fab', 'medium']" size="lg"></font-awesome-icon>
             </a>
-            <small class="">
-              <current-network></current-network>
-            </small>
           </div>
         </div>
       </div>
@@ -111,24 +109,36 @@
       ...mapState([]),
     },
     methods: {},
-    mounted () {
+    mounted() {
 
-      let bootStrappedWeb3;
+      if (window.ethereum) {
+        window.web3 = new Web3(ethereum);
 
-      // Checking if Web3 has been injected by the browser (Mist/MetaMask)
-      if (typeof web3 !== 'undefined') {
-        bootStrappedWeb3 = new Web3(web3.currentProvider);
+        // Request account access if needed
+        ethereum.enable()
+          .then((value) => {
+            console.log("Bootstrapping web app - provider acknowedgled", value);
+            this.$store.dispatch(actions.INIT_APP, window.web3);
+          })
+          .catch((error) => {
+            console.log('User denied access, boostrapping application using infura', error);
+            window.web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/nbCbdzC6IG9CF6hmvAVQ'));
+            this.$store.dispatch(actions.INIT_APP, window.web3);
+          });
+
+      } else if (window.web3) {
+        console.log("Running legacy web3 provider");
+        window.web3 = new Web3(web3.currentProvider);
+        this.$store.dispatch(actions.INIT_APP, window.web3);
+
       } else {
-        console.log('No web3! You should consider trying MetaMask or an Ethereum browser');
-        console.log('Falling back to using HTTP Provider');
+        console.log("Running without a web3 provider - falling back to infura");
 
-        bootStrappedWeb3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/nbCbdzC6IG9CF6hmvAVQ'));
+        window.web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/nbCbdzC6IG9CF6hmvAVQ'));
+        console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+        this.$store.dispatch(actions.INIT_APP, window.web3);
       }
 
-      window.web3 = bootStrappedWeb3;
-
-      // Bootstrap the full app
-      this.$store.dispatch(actions.INIT_APP, bootStrappedWeb3);
     }
   };
 

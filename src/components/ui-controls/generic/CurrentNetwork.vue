@@ -20,4 +20,7 @@
 
 <style scoped>
 
+  .current-network {
+    font-size: 0.75rem;
+  }
 </style>
