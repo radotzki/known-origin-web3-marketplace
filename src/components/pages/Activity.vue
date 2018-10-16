@@ -2,7 +2,7 @@
   <div>
     <div class="row bg-secondary text-white full-banner">
       <div class="col text-center m-5">
-        <p>Activity v2</p>
+        <p>Activity</p>
       </div>
     </div>
 
@@ -62,16 +62,14 @@
       ...mapGetters('kodaV2', [
         'findEdition'
       ]),
-      ...mapState(['activity'])
+      ...mapState('activity',
+        ['activity']
+      )
     },
     mounted () {
 
       const loadData = () => {
-        this.$store.dispatch(actions.ACTIVITY);
-
-        setTimeout(function () {
-          this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS_FOR_TYPE}`, {editionType: 1});
-        }.bind(this), 5000);
+        this.$store.dispatch(`activity/${actions.ACTIVITY}`);
       };
 
       this.$store.watch(

@@ -110,7 +110,6 @@
     },
     methods: {},
     mounted() {
-
       if (window.ethereum) {
         window.web3 = new Web3(ethereum);
 
@@ -138,7 +137,6 @@
         console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
         this.$store.dispatch(actions.INIT_APP, window.web3);
       }
-
     }
   };
 

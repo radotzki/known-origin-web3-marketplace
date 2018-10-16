@@ -18,6 +18,7 @@ import highres from './modules/highres';
 import kodaV1 from './modules/kodaV1';
 import kodaV2 from './modules/kodaV2';
 import loading from './modules/loading';
+import activity from './modules/activity';
 
 const KnownOriginDigitalAssetV1 = truffleContract(knownOriginDigitalAssetJson);
 const KnownOriginDigitalAssetV2 = truffleContract(knownOriginDigitalAssetJsonV2);
@@ -34,6 +35,7 @@ const store = new Vuex.Store({
     purchase,
     highres,
     loading,
+    activity
   },
   state: {
     // connectivity
@@ -52,8 +54,7 @@ const store = new Vuex.Store({
     KnownOriginDigitalAssetV1: null,
     KnownOriginDigitalAssetV2: null,
 
-    activity: [],
-    activityStarted: false,
+    KnownOriginDigitalAssetV2MainBlockNumber: 6270484
   },
   getters: {
     findArtist: (state) => (artistCode) => {
@@ -124,11 +125,7 @@ const store = new Vuex.Store({
     [mutations.SET_KODA_CONTRACT](state, {v1, v2}) {
       state.KnownOriginDigitalAssetV1 = v1;
       state.KnownOriginDigitalAssetV2 = v2;
-    },
-    [mutations.SET_ACTIVITY](state, anEvent) {
-      state.activityStarted = true;
-      Vue.set(state, 'activity', state.activity.concat(anEvent));
-    },
+    }
   },
   actions: {
     [actions.GET_CURRENT_NETWORK]({commit, dispatch, state}) {
@@ -226,29 +223,7 @@ const store = new Vuex.Store({
         .catch(function (error) {
           console.log('ERROR - account locked', error);
         });
-    },
-    [actions.ACTIVITY]: function ({commit, dispatch, state}) {
-
-      if (state.KnownOriginDigitalAssetV2 && !state.activityStarted) {
-        state.KnownOriginDigitalAssetV2.deployed()
-          .then((contract) => {
-
-            let mintedEvent = contract.Minted({}, {
-              fromBlock: 0,
-              toBlock: 'latest' // wait until event comes through
-            });
-
-            mintedEvent.watch(function (error, anEvent) {
-              if (!error) {
-                commit(mutations.SET_ACTIVITY, anEvent);
-              } else {
-                console.log('Failure', error);
-                mintedEvent.stopWatching();
-              }
-            });
-          });
-      }
-    },
+    }
   }
 });
 
