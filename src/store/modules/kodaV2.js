@@ -171,17 +171,14 @@ const contractStateModule = {
     async [actions.LOAD_EDITIONS] ({commit, dispatch, state, rootState}, editionNumbers) {
       const contract = await rootState.KnownOriginDigitalAssetV2.deployed();
 
-      if (!editionNumbers) {
-        editionNumbers = featureArtworks(rootState.currentNetwork);
-      }
-
-      console.log(editionNumbers);
-
       const editions = await Promise.all(_.map(editionNumbers, async function (edition) {
         return await loadEditionData(contract, edition);
       }));
 
       commit(mutations.SET_EDITIONS, editions);
+    },
+    async [actions.LOAD_FEATURED_EDITIONS] ({commit, dispatch, state, rootState}) {
+      dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, featureArtworks(rootState.currentNetwork), {root: true});
     },
     async [actions.LOAD_EDITIONS_FOR_TYPE] ({commit, dispatch, state, rootState}, {editionType}) {
       const contract = await rootState.KnownOriginDigitalAssetV2.deployed();

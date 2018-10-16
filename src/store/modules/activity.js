@@ -29,7 +29,7 @@ const activityStateModule = {
             mintedEvent.get(function (error, events) {
               if (!error) {
                 commit(mutations.SET_ACTIVITY, events);
-                
+
                 const editionNumbers = _.map(events, (e) => parseInt(e.args._editionNumber.toString()));
 
                 dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, editionNumbers, {root: true});

@@ -147,7 +147,7 @@
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.GALLERY);
 
       const loadData = function () {
-        this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS}`)
+        this.$store.dispatch(`kodaV2/${actions.LOAD_FEATURED_EDITIONS}`)
           .then(() => {
             this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.GALLERY);
 
