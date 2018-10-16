@@ -14,7 +14,7 @@
         <div class="row no-gutters">
           <div class="col-auto">
             <router-link :to="{ name: 'confirmPurchaseSimple', params: { editionNumber: auction.edition }}">
-              <img :src="getEdition(auction.edition).lowResImg" class="card-img-top" style="width: 150px;"/>
+              <img :src="getEdition(auction.edition).lowResImg" class="card-img-top" style="width: 175px;"/>
             </router-link>
           </div>
           <div class="col m-1">
@@ -26,10 +26,10 @@
                   <p class="strong">
                     <price-in-eth :value="auction.highestBid"></price-in-eth>
                     <usd-price :price-in-ether="auction.highestBid"></usd-price>
-                    <span class="float-right">
-                        <span class="small text-muted">address </span> <clickable-address
-                      :eth-address="auction.highestBidder"></clickable-address>
-                      </span>
+                  </p>
+                  <p class="">
+                    <clickable-address :eth-address="auction.highestBidder"></clickable-address>
+                    <span class="small text-muted">bidder</span>
                   </p>
                 </div>
                 <p v-else>
@@ -41,45 +41,8 @@
         </div>
 
         <div class="card-footer w-100 text-muted">
-
-          <button class="btn btn-primary btn-sm"
-                  v-if="canAcceptBid(auction) && auction.highestBidWei > 0"
-                  v-on:click="acceptBid(auction)">
-            Accept Bid
-          </button>
-
-          <span v-else-if="isAcceptingBidTriggered(auction.edition)">
-                Transaction triggered
-                <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
-                <clickable-transaction :transaction="getAcceptingBidTransactionForEdition(auction.edition)"
-                                       :show-label="false">
-                </clickable-transaction>
-              </span>
-
-          <span v-else-if="isAcceptingBidStarted(auction.edition)">
-                Your transaction is being confirmed...
-                <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
-                <clickable-transaction :transaction="getAcceptingBidTransactionForEdition(auction.edition)"
-                                       :show-label="false">
-                </clickable-transaction>
-              </span>
-
-          <span v-else-if="isAcceptingBidSuccessful(auction.edition)">
-                Bid confirmed
-                <clickable-transaction :transaction="getAcceptingBidTransactionForEdition(auction.edition)"
-                                       :show-label="false">
-                </clickable-transaction>
-              </span>
-
-          <span v-else-if="isAcceptingBidFailed(auction.edition)">
-                <span class="card-text text-danger mt-4">Your transaction failed!</span>
-                <img src="../../../../static/Failure.svg" style="width: 25px"/>
-              </span>
-
-          <span v-else>
-                &nbsp;
-              </span>
-
+          <accepting-bid-flow :auction="auction"></accepting-bid-flow>
+          <withdrawing-bid-flow :auction="auction"></withdrawing-bid-flow>
         </div>
       </div>
 
@@ -109,10 +72,14 @@
   import UsdPrice from '../../ui-controls/generic/USDPrice';
   import ClickableTransaction from '../../ui-controls/generic/ClickableTransaction';
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
+  import AcceptingBidFlow from "./control-flows/AcceptingBidFlow";
+  import WithdrawingBidFlow from "./control-flows/WithdrawingBidFlow";
 
   export default {
     name: 'acceptEditionBids',
     components: {
+      WithdrawingBidFlow,
+      AcceptingBidFlow,
       FontAwesomeIcon,
       ClickableTransaction,
       UsdPrice,
@@ -147,15 +114,7 @@
         'account',
       ]),
       ...mapState('auction', [
-        'owner',
         'auction',
-      ]),
-      ...mapGetters('auction', [
-        'isAcceptingBidTriggered',
-        'isAcceptingBidStarted',
-        'isAcceptingBidSuccessful',
-        'isAcceptingBidFailed',
-        'getAcceptingBidTransactionForEdition',
       ]),
       ...mapGetters([
         'findArtistsForAddress',
@@ -163,7 +122,7 @@
       listOpenAuctions: function () {
         const editionNumbers = _.keys(this.editions);
         return _.filter(this.auction, (auction) => {
-          if (!auction.enabled) {
+          if (!auction.enabled || auction.highestBidWei <= 0) {
             return false;
           }
           return _.indexOf(editionNumbers, auction.edition) > -1;
@@ -171,10 +130,6 @@
       },
     },
     methods: {
-      canAcceptBid: function (auction) {
-        // The owner and the artist can accept bids
-        return auction.controller === this.account || this.account === this.owner;
-      },
       lookupArtist: function () {
         return this.findArtistsForAddress(this.$route.params.artistAccount);
       },
@@ -187,9 +142,6 @@
       },
       getEdition: function (edition) {
         return this.editions[edition] || {};
-      },
-      acceptBid: function (auction) {
-        this.$store.dispatch(`auction/${actions.ACCEPT_BID}`, auction);
       },
     },
     destroyed() {
