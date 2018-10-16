@@ -12,6 +12,7 @@ const auctionStateModule = {
     auctionEvents: {},
     bidState: {},
     acceptingBidState: {},
+    withdrawingBidState: {},
     minBidAmount: 0,
     minBidAmountWei: 0,
   },
@@ -82,6 +83,27 @@ const auctionStateModule = {
     },
     getAcceptingBidTransactionForEdition: (state, getters) => (editionNumber) => {
       return getters.editionAcceptingBidState(editionNumber).transaction;
+    },
+    ///////////////////////////
+    // Withdrawing Bid State //
+    ///////////////////////////
+    editionWithdrawnBidState: (state) => (editionNumber) => {
+      return _.get(state.withdrawingBidState, editionNumber);
+    },
+    isWithdrawnBidTriggered: (state, getters) => (editionNumber) => {
+      return _.get(getters.editionWithdrawnBidState(editionNumber), 'state') === mutations.BID_WITHDRAWN_TRIGGERED;
+    },
+    isWithdrawnBidStarted: (state, getters) => (editionNumber) => {
+      return _.get(getters.editionWithdrawnBidState(editionNumber), 'state') === mutations.BID_WITHDRAWN_STARTED;
+    },
+    isWithdrawnBidSuccessful: (state, getters) => (editionNumber) => {
+      return _.get(getters.editionWithdrawnBidState(editionNumber), 'state') === mutations.BID_WITHDRAWN_SUCCESSFUL;
+    },
+    isWithdrawnBidFailed: (state, getters) => (editionNumber) => {
+      return _.get(getters.editionWithdrawnBidState(editionNumber), 'state') === mutations.BID_WITHDRAWN_FAILED;
+    },
+    getWithdrawnBidTransactionForEdition: (state, getters) => (editionNumber) => {
+      return getters.editionWithdrawnBidState(editionNumber).transaction;
     },
   },
   mutations: {
@@ -206,6 +228,53 @@ const auctionStateModule = {
         }
       };
     },
+    [mutations.RESET_BID_WITHDRAWN_STATE](state, {auction}) {
+      delete state.withdrawingBidState[auction.edition];
+      state.withdrawingBidState = {...state.acceptingBidState};
+    },
+    [mutations.BID_WITHDRAWN_FAILED](state, {auction, account}) {
+      state.withdrawingBidState = {
+        ...state.withdrawingBidState,
+        [auction.edition]: {
+          ...auction,
+          account,
+          transaction: state.withdrawingBidState[auction.edition].transaction,
+          state: 'BID_WITHDRAWN_FAILED'
+        }
+      };
+    },
+    [mutations.BID_WITHDRAWN_STARTED](state, {auction, account, transaction}) {
+      state.withdrawingBidState = {
+        ...state.withdrawingBidState,
+        [auction.edition]: {
+          ...auction,
+          account,
+          transaction,
+          state: 'BID_WITHDRAWN_STARTED'
+        }
+      };
+    },
+    [mutations.BID_WITHDRAWN_SUCCESSFUL](state, {auction, account}) {
+      state.withdrawingBidState = {
+        ...state.withdrawingBidState,
+        [auction.edition]: {
+          ...auction,
+          account,
+          transaction: state.withdrawingBidState[auction.edition].transaction,
+          state: 'BID_WITHDRAWN_SUCCESSFUL'
+        }
+      };
+    },
+    [mutations.BID_WITHDRAWN_TRIGGERED](state, {auction, account}) {
+      state.withdrawingBidState = {
+        ...state.withdrawingBidState,
+        [auction.edition]: {
+          ...auction,
+          account,
+          state: 'BID_WITHDRAWN_TRIGGERED'
+        }
+      };
+    },
   },
   actions: {
     [actions.GET_AUCTION_OWNER]: async function ({commit, state, getters, rootState}) {
@@ -249,21 +318,19 @@ const auctionStateModule = {
 
       commit(mutations.AUCTION_TRIGGERED, {edition, account});
 
+      const timer = setInterval(function () {
+        dispatch(actions.GET_AUCTION_DETAILS, edition);
+      }, 2000);
+
       const weiValue = Web3.utils.toWei(value, 'ether');
-      const bidIncrease = contract.placeBid(edition, {
-        from: account,
-        value: weiValue
-      });
+
+      const bidIncrease = contract.placeBid(edition, {from: account, value: weiValue});
 
       const blockNumber = await rootState.web3.eth.getBlockNumber();
       let bidIncreasedEvent = contract.BidPlaced({_bidder: account, _editionNumber: edition}, {
         fromBlock: blockNumber,
         toBlock: 'latest' // wait until event comes through
       });
-
-      const timer = setInterval(function () {
-        dispatch(actions.GET_AUCTION_DETAILS, edition);
-      }, 1000);
 
       bidIncreasedEvent.watch(function (error, event) {
         if (!error) {
@@ -273,6 +340,7 @@ const auctionStateModule = {
         } else {
           console.log('Failure', error);
           commit(mutations.AUCTION_FAILED, {edition, account});
+          dispatch(actions.GET_AUCTION_DETAILS, edition);
           bidIncreasedEvent.stopWatching();
         }
         if (timer) clearInterval(timer);
@@ -285,6 +353,7 @@ const auctionStateModule = {
         })
         .catch((error) => {
           console.log('Auction - place bid - rejection/error', error);
+          dispatch(actions.GET_AUCTION_DETAILS, edition);
           commit(mutations.AUCTION_FAILED, {edition, account});
           if (timer) clearInterval(timer);
         });
@@ -313,7 +382,7 @@ const auctionStateModule = {
 
       const timer = setInterval(function () {
         dispatch(actions.GET_AUCTION_DETAILS, edition);
-      }, 1000);
+      }, 2000);
 
       bidIncreasedEvent.watch(function (error, event) {
         if (!error) {
@@ -323,6 +392,7 @@ const auctionStateModule = {
         } else {
           console.log('Failure', error);
           commit(mutations.AUCTION_FAILED, {edition, account});
+          dispatch(actions.GET_AUCTION_DETAILS, edition);
           bidIncreasedEvent.stopWatching();
         }
         if (timer) clearInterval(timer);
@@ -336,6 +406,7 @@ const auctionStateModule = {
         .catch((error) => {
           console.log('Auction - increase bid - rejection/error', error);
           commit(mutations.AUCTION_FAILED, {edition, account});
+          dispatch(actions.GET_AUCTION_DETAILS, edition);
           if (timer) clearInterval(timer);
         });
     },
@@ -353,6 +424,10 @@ const auctionStateModule = {
 
       commit(mutations.BID_ACCEPTED_TRIGGERED, {auction, account});
 
+      const timer = setInterval(function () {
+        dispatch(actions.GET_AUCTION_DETAILS, auction.edition);
+      }, 2000);
+
       const acceptBid = contract.acceptBid(auction.edition, {from: account});
 
       bidAcceptedEvent.watch(function (error, event) {
@@ -363,8 +438,10 @@ const auctionStateModule = {
         } else {
           console.log('Failure', error);
           commit(mutations.BID_ACCEPTED_FAILED, {auction, account});
+          dispatch(actions.GET_AUCTION_DETAILS, auction.edition);
           bidAcceptedEvent.stopWatching();
         }
+        if (timer) clearInterval(timer);
       });
 
       acceptBid
@@ -375,6 +452,57 @@ const auctionStateModule = {
         .catch((error) => {
           console.log('Auction - accepted bid - rejection/error', error);
           commit(mutations.BID_ACCEPTED_FAILED, {auction, account});
+          dispatch(actions.GET_AUCTION_DETAILS, auction.edition);
+          if (timer) clearInterval(timer);
+        });
+    },
+    [actions.WITHDRAW_BID]: async function ({commit, dispatch, state, getters, rootState}, auction) {
+      commit(mutations.RESET_BID_WITHDRAWN_STATE, {auction});
+
+      const account = rootState.account;
+      const contract = await rootState.ArtistAcceptingBids.deployed();
+
+      const blockNumber = await rootState.web3.eth.getBlockNumber();
+      let bidWithdrawnEvent = contract.BidWithdrawn({
+        _bidder: auction.highestBidder,
+        _editionNumber: auction.edition
+      }, {
+        fromBlock: blockNumber,
+        toBlock: 'latest' // wait until event comes through
+      });
+
+      const timer = setInterval(function () {
+        dispatch(actions.GET_AUCTION_DETAILS, auction.edition);
+      }, 2000);
+
+      commit(mutations.BID_WITHDRAWN_TRIGGERED, {auction, account});
+
+      const withdrawBid = contract.withdrawBid(auction.edition, {from: account});
+
+      bidWithdrawnEvent.watch(function (error, event) {
+        if (!error) {
+          console.log('Auction - withdraw bid - successful', event);
+          dispatch(actions.GET_AUCTION_DETAILS, auction.edition);
+          commit(mutations.BID_WITHDRAWN_SUCCESSFUL, {auction, account});
+        } else {
+          console.log('Failure', error);
+          commit(mutations.BID_WITHDRAWN_FAILED, {auction, account});
+          dispatch(actions.GET_AUCTION_DETAILS, auction.edition);
+          bidWithdrawnEvent.stopWatching();
+        }
+        if (timer) clearInterval(timer);
+      });
+
+      withdrawBid
+        .then((data) => {
+          console.log('Auction - withdraw bid - transaction submitted', data);
+          commit(mutations.BID_WITHDRAWN_STARTED, {auction, account, transaction: data.tx});
+        })
+        .catch((error) => {
+          console.log('Auction - withdraw bid - rejection/error', error);
+          dispatch(actions.GET_AUCTION_DETAILS, auction.edition);
+          commit(mutations.BID_WITHDRAWN_FAILED, {auction, account});
+          if (timer) clearInterval(timer);
         });
     },
     [actions.GET_AUCTION_EVENTS_FOR_EDITION]: async function ({commit, dispatch, state, getters, rootState}, edition) {
