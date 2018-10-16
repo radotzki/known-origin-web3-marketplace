@@ -65,7 +65,23 @@
       ...mapState(['activity'])
     },
     mounted () {
-      this.$store.dispatch(actions.ACTIVITY);
+
+      const loadData = () => {
+        this.$store.dispatch(actions.ACTIVITY);
+
+        setTimeout(function () {
+          this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS_FOR_TYPE}`, {editionType: 1});
+        }.bind(this), 5000);
+      };
+
+      this.$store.watch(
+        () => this.$store.state.KnownOriginDigitalAssetV2,
+        () => loadData()
+      );
+
+      if (this.$store.state.KnownOriginDigitalAssetV2) {
+        loadData();
+      }
     }
   };
 </script>
