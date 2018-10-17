@@ -6,9 +6,7 @@
       </div>
     </div>
 
-    <div class="text-center mt-5" v-if="!activity || activity.length === 0">
-      <loading-spinner></loading-spinner>
-    </div>
+    <loading-section :page="PAGES.ACTIVITY"></loading-section>
 
     <div class="container-fluid mt-4">
       <div class="row editions-wrap">
@@ -40,18 +38,21 @@
   import ClickableTransaction from '../ui-controls/generic/ClickableTransaction.vue';
   import * as actions from '../../store/actions';
   import Availability from '../ui-controls/v2/Availability';
-  import LoadingSpinner from '../ui-controls/generic/LoadingSpinner';
+  import { PAGES } from '../../store/loadingPageState';
+  import LoadingSection from '../ui-controls/generic/LoadingSection';
 
   export default {
     name: 'activity',
     components: {
-      LoadingSpinner,
+      LoadingSection,
       Availability,
       ClickableAddress,
       ClickableTransaction
     },
     data () {
-      return {};
+      return {
+        PAGES
+      };
     },
     methods: {
       goToArtist: function (artistAccount) {
@@ -66,10 +67,13 @@
         ['activity']
       )
     },
-    mounted () {
+    created () {
+
+      this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.ACTIVITY);
 
       const loadData = () => {
         this.$store.dispatch(`activity/${actions.ACTIVITY}`);
+        this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.ACTIVITY);
       };
 
       this.$store.watch(
