@@ -6,15 +6,16 @@
       </div>
     </div>
 
-    <loading-section :page="PAGES.ACTIVITY"></loading-section>
+    <loading-section :page="PAGES.ACTIVITY" class="mt-5"></loading-section>
 
     <div class="container-fluid mt-4">
       <div class="row editions-wrap">
 
         <table class="table table-striped">
           <tbody>
-          <tr v-for="event in orderBy(activity, 'blockNumber', -1)">
-            <td class="w-25 text-center"><img v-if="findEdition(parseInt(event.args._editionNumber))" class="img-thumbnail" :src="findEdition(parseInt(event.args._editionNumber)).lowResImg"/></td>
+          <tr v-for="event in orderBy(activity, 'blockNumber', -1)" class="text-center">
+            <td class="w-25"><img v-if="findEdition(parseInt(event.args._editionNumber))" class="img-thumbnail" :src="findEdition(parseInt(event.args._editionNumber)).lowResImg"/></td>
+            <td><code>{{ event.event }}</code></td>
             <td><span class="badge badge-primary">{{ event.args._tokenId.toString() }}</span></td>
             <td><span class="text-muted small">Block:</span> <code>{{ event.blockNumber }}</code></td>
             <td><span class="text-muted small">Owner:</span>
