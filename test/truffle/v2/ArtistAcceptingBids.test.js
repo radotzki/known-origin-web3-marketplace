@@ -14,7 +14,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-contract('ArtistAcceptingBids', function (accounts) {
+contract.only('ArtistAcceptingBids', function (accounts) {
 
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -78,7 +78,7 @@ contract('ArtistAcceptingBids', function (accounts) {
 
     describe('Once an edition is configured', async function () {
       beforeEach(async function () {
-        await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
+        await this.auction.setArtistsControlAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
       });
 
       it('is not paused', async function () {
@@ -114,7 +114,7 @@ contract('ArtistAcceptingBids', function (accounts) {
 
       beforeEach(async function () {
         // Enable the edition and use a different artist address than the original KODA edition artist
-        await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
+        await this.auction.setArtistsControlAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
       });
 
       it('should be enabled', async function () {
@@ -511,7 +511,7 @@ contract('ArtistAcceptingBids', function (accounts) {
 
     beforeEach(async function () {
       // Enable the edition and use a different artist address than the original KODA edition artist
-      await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
+      await this.auction.setArtistsControlAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
 
       // Place a bid on the edition
       await this.auction.placeBid(editionNumber1, {from: theBidder, value: this.minBidAmount});
@@ -615,7 +615,7 @@ contract('ArtistAcceptingBids', function (accounts) {
   describe('increasing a bid', async function () {
 
     beforeEach(async function () {
-      await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
+      await this.auction.setArtistsControlAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
     });
 
     it('cant increase it when no bid exists', async function () {
@@ -690,7 +690,7 @@ contract('ArtistAcceptingBids', function (accounts) {
     let txGasCosts;
 
     beforeEach(async function () {
-      await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount1, {from: _owner});
+      await this.auction.setArtistsControlAddressAndEnabledEdition(editionNumber1, artistAccount1, {from: _owner});
       bidder1_BalanceBeforeBid = await web3.eth.getBalance(bidder1);
 
       let tx = await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
@@ -900,7 +900,7 @@ contract('ArtistAcceptingBids', function (accounts) {
         });
 
         it('is successful when owner and eth present to withdraw', async function () {
-          await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
+          await this.auction.setArtistsControlAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
           await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
 
           const auctionBalance = await web3.eth.getBalance(this.auction.address);
@@ -913,7 +913,7 @@ contract('ArtistAcceptingBids', function (accounts) {
         });
 
         it('fails when NOT owner', async function () {
-          await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
+          await this.auction.setArtistsControlAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
           await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
 
           const auctionBalance = await web3.eth.getBalance(this.auction.address);
@@ -923,7 +923,7 @@ contract('ArtistAcceptingBids', function (accounts) {
         });
 
         it('fails when address is zero', async function () {
-          await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
+          await this.auction.setArtistsControlAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
           await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
 
           const auctionBalance = await web3.eth.getBalance(this.auction.address);
@@ -965,7 +965,7 @@ contract('ArtistAcceptingBids', function (accounts) {
         });
 
         it('is successful when owner and eth present to withdraw', async function () {
-          await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
+          await this.auction.setArtistsControlAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
           await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
 
           const auctionBalance = await web3.eth.getBalance(this.auction.address);
@@ -978,7 +978,7 @@ contract('ArtistAcceptingBids', function (accounts) {
         });
 
         it('fails when NOT owner', async function () {
-          await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
+          await this.auction.setArtistsControlAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
           await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
 
           const auctionBalance = await web3.eth.getBalance(this.auction.address);
@@ -988,7 +988,7 @@ contract('ArtistAcceptingBids', function (accounts) {
         });
 
         it('fails when amount is zero', async function () {
-          await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
+          await this.auction.setArtistsControlAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
           await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
 
           const auctionBalance = await web3.eth.getBalance(this.auction.address);
@@ -998,7 +998,7 @@ contract('ArtistAcceptingBids', function (accounts) {
         });
 
         it('fails when address is zero', async function () {
-          await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
+          await this.auction.setArtistsControlAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
           await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
 
           const auctionBalance = await web3.eth.getBalance(this.auction.address);
@@ -1080,14 +1080,14 @@ contract('ArtistAcceptingBids', function (accounts) {
           let editionController = await this.auction.editionController(editionNumber1);
           editionController.should.be.equal(ZERO_ADDRESS);
 
-          await this.auction.setArtistsControlAddress(editionNumber1, artistAccount2, {from: _owner});
+          await this.auction.setArtistsControlAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: _owner});
 
           editionController = await this.auction.editionController(editionNumber1);
           editionController.should.be.equal(artistAccount2);
         });
 
         it('fails when you are NOT the owner', async function () {
-          await assertRevert(this.auction.setArtistsControlAddress(editionNumber1, artistAccount2, {from: bidder1}));
+          await assertRevert(this.auction.setArtistsControlAddressAndEnabledEdition(editionNumber1, artistAccount2, {from: bidder1}));
 
           // Still zero
           const editionController = await this.auction.editionController(editionNumber1);
@@ -1105,7 +1105,7 @@ contract('ArtistAcceptingBids', function (accounts) {
     describe('TODO override functions', async function () {
 
       beforeEach(async function () {
-        await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount1, {from: _owner});
+        await this.auction.setArtistsControlAddressAndEnabledEdition(editionNumber1, artistAccount1, {from: _owner});
         await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
       });
 
@@ -1223,31 +1223,6 @@ contract('ArtistAcceptingBids', function (accounts) {
 
       });
 
-      describe('manually overriding edition highest bid and bidder', async function () {
-
-        // function manualOverrideEditionHighestBidder(uint256 _editionNumber, address _bidder) onlyOwner public returns (bool) {
-
-        it('fails if not the owner', async function () {
-
-        });
-
-        it('updates edition data', async function () {
-
-        });
-
-        it('can still increase bid', async function () {
-
-        });
-
-        it('new bid can still be made', async function () {
-
-        });
-
-        it('artists can still accept new bids and funds split accordingly', async function () {
-
-        });
-      });
-
       describe('manually deleting the bid values', async function () {
 
         it('fails if not the owner', async function () {
@@ -1350,7 +1325,7 @@ contract('ArtistAcceptingBids', function (accounts) {
       await this.koda.updateTotalAvailable(editionNumber1, 1, {from: _owner});
 
       // Setup controller account for edition in auction
-      await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount1, {from: _owner});
+      await this.auction.setArtistsControlAddressAndEnabledEdition(editionNumber1, artistAccount1, {from: _owner});
 
       const totalRemaining = await this.koda.totalRemaining(editionNumber1);
       totalRemaining.should.be.bignumber.equal(1);
@@ -1429,7 +1404,7 @@ contract('ArtistAcceptingBids', function (accounts) {
   describe('accepting bids', async function () {
     beforeEach(async function () {
       // Setup controller account for edition in auction
-      await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount1, {from: _owner});
+      await this.auction.setArtistsControlAddressAndEnabledEdition(editionNumber1, artistAccount1, {from: _owner});
     });
 
     it('when all auctions Are paused', async function () {
@@ -1451,7 +1426,7 @@ contract('ArtistAcceptingBids', function (accounts) {
   describe('Event are emit correctly at the right time', async function () {
 
     beforeEach(async function () {
-      await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount1, {from: _owner});
+      await this.auction.setArtistsControlAddressAndEnabledEdition(editionNumber1, artistAccount1, {from: _owner});
     });
 
     describe('BidPlaced', async function () {
