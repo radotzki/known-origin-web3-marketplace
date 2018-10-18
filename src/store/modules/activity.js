@@ -11,7 +11,7 @@ const activityStateModule = {
   mutations: {
     [mutations.SET_ACTIVITY] (state, events) {
       state.activityStarted = true;
-      Vue.set(state, 'activity', events);
+      Vue.set(state, 'activity', state.activity.concat(events));
     }
   },
   actions: {
@@ -25,17 +25,23 @@ const activityStateModule = {
             toBlock: 'latest' // wait until event comes through
           });
 
-          mintedEvent.get(function (error, events) {
-            if (!error) {
-              commit(mutations.SET_ACTIVITY, events);
+          let createdEvent = contract.EditionCreated({}, {
+            fromBlock: rootState.currentNetwork === 'Main' ? rootState.KnownOriginDigitalAssetV2MainBlockNumber : 0,
+            toBlock: 'latest' // wait until event comes through
+          });
 
-              const editionNumbers = _.map(events, (e) => parseInt(e.args._editionNumber.toString()));
+          [mintedEvent, createdEvent].map((ev) => {
+            ev.get(function (error, events) {
+              if (!error) {
+                commit(mutations.SET_ACTIVITY, events);
 
-              dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, editionNumbers, {root: true});
-            } else {
-              console.log('Failure', error);
-              mintedEvent.stopWatching();
-            }
+                const editionNumbers = _.map(events, (e) => parseInt(e.args._editionNumber.toString()));
+                dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, editionNumbers, {root: true});
+              } else {
+                console.log('Failure', error);
+                ev.stopWatching();
+              }
+            });
           });
         });
     },
