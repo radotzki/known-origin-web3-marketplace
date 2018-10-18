@@ -54,11 +54,8 @@
 
             <div class="mt-2" v-if="!haveNotPurchasedEditionBefore(edition.edition)">
               <p class="text-center pt-2">
-                It looks like you have already purchased this edition!
+                You have already purchased this edition!
               </p>
-              <router-link :to="{ name: 'account'}" tag="button" class="btn btn-outline-primary">
-                View account
-              </router-link>
             </div>
 
           </div>
