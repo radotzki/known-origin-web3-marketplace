@@ -13,7 +13,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-contract('ArtistAcceptingBids - re-entrency tests', function (accounts) {
+contract.only('ArtistAcceptingBids - re-entrency tests', function (accounts) {
 
   const ROLE_MINTER = 2;
 
@@ -64,8 +64,8 @@ contract('ArtistAcceptingBids - re-entrency tests', function (accounts) {
     await this.koda.createActiveEdition(editionNumber2, editionData, editionType, 0, 0, artistAccount1, artistCommission, edition1Price, editionTokenUri, totalAvailable, {from: _owner});
 
     // Enable the edition and artist
-    await this.auction.setArtistsAddressAndEnabledEdition(editionNumber1, artistAccount1, {from: _owner});
-    await this.auction.setArtistsAddressAndEnabledEdition(editionNumber2, artistAccount1, {from: _owner});
+    await this.auction.setArtistsControlAddressAndEnabledEdition(editionNumber1, artistAccount1, {from: _owner});
+    await this.auction.setArtistsControlAddressAndEnabledEdition(editionNumber2, artistAccount1, {from: _owner});
   });
 
   describe('withdrawBid() - testing for re-entrancy', async function () {
