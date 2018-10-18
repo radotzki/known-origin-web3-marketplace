@@ -21,7 +21,7 @@
               <span class="text-muted small">Block:</span> <code>{{ event.blockNumber }}</code>
             </td>
             <td class="d-none d-md-table-cell">
-              <span class="text-muted small" v-if="event.args._buyer">Owner:</span><clickable-address :eth-address="event.args._buyer"></clickable-address>
+              <span class="text-muted small" v-if="event.args._buyer">Owner: </span><clickable-address :eth-address="event.args._buyer"></clickable-address>
             </td>
             <td class="d-none d-md-table-cell">
               <clickable-transaction :transaction="event.transactionHash"></clickable-transaction>
