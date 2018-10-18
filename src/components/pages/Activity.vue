@@ -17,11 +17,11 @@
             <td class="w-25 text-center"><img v-if="findEdition(parseInt(event.args._editionNumber))" class="img-thumbnail" :src="findEdition(parseInt(event.args._editionNumber)).lowResImg"/></td>
             <td><code>{{ mapEvent(event.event) }}</code></td>
             <td><span class="badge badge-primary" v-if="event.args._tokenId">{{ event.args._tokenId.toString() }}</span></td>
-            <td><span class="text-muted small">Block:</span> <code>{{ event.blockNumber }}</code></td>
-            <td><span class="text-muted small" v-if="event.args._buyer">Owner:</span>
+            <td class="d-none d-md-block"><span class="text-muted small">Block:</span> <code>{{ event.blockNumber }}</code></td>
+            <td class="d-none d-md-block"><span class="text-muted small" v-if="event.args._buyer">Owner:</span>
               <clickable-address :eth-address="event.args._buyer"></clickable-address>
             </td>
-            <td>
+            <td class="d-none d-md-block">
               <clickable-transaction :transaction="event.transactionHash"></clickable-transaction>
             </td>
           </tr>
