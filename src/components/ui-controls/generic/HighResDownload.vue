@@ -6,7 +6,6 @@
     <a class="btn btn-success btn-block text-white"
        v-if="!isHighResDownloadTriggered(edition.tokenId) && !isHighResDownloadSuccess(edition.tokenId) && !isHighResDownloadFailed(edition.tokenId)"
        @click="verifyPurchase">
-      <font-awesome-icon :icon="['fas', 'check']"></font-awesome-icon>
       High-res asset available
     </a>
 
