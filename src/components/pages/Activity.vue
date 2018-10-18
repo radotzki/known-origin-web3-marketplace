@@ -13,12 +13,12 @@
 
         <table class="table table-striped">
           <tbody>
-          <tr v-for="event in orderBy(activity, 'blockNumber', -1)" class="text-center">
-            <td class="w-25"><img v-if="findEdition(parseInt(event.args._editionNumber))" class="img-thumbnail" :src="findEdition(parseInt(event.args._editionNumber)).lowResImg"/></td>
-            <td><code>{{ event.event }}</code></td>
-            <td><span class="badge badge-primary">{{ event.args._tokenId.toString() }}</span></td>
+          <tr v-for="event in orderBy(activity, 'blockNumber', -1)">
+            <td class="w-25 text-center"><img v-if="findEdition(parseInt(event.args._editionNumber))" class="img-thumbnail" :src="findEdition(parseInt(event.args._editionNumber)).lowResImg"/></td>
+            <td><code>{{ mapEvent(event.event) }}</code></td>
+            <td><span class="badge badge-primary" v-if="event.args._tokenId">{{ event.args._tokenId.toString() }}</span></td>
             <td><span class="text-muted small">Block:</span> <code>{{ event.blockNumber }}</code></td>
-            <td><span class="text-muted small">Owner:</span>
+            <td><span class="text-muted small" v-if="event.args._buyer">Owner:</span>
               <clickable-address :eth-address="event.args._buyer"></clickable-address>
             </td>
             <td>
@@ -56,8 +56,16 @@
       };
     },
     methods: {
-      goToArtist: function (artistAccount) {
-        this.$router.push({name: 'artist-v2', params: {artistAccount}});
+      mapEvent: function (eventStr) {
+        if (eventStr === 'EditionCreated') {
+          return '👶 Birth';
+        }
+
+        if (eventStr === 'Minted') {
+          return '💸 Purchase';
+        }
+
+        return eventStr;
       }
     },
     computed: {
