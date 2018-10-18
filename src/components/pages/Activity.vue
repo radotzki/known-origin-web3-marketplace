@@ -13,15 +13,17 @@
 
         <table class="table table-striped">
           <tbody>
-          <tr v-for="event in orderBy(activity, 'blockNumber', -1)">
+          <tr v-for="event in limitBy(orderBy(activity, 'blockNumber', -1), 50)">
             <td class="w-25 text-center"><img v-if="findEdition(parseInt(event.args._editionNumber))" class="img-thumbnail" :src="findEdition(parseInt(event.args._editionNumber)).lowResImg"/></td>
             <td><code>{{ mapEvent(event.event) }}</code></td>
             <td><span class="badge badge-primary" v-if="event.args._tokenId">{{ event.args._tokenId.toString() }}</span></td>
-            <td class="d-none d-md-block"><span class="text-muted small">Block:</span> <code>{{ event.blockNumber }}</code></td>
-            <td class="d-none d-md-block"><span class="text-muted small" v-if="event.args._buyer">Owner:</span>
-              <clickable-address :eth-address="event.args._buyer"></clickable-address>
+            <td class="d-none d-md-table-cell">
+              <span class="text-muted small">Block:</span> <code>{{ event.blockNumber }}</code>
             </td>
-            <td class="d-none d-md-block">
+            <td class="d-none d-md-table-cell">
+              <span class="text-muted small" v-if="event.args._buyer">Owner:</span><clickable-address :eth-address="event.args._buyer"></clickable-address>
+            </td>
+            <td class="d-none d-md-table-cell">
               <clickable-transaction :transaction="event.transactionHash"></clickable-transaction>
             </td>
           </tr>
