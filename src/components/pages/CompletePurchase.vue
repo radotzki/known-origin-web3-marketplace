@@ -44,10 +44,7 @@
               <hr/>
             </div>
 
-            <p class="card-title">{{ edition.name }}</p>
-            <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
-            <span class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
-
+            <p class="card-title"><strong>{{ edition.name }}</strong></p>
           </div>
 
           <ul class="list-group list-group-flush" v-if="isNotSoldOut() && account">
@@ -59,17 +56,17 @@
               </div>
             </li>
             <li class="list-group-item">
-              <div class="d-inline-block"><img src="/../../static/Account_You_icn.svg" style="height: 50px"/></div>
+              <div class="d-inline-block"><img src="/../../static/Account_You_icn.svg" class="artist-avatar"/></div>
               <div class="d-inline-block">
                 <small class="pl-2 text-muted">You:</small>
-                <clickable-address :eth-address="account"></clickable-address>
+                <clickable-address :eth-address="account" class="small"></clickable-address>
               </div>
             </li>
             <li class="list-group-item">
-              <div class="d-inline-block"><img src="/../../static/Account_You_icn.svg" style="height: 50px"/></div>
+              <div class="d-inline-block"><img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/></div>
               <div class="d-inline-block">
                 <small class="pl-2 text-muted">Artist:</small>
-                <clickable-address :eth-address="edition.artistAccount"></clickable-address>
+                <span class="artist-name">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
               </div>
             </li>
             <li class="list-group-item text-right no-bottom-border font-weight-bold">
@@ -86,7 +83,7 @@
                 <div class="form-check mb-2" v-if="isNotSoldOut">
                   <label class="form-check-label" :for="'confirm_terms'">
                     <input type="checkbox" :id="'confirm_terms'" v-model="confirm_terms">
-                    <span class="pl-2">I agree with the KODA terms of service</span>
+                    <span class="pl-2 small">I agree with the KODA terms of service</span>
                   </label>
                 </div>
 
