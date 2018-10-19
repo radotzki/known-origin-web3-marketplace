@@ -12,6 +12,7 @@ export const ACTIVITY = 'ACTIVITY';
 // V2 Page Loads //
 ///////////////////
 
+export const LOAD_EDITIONS = 'LOAD_EDITIONS';
 export const LOAD_FEATURED_EDITIONS = 'LOAD_FEATURED_EDITIONS';
 export const LOAD_EDITIONS_FOR_TYPE = 'LOAD_EDITIONS_FOR_TYPE';
 export const LOAD_EDITIONS_FOR_ARTIST = 'LOAD_EDITIONS_FOR_ARTIST';

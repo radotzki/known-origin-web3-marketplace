@@ -46,7 +46,7 @@
       </li>
     </ul>
 
-    <div class="card-footer text-center no-top-border">
+    <div class="card-footer text-right no-top-border">
       <price-in-eth :value="edition.priceInEther"></price-in-eth>
     </div>
   </div>

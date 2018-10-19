@@ -4,20 +4,15 @@ import * as mutations from '../mutation';
 import _ from 'lodash';
 import Web3 from 'web3';
 import axios from 'axios';
-import {isHighRes} from '../../utils';
+import { isHighRes } from '../../utils';
 
-function featureArtworks(network) {
+function featureArtworks (network) {
   switch (network) {
     case 'Main':
     case 'Rinkeby':
     case 'Ropsten':
     case 'Local':
       return [
-        19300,
-        19600,
-        19700,
-        19800,
-        20000,
         20000,
         20400,
         20500,
@@ -29,6 +24,7 @@ function featureArtworks(network) {
         21100,
         21200,
         21300,
+        21400,
       ];
     default:
       return [];
@@ -134,13 +130,13 @@ const contractStateModule = {
     },
   },
   mutations: {
-    [mutations.SET_ACCOUNT_TOKENS](state, tokenAndEditions) {
+    [mutations.SET_ACCOUNT_TOKENS] (state, tokenAndEditions) {
       Vue.set(state, 'accountOwnedTokens', tokenAndEditions);
     },
-    [mutations.SET_ACCOUNT_EDITIONS](state, accountOwnedEditions) {
+    [mutations.SET_ACCOUNT_EDITIONS] (state, accountOwnedEditions) {
       Vue.set(state, 'accountOwnedEditions', accountOwnedEditions);
     },
-    [mutations.SET_ACCOUNT_EDITION](state, edition) {
+    [mutations.SET_ACCOUNT_EDITION] (state, edition) {
       let index = _.findIndex(state.accountOwnedEditions, {tokenId: edition.tokenId});
       if (index <= 0) {
         state.accountOwnedEditions.push(edition);
@@ -148,18 +144,18 @@ const contractStateModule = {
         state.accountOwnedEditions.splice(index, 0, edition);
       }
     },
-    [mutations.SET_EDITION](state, data) {
+    [mutations.SET_EDITION] (state, data) {
       setEditionData(data, state);
     },
-    [mutations.SET_EDITIONS](state, editions) {
+    [mutations.SET_EDITIONS] (state, editions) {
       _.forEach(editions, (data) => {
         setEditionData(data, state);
       });
     },
-    [mutations.SET_CONTRACT_ADDRESS_V2](state, contractAddress) {
+    [mutations.SET_CONTRACT_ADDRESS_V2] (state, contractAddress) {
       state.contractAddress = contractAddress;
     },
-    [mutations.SET_CONTRACT_DETAILS](state, {totalSupply, totalPurchaseValueInWei, totalPurchaseValueInEther, totalNumberMinted, totalNumberAvailable, koCommissionAccount}) {
+    [mutations.SET_CONTRACT_DETAILS] (state, {totalSupply, totalPurchaseValueInWei, totalPurchaseValueInEther, totalNumberMinted, totalNumberAvailable, koCommissionAccount}) {
       state.totalSupply = totalSupply;
       state.totalPurchaseValueInWei = totalPurchaseValueInWei;
       state.totalPurchaseValueInEther = totalPurchaseValueInEther;
@@ -169,16 +165,19 @@ const contractStateModule = {
     }
   },
   actions: {
-    async [actions.LOAD_FEATURED_EDITIONS]({commit, dispatch, state, rootState}) {
+    async [actions.LOAD_EDITIONS] ({commit, dispatch, state, rootState}, editionNumbers) {
       const contract = await rootState.KnownOriginDigitalAssetV2.deployed();
 
-      const editions = await Promise.all(_.map(featureArtworks(rootState.currentNetwork), async function (edition) {
+      const editions = await Promise.all(_.map(editionNumbers, async function (edition) {
         return await loadEditionData(contract, edition);
       }));
 
       commit(mutations.SET_EDITIONS, editions);
     },
-    async [actions.LOAD_EDITIONS_FOR_TYPE]({commit, dispatch, state, rootState}, {editionType}) {
+    async [actions.LOAD_FEATURED_EDITIONS] ({commit, dispatch, state, rootState}) {
+      dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, featureArtworks(rootState.currentNetwork), {root: true});
+    },
+    async [actions.LOAD_EDITIONS_FOR_TYPE] ({commit, dispatch, state, rootState}, {editionType}) {
       const contract = await rootState.KnownOriginDigitalAssetV2.deployed();
 
       let editions = [];
@@ -199,7 +198,7 @@ const contractStateModule = {
       }));
       commit(mutations.SET_EDITIONS, editionsData);
     },
-    async [actions.LOAD_EDITIONS_FOR_ARTIST]({commit, dispatch, state, rootState}, {artistAccount}) {
+    async [actions.LOAD_EDITIONS_FOR_ARTIST] ({commit, dispatch, state, rootState}, {artistAccount}) {
       const contract = await rootState.KnownOriginDigitalAssetV2.deployed();
 
       let editions;
@@ -224,7 +223,7 @@ const contractStateModule = {
       }));
       commit(mutations.SET_EDITIONS, editionsData);
     },
-    async [actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT]({commit, dispatch, state, rootState}, {account}) {
+    async [actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT] ({commit, dispatch, state, rootState}, {account}) {
       let contract = await rootState.KnownOriginDigitalAssetV2.deployed();
 
       // Find the token IDs the account owns
@@ -232,7 +231,7 @@ const contractStateModule = {
 
       const tokenIds = await contract.tokensOf(account);
       const tokenAndEditions = await Promise.all(
-        _.map(tokenIds, (tokenId) => editionOfTokenId(contract, tokenId.toString("10")))
+        _.map(tokenIds, (tokenId) => editionOfTokenId(contract, tokenId.toString('10')))
       );
       commit(mutations.SET_ACCOUNT_TOKENS, tokenAndEditions);
 
@@ -242,17 +241,17 @@ const contractStateModule = {
       );
       commit(mutations.SET_ACCOUNT_EDITIONS, editions);
     },
-    async [actions.LOAD_INDIVIDUAL_TOKEN]({commit, dispatch, state, rootState}, {tokenId}) {
+    async [actions.LOAD_INDIVIDUAL_TOKEN] ({commit, dispatch, state, rootState}, {tokenId}) {
       const contract = await rootState.KnownOriginDigitalAssetV2.deployed();
       const data = await loadTokenAndEdition(contract, tokenId);
       commit(mutations.SET_ACCOUNT_EDITION, data);
     },
-    async [actions.LOAD_INDIVIDUAL_EDITION]({commit, dispatch, state, rootState}, {editionNumber}) {
+    async [actions.LOAD_INDIVIDUAL_EDITION] ({commit, dispatch, state, rootState}, {editionNumber}) {
       const contract = await rootState.KnownOriginDigitalAssetV2.deployed();
       const data = await loadEditionData(contract, editionNumber);
       commit(mutations.SET_EDITION, data);
     },
-    async [actions.REFRESH_CONTRACT_DETAILS]({commit, dispatch, state, rootState}) {
+    async [actions.REFRESH_CONTRACT_DETAILS] ({commit, dispatch, state, rootState}) {
       let contract = await rootState.KnownOriginDigitalAssetV2.deployed();
 
       commit(mutations.SET_CONTRACT_ADDRESS_V2, contract.address);

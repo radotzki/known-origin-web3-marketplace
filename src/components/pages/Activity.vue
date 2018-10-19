@@ -2,27 +2,28 @@
   <div>
     <div class="row bg-secondary text-white full-banner">
       <div class="col text-center m-5">
-        <p>Activity v2</p>
+        <p>Activity</p>
       </div>
     </div>
 
-    <div class="text-center mt-5" v-if="!activity || activity.length === 0">
-      <loading-spinner></loading-spinner>
-    </div>
+    <loading-section :page="PAGES.ACTIVITY" class="mt-5"></loading-section>
 
     <div class="container-fluid mt-4">
       <div class="row editions-wrap">
 
         <table class="table table-striped">
           <tbody>
-          <tr v-for="event in orderBy(activity, 'blockNumber', -1)">
+          <tr v-for="event in limitBy(orderBy(activity, 'blockNumber', -1), 50)">
             <td class="w-25 text-center"><img v-if="findEdition(parseInt(event.args._editionNumber))" class="img-thumbnail" :src="findEdition(parseInt(event.args._editionNumber)).lowResImg"/></td>
-            <td><span class="badge badge-primary">{{ event.args._tokenId.toString() }}</span></td>
-            <td><span class="text-muted small">Block:</span> <code>{{ event.blockNumber }}</code></td>
-            <td><span class="text-muted small">Owner:</span>
-              <clickable-address :eth-address="event.args._buyer"></clickable-address>
+            <td><code>{{ mapEvent(event.event) }}</code></td>
+            <td><span class="badge badge-primary" v-if="event.args._tokenId">{{ event.args._tokenId.toString() }}</span></td>
+            <td class="d-none d-md-table-cell">
+              <span class="text-muted small">Block:</span> <code>{{ event.blockNumber }}</code>
             </td>
-            <td>
+            <td class="d-none d-md-table-cell">
+              <span class="text-muted small" v-if="event.args._buyer">Owner: </span><clickable-address :eth-address="event.args._buyer"></clickable-address>
+            </td>
+            <td class="d-none d-md-table-cell">
               <clickable-transaction :transaction="event.transactionHash"></clickable-transaction>
             </td>
           </tr>
@@ -40,32 +41,60 @@
   import ClickableTransaction from '../ui-controls/generic/ClickableTransaction.vue';
   import * as actions from '../../store/actions';
   import Availability from '../ui-controls/v2/Availability';
-  import LoadingSpinner from '../ui-controls/generic/LoadingSpinner';
+  import { PAGES } from '../../store/loadingPageState';
+  import LoadingSection from '../ui-controls/generic/LoadingSection';
 
   export default {
     name: 'activity',
     components: {
-      LoadingSpinner,
+      LoadingSection,
       Availability,
       ClickableAddress,
       ClickableTransaction
     },
     data () {
-      return {};
+      return {
+        PAGES
+      };
     },
     methods: {
-      goToArtist: function (artistAccount) {
-        this.$router.push({name: 'artist-v2', params: {artistAccount}});
+      mapEvent: function (eventStr) {
+        if (eventStr === 'EditionCreated') {
+          return '👶 Birth';
+        }
+
+        if (eventStr === 'Minted') {
+          return '💸 Purchase';
+        }
+
+        return eventStr;
       }
     },
     computed: {
       ...mapGetters('kodaV2', [
         'findEdition'
       ]),
-      ...mapState(['activity'])
+      ...mapState('activity',
+        ['activity']
+      )
     },
-    mounted () {
-      this.$store.dispatch(actions.ACTIVITY);
+    created () {
+
+      this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.ACTIVITY);
+
+      const loadData = () => {
+        this.$store.dispatch(`activity/${actions.ACTIVITY}`);
+        this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.ACTIVITY);
+      };
+
+      this.$store.watch(
+        () => this.$store.state.KnownOriginDigitalAssetV2,
+        () => loadData()
+      );
+
+      if (this.$store.state.KnownOriginDigitalAssetV2) {
+        loadData();
+      }
     }
   };
 </script>
