@@ -20,6 +20,7 @@ import kodaV1 from './modules/kodaV1';
 import kodaV2 from './modules/kodaV2';
 import loading from './modules/loading';
 import auction from './modules/auction';
+import activity from './modules/activity';
 
 const KnownOriginDigitalAssetV1 = truffleContract(knownOriginDigitalAssetJson);
 const KnownOriginDigitalAssetV2 = truffleContract(knownOriginDigitalAssetJsonV2);
@@ -37,7 +38,6 @@ const store = new Vuex.Store({
     purchase,
     highres,
     loading,
-    auction,
   },
   state: {
     // connectivity
@@ -57,8 +57,7 @@ const store = new Vuex.Store({
     KnownOriginDigitalAssetV2: null,
     ArtistAcceptingBids: null,
 
-    activity: [],
-    activityStarted: false,
+    KnownOriginDigitalAssetV2MainBlockNumber: 6270484
   },
   getters: {
     findArtist: (state) => (artistCode) => {
@@ -131,10 +130,6 @@ const store = new Vuex.Store({
       state.KnownOriginDigitalAssetV2 = v2;
       state.ArtistAcceptingBids = auction;
     },
-    [mutations.SET_ACTIVITY](state, anEvent) {
-      state.activityStarted = true;
-      Vue.set(state, 'activity', state.activity.concat(anEvent));
-    },
   },
   actions: {
     [actions.GET_CURRENT_NETWORK]({commit, dispatch, state}) {
@@ -203,9 +198,6 @@ const store = new Vuex.Store({
         auction: ArtistAcceptingBids,
       });
 
-      // Load the auction owner
-      dispatch(`auction/${actions.GET_AUCTION_OWNER}`);
-
       // Find current network
       dispatch(actions.GET_CURRENT_NETWORK);
 
@@ -246,29 +238,7 @@ const store = new Vuex.Store({
         .catch(function (error) {
           console.log('ERROR - account locked', error);
         });
-    },
-    [actions.ACTIVITY]: function ({commit, dispatch, state}) {
-
-      if (state.KnownOriginDigitalAssetV2 && !state.activityStarted) {
-        state.KnownOriginDigitalAssetV2.deployed()
-          .then((contract) => {
-
-            let mintedEvent = contract.Minted({}, {
-              fromBlock: 0,
-              toBlock: 'latest' // wait until event comes through
-            });
-
-            mintedEvent.watch(function (error, anEvent) {
-              if (!error) {
-                commit(mutations.SET_ACTIVITY, anEvent);
-              } else {
-                console.log('Failure', error);
-                mintedEvent.stopWatching();
-              }
-            });
-          });
-      }
-    },
+    }
   }
 });
 
