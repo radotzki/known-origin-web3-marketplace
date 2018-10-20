@@ -411,6 +411,48 @@ const artists = [
     twitter: '@artofosiris',
     website: 'https://maxosiris.com/',
     ethAddress: '0x0b715ca8dc39e7f8a480d28d9822ae02f0a57008'
+  },
+  {
+    artistCode: 'AZB',
+    name: 'Azbeen',
+    bio: 'Azbeen aka Aris Falegos is an artist who has a passion for creating images that tell stories and appeal to both children and the young at heart',
+    strapline: 'Azbeen aka Aris Falegos is an artist who has a passion for creating images that tell stories and appeal to both children and the young at heart',
+    twitter: '@azbeen',
+    img: '/static/artists/azbeen_Profile@x2.png',
+    website: 'www.azbeen.gr',
+    ethAddress: '0x38cca9a8848D538FB29Bf55f664f948E24228bAa',
+    live: true,
+  },
+  {
+    artistCode: 'ALR',
+    name: 'Angel L. Rodriguez',
+    bio: 'I find bliss in capturing light and fleeting moments',
+    strapline: 'I find bliss in capturing light and fleeting moments',
+    twitter: '@alr020',
+    img: '/static/artists/Angel-LProfile@x2.png',
+    ethAddress: '0xedB3DefCD7f2B17aBd937C966a4067fe832Ea0C2',
+    live: true,
+  },
+  {
+    artistCode: 'DVT',
+    name: 'Divo_Tvurce',
+    bio: 'Contemporary artist Petr Němec',
+    strapline: 'Contemporary artist Petr Němec',
+    twitter: '@divo_tvurce',
+    img: '/static/artists/divo_tvurce_Profile@x2.png',
+    ethAddress: '0xdFa4feED08974A587139aF3e52826f41B6a82A8C',
+    live: true,
+  },
+  {
+    artistCode: 'DVT',
+    name: 'XCOPY',
+    bio: 'London based artist XCOPY explores death, dystopia and apathy through distorted visual loops. Warning: flashing imagery',
+    strapline: 'London based artist XCOPY explores death, dystopia and apathy through distorted visual loops. Warning: flashing imagery',
+    twitter: '@XCOPYART',
+    website: 'https://xcopyart.com',
+    img: '/static/artists/XCOPY_Profile@x2.png',
+    ethAddress: '0x3768225622d53FfCc1E00eaC53a2A870ECd825C8',
+    live: true,
   }
 ];
 
