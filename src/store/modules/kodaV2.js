@@ -23,12 +23,12 @@ function featureArtworks(network) {
         21200,
         21300,
         21400,
-        // 21600,
-        // 21700,
-        // 21800,
-        // 21900,
-        // 21900,
-        // 22000,
+        21600,
+        21700,
+        21800,
+        21900,
+        21900,
+        22000,
       ];
     default:
       return [];
@@ -53,13 +53,13 @@ const contractStateModule = {
 
     // must be 7 as rotated daily
     featuredArtistAccounts: [
+      '0x0b715ca8dc39e7f8a480d28d9822ae02f0a57008',
+      '0x38cca9a8848D538FB29Bf55f664f948E24228bAa',
+      '0xedB3DefCD7f2B17aBd937C966a4067fe832Ea0C2',
+      '0xdFa4feED08974A587139aF3e52826f41B6a82A8C',
+      '0x3768225622d53FfCc1E00eaC53a2A870ECd825C8',
       '0x43a7634eb14c12b59be599487c1d7898a3d864c1',
-      '0x08f950816358F4306B70fB319E4F35c592d1B8a8',
-      '0xE9c57276EF46324d8144b3E759Ab0AC59F75513F',
-      '0xa4aD045d62a493f0ED883b413866448AfB13087C',
-      '0xf8b32D30aC6Ab3030595432533D7836FD76B078d',
-      '0xe0F228070D8F7b5C25E9375Fa70FA418f8dfEDf8',
-      '0xa2cD656f8461d2C186D69fFB8A4a5c10EFF0914d'
+      '0x08f950816358F4306B70fB319E4F35c592d1B8a8'
     ]
   },
   getters: {
