@@ -1102,7 +1102,7 @@ contract.only('ArtistAcceptingBids', function (accounts) {
       });
     });
 
-    describe('TODO override functions', async function () {
+    describe('override functions', async function () {
 
       beforeEach(async function () {
         await this.auction.setArtistsControlAddressAndEnabledEdition(editionNumber1, artistAccount1, {from: _owner});
@@ -1120,7 +1120,7 @@ contract.only('ArtistAcceptingBids', function (accounts) {
 
         it('fails if not the owner', async function () {
           // Attempting to lower the bid
-          await assertRevert(this.auction.manualOverrideEditionBid(editionNumber1, bidder1, AMOUNT_BID_OVERRIDDEN_TO, {from: bidder1}));
+          await assertRevert(this.auction.manualOverrideEditionHighestBidAndBidder(editionNumber1, bidder1, AMOUNT_BID_OVERRIDDEN_TO, {from: bidder1}));
         });
 
         it('contract balance show original balance', async function () {
@@ -1507,7 +1507,7 @@ contract.only('ArtistAcceptingBids', function (accounts) {
       });
     });
 
-    describe('EditionAuctionCanceled', async function () {
+    describe('AuctionCancelled', async function () {
 
       let events;
       beforeEach(async function () {
@@ -1524,8 +1524,8 @@ contract.only('ArtistAcceptingBids', function (accounts) {
         _amount.should.be.bignumber.equal(this.minBidAmount);
       });
 
-      it('EditionAuctionCanceled event populated', async function () {
-        events[1].event.should.be.equal('EditionAuctionCanceled');
+      it('AuctionCancelled event populated', async function () {
+        events[1].event.should.be.equal('AuctionCancelled');
         let {_editionNumber} = events[1].args;
         _editionNumber.should.be.bignumber.equal(editionNumber1);
       });

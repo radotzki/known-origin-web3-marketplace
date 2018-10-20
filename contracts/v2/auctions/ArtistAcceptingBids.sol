@@ -41,7 +41,7 @@ interface IAuction {
     uint256 indexed _amount
   );
 
-  event EditionAuctionCanceled(
+  event AuctionCancelled(
     uint256 indexed _editionNumber
   );
 
@@ -303,7 +303,7 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
     enabledEditions[_editionNumber] = false;
 
     // Fire event
-    emit EditionAuctionCanceled(_editionNumber);
+    emit AuctionCancelled(_editionNumber);
 
     return true;
   }
@@ -466,7 +466,7 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   /////////////////////////////
 
   /**
-   * @dev Last ditch resort to extract ether so we can distribute to the correct bidders accordingly, better safe than stuck
+   * @dev Allows for the ability to extract ether so we can distribute to the correct bidders accordingly
    * @dev Only callable from owner
    */
   function withdrawStuckEther(address _withdrawalAccount) onlyOwner public {
@@ -476,7 +476,7 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   }
 
   /**
-   * @dev Allows withdrawal of an amount to an address
+   * @dev Allows for the ability to extract specific ether amounts so we can distribute to the correct bidders accordingly
    * @dev Only callable from owner
    */
   function withdrawStuckEtherOfAmount(address _withdrawalAccount, uint256 _amount) onlyOwner public {
@@ -487,25 +487,7 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   }
 
   /**
-   * @dev Manual override (last resort) method for overriding an edition bid
-   * @dev Only callable from owner
-   */
-  function manualOverrideEditionBid(uint256 _editionNumber, address _bidder, uint256 _amount) onlyOwner public returns (bool) {
-    editionBids[_editionNumber][_bidder] = _amount;
-    return true;
-  }
-
-  /**
-   * @dev Manual override (last resort) method for setting edition highest bid
-   * @dev Only callable from owner
-   */
-  function manualOverrideEditionHighestBidder(uint256 _editionNumber, address _bidder) onlyOwner public returns (bool) {
-    editionHighestBid[_editionNumber] = _bidder;
-    return true;
-  }
-
-  /**
-   * @dev Manual override (last resort) method for setting edition highest bid & the highest bidder to the provided address
+   * @dev Manual override method for setting edition highest bid & the highest bidder to the provided address
    * @dev Only callable from owner
    */
   function manualOverrideEditionHighestBidAndBidder(uint256 _editionNumber, address _bidder, uint256 _amount) onlyOwner public returns (bool) {
@@ -515,7 +497,7 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   }
 
   /**
-   * @dev Manual override (last resort) method removing bidding values
+   * @dev Manual override method removing bidding values
    * @dev Only callable from owner
    */
   function manualDeleteEditionBids(uint256 _editionNumber, address _bidder) onlyOwner public returns (bool) {

@@ -23,8 +23,8 @@ module.exports = async function (deployer, network, accounts) {
 
   const aktivProtesk = '0xa2cD656f8461d2C186D69fFB8A4a5c10EFF0914d';
 
-  await auction.setArtistsAddressAndEnabledEdition(18500, aktivProtesk, {from: _koAccount});
-  await auction.setArtistsAddressAndEnabledEdition(18600, aktivProtesk, {from: _koAccount});
-  await auction.setArtistsAddressAndEnabledEdition(18700, aktivProtesk, {from: _koAccount});
-  await auction.setArtistsAddressAndEnabledEdition(18800, aktivProtesk, {from: _koAccount});
+  await auction.setArtistsControlAddressAndEnabledEdition(18500, aktivProtesk, {from: _koAccount});
+  await auction.setArtistsControlAddressAndEnabledEdition(18600, aktivProtesk, {from: _koAccount});
+  await auction.setArtistsControlAddressAndEnabledEdition(18700, aktivProtesk, {from: _koAccount});
+  await auction.setArtistsControlAddressAndEnabledEdition(18800, aktivProtesk, {from: _koAccount});
 };

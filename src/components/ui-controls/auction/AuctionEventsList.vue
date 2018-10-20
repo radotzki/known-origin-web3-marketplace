@@ -1,8 +1,10 @@
 <template>
-  <div>
-    <div v-for="event in auctionEditionEvents(edition.edition)">
+  <div class="mt-4 shadow-sm bg-white p-4"
+       v-if="isEditionAuctionEnabled(edition.edition) && auctionEditionEvents(edition.edition).length > 0">
+    <h5>Recent events</h5>
+    <div v-for="event in limitBy(auctionEditionEvents(edition.edition), 4)">
       <div>
-        <strong>{{event.event}}</strong>
+        <strong>{{humanize(event.event)}}</strong>
       </div>
       <div>
         <span v-for="value, key in event.args">
@@ -52,6 +54,7 @@
     },
     computed: {
       ...mapGetters('auction', [
+        'isEditionAuctionEnabled',
         'auctionEditionEvents'
       ]),
       ...mapState('auction', []),
@@ -59,6 +62,9 @@
     methods: {
       toEth: function (value) {
         return Web3.utils.fromWei(value.toString("10"), 'ether');
+      },
+      humanize: function (value) {
+        return _.startCase(value);
       }
     },
     mounted() {

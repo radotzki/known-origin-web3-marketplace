@@ -38,6 +38,8 @@ const store = new Vuex.Store({
     purchase,
     highres,
     loading,
+    auction,
+    activity,
   },
   state: {
     // connectivity
