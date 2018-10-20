@@ -1,5 +1,5 @@
 <template>
-  <div v-if="edition && nextMinimumNewBid(edition.edition) && isEditionAuctionEnabled(edition.edition)">
+  <div class="mt-4 shadow-sm bg-white p-4" v-if="edition && nextMinimumNewBid(edition.edition) && isEditionAuctionEnabled(edition.edition)">
     <div v-if="account">
 
       <h6>Make a bid</h6>

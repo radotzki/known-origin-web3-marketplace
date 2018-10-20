@@ -68,18 +68,13 @@
             <availability class="float-right" :totalAvailable="edition.totalAvailable"
                           :totalSupply="edition.totalSupply"></availability>
           </div>
-          <!--<div class="mt-2">-->
-          <!--<h6>Activity</h6>-->
-          <!--</div>-->
         </div>
 
-        <div class="mt-4 shadow-sm bg-white p-4" v-if="(edition.totalAvailable - edition.totalSupply > 0) && haveNotPurchasedEditionBefore(edition.edition)">
+        <div v-if="(edition.totalAvailable - edition.totalSupply > 0) && haveNotPurchasedEditionBefore(edition.edition)">
           <place-edition-bid :edition="edition"></place-edition-bid>
         </div>
 
-        <div class="mt-4 shadow-sm bg-white p-4">
-          <auction-events-list :edition="edition"></auction-events-list>
-        </div>
+        <auction-events-list :edition="edition"></auction-events-list>
       </div>
 
       <div class="col-sm-6 order-1 order-sm-2 mb-5">
