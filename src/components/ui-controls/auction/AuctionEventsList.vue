@@ -2,24 +2,27 @@
   <div class="mt-4 shadow-sm bg-white p-4"
        v-if="isEditionAuctionEnabled(edition.edition) && auctionEditionEvents(edition.edition).length > 0">
     <h5>Recent events</h5>
-    <div v-for="event in limitBy(auctionEditionEvents(edition.edition), 4)">
+
+    <div v-for="event in limitBy(auctionEditionEvents(edition.edition), 3)">
+
       <div>
         <strong>{{humanize(event.event)}}</strong>
       </div>
+
       <div>
-        <span v-for="value, key in event.args">
-          <span v-if="key === '_amount'">
-            <price-in-eth :value="toEth(value)"></price-in-eth>
-          </span>
-          <span v-if="key === '_bidder'">
-            <clickable-address :eth-address="value"></clickable-address>
-          </span>
+
+        <span v-if="event.args._amount">
+          <price-in-eth :value="toEth(event.args._amount)"></price-in-eth>
         </span>
-      </div>
-      <div>
-        <clickable-transaction :transaction="event.transactionHash"
-                               :show-label="false">
-        </clickable-transaction>
+
+        <span v-if="event.args._bidder">
+          <clickable-address :eth-address="event.args._bidder"></clickable-address>
+        </span>
+
+        <span class="float-right">
+           <view-transaction-details :transaction="event.transactionHash"></view-transaction-details>
+        </span>
+
       </div>
       <br/>
     </div>
@@ -35,10 +38,12 @@
   import USDPrice from '../generic/USDPrice';
   import ClickableTransaction from "../generic/ClickableTransaction";
   import Web3 from "web3";
+  import ViewTransactionDetails from "../generic/ViewTransactionDetails";
 
   export default {
     name: 'auctionEventsList',
     components: {
+      ViewTransactionDetails,
       ClickableTransaction,
       PriceInEth,
       ClickableAddress,
