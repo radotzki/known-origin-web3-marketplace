@@ -215,8 +215,12 @@ const store = new Vuex.Store({
                 // store the account details
                 commit(mutations.SET_ACCOUNT, {account, accountBalance});
 
+                // Load account owner assets for V1 & V2
                 dispatch(`kodaV1/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account});
                 dispatch(`kodaV2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account});
+
+                // Load auction contract owner
+                dispatch(`auction/${actions.GET_AUCTION_OWNER}`);
               });
           };
 
