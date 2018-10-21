@@ -9,41 +9,37 @@ const activityStateModule = {
   },
   getters: {},
   mutations: {
-    [mutations.SET_ACTIVITY] (state, events) {
+    [mutations.SET_ACTIVITY](state, events) {
       state.activityStarted = true;
       Vue.set(state, 'activity', state.activity.concat(events));
     }
   },
   actions: {
-    [actions.ACTIVITY]: function ({commit, dispatch, state, rootState}) {
+    async [actions.ACTIVITY]({commit, dispatch, state, rootState}) {
 
-      rootState.KnownOriginDigitalAssetV2.deployed()
-        .then((contract) => {
+      const contract = await rootState.KnownOriginDigitalAssetV2.deployed();
 
-          let mintedEvent = contract.Minted({}, {
-            fromBlock: rootState.currentNetwork === 'Main' ? rootState.KnownOriginDigitalAssetV2MainBlockNumber : 0,
-            toBlock: 'latest' // wait until event comes through
-          });
+      const filter = {
+        fromBlock: rootState.currentNetwork === 'Main' ? rootState.KnownOriginDigitalAssetV2MainBlockNumber : 0,
+        toBlock: 'latest' // wait until event comes through
+      };
 
-          let createdEvent = contract.EditionCreated({}, {
-            fromBlock: rootState.currentNetwork === 'Main' ? rootState.KnownOriginDigitalAssetV2MainBlockNumber : 0,
-            toBlock: 'latest' // wait until event comes through
-          });
+      [
+        contract.Minted({}, filter),
+        contract.EditionCreated({}, filter)
+      ].map((ev) => {
+        ev.get(function (error, events) {
+          if (!error) {
+            commit(mutations.SET_ACTIVITY, events);
 
-          [mintedEvent, createdEvent].map((ev) => {
-            ev.get(function (error, events) {
-              if (!error) {
-                commit(mutations.SET_ACTIVITY, events);
-
-                const editionNumbers = _.map(events, (e) => parseInt(e.args._editionNumber.toString()));
-                dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, editionNumbers, {root: true});
-              } else {
-                console.log('Failure', error);
-                ev.stopWatching();
-              }
-            });
-          });
+            const editionNumbers = _.map(events, (e) => parseInt(e.args._editionNumber.toString()));
+            dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, editionNumbers, {root: true});
+          } else {
+            console.log('Failure', error);
+            ev.stopWatching();
+          }
         });
+      });
     },
   }
 };
