@@ -14,12 +14,24 @@
         <table class="table table-striped">
           <tbody>
           <tr v-for="event in limitBy(orderBy(activity, 'blockNumber', -1), 50)">
-            <td class="w-25 text-center"><img v-if="findEdition(parseInt(event.args._editionNumber))"
-                                              class="img-thumbnail"
-                                              :src="findEdition(parseInt(event.args._editionNumber)).lowResImg"/></td>
-            <td><code>{{ mapEvent(event.event) }}</code></td>
-            <td><span class="badge badge-primary"
-                      v-if="event.args._tokenId">{{ event.args._tokenId.toString() }}</span></td>
+            <td class="w-25 text-center">
+              <router-link :to="{ name: 'confirmPurchase', params: { editionNumber: parseInt(event.args._editionNumber) }}">
+                <img v-if="findEdition(parseInt(event.args._editionNumber))"
+                     class="img-thumbnail"
+                     :src="findEdition(parseInt(event.args._editionNumber)).lowResImg"/>
+              </router-link>
+            </td>
+            <td>
+              <code>{{ mapEvent(event.event) }}</code>
+            </td>
+            <td>
+              <div v-if="event.args._tokenId">
+                <router-link :to="{ name: 'edition-token', params: { tokenId: event.args._tokenId.toString() }}"
+                             class="badge badge-primary">
+                  {{ event.args._tokenId.toString() }}
+                </router-link>
+              </div>
+            </td>
             <td class="d-none d-md-table-cell">
               <span class="text-muted small">Block:</span> <code>{{ event.blockNumber }}</code>
             </td>
@@ -78,9 +90,9 @@
       ...mapGetters('kodaV2', [
         'findEdition'
       ]),
-      ...mapState('activity', [
-        'activity'
-      ])
+      ...mapState('activity',
+        ['activity']
+      )
     },
     created() {
 
@@ -88,7 +100,7 @@
 
       const loadData = () => {
         this.$store.dispatch(`activity/${actions.ACTIVITY}`)
-          .then(() => {
+          .finally(() => {
             this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.ACTIVITY);
           });
       };
