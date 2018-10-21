@@ -1,38 +1,42 @@
 <template>
   <div v-if="canAcceptBid()">
 
-    <button class="btn btn-outline-primary btn-sm"
-            v-on:click="acceptBid()">
-      Accept Bid
-    </button>
+    <div>
+      <button class="btn btn-outline-primary btn-sm"
+              v-on:click="acceptBid()">
+        Accept Bid
+      </button>
+    </div>
 
-    <span v-if="isAcceptingBidTriggered(auction.edition)">
-      Transaction triggered
-      <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
-      <clickable-transaction :transaction="getAcceptingBidTransactionForEdition(auction.edition)"
-                             :show-label="false">
-      </clickable-transaction>
-    </span>
+    <div>
+      <span v-if="isAcceptingBidTriggered(auction.edition)">
+        Transaction triggered
+        <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
+        <clickable-transaction :transaction="getAcceptingBidTransactionForEdition(auction.edition)"
+                               :show-label="false">
+        </clickable-transaction>
+      </span>
 
-    <span v-else-if="isAcceptingBidStarted(auction.edition)">
-      Your transaction is being confirmed...
-      <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
-      <clickable-transaction :transaction="getAcceptingBidTransactionForEdition(auction.edition)"
-                             :show-label="false">
-      </clickable-transaction>
-    </span>
+      <span v-else-if="isAcceptingBidStarted(auction.edition)">
+        Your transaction is being confirmed...
+        <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
+        <clickable-transaction :transaction="getAcceptingBidTransactionForEdition(auction.edition)"
+                               :show-label="false">
+        </clickable-transaction>
+      </span>
 
-    <span v-else-if="isAcceptingBidSuccessful(auction.edition)">
-      Bid confirmed
-      <clickable-transaction :transaction="getAcceptingBidTransactionForEdition(auction.edition)"
-                             :show-label="false">
-      </clickable-transaction>
-    </span>
+      <span v-else-if="isAcceptingBidSuccessful(auction.edition)">
+        Bid confirmed
+        <clickable-transaction :transaction="getAcceptingBidTransactionForEdition(auction.edition)"
+                               :show-label="false">
+        </clickable-transaction>
+      </span>
 
-    <span v-else-if="isAcceptingBidFailed(auction.edition)">
-        <span class="card-text text-danger mt-4">Your transaction failed!</span>
-        <img src="../../../../../static/Failure.svg" style="width: 25px"/>
-    </span>
+      <span v-else-if="isAcceptingBidFailed(auction.edition)">
+          <span class="card-text text-danger mt-4">Your transaction failed!</span>
+          <img src="../../../../../static/Failure.svg" style="width: 25px"/>
+      </span>
+    </div>
 
   </div>
 </template>

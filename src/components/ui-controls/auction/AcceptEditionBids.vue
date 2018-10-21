@@ -1,51 +1,45 @@
 <template>
   <div class="container-fluid" v-if="listOpenAuctions.length > 0">
 
-    <h3>Ongoing auctions</h3>
+    <div class="editions-wrap">
+      <h3>Open Offers</h3>
+      <p>
+        Below is list of ongoing auctions, edition creators can accept offers and user can withdraw them.
+      </p>
 
-    <p>
-      Below are list of ongoing auctions which can be actioned by the artists account for each edition.
-    </p>
+    </div>
 
-    <div class="row col">
+    <div class="row editions-wrap">
 
-      <div class="card m-3" v-for="auction in listOpenAuctions" :key="auction.edition">
-
-        <div class="row no-gutters">
-          <div class="col-auto">
+      <table class="table table-striped">
+        <tbody>
+        <tr v-for="auction in listOpenAuctions" :key="auction.edition">
+          <td>
             <router-link :to="{ name: 'confirmPurchaseSimple', params: { editionNumber: auction.edition }}">
-              <img :src="getEdition(auction.edition).lowResImg" class="card-img-top" style="width: 175px;"/>
+              <img :src="getEdition(auction.edition).lowResImg" class="img-thumbnail" style="max-width: 100px"/>
             </router-link>
-          </div>
-          <div class="col m-1">
-            <div class="card-block px-2">
-              <h4 class="card-title">{{getEdition(auction.edition).name}}</h4>
-              <div class="card-text">
-                <div v-if="auction.highestBid > 0">
-                  <p>Current highest bidder</p>
-                  <p class="strong">
-                    <price-in-eth :value="auction.highestBid"></price-in-eth>
-                    <usd-price :price-in-ether="auction.highestBid"></usd-price>
-                  </p>
-                  <p class="">
-                    <clickable-address :eth-address="auction.highestBidder"></clickable-address>
-                    <span class="small text-muted">bidder</span>
-                  </p>
-                </div>
-                <p v-else>
-                  No bids yet...
-                </p>
-              </div>
+          </td>
+          <td class="hidden-on-mobile">
+            {{getEdition(auction.edition).name}}
+          </td>
+          <td>
+            <div v-if="auction.highestBid > 0">
+              <!--<p>Current highest bidder</p>-->
+              <price-in-eth :value="auction.highestBid"></price-in-eth>
+              <usd-price :price-in-ether="auction.highestBid"></usd-price>
             </div>
-          </div>
-        </div>
-
-        <div class="card-footer w-100 text-muted">
-          <accepting-bid-flow :auction="auction"></accepting-bid-flow>
-          <withdrawing-bid-flow :auction="auction"></withdrawing-bid-flow>
-        </div>
-      </div>
-
+          </td>
+          <td class="hidden-on-mobile">
+            <clickable-address :eth-address="auction.highestBidder"></clickable-address>
+            <span class="small text-muted">bidder</span>
+          </td>
+          <td class="w-25 text-center">
+            <accepting-bid-flow :auction="auction"></accepting-bid-flow>
+            <withdrawing-bid-flow :auction="auction"></withdrawing-bid-flow>
+          </td>
+        </tr>
+        </tbody>
+      </table>
     </div>
 
   </div>
@@ -153,5 +147,11 @@
   @import '../../../ko-colours.scss';
   @import '../../../ko-card.scss';
 
+  /* mobile only */
+  @media screen and (max-width: 767px) {
+    .hidden-on-mobile {
+      display: none;
+    }
+  }
 
 </style>
