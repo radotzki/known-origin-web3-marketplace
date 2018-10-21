@@ -1,39 +1,43 @@
 <template>
   <div v-if="canWithdrawBid()">
 
-    <button class="btn btn-outline-primary btn-sm"
-            v-on:click="withdrawBid()">
-      Withdraw Bid
-    </button>
+    <div>
+      <button class="btn btn-outline-primary btn-sm"
+              v-on:click="withdrawBid()">
+        Withdraw Bid
+      </button>
+    </div>
 
-    <span v-if="isWithdrawnBidTriggered(auction.edition)">
-      Transaction triggered
-      <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
-      <clickable-transaction :transaction="getWithdrawnBidTransactionForEdition(auction.edition)"
-                             :show-label="false">
-      </clickable-transaction>
-    </span>
+    <div class="mt-2">
+      <span v-if="isWithdrawnBidTriggered(auction.edition)">
+        Transaction triggered
+        <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
+        <clickable-transaction :transaction="getWithdrawnBidTransactionForEdition(auction.edition)"
+                               :show-label="false">
+        </clickable-transaction>
+      </span>
 
-    <span v-else-if="isWithdrawnBidStarted(auction.edition)">
-      Your transaction is being confirmed...
-      <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
-      <clickable-transaction :transaction="getWithdrawnBidTransactionForEdition(auction.edition)"
-                             :show-label="false">
-      </clickable-transaction>
-    </span>
+      <span v-else-if="isWithdrawnBidStarted(auction.edition)">
+        Your transaction is being confirmed...
+        <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
+        <clickable-transaction :transaction="getWithdrawnBidTransactionForEdition(auction.edition)"
+                               :show-label="false">
+        </clickable-transaction>
+      </span>
 
-    <span v-else-if="isWithdrawnBidSuccessful(auction.edition)">
-      Bid withdrawn
-      <clickable-transaction :transaction="getWithdrawnBidTransactionForEdition(auction.edition)"
-                             :show-label="false">
-      </clickable-transaction>
-    </span>
+      <span v-else-if="isWithdrawnBidSuccessful(auction.edition)">
+        Bid withdrawn
+        <clickable-transaction :transaction="getWithdrawnBidTransactionForEdition(auction.edition)"
+                               :show-label="false">
+        </clickable-transaction>
+      </span>
 
-    <span v-else-if="isWithdrawnBidFailed(auction.edition)">
-        <span class="card-text text-danger mt-4">Your transaction failed!</span>
-        <img src="../../../../../static/Failure.svg" style="width: 25px"/>
-    </span>
+      <span v-else-if="isWithdrawnBidFailed(auction.edition)">
+          <span class="card-text text-danger mt-4">Your transaction failed!</span>
+          <img src="../../../../../static/Failure.svg" style="width: 25px"/>
+      </span>
 
+    </div>
   </div>
 </template>
 
