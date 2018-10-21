@@ -27,7 +27,6 @@ function featureArtworks(network) {
         21700,
         21800,
         21900,
-        21900,
         22000,
       ];
     default:
