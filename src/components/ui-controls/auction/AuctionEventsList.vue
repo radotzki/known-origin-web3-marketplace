@@ -12,7 +12,7 @@
       <div>
 
         <span v-if="event.args._amount">
-          <price-in-eth :value="toEth(event.args._amount)"></price-in-eth>
+          <price-in-eth :value="event.args._amoun | toEth"></price-in-eth>
         </span>
 
         <span v-if="event.args._bidder">
@@ -37,7 +37,6 @@
   import PriceInEth from '../generic/PriceInEth';
   import USDPrice from '../generic/USDPrice';
   import ClickableTransaction from "../generic/ClickableTransaction";
-  import Web3 from "web3";
   import ViewTransactionDetails from "../generic/ViewTransactionDetails";
 
   export default {
@@ -65,9 +64,6 @@
       ...mapState('auction', []),
     },
     methods: {
-      toEth: function (value) {
-        return Web3.utils.fromWei(value.toString("10"), 'ether');
-      },
       humanize: function (value) {
         return _.startCase(value);
       }
