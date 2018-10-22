@@ -19,21 +19,25 @@
               <img :src="getEdition(auction.edition).lowResImg" class="img-thumbnail" style="max-width: 100px"/>
             </router-link>
           </td>
-          <td class="d-none d-md-block">
-            {{getEdition(auction.edition).name}}
+          <td class="d-none d-md-table-cell align-middle">
+            <div>
+              <span>{{getEdition(auction.edition).name}}</span>
+            </div>
           </td>
-          <td>
+          <td class="align-middle">
             <div v-if="auction.highestBid > 0">
               <!--<p>Current highest bidder</p>-->
               <price-in-eth :value="auction.highestBid"></price-in-eth>
               <usd-price :price-in-ether="auction.highestBid"></usd-price>
             </div>
           </td>
-          <td class="d-none d-md-block">
-            <clickable-address :eth-address="auction.highestBidder"></clickable-address>
-            <span class="small text-muted">bidder</span>
+          <td class="d-none d-md-table-cell align-middle">
+            <div>
+              <clickable-address :eth-address="auction.highestBidder"></clickable-address>
+              <span class="small text-muted">bidder</span>
+            </div>
           </td>
-          <td class="w-25 text-center">
+          <td class="w-25 text-center align-middle">
             <accepting-bid-flow :auction="auction"></accepting-bid-flow>
             <withdrawing-bid-flow :auction="auction"></withdrawing-bid-flow>
           </td>

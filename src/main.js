@@ -7,6 +7,7 @@ import store from './store';
 import logging from './logging';
 import VModal from 'vue-js-modal';
 import Web3 from "web3";
+import _ from 'lodash';
 
 import AsyncComputed from 'vue-async-computed';
 import ToggleButton from 'vue-js-toggle-button';
@@ -42,6 +43,11 @@ Vue.filter('to2Dp', function (value) {
 Vue.filter('to0Dp', function (value) {
   if (!value) return '';
   return Web3.utils.BN(value.toString(10)).toFormat(0);
+});
+
+Vue.filter('humanize', function (value) {
+  if (!value) return '';
+  return _.startCase(value);
 });
 
 (async () => {

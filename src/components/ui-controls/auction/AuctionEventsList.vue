@@ -6,21 +6,21 @@
     <div v-for="event in limitBy(auctionEditionEvents(edition.edition), 3)">
 
       <div>
-        <strong>{{humanize(event.event)}}</strong>
+        <strong>{{event.event | humanize}}</strong>
+        <!--<small class="float-right">Block: {{event.blockNumber}}</small>-->
+        <span class="float-right" v-if="event.args._amount">
+          <price-in-eth :value="event.args._amount | toEth"></price-in-eth>
+        </span>
       </div>
 
       <div>
-
-        <span v-if="event.args._amount">
-          <price-in-eth :value="event.args._amoun | toEth"></price-in-eth>
-        </span>
-
         <span v-if="event.args._bidder">
           <clickable-address :eth-address="event.args._bidder"></clickable-address>
         </span>
 
         <span class="float-right">
-           <view-transaction-details :transaction="event.transactionHash"></view-transaction-details>
+          <small>Block: {{event.blockNumber}}</small>
+          <view-transaction-details :transaction="event.transactionHash"></view-transaction-details>
         </span>
 
       </div>
@@ -31,7 +31,6 @@
 
 <script>
   import {mapGetters, mapState} from 'vuex';
-  import _ from 'lodash';
   import * as actions from '../../../store/actions';
   import ClickableAddress from '../generic/ClickableAddress';
   import PriceInEth from '../generic/PriceInEth';
@@ -64,9 +63,6 @@
       ...mapState('auction', []),
     },
     methods: {
-      humanize: function (value) {
-        return _.startCase(value);
-      }
     },
     mounted() {
       this.$store.dispatch(`auction/${actions.GET_AUCTION_EVENTS_FOR_EDITION}`, this.edition.edition);
