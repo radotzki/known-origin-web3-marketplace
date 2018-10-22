@@ -36,7 +36,7 @@
             </div>
             <input type="number"
                    v-bind:class="{'is-invalid': nextMinimumNewBid(edition.edition) > form.bid, 'is-valid': nextMinimumNewBid(edition.edition) < form.bid}"
-                   class="form-control mr-sm-2" id="makeBidValue" step="0.01" placeholder="0.1" v-model="form.bid" :min="nextMinimumNewBid(edition.edition)"/>
+                   class="form-control mr-sm-2" id="makeBidValue" step="0.01" :placeholder="nextMinimumNewBid(edition.edition)" v-model="form.bid" :min="nextMinimumNewBid(edition.edition)"/>
             <button class="btn btn-secondary"
                     v-if="!accountIsHighestBidder(edition.edition)" v-on:click="placeBid"
                     :disabled="form.bid < nextMinimumNewBid(edition.edition)">
