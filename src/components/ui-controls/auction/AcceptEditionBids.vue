@@ -9,7 +9,7 @@
 
     </div>
 
-    <div class="row editions-wrap">
+    <div class="row col editions-wrap">
 
       <table class="table table-striped">
         <tbody>
@@ -19,7 +19,7 @@
               <img :src="getEdition(auction.edition).lowResImg" class="img-thumbnail" style="max-width: 100px"/>
             </router-link>
           </td>
-          <td class="hidden-on-mobile">
+          <td class="d-none d-md-block">
             {{getEdition(auction.edition).name}}
           </td>
           <td>
@@ -29,7 +29,7 @@
               <usd-price :price-in-ether="auction.highestBid"></usd-price>
             </div>
           </td>
-          <td class="hidden-on-mobile">
+          <td class="d-none d-md-block">
             <clickable-address :eth-address="auction.highestBidder"></clickable-address>
             <span class="small text-muted">bidder</span>
           </td>
@@ -146,12 +146,5 @@
 <style scoped lang="scss">
   @import '../../../ko-colours.scss';
   @import '../../../ko-card.scss';
-
-  /* mobile only */
-  @media screen and (max-width: 767px) {
-    .hidden-on-mobile {
-      display: none;
-    }
-  }
 
 </style>

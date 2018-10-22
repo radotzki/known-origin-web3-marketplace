@@ -6,15 +6,17 @@ import router from './router';
 import store from './store';
 import logging from './logging';
 import VModal from 'vue-js-modal';
+import Web3 from "web3";
+
 import AsyncComputed from 'vue-async-computed';
 import ToggleButton from 'vue-js-toggle-button';
 import BootstrapVue from 'bootstrap-vue';
+import Vue2Filters from 'vue2-filters';
 
 // Add brands to fontawesome
 import fontawesome from '@fortawesome/fontawesome';
 import brands from '@fortawesome/fontawesome-free-brands';
 import solid from '@fortawesome/fontawesome-free-solid';
-import Vue2Filters from 'vue2-filters';
 
 fontawesome.library.add(brands, solid);
 
@@ -26,6 +28,21 @@ Vue.use(require('vue-moment'));
 Vue.use(Vue2Filters);
 
 Vue.config.productionTip = false;
+
+Vue.filter('toEth', function (value) {
+  if (!value) return '';
+  return Web3.utils.fromWei(value.toString(10), 'ether').valueOf();
+});
+
+Vue.filter('to2Dp', function (value) {
+  if (!value) return '';
+  return Web3.utils.BN(value.toString(10)).toFormat(2);
+});
+
+Vue.filter('to0Dp', function (value) {
+  if (!value) return '';
+  return Web3.utils.BN(value.toString(10)).toFormat(0);
+});
 
 (async () => {
   try {
