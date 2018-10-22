@@ -81,6 +81,23 @@
             </a>
           </div>
         </div>
+        <div class="row">
+          <div class="col">
+            <!-- Begin Mailchimp Signup Form -->
+            <div id="mc_embed_signup">
+              <form action="https://knownorigin.us19.list-manage.com/subscribe/post?u=84b0312927af7712ac2e6dd5a&amp;id=70433f1407" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+                <div id="mc_embed_signup_scroll">
+
+                  <input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="Subscribe to The Origin Weekly..." required>
+                  <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+                  <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_84b0312927af7712ac2e6dd5a_70433f1407" tabindex="-1" value=""></div>
+                  <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button btn"></div>
+                </div>
+              </form>
+            </div>
+            <!--End mc_embed_signup-->
+          </div>
+        </div>
       </div>
     </footer>
   </div>
@@ -308,6 +325,14 @@
   .editions-wrap {
     margin-left: 50px;
     margin-right: 50px;
+  }
+
+  #mc_embed_signup {
+    background: $primary;
+    color: $body-bg;
+    clear: left;
+    font: 14px Helvetica, Arial, sans-serif;
+    width: 100%;
   }
 
 </style>
