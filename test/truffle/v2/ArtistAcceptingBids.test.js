@@ -14,7 +14,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-contract.only('ArtistAcceptingBids', function (accounts) {
+contract('ArtistAcceptingBids', function (accounts) {
 
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -1399,6 +1399,30 @@ contract.only('ArtistAcceptingBids', function (accounts) {
 
     });
 
+  });
+
+  describe('setting artists control address', async function () {
+
+    beforeEach(async function () {
+      await this.auction.setArtistsControlAddressAndEnabledEdition(editionNumber1, artistAccount1, {from: _owner});
+    });
+
+    it('fails when not owner', async function () {
+      await assertRevert(this.auction.setArtistsControlAddress(editionNumber1, bidder1, {from: bidder2}));
+
+      const controller = await this.auction.editionController(editionNumber1);
+      controller.should.be.equal(artistAccount1);
+    });
+
+    it('can change control address', async function () {
+      let controller = await this.auction.editionController(editionNumber1);
+      controller.should.be.equal(artistAccount1);
+
+      await this.auction.setArtistsControlAddress(editionNumber1, artistAccount2, {from: _owner});
+
+      controller = await this.auction.editionController(editionNumber1);
+      controller.should.be.equal(artistAccount2);
+    });
   });
 
   describe('accepting bids', async function () {

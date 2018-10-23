@@ -13,7 +13,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-contract.only('ArtistAcceptingBids - re-entrency tests', function (accounts) {
+contract('ArtistAcceptingBids - re-entrency tests', function (accounts) {
 
   const ROLE_MINTER = 2;
 
