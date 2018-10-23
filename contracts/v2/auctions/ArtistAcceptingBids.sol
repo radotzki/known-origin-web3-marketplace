@@ -85,16 +85,16 @@ interface IKODAV2 {
 * If the contract is Paused, no public actions can happen e.g. bids, increases, withdrawals
 * Managers of contract have full control over it act as a fallback in-case funds go missing or errors are found
 * On accepting of any bid, funds are split to KO and Artists - optional 3rd party split not currently supported
-* If an edition is sold out, auction is stopped, manual refund required by bidder or owner
+* If an edition is sold out, the auction is stopped, manual refund required by bidder or owner
 * Upon cancelling a bid which is in flight, funds are returned and contract stops further bids on the edition
 * Artists commissions and address are pulled from the KODA contract and are not based on the controller address
 *
 * Scenario:
-* 1) Config artist & edition
-* 2) Bob places bid
-* 3) Alice places higher bid, overrides Bobs position as the leader, sends Bobs ETH back and takes 1st place
-* 4) Artist accepts Alice's bid
-* 5) KODA token generated and transferred to Alice, funds are absorbed and split between KO and Artist of edition
+* 1) Config artist (Dave) & edition (1000)
+* 2) Bob places a bid on edition 1000 for 1 ETH
+* 3) Alice places a higher bid of 1.5ETH, overriding Bobs position as the leader, sends Bobs 1 ETH back and taking 1st place
+* 4) Dave accepts Alice's bid
+* 5) KODA token generated and transferred to Alice, funds are split between KO and Artist
 *
 * https://www.knownorigin.io/
 *
@@ -113,7 +113,7 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   mapping(uint256 => address) internal editionHighestBid;
 
   // Mapping for edition -> bidder -> bid amount
-  mapping(uint256 => mapping(address => uint256)) editionBids;
+  mapping(uint256 => mapping(address => uint256)) internal editionBids;
 
   // Min increase in bid amount
   uint256 public minBidAmount = 0.01 ether;
