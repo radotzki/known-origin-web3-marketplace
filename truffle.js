@@ -55,12 +55,11 @@ module.exports = {
     },
     live: {
       provider: function () {
-        let mnemonic_live = require('./mnemonic_live');
-        return new HDWalletProvider(mnemonic_live, `https://mainnet.infura.io/v3/${infuraApikey}`);
+        return new HDWalletProvider(require('./mnemonic_live'), `https://mainnet.infura.io/v3/${infuraApikey}`);
       },
       network_id: 1,
       gas: 6075039, // default = 4712388
-      gasPrice: 3000000000 // default = 100 gwei = 100000000000
+      gasPrice: 4000000000 // default = 100 gwei = 100000000000
     },
     ropsten: {
       provider: function () {
