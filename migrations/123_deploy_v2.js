@@ -12,7 +12,7 @@ module.exports = function (deployer, network, accounts) {
     _koAccount = new HDWalletProvider(require('../mnemonic'), `https://${network}.infura.io/${infuraApikey}`, 0).getAddress();
   }
 
-  if (network === 'live') {
+  if (network === 'live' || network === 'live-fork') {
     _koAccount = new HDWalletProvider(require('../mnemonic_live'), `https://mainnet.infura.io/${infuraApikey}`, 0).getAddress();
   }
 
