@@ -174,7 +174,7 @@
   }
 
   body {
-    margin-bottom: 60px;
+    margin-bottom: 80px;
     padding-top: 50px;
     padding-bottom: 20px;
   }
