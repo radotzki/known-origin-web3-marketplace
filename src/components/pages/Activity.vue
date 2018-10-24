@@ -14,14 +14,30 @@
         <table class="table table-striped">
           <tbody>
           <tr v-for="event in limitBy(orderBy(activity, 'blockNumber', -1), 50)">
-            <td class="w-25 text-center"><img v-if="findEdition(parseInt(event.args._editionNumber))" class="img-thumbnail" :src="findEdition(parseInt(event.args._editionNumber)).lowResImg"/></td>
-            <td><code>{{ mapEvent(event.event) }}</code></td>
-            <td><span class="badge badge-primary" v-if="event.args._tokenId">{{ event.args._tokenId.toString() }}</span></td>
+            <td class="w-25 text-center">
+              <router-link :to="{ name: 'confirmPurchase', params: { editionNumber: parseInt(event.args._editionNumber) }}">
+                <img v-if="findEdition(parseInt(event.args._editionNumber))"
+                     class="img-thumbnail"
+                     :src="findEdition(parseInt(event.args._editionNumber)).lowResImg"/>
+              </router-link>
+            </td>
+            <td>
+              <code>{{ mapEvent(event.event) }}</code>
+            </td>
+            <td>
+              <div v-if="event.args._tokenId">
+                <router-link :to="{ name: 'edition-token', params: { tokenId: event.args._tokenId.toString() }}"
+                             class="badge badge-primary">
+                  {{ event.args._tokenId.toString() }}
+                </router-link>
+              </div>
+            </td>
             <td class="d-none d-md-table-cell">
               <span class="text-muted small">Block:</span> <code>{{ event.blockNumber }}</code>
             </td>
             <td class="d-none d-md-table-cell">
-              <span class="text-muted small" v-if="event.args._buyer">Owner: </span><clickable-address :eth-address="event.args._buyer"></clickable-address>
+              <span class="text-muted small" v-if="event.args._buyer">Owner: </span>
+              <clickable-address :eth-address="event.args._buyer"></clickable-address>
             </td>
             <td class="d-none d-md-table-cell">
               <clickable-transaction :transaction="event.transactionHash"></clickable-transaction>
@@ -36,12 +52,12 @@
 <script>
 
   import _ from 'lodash';
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import ClickableAddress from '../ui-controls/generic/ClickableAddress';
   import ClickableTransaction from '../ui-controls/generic/ClickableTransaction.vue';
   import * as actions from '../../store/actions';
   import Availability from '../ui-controls/v2/Availability';
-  import { PAGES } from '../../store/loadingPageState';
+  import {PAGES} from '../../store/loadingPageState';
   import LoadingSection from '../ui-controls/generic/LoadingSection';
 
   export default {
@@ -52,7 +68,7 @@
       ClickableAddress,
       ClickableTransaction
     },
-    data () {
+    data() {
       return {
         PAGES
       };
@@ -78,13 +94,15 @@
         ['activity']
       )
     },
-    created () {
+    created() {
 
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.ACTIVITY);
 
       const loadData = () => {
-        this.$store.dispatch(`activity/${actions.ACTIVITY}`);
-        this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.ACTIVITY);
+        this.$store.dispatch(`activity/${actions.ACTIVITY}`)
+          .finally(() => {
+            this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.ACTIVITY);
+          });
       };
 
       this.$store.watch(
