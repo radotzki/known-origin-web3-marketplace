@@ -37,7 +37,5 @@
 </script>
 
 <style scoped lang="scss">
-  .badge {
-    border-radius: 0;
-  }
+
 </style>

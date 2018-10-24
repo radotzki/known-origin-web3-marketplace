@@ -70,7 +70,7 @@ export default new Router({
     },
     {
       path: '/edition/:editionNumber',
-      name: 'confirmPurchase',
+      name: 'confirmPurchaseSimple',
       component: ConfirmPurchase,
       props: true
     },
