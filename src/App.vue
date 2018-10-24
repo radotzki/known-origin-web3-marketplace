@@ -163,9 +163,7 @@
 <style lang="scss">
 
   @import url('https://fonts.googleapis.com/css?family=Poppins:400,500,700');
-
   @import './ko-colours.scss';
-
   @import '../node_modules/bootstrap/scss/bootstrap.scss';
   @import '../node_modules/bootstrap-vue/dist/bootstrap-vue.css';
 
@@ -261,7 +259,6 @@
     padding: 60px 60px 0;
   }
 
-
   .footer > .container {
     padding-right: 15px;
     padding-left: 15px;
@@ -290,6 +287,7 @@
 
   .badge {
     font-weight: normal !important;
+    border-radius: 0;
   }
 
   .badge-nav {

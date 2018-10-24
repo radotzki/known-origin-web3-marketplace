@@ -114,6 +114,7 @@ const contractStateModule = {
             _.merge(artistEditions, found);
           }
         });
+
         return artistEditions;
       } else {
         return _.pickBy(state.assets, function (value, key) {
@@ -218,6 +219,8 @@ const contractStateModule = {
       } else {
         editions = await contract.artistsEditions(Web3.utils.toChecksumAddress(artistAccount));
       }
+
+      dispatch(`auction/${actions.GET_AUCTION_DETAILS_FOR_EDITION_NUMBERS}`, {editions}, {root: true});
 
       // Basic sanity check that we are not already loaded
       if (_.size(state.assets) === _.size(editions)) {

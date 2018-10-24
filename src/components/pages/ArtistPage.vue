@@ -44,46 +44,44 @@
         </div>
       </div>
     </div>
+
+    <accept-edition-bids :editions="editions"></accept-edition-bids>
+
   </div>
 </template>
 
 <script>
 
-  import { mapGetters, mapState } from 'vuex';
-  import ArtistShortBio from '../ui-controls/artist/ArtistShortBio';
+  import {mapGetters, mapState} from 'vuex';
   import ArtistPanel from '../ui-controls/artist/ArtistPanel';
   import LoadingSpinner from '../ui-controls/generic/LoadingSpinner';
   import * as actions from '../../store/actions';
-  import RarityIndicator from '../ui-controls/v2/RarityIndicator';
-  import MetadataAttributes from '../ui-controls/v2/MetadataAttributes';
-  import TweetEditionButton from '../ui-controls/v2/TweetEditionButton';
-  import HighResLabel from '../ui-controls/generic/HighResLabel';
-  import { PAGES } from '../../store/loadingPageState';
+  import {PAGES} from '../../store/loadingPageState';
   import LoadingSection from '../ui-controls/generic/LoadingSection';
-  import ClickableAddress from '../ui-controls/generic/ClickableAddress';
   import Availability from '../ui-controls/v2/Availability';
   import _ from 'lodash';
+  import AcceptEditionBids from "../ui-controls/auction/AcceptEditionBids";
+  import AuctionEventsList from "../ui-controls/auction/AuctionEventsList";
 
   export default {
     name: 'artistPage',
     components: {
+      AuctionEventsList,
+      AcceptEditionBids,
       Availability,
       LoadingSection,
-      HighResLabel,
-      TweetEditionButton,
-      MetadataAttributes,
-      RarityIndicator,
-      ArtistShortBio,
       ArtistPanel,
       LoadingSpinner,
-      ClickableAddress
     },
-    data () {
+    data() {
       return {
         PAGES: PAGES
       };
     },
     computed: {
+      ...mapState([
+        'account',
+      ]),
       ...mapGetters([
         'findArtistsForAddress',
       ]),
@@ -96,6 +94,10 @@
       }
     },
     methods: {
+      canAcceptBid: function (auction) {
+        // The owner and the artist can accept bids
+        return auction.controller === this.account || this.account === this.owner;
+      },
       lookupArtist: function () {
         return this.findArtistsForAddress(this.$route.params.artistAccount);
       },
@@ -108,9 +110,15 @@
           return artists.ethAddress[0];
         }
         return artists.ethAddress;
-      }
+      },
+      getEdition: function (edition) {
+        return this.editions[edition] || {};
+      },
+      acceptBid: function (auction) {
+        this.$store.dispatch(`auction/${actions.ACCEPT_BID}`, auction);
+      },
     },
-    created () {
+    created() {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.ARTISTS);
 
       const loadData = function () {
@@ -129,7 +137,7 @@
         loadData();
       }
     },
-    destroyed () {
+    destroyed() {
     }
   };
 </script>
