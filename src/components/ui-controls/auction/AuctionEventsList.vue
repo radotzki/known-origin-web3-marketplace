@@ -3,7 +3,7 @@
        v-if="isEditionAuctionEnabled(edition.edition) && auctionEditionEvents(edition.edition).length > 0">
     <h5>Recent events</h5>
 
-    <div v-for="event in limitBy(auctionEditionEvents(edition.edition), 3)">
+    <div v-for="event in limitBy(auctionEditionEvents(edition.edition), 5)">
 
       <div>
         <strong>{{event.event | humanize}}</strong>
