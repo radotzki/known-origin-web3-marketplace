@@ -515,9 +515,9 @@ const auctionStateModule = {
       [
         contract.BidPlaced(filter, config),
         contract.BidIncreased(filter, config),
-        contract.BidWithdrawn(filter, config),
+        // contract.BidWithdrawn(filter, config),
         contract.BidAccepted(filter, config),
-        contract.BidderRefunded(filter, config),
+        // contract.BidderRefunded(filter, config),
         contract.AuctionCancelled(filter, config)
       ].map((event) => {
         event.get((error, results) => {

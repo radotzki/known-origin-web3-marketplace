@@ -13,7 +13,7 @@
           <price-in-eth :value="auction[edition.edition].highestBid" class=""></price-in-eth>
           <span class="pl-1"><u-s-d-price :price-in-ether="auction[edition.edition].highestBid"></u-s-d-price></span>
         </div>
-        <div v-if="accountIsHighestBidder(edition.edition)" class="mt-2 text-success small text-center">
+        <div v-if="accountIsHighestBidder(edition.edition)" class="mt-2 small text-center">
           <strong>Your bid is the highest!</strong>
         </div>
       </div>
