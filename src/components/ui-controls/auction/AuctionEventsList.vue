@@ -7,7 +7,6 @@
 
       <div>
         <strong>{{event.event | humanize}}</strong>
-        <!--<small class="float-right">Block: {{event.blockNumber}}</small>-->
         <span class="float-right" v-if="event.args._amount">
           <price-in-eth :value="event.args._amount | toEth"></price-in-eth>
         </span>

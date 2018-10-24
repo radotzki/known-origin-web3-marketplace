@@ -1,5 +1,6 @@
 <template>
-  <div class="mt-4 shadow-sm bg-white p-4" v-if="edition && nextMinimumNewBid(edition.edition) && isEditionAuctionEnabled(edition.edition)">
+  <div class="mt-4 shadow-sm bg-white p-4"
+       v-if="edition && nextMinimumNewBid(edition.edition) && isEditionAuctionEnabled(edition.edition)">
     <div v-if="account">
 
       <h6>Make a bid</h6>
@@ -12,14 +13,8 @@
           <price-in-eth :value="auction[edition.edition].highestBid" class=""></price-in-eth>
           <span class="pl-1"><u-s-d-price :price-in-ether="auction[edition.edition].highestBid"></u-s-d-price></span>
         </div>
-        <!--<div v-if="!accountIsHighestBidder(edition.edition)" class="mt-2">-->
-
-
-        <!--&lt;!&ndash;from <clickable-address :eth-address="auction[edition.edition].highestBidder"></clickable-address>&ndash;&gt;-->
-        <!--</div>-->
         <div v-if="accountIsHighestBidder(edition.edition)" class="mt-2 text-success small text-center">
           <strong>Your bid is the highest!</strong>
-          <!--<clickable-address :eth-address="auction[edition.edition].highestBidder"></clickable-address>-->
         </div>
       </div>
 
@@ -31,35 +26,54 @@
 
           <!-- When you are NOT the top bidder -->
           <div class="input-group" v-if="!accountIsHighestBidder(edition.edition)">
+
             <div class="input-group-prepend">
               <div class="input-group-text">ETH</div>
             </div>
+
             <input type="number"
                    v-bind:class="{'is-invalid': nextMinimumNewBid(edition.edition) > form.bid, 'is-valid': nextMinimumNewBid(edition.edition) < form.bid}"
-                   class="form-control mr-sm-2" id="makeBidValue" step="0.01" :placeholder="nextMinimumNewBid(edition.edition)" v-model="form.bid" :min="nextMinimumNewBid(edition.edition)"/>
+                   class="form-control mr-sm-2" id="makeBidValue"
+                   :step="minBidAmount" :min="nextMinimumNewBid(edition.edition)"
+                   v-model="form.bid"
+                   :placeholder="nextMinimumNewBid(edition.edition)"/>
+
             <button class="btn btn-secondary"
                     v-if="!accountIsHighestBidder(edition.edition)" v-on:click="placeBid"
                     :disabled="form.bid < nextMinimumNewBid(edition.edition)">
               Make Bid
             </button>
-            <div class="invalid-feedback" v-if="nextMinimumNewBid(edition.edition) > form.bid">Minimum bid: {{nextMinimumNewBid(edition.edition)}} ETH</div>
+
+            <div class="invalid-feedback" v-if="nextMinimumNewBid(edition.edition) > form.bid">Minimum bid:
+              {{nextMinimumNewBid(edition.edition)}} ETH
+            </div>
+
           </div>
 
           <!-- When you are top bidder -->
           <div class="input-group" v-if="accountIsHighestBidder(edition.edition)">
+
             <div class="input-group-prepend">
               <div class="input-group-text">ETH</div>
             </div>
-            <input type="number" v-bind:class="{'is-invalid': nextMinimumNewBid(edition.edition) > form.bid, 'is-valid': nextMinimumNewBid(edition.edition) < form.bid}"
-                   class="form-control is-invalid mr-sm-2" id="increaseBidValue" step="0.01" placeholder="0.1" v-model="form.bid" :min="minBidAmount">
+
+            <input type="number"
+                   v-bind:class="{'is-invalid': nextMinimumNewBid(edition.edition) > form.bid, 'is-valid': nextMinimumNewBid(edition.edition) < form.bid}"
+                   class="form-control is-invalid mr-sm-2" id="increaseBidValue"
+                   :step="minBidAmount" :min="minBidAmount"
+                   v-model="form.bid"
+                   :placeholder="nextMinimumNewBid(edition.edition)" />
+
             <button class="btn btn-secondary"
                     v-if="accountIsHighestBidder(edition.edition)" v-on:click="increaseBid"
                     :disabled="form.bid < minBidAmount">
               Make Bid
             </button>
+
             <div class="invalid-feedback" v-if="nextMinimumNewBid(edition.edition) > form.bid">
               Minimum increase: {{minBidAmount}} ETH
             </div>
+
           </div>
         </form>
       </fieldset>
@@ -71,9 +85,11 @@
           <hr/>
           <div class="mt-4">
             Your bid has been submitted.<br/>Please be patient. Blockchains need to be mined.
+            <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
           </div>
           <div class="text-muted">
-            <clickable-transaction :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>
+            <clickable-transaction
+              :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>
           </div>
         </div>
 
@@ -81,6 +97,7 @@
           <hr/>
           <div class="mt-4">
             Your bid is being confirmed.
+            <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
           </div>
           <div class="text-muted">
             <clickable-transaction
@@ -109,23 +126,23 @@
         If accepted, the highest bid will purchase the artwork. Other bids are refunded automatically.
       </p>
 
-      <!--<p class="text-muted text-center small">-->
-      <!--Got any questions, reach us on-->
-      <!--<a href="https://t.me/knownorigin_io" target="_blank" title="Telegram">telegram</a>-->
-      <!--or via <a href="mailto:hello@knownorigin.io" target="_blank" title="Mail">email</a>-->
-      <!--</p>-->
+      <p class="text-muted text-center auction-info">
+        Questions? Reach us on
+        <a href="https://t.me/knownorigin_io" target="_blank" title="Telegram">telegram</a>
+        or <a href="mailto:hello@knownorigin.io" target="_blank" title="Mail">email</a>
+      </p>
     </div>
     <p v-else class="text-center pt-2">
-      Your account is locked!
+      Bidding not available - check your account is unlocked!
     </p>
   </div>
 </template>
 
 <script>
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import _ from 'lodash';
   import * as actions from '../../../store/actions';
-  import { PAGES } from '../../../store/loadingPageState';
+  import {PAGES} from '../../../store/loadingPageState';
   import ClickableAddress from '../generic/ClickableAddress';
   import PriceInEth from '../generic/PriceInEth';
   import USDPrice from '../generic/USDPrice';
@@ -148,7 +165,7 @@
         type: Object
       }
     },
-    data () {
+    data() {
       return {
         PAGES: PAGES,
         form: {
@@ -200,7 +217,7 @@
         }
       }
     },
-    created () {
+    created() {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.ARTIST_ACCEPTING_BID);
 
       const loadData = () => {

@@ -61,10 +61,12 @@
   import Availability from '../ui-controls/v2/Availability';
   import _ from 'lodash';
   import AcceptEditionBids from "../ui-controls/auction/AcceptEditionBids";
+  import AuctionEventsList from "../ui-controls/auction/AuctionEventsList";
 
   export default {
     name: 'artistPage',
     components: {
+      AuctionEventsList,
       AcceptEditionBids,
       Availability,
       LoadingSection,

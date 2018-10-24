@@ -9,7 +9,7 @@
 
     </div>
 
-    <div class="row col editions-wrap">
+    <div class="row col editions-wrap pb-4">
 
       <table class="table table-striped">
         <tbody>
