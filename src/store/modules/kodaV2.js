@@ -13,13 +13,10 @@ function featureArtworks(network) {
     case 'Ropsten':
     case 'Local':
       return [
-        20500,
-        20600,
         20700,
         20800,
         20900,
         21000,
-        21100,
         21200,
         21300,
         21400,

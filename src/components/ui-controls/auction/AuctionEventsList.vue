@@ -1,41 +1,34 @@
 <template>
   <div class="mt-4 shadow-sm bg-white p-4"
        v-if="isEditionAuctionEnabled(edition.edition) && auctionEditionEvents(edition.edition).length > 0">
-    <h5>Recent events</h5>
+    <h6>Recent events</h6>
 
     <div v-for="event in limitBy(auctionEditionEvents(edition.edition), 5)">
 
       <div>
-        <strong>{{event.event | humanize}}</strong>
+        <code>{{event.event | humanize}}</code>
         <span class="float-right" v-if="event.args._amount">
           <price-in-eth :value="event.args._amount | toEth"></price-in-eth>
+          <usd-price :price-in-ether="event.args._amount"></usd-price>
         </span>
       </div>
 
-      <div>
-        <span v-if="event.args._bidder">
-          <clickable-address :eth-address="event.args._bidder"></clickable-address>
-        </span>
-
-        <span class="float-right">
-          <small>Block: {{event.blockNumber}}</small>
-          <view-transaction-details :transaction="event.transactionHash"></view-transaction-details>
-        </span>
-
+      <div v-if="event.args._bidder" class="mb-2">
+        <clickable-address :eth-address="event.args._bidder" class="small"></clickable-address>
+        <view-transaction-details :transaction="event.transactionHash" class="float-right small"></view-transaction-details>
       </div>
-      <br/>
     </div>
   </div>
 </template>
 
 <script>
-  import {mapGetters, mapState} from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
   import * as actions from '../../../store/actions';
   import ClickableAddress from '../generic/ClickableAddress';
   import PriceInEth from '../generic/PriceInEth';
   import USDPrice from '../generic/USDPrice';
-  import ClickableTransaction from "../generic/ClickableTransaction";
-  import ViewTransactionDetails from "../generic/ViewTransactionDetails";
+  import ClickableTransaction from '../generic/ClickableTransaction';
+  import ViewTransactionDetails from '../generic/ViewTransactionDetails';
 
   export default {
     name: 'auctionEventsList',
@@ -51,7 +44,7 @@
         type: Object
       }
     },
-    data() {
+    data () {
       return {};
     },
     computed: {
@@ -61,9 +54,8 @@
       ]),
       ...mapState('auction', []),
     },
-    methods: {
-    },
-    mounted() {
+    methods: {},
+    mounted () {
       this.$store.dispatch(`auction/${actions.GET_AUCTION_EVENTS_FOR_EDITION}`, this.edition.edition);
     },
   };

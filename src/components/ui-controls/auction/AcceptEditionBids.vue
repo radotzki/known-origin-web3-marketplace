@@ -4,7 +4,7 @@
     <div class="editions-wrap">
       <h3>Open Offers</h3>
       <p>
-        Below is list of ongoing auctions, edition creators can accept offers and user can withdraw them.
+        Artists can accept offers or the highest bidder can withdraw them.
       </p>
 
     </div>
