@@ -14,7 +14,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
+contract('KnownOriginDigitalAssetV2 - custom', function (accounts) {
 
   const ROLE_KNOWN_ORIGIN = 1;
   const ROLE_MINTER = 2;
@@ -368,7 +368,6 @@ contract.only('KnownOriginDigitalAssetV2 - custom', function (accounts) {
         it('can be updated by whitelist', async function () {
           await this.token.updateArtistCommission(editionNumber1, 10);
           let artistCommission = await this.token.artistCommission(editionNumber1);
-          console.log(artistCommission);
           artistCommission[1].should.be.bignumber.equal(10);
         });
 

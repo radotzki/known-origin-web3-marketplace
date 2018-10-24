@@ -4,7 +4,7 @@
 
       <loading-section v-if="!edition" :page="PAGES.CONFIRM_PURCHASE"></loading-section>
 
-      <div class="col-sm-3 order-2 order-sm-1 mb-5">
+      <div class="col-sm-3 order-2 order-sm-1 mb-5" v-if="edition">
         <div class="shadow-sm bg-white p-4">
 
           <router-link
@@ -37,7 +37,6 @@
 
           <metadata-attributes :attributes="edition.attributes"></metadata-attributes>
 
-
           <div class="mt-4">
             <hr/>
             <price-in-eth :value="edition.priceInEther"></price-in-eth>
@@ -69,13 +68,13 @@
             <availability class="float-right" :totalAvailable="edition.totalAvailable"
                           :totalSupply="edition.totalSupply"></availability>
           </div>
-
-          <!--<hr/>-->
-
-          <!--<div class="mt-2">-->
-          <!--<h6>Activity</h6>-->
-          <!--</div>-->
         </div>
+
+        <div v-if="(edition.totalAvailable - edition.totalSupply > 0) && haveNotPurchasedEditionBefore(edition.edition)">
+          <place-edition-bid :edition="edition"></place-edition-bid>
+        </div>
+
+        <auction-events-list :edition="edition"></auction-events-list>
       </div>
 
       <div class="col-sm-6 order-1 order-sm-2 mb-5">
@@ -99,10 +98,14 @@
   import MetadataAttributes from '../ui-controls/v2/MetadataAttributes';
   import HighResLabel from '../ui-controls/generic/HighResLabel';
   import Availability from "../ui-controls/v2/Availability";
+  import PlaceEditionBid from "../ui-controls/auction/PlaceEditionBid";
+  import AuctionEventsList from "../ui-controls/auction/AuctionEventsList";
 
   export default {
     name: 'confirmPurchase',
     components: {
+      AuctionEventsList,
+      PlaceEditionBid,
       Availability,
       LoadingSection,
       PriceInEth,

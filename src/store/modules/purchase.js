@@ -97,10 +97,9 @@ const purchaseStateModule = {
         value: edition.priceInWei
       });
 
-      // TODO this isnt going to work
-
+      const blockNumber = await rootState.web3.eth.getBlockNumber();
       let mintedEvent = contract.Minted({_editionNumber: edition.edition, _buyer: account}, {
-        fromBlock: web3.eth.blockNumber,
+        fromBlock: blockNumber,
         toBlock: 'latest' // wait until event comes through
       });
 

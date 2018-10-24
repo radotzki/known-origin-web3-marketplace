@@ -444,7 +444,7 @@ const artists = [
     live: true,
   },
   {
-    artistCode: 'DVT',
+    artistCode: 'XCY',
     name: 'XCOPY',
     bio: 'London based artist XCOPY explores death, dystopia and apathy through distorted visual loops. Warning: flashing imagery',
     strapline: 'London based artist XCOPY explores death, dystopia and apathy through distorted visual loops. Warning: flashing imagery',
