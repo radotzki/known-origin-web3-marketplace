@@ -1,6 +1,6 @@
 <template>
   <span v-if="transaction">
-    <a class="small" :href="buildLink" target="_blank">details</a>
+    <a class="small" :href="buildLink" target="_blank">[view tx]</a>
   </span>
 </template>
 
