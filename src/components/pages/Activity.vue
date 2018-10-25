@@ -13,9 +13,9 @@
 
         <table class="table table-striped">
           <tbody>
-          <tr v-for="event in limitBy(orderBy(activity, 'blockNumber', -1), 50)">
+          <tr v-for="event in limitBy(orderBy(activity, 'blockNumber', -1), 50)" :key="event.transactionHash">
             <td class="w-25 text-center">
-              <router-link :to="{ name: 'confirmPurchase', params: { editionNumber: parseInt(event.args._editionNumber) }}">
+              <router-link :to="{ name: 'confirmPurchaseSimple', params: { editionNumber: parseInt(event.args._editionNumber) }}">
                 <img v-if="findEdition(parseInt(event.args._editionNumber))"
                      class="img-thumbnail"
                      :src="findEdition(parseInt(event.args._editionNumber)).lowResImg"/>
