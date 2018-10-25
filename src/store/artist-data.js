@@ -453,6 +453,27 @@ const artists = [
     img: '/static/artists/XCOPY_Profile@x2.png',
     ethAddress: '0x3768225622d53FfCc1E00eaC53a2A870ECd825C8',
     live: true,
+  },
+  {
+    artistCode: 'SCW',
+    name: 'Scott C. Waring',
+    bio: 'My name is Scott C. Waring AKA $$DD and I am a world famous UFO and alien researcher who has been in world news on more than 50,000 news sites in over 40 languages. I have been on CNN, CNBC, NBC, ABC, CBS, Fox News, New Scientist and much more. Also on Ancient Aliens and Destination Truth to name a few. I have an eye for detail, I notice that which other overlook. I run UFO Sightings Daily site. Art has been part of me forever.',
+    strapline: 'My name is Scott C. Waring AKA $$DD and I am a world famous UFO and alien researcher.',
+    twitter: '@lvl_asian',
+    website: 'https://www.ufosightingsdaily.com',
+    img: '/static/artists/SCW_Profile@x2.png',
+    ethAddress: '0x8ddfb56566d7ae614a65f9f966837a66387cde47',
+    live: true,
+  },
+  {
+    artistCode: 'SAL',
+    name: 'Sarah Louise',
+    bio: 'I began creating digital artwork back in my university days with fractals and photoshop creations. I have since pursued a career in fashion and advertising photography having worked with many high end clients including Conde Naste, GQ magazine, Sdchwarzkopf, Timotei and more recently have begun painting and drawing more traditionally.',
+    strapline: 'I began creating digital artwork back in my university days with fractals and photoshop creations.',
+    twitter: '@sarahlouisej',
+    img: '/static/artists/SarahL_Profile@x2.png',
+    ethAddress: '0xd2cb8b4f7635f4081b4c3109c9bb35ae2bbee516',
+    live: true,
   }
 ];
 
