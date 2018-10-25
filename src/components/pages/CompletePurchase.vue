@@ -53,20 +53,20 @@
               <div class="text-center mb-2 " v-if="isPurchaseStarted(edition.edition, account)">
                 <loading-spinner></loading-spinner>
                 <p class="card-text text-dark mt-2">Your purchase is being confirmed...</p>
-                <small class="text-muted">
+                <span class="text-muted">
                   <clickable-transaction
                     :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>
-                </small>
+                </span>
                 <hr/>
               </div>
 
               <div class="text-center mb-2" v-if="isPurchaseSuccessful(edition.edition, account)">
                 <img src="../../../static/GreenTick.svg" style="width: 50px"/>
                 <p class="card-text text-success mt-2">Your purchase was successful!</p>
-                <small class="text-muted">
+                <span class="text-muted">
                   <clickable-transaction
                     :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>
-                </small>
+                </span>
                 <hr/>
               </div>
 
@@ -77,10 +77,10 @@
               </div>
             </div>
 
-            <div class="mt-2" v-if="(edition.totalAvailable - edition.totalSupply > 0) && !isStartDateInTheFuture(edition.startDate) && haveNotPurchasedEditionBefore(edition.edition)">
+            <div class="mt-2" v-if="account && (edition.totalAvailable - edition.totalSupply > 0) && !isStartDateInTheFuture(edition.startDate) && haveNotPurchasedEditionBefore(edition.edition) && !isPurchaseFailed(edition.edition, account)">
               <div v-if="edition || !editionPurchaseState(edition.edition)">
 
-                <div class="form-check mb-2" v-if="isNotSoldOut">
+                <div class="form-check mb-2">
                   <label class="form-check-label" :for="'confirm_terms'">
                     <input type="checkbox" :id="'confirm_terms'" v-model="confirm_terms">
                     <span class="pl-2 small">I agree with the KODA terms of service. <router-link :to="{ name: 'terms' }" target="_blank">Terms of Service</router-link></span>
@@ -104,7 +104,6 @@
             </div>
 
             <div class="mt-2 text-center" v-if="(edition.totalAvailable - edition.totalSupply === 0)">
-              <hr/>
               Sold out
             </div>
 
@@ -113,8 +112,7 @@
             </div>
 
             <div class="mt-2 text-center" v-if="!account">
-              <hr/>
-              Your account is locked!
+              <code>Your account is locked!</code>
             </div>
 
           </div>
