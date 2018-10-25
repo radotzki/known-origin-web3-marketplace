@@ -1,165 +1,159 @@
 <template>
-  <div class="container">
+  <div class="container-fluid mt-4">
+    <div class="row editions-wrap">
 
-    <loading-section v-if="!edition" :page="PAGES.COMPLETE_PURCHASE"></loading-section>
+      <loading-section v-if="!edition" :page="PAGES.COMPLETE_PURCHASE"></loading-section>
 
-    <div v-if="edition" class="row justify-content-sm-center">
-      <div class="col col-sm-6">
-        <div class="card shadow-sm">
+      <div class="col-sm-3 order-2 order-sm-1 mb-5" v-if="edition">
+        <div class="shadow-sm bg-white p-4">
 
-          <img class="card-img-top" :src="edition.lowResImg"/>
+          <router-link
+            :to="{ name: 'artist-v2', params: { artistAccount: getArtistAddress(findArtistsForAddress(edition.artistAccount)) } }" class="artist-link">
+            <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
+            <span class="pl-1 artist-name-lg" v-on:click="goToArtist(edition.artistAccount)">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
+          </router-link>
 
-          <div class="card-body">
+          <div class="clearfix"></div>
 
-            <div class="text-center mb-2" v-if="isPurchaseTriggered(edition.edition, account)">
-              <loading-spinner></loading-spinner>
-              <p class="card-text text-dark mt-4">Your purchase has been initiated</p>
-              <p class="card-text text-dark mt-4">Please be patient. Blockchains need to be mined.</p>
-              <hr/>
-            </div>
+          <hr/>
 
-            <div class="text-center mb-2" v-if="isPurchaseStarted(edition.edition, account)">
-              <loading-spinner></loading-spinner>
-              <p class="card-text text-dark mt-4">Your purchase is being confirmed...</p>
-              <small class="text-muted">
-                <clickable-transaction
-                  :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>
-              </small>
-              <hr/>
-            </div>
-
-            <div class="text-center mb-2" v-if="isPurchaseSuccessful(edition.edition, account)">
-              <img src="../../../static/GreenTick.svg" style="width: 100px"/>
-              <p class="card-text text-success mt-4">Your purchase was successful!</p>
-              <small class="text-muted">
-                <clickable-transaction
-                  :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>
-              </small>
-              <hr/>
-            </div>
-
-            <div class="text-center mb-2" v-if="isPurchaseFailed(edition.edition, account)">
-              <img src="../../../static/Failure.svg" style="width: 100px"/>
-              <p class="card-text text-danger mt-4">Your purchase failed!</p>
-              <hr/>
-            </div>
-
-            <p class="card-title"><strong>{{ edition.name }}</strong></p>
+          <div>
+            <strong>{{ edition.name }}</strong>
           </div>
 
-          <ul class="list-group list-group-flush" v-if="isNotSoldOut() && account">
-            <li class="list-group-item">
-              <div class="d-inline-block">
-                <high-res-label :high-res-available="edition.highResAvailable"></high-res-label>
-                <rarity-indicator :total-available="edition.totalAvailable"></rarity-indicator>
-                <metadata-attributes :attributes="edition.attributes"></metadata-attributes>
-              </div>
-            </li>
-            <li class="list-group-item">
-              <div class="d-inline-block"><img src="/../../static/Account_You_icn.svg" class="artist-avatar"/></div>
-              <div class="d-inline-block">
-                <small class="pl-2 text-muted">You:</small>
-                <clickable-address :eth-address="account" class="small"></clickable-address>
-              </div>
-            </li>
-            <li class="list-group-item">
-              <div class="d-inline-block"><img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/></div>
-              <div class="d-inline-block">
-                <small class="pl-2 text-muted">Artist:</small>
-                <span class="artist-name">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
-              </div>
-            </li>
-            <li class="list-group-item text-right no-bottom-border font-weight-bold">
-              <price-in-eth :value="edition.priceInEther"></price-in-eth>
-            </li>
-          </ul>
+          <div class="small mt-2">
+            {{ edition.description }}
+          </div>
 
-          <div class="card-footer"
-               v-if="!isPurchaseFailed(edition.edition, account) && haveNotPurchasedEditionBefore(edition.edition)">
-            <form v-if="account">
+          <hr/>
 
+          <!--<small class="text-danger" v-if="isStartDateInTheFuture(edition.startDate)">-->
+          <!--<span>Available {{ edition.startDate | moment('from') }}</span>-->
+          <!--</small>-->
+
+          <high-res-label :high-res-available="edition.highResAvailable"></high-res-label>
+
+          <rarity-indicator :total-available="edition.totalAvailable"></rarity-indicator>
+
+          <metadata-attributes :attributes="edition.attributes"></metadata-attributes>
+
+          <div class="mt-4">
+            <hr/>
+            <price-in-eth :value="edition.priceInEther"></price-in-eth>
+            <span class="pl-1"><u-s-d-price :price-in-ether="edition.priceInEther"></u-s-d-price></span>
+
+            <div class="mt-2 small">
+              <div class="text-center mb-2" v-if="isPurchaseTriggered(edition.edition, account)">
+                <loading-spinner></loading-spinner>
+                <p class="card-text text-dark mt-2">Your purchase has been initiated</p>
+                <p class="card-text text-dark mt-2">Please be patient. Blockchains need to be mined.</p>
+                <hr/>
+              </div>
+
+              <div class="text-center mb-2 " v-if="isPurchaseStarted(edition.edition, account)">
+                <loading-spinner></loading-spinner>
+                <p class="card-text text-dark mt-2">Your purchase is being confirmed...</p>
+                <small class="text-muted">
+                  <clickable-transaction
+                    :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>
+                </small>
+                <hr/>
+              </div>
+
+              <div class="text-center mb-2" v-if="isPurchaseSuccessful(edition.edition, account)">
+                <img src="../../../static/GreenTick.svg" style="width: 50px"/>
+                <p class="card-text text-success mt-2">Your purchase was successful!</p>
+                <small class="text-muted">
+                  <clickable-transaction
+                    :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>
+                </small>
+                <hr/>
+              </div>
+
+              <div class="text-center mb-2" v-if="isPurchaseFailed(edition.edition, account)">
+                <img src="../../../static/Failure.svg" style="width: 50px"/>
+                <p class="card-text text-danger mt-2">Your purchase failed!</p>
+                <hr/>
+              </div>
+            </div>
+
+            <div class="mt-2" v-if="(edition.totalAvailable - edition.totalSupply > 0) && !isStartDateInTheFuture(edition.startDate) && haveNotPurchasedEditionBefore(edition.edition)">
               <div v-if="edition || !editionPurchaseState(edition.edition)">
 
                 <div class="form-check mb-2" v-if="isNotSoldOut">
                   <label class="form-check-label" :for="'confirm_terms'">
                     <input type="checkbox" :id="'confirm_terms'" v-model="confirm_terms">
-                    <span class="pl-2 small">I agree with the KODA terms of service</span>
+                    <span class="pl-2 small">I agree with the KODA terms of service. <router-link :to="{ name: 'terms' }" target="_blank">Terms of Service</router-link></span>
                   </label>
                 </div>
 
-                <div v-if="isNotSoldOut" class="mb-2">
-                  <small>
-                    By choosing <strong>I agree</strong>, you understand and agree to KnownOrigin's term of service and
-                    usage license.
-                    <router-link :to="{ name: 'terms' }" target="_blank">Terms of Service</router-link>
-                  </small>
-                </div>
-
-                <div class="btn-group-vertical btn-block">
-                  <button type="button" class="btn btn-success btn-block text-white"
-                          :disabled="!confirm_terms || isPurchaseTriggered(edition.edition, account) || isPurchaseSuccessful(edition.edition, account)"
-                          v-on:click="completePurchase"
-                          v-if="isNotSoldOut || !isPurchaseSuccessful(edition.edition, account)">
-                    Confirm
-                  </button>
-
-                  <router-link :to="{ name: 'gallery'}" tag="button" class="btn btn-outline-primary btn-block">
-                    Back to gallery
-                  </router-link>
-                </div>
+                <button type="button" class="btn btn-success btn text-white"
+                        :disabled="!confirm_terms || isPurchaseTriggered(edition.edition, account) || isPurchaseSuccessful(edition.edition, account)"
+                        v-on:click="completePurchase"
+                        v-if="isNotSoldOut || !isPurchaseSuccessful(edition.edition, account)">
+                  Confirm
+                </button>
 
               </div>
 
-              <router-link :to="{ name: 'account'}"
-                           v-if="isPurchaseSuccessful(edition.edition, account)"
-                           tag="button" class="btn btn-outline-primary btn-block">
-                View account
-              </router-link>
-
-            </form>
-
-            <p v-if="!account" class="text-center pt-2">
-              Your account is locked!
-            </p>
-
-          </div>
-
-          <div class="card-footer"
-               v-if="!haveNotPurchasedEditionBefore(edition.edition) && !isPurchaseSuccessful(edition.edition, account)">
-            <p class="text-center pt-2">
-              You have already purchased this edition!
-            </p>
-          </div>
-
-          <div v-if="isPurchaseFailed(edition.edition, account)" class="card-footer">
-            <div class="btn-group-vertical btn-block">
-              <button type="button" v-on:click="retryPurchase" class="btn btn-outline-primary btn-block">
-                Retry
-              </button>
+              <div v-if="isPurchaseFailed(edition.edition, account)">
+                <button type="button" v-on:click="retryPurchase" class="btn btn-outline-primary btn">
+                  Retry
+                </button>
+              </div>
             </div>
+
+            <div class="mt-2 text-center" v-if="(edition.totalAvailable - edition.totalSupply === 0)">
+              <hr/>
+              Sold out
+            </div>
+
+            <div class="mt-2 text-center" v-if="!haveNotPurchasedEditionBefore(edition.edition)">
+              You own this asset
+            </div>
+
+            <div class="mt-2 text-center" v-if="!account">
+              <hr/>
+              Your account is locked!
+            </div>
+
+          </div>
+
+          <div class="small">
+            <hr/>
+            Edition 1 of {{ edition.totalAvailable }}
+            <availability class="float-right" :totalAvailable="edition.totalAvailable"
+                          :totalSupply="edition.totalSupply"></availability>
           </div>
         </div>
       </div>
-    </div>
 
+      <div class="col-sm-6 order-1 order-sm-2 mb-5">
+        <div class="card shadow-sm" v-if="edition">
+          <img class="card-img-top" :src="edition.lowResImg"/>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-  import {mapGetters, mapState} from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
   import _ from 'lodash';
   import AddressIcon from '../ui-controls/generic/AddressIcon';
   import PriceInEth from '../ui-controls/generic/PriceInEth';
   import * as actions from '../../store/actions';
-  import {PAGES} from '../../store/loadingPageState';
-  import ClickableTransaction from "../ui-controls/generic/ClickableTransaction";
-  import ClickableAddress from "../ui-controls/generic/ClickableAddress";
-  import LoadingSpinner from "../ui-controls/generic/LoadingSpinner";
-  import RarityIndicator from "../ui-controls/v2/RarityIndicator";
-  import HighResLabel from "../ui-controls/generic/HighResLabel.vue";
-  import MetadataAttributes from "../ui-controls/v2/MetadataAttributes.vue";
-  import TweetEditionButton from "../ui-controls/v2/TweetEditionButton";
-  import LoadingSection from "../ui-controls/generic/LoadingSection";
+  import { PAGES } from '../../store/loadingPageState';
+  import ClickableTransaction from '../ui-controls/generic/ClickableTransaction';
+  import ClickableAddress from '../ui-controls/generic/ClickableAddress';
+  import LoadingSpinner from '../ui-controls/generic/LoadingSpinner';
+  import RarityIndicator from '../ui-controls/v2/RarityIndicator';
+  import HighResLabel from '../ui-controls/generic/HighResLabel.vue';
+  import MetadataAttributes from '../ui-controls/v2/MetadataAttributes.vue';
+  import TweetEditionButton from '../ui-controls/v2/TweetEditionButton';
+  import LoadingSection from '../ui-controls/generic/LoadingSection';
+  import USDPrice from '../ui-controls/generic/USDPrice';
+  import Availability from '../ui-controls/v2/Availability';
 
   export default {
     name: 'completePurchase',
@@ -173,9 +167,11 @@
       AddressIcon,
       PriceInEth,
       LoadingSpinner,
-      ClickableAddress
+      ClickableAddress,
+      USDPrice,
+      Availability
     },
-    data() {
+    data () {
       return {
         PAGES: PAGES,
         confirm_terms: false
@@ -196,6 +192,7 @@
       ...mapGetters('kodaV2', [
         'haveNotPurchasedEditionBefore',
         'findEdition',
+        'isStartDateInTheFuture',
       ]),
       ...mapGetters('loading', [
         'isLoading'
@@ -224,9 +221,15 @@
       },
       isNotSoldOut: function () {
         return this.edition.totalAvailable - this.edition.totalSupply > 0;
+      },
+      getArtistAddress: function (artist) {
+        if (_.isArray(artist.ethAddress)) {
+          return artist.ethAddress[0];
+        }
+        return artist.ethAddress;
       }
     },
-    created() {
+    created () {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.COMPLETE_PURCHASE);
 
       const loadData = function () {
@@ -254,7 +257,7 @@
         }
       }.bind(this), 10000);
     },
-    destroyed() {
+    destroyed () {
     }
   };
 </script>
