@@ -23,9 +23,13 @@
             <td>Artworks Available</td>
             <td>{{ v2.totalNumberAvailable }}</td>
           </tr>
-          <tr v-if="v2.totalNumberMinted">
-            <td>Artworks Minted</td>
-            <td>{{ v2.totalNumberMinted }}</td>
+          <tr v-if="v2.totalEditions">
+            <td>Editions Available</td>
+            <td>{{ v2.totalEditions }}</td>
+          </tr>
+          <tr>
+            <td>Total Artists</td>
+            <td>{{ liveArtists.length }}</td>
           </tr>
           <tr v-if="v2.totalPurchaseValueInEther">
             <td>Total</td>
@@ -76,11 +80,15 @@
   import ClickableAddress from '../ui-controls/generic/ClickableAddress';
   import * as actions from '../../store/actions';
   import ClickableAddressButton from '../ui-controls/generic/ClickableAddressButton';
+  import {mapGetters, mapState} from 'vuex';
 
   export default {
     name: 'contractDetails',
     components: {ClickableAddressButton, ClickableAddress},
     computed: {
+      ...mapGetters([
+        'liveArtists',
+      ]),
       v1: function () {
         return {
           contractAddress: this.$store.state.kodaV1.contractAddress,
@@ -95,6 +103,7 @@
           totalSupply: this.$store.state.kodaV2.totalSupply,
           totalPurchaseValueInEther: this.$store.state.kodaV2.totalPurchaseValueInEther,
           totalNumberMinted: this.$store.state.kodaV2.totalNumberMinted,
+          totalEditions: this.$store.state.kodaV2.totalEditions,
           totalNumberAvailable: this.$store.state.kodaV2.totalNumberAvailable,
           koCommissionAccount: this.$store.state.kodaV2.koCommissionAccount,
         };
