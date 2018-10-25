@@ -47,16 +47,18 @@
                   </div>
                   <div class="card-body">
                     <p class="card-title">{{ edition.name }}</p>
-                    <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
-                    <a class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name | truncate(18) }}</a>
                   </div>
-                  <div class="card-footer">
+                  <div class="card-footer bg-white no-top-border">
                     <div class="row">
-                      <div class="col">
+                      <div class="col-sm-5"><strong>{{ edition.priceInEther }} ETH</strong></div>
+                      <div class="col-sm-7 text-right">
                         <availability :total-available="edition.totalAvailable" :total-supply="edition.totalSupply"></availability>
                       </div>
-                      <div class="col text-right">{{ edition.priceInEther }} ETH</div>
                     </div>
+                  </div>
+                  <div class="card-footer">
+                    <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
+                    <a class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name | truncate(18) }}</a>
                   </div>
                 </div>
               </router-link>
@@ -76,18 +78,22 @@
                 </div>
                 <div class="card-body">
                   <p class="card-title">{{ edition.name }}</p>
-                  <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
-                  <a class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name | truncate(18) }}</a>
                 </div>
-                <div class="card-footer">
+                <div class="card-footer bg-white no-top-border">
                   <div class="row">
-                    <div class="col">
+                    <div class="col"><strong>{{ edition.priceInEther }} ETH</strong></div>
+                    <div class="col text-right">
                       <availability :total-available="edition.totalAvailable" :total-supply="edition.totalSupply"></availability>
                     </div>
-                    <div class="col text-right">{{ edition.priceInEther }} ETH</div>
                   </div>
                 </div>
               </div>
+            </router-link>
+            <router-link :to="{ name: 'artist-v2', params: { artistAccount: edition.artistAccount } }" class="floating-artist-link">
+            <div class="ml-4 mt-3">
+              <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
+              <a class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name | truncate(18) }}</a>
+            </div>
             </router-link>
           </div>
         </div>
@@ -173,6 +179,8 @@
 
 
 <style scoped lang="scss">
+  @import '../../ko-colours.scss';
+
   .full-banner {
     p {
       margin-bottom: 0;
@@ -181,6 +189,10 @@
 
   .full-banner-secondary {
 
+  }
+
+  .floating-artist-link a {
+    color: $secondary;
   }
 
   .sub-filter {
@@ -210,6 +222,10 @@
     position: absolute;
     top: -4px;
     opacity: 0.9;
+  }
+
+  .no-top-border {
+    border-top: 0 none !important;
   }
 
   @import '../../ko-card.scss';
