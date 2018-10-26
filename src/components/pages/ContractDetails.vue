@@ -72,6 +72,22 @@
       </div>
     </div>
 
+    <div class="row mt-5 justify-content-sm-center">
+      <div class="col-sm-6">
+        <clickable-address-button :eth-address="auctionV1.contractAddress" :label="'View Smart Contract'" v-if="auctionV1.contractAddress" class="float-right"></clickable-address-button>
+        <h3>Auction Contract</h3>
+        <table class="table table-striped bg-white text-center">
+          <tbody>
+          <tr>
+            <td>Smart Contract</td>
+            <td>
+              <clickable-address :eth-address="auctionV1.contractAddress"></clickable-address>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -107,7 +123,12 @@
           totalNumberAvailable: this.$store.state.kodaV2.totalNumberAvailable,
           koCommissionAccount: this.$store.state.kodaV2.koCommissionAccount,
         };
-      }
+      },
+      auctionV1: function () {
+        return {
+          contractAddress: this.$store.state.auction.contractAddress,
+        };
+      },
     },
     created () {
       this.$store.watch(
