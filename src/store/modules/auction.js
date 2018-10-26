@@ -8,6 +8,8 @@ const auctionStateModule = {
   namespaced: true,
   state: {
     owner: null,
+    contractAddress: null,
+
     auction: {},
     auctionEvents: {},
     bidState: {},
@@ -107,8 +109,9 @@ const auctionStateModule = {
     },
   },
   mutations: {
-    [mutations.SET_AUCTION_OWNER](state, owner) {
+    [mutations.SET_AUCTION_OWNER](state, {owner, address}) {
       state.owner = Web3.utils.toChecksumAddress(owner);
+      state.contractAddress = address;
     },
     [mutations.SET_AUCTION_EVENTS](state, {results, edition}) {
       if (!_.isArray(state.auctionEvents[edition])) {
@@ -279,8 +282,8 @@ const auctionStateModule = {
   actions: {
     [actions.GET_AUCTION_OWNER]: async function ({commit, state, getters, rootState}) {
       const contract = await rootState.ArtistAcceptingBids.deployed();
-      const result = await contract.owner();
-      commit(mutations.SET_AUCTION_OWNER, result);
+      const owner = await contract.owner();
+      commit(mutations.SET_AUCTION_OWNER, {owner, address: contract.address});
     },
     [actions.GET_AUCTION_DETAILS]: async function ({commit, state, getters, rootState}, edition) {
       const contract = await rootState.ArtistAcceptingBids.deployed();
