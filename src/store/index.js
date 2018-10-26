@@ -59,7 +59,8 @@ const store = new Vuex.Store({
     KnownOriginDigitalAssetV2: null,
     ArtistAcceptingBids: null,
 
-    KnownOriginDigitalAssetV2MainBlockNumber: 6270484
+    KnownOriginDigitalAssetV2MainBlockNumber: 6270484,
+    ArtistAcceptingBidsMainBlockNumber: 6568535
   },
   getters: {
     findArtist: (state) => (artistCode) => {

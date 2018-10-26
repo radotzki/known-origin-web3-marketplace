@@ -13,7 +13,7 @@
 
         <table class="table table-striped">
           <tbody>
-          <tr v-for="event in limitBy(orderBy(activity, 'blockNumber', -1), 50)" :key="event.transactionHash">
+          <tr v-for="event in limitBy(orderBy(activity, 'blockNumber', -1), 50)" :key="event.transactionHash + event.logIndex + event.event">
             <td class="w-25 text-center">
               <router-link :to="{ name: 'confirmPurchaseSimple', params: { editionNumber: parseInt(event.args._editionNumber) }}">
                 <img v-if="findEdition(parseInt(event.args._editionNumber))"
@@ -22,9 +22,12 @@
               </router-link>
             </td>
             <td>
-              <code>{{ mapEvent(event.event) }}</code>
+              <code>{{ mapEvent(event.event)}}</code>
             </td>
             <td>
+              <div v-if="event.args._amount">
+                  {{ event.args._amount | toEth}} ETH
+              </div>
               <div v-if="event.args._tokenId">
                 <router-link :to="{ name: 'edition-token', params: { tokenId: event.args._tokenId.toString() }}"
                              class="badge badge-primary">
@@ -36,8 +39,14 @@
               <span class="text-muted small">Block:</span> <code>{{ event.blockNumber }}</code>
             </td>
             <td class="d-none d-md-table-cell">
-              <span class="text-muted small" v-if="event.args._buyer">Owner: </span>
-              <clickable-address :eth-address="event.args._buyer"></clickable-address>
+              <div v-if="event.args._buyer">
+                <span class="text-muted small">Owner: </span>
+                <clickable-address :eth-address="event.args._buyer"></clickable-address>
+              </div>
+              <div v-if="event.args._bidder">
+                <span class="text-muted small">Bidder: </span>
+                <clickable-address :eth-address="event.args._bidder"></clickable-address>
+              </div>
             </td>
             <td class="d-none d-md-table-cell">
               <clickable-transaction :transaction="event.transactionHash"></clickable-transaction>
@@ -78,11 +87,18 @@
         if (eventStr === 'EditionCreated') {
           return '👶 Birth';
         }
-
         if (eventStr === 'Minted') {
           return '💸 Purchase';
         }
-
+        if (eventStr === 'BidPlaced') {
+          return '💵 Bid Placed';
+        }
+        if (eventStr === 'BidIncreased') {
+          return '📈 Bid Increased';
+        }
+        if (eventStr === 'BidAccepted') {
+          return '💰 Bid Accepted';
+        }
         return eventStr;
       }
     },
