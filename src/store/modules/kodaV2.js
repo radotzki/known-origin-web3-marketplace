@@ -45,6 +45,7 @@ const contractStateModule = {
     totalPurchaseValueInEther: null,
     totalNumberMinted: null,
     totalNumberAvailable: null,
+    totalEditions: null,
     koCommissionAccount: null,
 
     // must be 7 as rotated daily
@@ -155,11 +156,12 @@ const contractStateModule = {
     [mutations.SET_CONTRACT_ADDRESS_V2](state, contractAddress) {
       state.contractAddress = contractAddress;
     },
-    [mutations.SET_CONTRACT_DETAILS](state, {totalSupply, totalPurchaseValueInWei, totalPurchaseValueInEther, totalNumberMinted, totalNumberAvailable, koCommissionAccount}) {
+    [mutations.SET_CONTRACT_DETAILS](state, {totalSupply, totalPurchaseValueInWei, totalPurchaseValueInEther, totalNumberMinted, totalEditions, totalNumberAvailable, koCommissionAccount}) {
       state.totalSupply = totalSupply;
       state.totalPurchaseValueInWei = totalPurchaseValueInWei;
       state.totalPurchaseValueInEther = totalPurchaseValueInEther;
       state.totalNumberMinted = totalNumberMinted;
+      state.totalEditions = totalEditions;
       state.totalNumberAvailable = totalNumberAvailable;
       state.koCommissionAccount = koCommissionAccount;
     }
@@ -265,6 +267,7 @@ const contractStateModule = {
       const totalSupply = (await contract.totalSupply()).toString(10);
       const totalPurchaseValueInWei = (await contract.totalPurchaseValueInWei()).toString(10);
       const totalNumberMinted = (await contract.totalNumberMinted()).toString(10);
+      const totalEditions = (await contract.editionsOfType(1)).length;
       const totalNumberAvailable = (await contract.totalNumberAvailable()).toString(10);
       const koCommissionAccount = await contract.koCommissionAccount();
 
@@ -272,6 +275,7 @@ const contractStateModule = {
         totalSupply,
         totalPurchaseValueInWei,
         totalPurchaseValueInEther: Web3.utils.fromWei(totalPurchaseValueInWei, 'ether'),
+        totalEditions,
         totalNumberMinted,
         totalNumberAvailable,
         koCommissionAccount,

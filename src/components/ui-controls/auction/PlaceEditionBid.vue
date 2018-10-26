@@ -44,9 +44,9 @@
               Make Bid
             </button>
 
-            <div class="invalid-feedback" v-if="nextMinimumNewBid(edition.edition) > form.bid">Minimum bid:
-              {{nextMinimumNewBid(edition.edition)}} ETH
-            </div>
+            <!--<div class="invalid-feedback" v-if="nextMinimumNewBid(edition.edition) > form.bid">Minimum bid:-->
+              <!--{{nextMinimumNewBid(edition.edition)}} ETH-->
+            <!--</div>-->
 
           </div>
 
@@ -70,9 +70,9 @@
               Make Bid
             </button>
 
-            <div class="invalid-feedback" v-if="nextMinimumNewBid(edition.edition) > form.bid">
-              Minimum increase: {{minBidAmount}} ETH
-            </div>
+            <!--<div class="invalid-feedback" v-if="nextMinimumNewBid(edition.edition) > form.bid">-->
+              <!--Minimum increase: {{minBidAmount}} ETH-->
+            <!--</div>-->
 
           </div>
         </form>

@@ -23,9 +23,13 @@
             <td>Artworks Available</td>
             <td>{{ v2.totalNumberAvailable }}</td>
           </tr>
-          <tr v-if="v2.totalNumberMinted">
-            <td>Artworks Minted</td>
-            <td>{{ v2.totalNumberMinted }}</td>
+          <tr v-if="v2.totalEditions">
+            <td>Editions Available</td>
+            <td>{{ v2.totalEditions }}</td>
+          </tr>
+          <tr>
+            <td>Total Artists</td>
+            <td>{{ liveArtists.length }}</td>
           </tr>
           <tr v-if="v2.totalPurchaseValueInEther">
             <td>Total</td>
@@ -68,6 +72,22 @@
       </div>
     </div>
 
+    <div class="row mt-5 justify-content-sm-center">
+      <div class="col-sm-6">
+        <clickable-address-button :eth-address="auctionV1.contractAddress" :label="'View Smart Contract'" v-if="auctionV1.contractAddress" class="float-right"></clickable-address-button>
+        <h3>Auction Contract</h3>
+        <table class="table table-striped bg-white text-center">
+          <tbody>
+          <tr>
+            <td>Smart Contract</td>
+            <td>
+              <clickable-address :eth-address="auctionV1.contractAddress"></clickable-address>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -76,11 +96,15 @@
   import ClickableAddress from '../ui-controls/generic/ClickableAddress';
   import * as actions from '../../store/actions';
   import ClickableAddressButton from '../ui-controls/generic/ClickableAddressButton';
+  import {mapGetters, mapState} from 'vuex';
 
   export default {
     name: 'contractDetails',
     components: {ClickableAddressButton, ClickableAddress},
     computed: {
+      ...mapGetters([
+        'liveArtists',
+      ]),
       v1: function () {
         return {
           contractAddress: this.$store.state.kodaV1.contractAddress,
@@ -95,10 +119,16 @@
           totalSupply: this.$store.state.kodaV2.totalSupply,
           totalPurchaseValueInEther: this.$store.state.kodaV2.totalPurchaseValueInEther,
           totalNumberMinted: this.$store.state.kodaV2.totalNumberMinted,
+          totalEditions: this.$store.state.kodaV2.totalEditions,
           totalNumberAvailable: this.$store.state.kodaV2.totalNumberAvailable,
           koCommissionAccount: this.$store.state.kodaV2.koCommissionAccount,
         };
-      }
+      },
+      auctionV1: function () {
+        return {
+          contractAddress: this.$store.state.auction.contractAddress,
+        };
+      },
     },
     created () {
       this.$store.watch(
