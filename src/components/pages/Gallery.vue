@@ -38,10 +38,11 @@
         <div class="col-sm-9" v-if="priceFilter === 'artist'">
           <div class="card-deck">
             <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions" :key="editionNumber" v-if="edition.active">
-              <router-link class="card-target"
-                           :to="{ name: 'confirmPurchase', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
-                <div class="card shadow-sm">
+              <div class="card shadow-sm">
+                <router-link class="card-target"
+                             :to="{ name: 'confirmPurchase', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
                   <img class="card-img-top" :src="edition.lowResImg" :id="editionNumber"/>
+
                   <div class="high-res">
                     <high-res-label :high-res-available="edition.highResAvailable"></high-res-label>
                   </div>
@@ -50,18 +51,21 @@
                   </div>
                   <div class="card-footer bg-white no-top-border">
                     <div class="row">
-                      <div class="col-sm-5"><strong>{{ edition.priceInEther }} ETH</strong></div>
-                      <div class="col-sm-7 text-right">
+                      <div class="col"><strong>{{ edition.priceInEther }} ETH</strong></div>
+                      <div class="col text-right">
                         <availability :total-available="edition.totalAvailable" :total-supply="edition.totalSupply"></availability>
                       </div>
                     </div>
                   </div>
-                  <div class="card-footer">
+                </router-link>
+
+                <router-link :to="{ name: 'artist-v2', params: { artistAccount: edition.artistAccount } }" class="floating-artist-link">
+                  <div class="card-footer bg-white">
                     <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
                     <a class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name | truncate(18) }}</a>
                   </div>
-                </div>
-              </router-link>
+                </router-link>
+              </div>
             </div>
           </div>
         </div>
@@ -69,10 +73,12 @@
         <!-- extract cards out to prevent duplication -->
         <div class="card-deck" v-else>
           <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions" :key="editionNumber" v-if="edition.active">
-            <router-link class="card-target"
-                         :to="{ name: 'confirmPurchase', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
-              <div class="card shadow-sm">
+
+            <div class="card shadow-sm">
+              <router-link class="card-target"
+                           :to="{ name: 'confirmPurchase', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
                 <img class="card-img-top" :src="edition.lowResImg" :id="editionNumber"/>
+
                 <div class="high-res">
                   <high-res-label :high-res-available="edition.highResAvailable"></high-res-label>
                 </div>
@@ -87,14 +93,15 @@
                     </div>
                   </div>
                 </div>
-              </div>
-            </router-link>
-            <router-link :to="{ name: 'artist-v2', params: { artistAccount: edition.artistAccount } }" class="floating-artist-link">
-            <div class="ml-4 mt-3">
-              <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
-              <a class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name | truncate(18) }}</a>
+              </router-link>
+
+              <router-link :to="{ name: 'artist-v2', params: { artistAccount: edition.artistAccount } }" class="floating-artist-link">
+                <div class="card-footer bg-white">
+                  <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
+                  <a class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name | truncate(18) }}</a>
+                </div>
+              </router-link>
             </div>
-            </router-link>
           </div>
         </div>
 
