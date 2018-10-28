@@ -38,7 +38,7 @@
         <div class="col-sm-9" v-if="priceFilter === 'artist'">
           <div class="card-deck">
             <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions" :key="editionNumber" v-if="edition.active">
-              <gallery-card :edition="edition" :editionNumber="editionNumber"></gallery-card>
+              <gallery-card :edition="edition" :edition-number="editionNumber"></gallery-card>
             </div>
           </div>
         </div>
@@ -46,7 +46,7 @@
         <!-- extract cards out to prevent duplication -->
         <div class="card-deck" v-else>
           <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions" :key="editionNumber" v-if="edition.active">
-            <gallery-card :edition="edition"></gallery-card>
+            <gallery-card :edition="edition" :edition-number="editionNumber"></gallery-card>
           </div>
         </div>
 
