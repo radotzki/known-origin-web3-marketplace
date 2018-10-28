@@ -13,33 +13,7 @@
         <div class="card-deck">
           <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions" :key="editionNumber"
                v-if="edition.active">
-            <div class="card-target">
-              <router-link class="card-target"
-                           :to="{ name: 'confirmPurchase', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
-                <div class="card shadow-sm">
-                  <img class="card-img-top" :src="edition.lowResImg" :id="editionNumber"/>
-                  <div class="card-body">
-                    <p class="card-title">{{ edition.name }}</p>
-                    <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
-                    <span class="pl-1 artist-name" v-on:click="goToArtist(edition.artistAccount)">{{ findArtistsForAddress(edition.artistAccount).name | truncate(18)}}</span>
-
-                    <small class="text-danger" v-if="isStartDateInTheFuture(edition)">
-                      <span>Available {{ edition.startDate | moment('from') }}</span>
-                    </small>
-
-                  </div>
-                  <div class="card-footer">
-                    <div class="row">
-                      <div class="col">
-                        <availability :total-available="edition.totalAvailable"
-                                      :total-supply="edition.totalSupply"></availability>
-                      </div>
-                      <div class="col text-right">{{ edition.priceInEther }} ETH</div>
-                    </div>
-                  </div>
-                </div>
-              </router-link>
-            </div>
+            <gallery-card :edition="edition" :edition-number="editionNumber"></gallery-card>
           </div>
         </div>
       </div>
@@ -62,10 +36,12 @@
   import _ from 'lodash';
   import AcceptEditionBids from "../ui-controls/auction/AcceptEditionBids";
   import AuctionEventsList from "../ui-controls/auction/AuctionEventsList";
+  import GalleryCard from '../ui-controls/cards/GalleryCard';
 
   export default {
     name: 'artistPage',
     components: {
+      GalleryCard,
       AuctionEventsList,
       AcceptEditionBids,
       Availability,
