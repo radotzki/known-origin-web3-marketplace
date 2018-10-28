@@ -27,7 +27,9 @@
           KnownOrigin.io
         </router-link>
 
-        <a @click="goBack" class="back-arrow" v-if="['home', 'gallery'].indexOf($route.name) === -1">&lt;</a>
+        <a @click="goBack" v-if="['home', 'gallery'].indexOf($route.name) === -1">
+          <img src="../static/back_arrow.svg" class="back-arrow"/>
+        </a>
 
         <ul class="navbar-nav mr-auto">
         </ul>
@@ -315,9 +317,7 @@
   }
 
   .back-arrow {
-    font-size: 1.5rem;
     cursor: pointer;
-    padding: 0px;
   }
 
   .card-desc {
