@@ -91,7 +91,9 @@
     methods: {
       canAcceptBid: function () {
         // The owner and the artist can accept bids
-        return this.auction.highestBidWei > 0 && this.auction.controller === this.account || this.account === this.owner;
+        return (this.account && this.owner) &&
+          this.auction.highestBidWei > 0 &&
+          (this.auction.controller === this.account || this.account === this.owner);
       },
       acceptBid: function () {
         this.$store.dispatch(`auction/${actions.ACCEPT_BID}`, this.auction);
