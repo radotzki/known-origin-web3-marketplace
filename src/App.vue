@@ -196,8 +196,8 @@
   }
 
   .navbar {
-    padding: 5px;
-    min-height: 50px;
+    padding: 10px;
+    min-height: 60px;
   }
 
   .navbar-light .navbar-brand {
@@ -311,8 +311,6 @@
     font-size: 1.5rem;
     cursor: pointer;
     padding: 0px;
-    margin-left: 25px;
-    /*font-weight: bold;*/
   }
 
   .card-desc {
