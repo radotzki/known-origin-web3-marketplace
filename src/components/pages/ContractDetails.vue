@@ -75,7 +75,7 @@
     <div class="row mt-5 justify-content-sm-center">
       <div class="col-sm-6">
         <clickable-address-button :eth-address="auctionV1.contractAddress" :label="'View Smart Contract'" v-if="auctionV1.contractAddress" class="float-right"></clickable-address-button>
-        <h3>Auction Contract</h3>
+        <h3>Auction</h3>
         <table class="table table-striped bg-white text-center">
           <tbody>
           <tr>
