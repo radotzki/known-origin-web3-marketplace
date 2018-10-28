@@ -13,18 +13,21 @@ function featureArtworks(network) {
     case 'Ropsten':
     case 'Local':
       return [
-        20700,
-        20800,
-        20900,
-        21000,
-        21200,
-        21300,
-        21400,
         21600,
         21700,
         21800,
         21900,
         22000,
+        22200,
+        22300,
+        22400,
+        22500,
+        22600,
+        22700,
+        22800,
+        22900,
+        23000,
+        23100
       ];
     default:
       return [];
@@ -45,17 +48,18 @@ const contractStateModule = {
     totalPurchaseValueInEther: null,
     totalNumberMinted: null,
     totalNumberAvailable: null,
+    totalEditions: null,
     koCommissionAccount: null,
 
     // must be 7 as rotated daily
     featuredArtistAccounts: [
-      '0x0b715ca8dc39e7f8a480d28d9822ae02f0a57008',
-      '0x38cca9a8848D538FB29Bf55f664f948E24228bAa',
       '0xedB3DefCD7f2B17aBd937C966a4067fe832Ea0C2',
       '0xdFa4feED08974A587139aF3e52826f41B6a82A8C',
       '0x3768225622d53FfCc1E00eaC53a2A870ECd825C8',
       '0x43a7634eb14c12b59be599487c1d7898a3d864c1',
-      '0x08f950816358F4306B70fB319E4F35c592d1B8a8'
+      '0x08f950816358F4306B70fB319E4F35c592d1B8a8',
+      '0xd2cb8b4f7635f4081b4c3109c9bb35ae2bbee516',
+      '0x8ddfb56566d7ae614a65f9f966837a66387cde47'
     ]
   },
   getters: {
@@ -155,11 +159,12 @@ const contractStateModule = {
     [mutations.SET_CONTRACT_ADDRESS_V2](state, contractAddress) {
       state.contractAddress = contractAddress;
     },
-    [mutations.SET_CONTRACT_DETAILS](state, {totalSupply, totalPurchaseValueInWei, totalPurchaseValueInEther, totalNumberMinted, totalNumberAvailable, koCommissionAccount}) {
+    [mutations.SET_CONTRACT_DETAILS](state, {totalSupply, totalPurchaseValueInWei, totalPurchaseValueInEther, totalNumberMinted, totalEditions, totalNumberAvailable, koCommissionAccount}) {
       state.totalSupply = totalSupply;
       state.totalPurchaseValueInWei = totalPurchaseValueInWei;
       state.totalPurchaseValueInEther = totalPurchaseValueInEther;
       state.totalNumberMinted = totalNumberMinted;
+      state.totalEditions = totalEditions;
       state.totalNumberAvailable = totalNumberAvailable;
       state.koCommissionAccount = koCommissionAccount;
     }
@@ -265,6 +270,7 @@ const contractStateModule = {
       const totalSupply = (await contract.totalSupply()).toString(10);
       const totalPurchaseValueInWei = (await contract.totalPurchaseValueInWei()).toString(10);
       const totalNumberMinted = (await contract.totalNumberMinted()).toString(10);
+      const totalEditions = (await contract.editionsOfType(1)).length;
       const totalNumberAvailable = (await contract.totalNumberAvailable()).toString(10);
       const koCommissionAccount = await contract.koCommissionAccount();
 
@@ -272,6 +278,7 @@ const contractStateModule = {
         totalSupply,
         totalPurchaseValueInWei,
         totalPurchaseValueInEther: Web3.utils.fromWei(totalPurchaseValueInWei, 'ether'),
+        totalEditions,
         totalNumberMinted,
         totalNumberAvailable,
         koCommissionAccount,

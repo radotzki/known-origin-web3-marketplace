@@ -88,7 +88,9 @@
     },
     methods: {
       canWithdrawBid: function () {
-        return this.auction.highestBidWei > 0 && Web3.utils.toChecksumAddress(this.auction.highestBidder) === Web3.utils.toChecksumAddress(this.account);
+        return (this.account && this.auction) &&
+          this.auction.highestBidWei > 0 &&
+          (Web3.utils.toChecksumAddress(this.auction.highestBidder) === Web3.utils.toChecksumAddress(this.account));
       },
       withdrawBid: function () {
         this.$store.dispatch(`auction/${actions.WITHDRAW_BID}`, this.auction);
