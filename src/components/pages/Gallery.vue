@@ -38,34 +38,7 @@
         <div class="col-sm-9" v-if="priceFilter === 'artist'">
           <div class="card-deck">
             <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions" :key="editionNumber" v-if="edition.active">
-              <div class="card shadow-sm">
-                <router-link class="card-target"
-                             :to="{ name: 'confirmPurchase', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
-                  <img class="card-img-top" :src="edition.lowResImg" :id="editionNumber"/>
-
-                  <div class="high-res">
-                    <high-res-label :high-res-available="edition.highResAvailable"></high-res-label>
-                  </div>
-                  <div class="card-body">
-                    <p class="card-title">{{ edition.name }}</p>
-                  </div>
-                  <div class="card-footer bg-white no-top-border">
-                    <div class="row">
-                      <div class="col"><strong>{{ edition.priceInEther }} ETH</strong></div>
-                      <div class="col text-right">
-                        <availability :total-available="edition.totalAvailable" :total-supply="edition.totalSupply"></availability>
-                      </div>
-                    </div>
-                  </div>
-                </router-link>
-
-                <router-link :to="{ name: 'artist-v2', params: { artistAccount: edition.artistAccount } }" class="floating-artist-link">
-                  <div class="card-footer bg-white">
-                    <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
-                    <a class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name | truncate(18) }}</a>
-                  </div>
-                </router-link>
-              </div>
+              <gallery-card :edition="edition" :editionNumber="editionNumber"></gallery-card>
             </div>
           </div>
         </div>
@@ -73,35 +46,7 @@
         <!-- extract cards out to prevent duplication -->
         <div class="card-deck" v-else>
           <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions" :key="editionNumber" v-if="edition.active">
-
-            <div class="card shadow-sm">
-              <router-link class="card-target"
-                           :to="{ name: 'confirmPurchase', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
-                <img class="card-img-top" :src="edition.lowResImg" :id="editionNumber"/>
-
-                <div class="high-res">
-                  <high-res-label :high-res-available="edition.highResAvailable"></high-res-label>
-                </div>
-                <div class="card-body">
-                  <p class="card-title">{{ edition.name }}</p>
-                </div>
-                <div class="card-footer bg-white no-top-border">
-                  <div class="row">
-                    <div class="col"><strong>{{ edition.priceInEther }} ETH</strong></div>
-                    <div class="col text-right">
-                      <availability :total-available="edition.totalAvailable" :total-supply="edition.totalSupply"></availability>
-                    </div>
-                  </div>
-                </div>
-              </router-link>
-
-              <router-link :to="{ name: 'artist-v2', params: { artistAccount: edition.artistAccount } }" class="floating-artist-link">
-                <div class="card-footer bg-white">
-                  <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
-                  <a class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name | truncate(18) }}</a>
-                </div>
-              </router-link>
-            </div>
+            <gallery-card :edition="edition"></gallery-card>
           </div>
         </div>
 
@@ -120,10 +65,12 @@
   import LoadingSection from '../ui-controls/generic/LoadingSection';
   import Availability from '../ui-controls/v2/Availability';
   import HighResLabel from '../ui-controls/generic/HighResLabel';
+  import GalleryCard from '../ui-controls/cards/GalleryCard';
 
   export default {
     name: 'galleryKODAV2',
     components: {
+      GalleryCard,
       LoadingSection,
       Availability,
       ClickableAddress,
@@ -198,10 +145,6 @@
 
   }
 
-  .floating-artist-link a {
-    color: $secondary;
-  }
-
   .sub-filter {
     cursor: pointer;
     padding-left: 3rem;
@@ -223,16 +166,6 @@
       padding-left: 0.7rem;
       padding-right: 0.7rem;
     }
-  }
-
-  .high-res {
-    position: absolute;
-    top: -4px;
-    opacity: 0.9;
-  }
-
-  .no-top-border {
-    border-top: 0 none !important;
   }
 
   @import '../../ko-card.scss';
