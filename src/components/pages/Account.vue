@@ -45,25 +45,8 @@
           </div>
 
           <!-- V2 -->
-          <div class="col-auto mx-auto mb-5" v-for="edition in accountOwnedEditions" :key="edition.tokenId">
-            <router-link :to="{ name: 'edition-token', params: { tokenId: edition.tokenId }, props: { edition: edition } }" class="card-target">
-              <div class="card shadow-sm">
-                <img class="card-img-top" :src="edition.lowResImg" :id="edition.tokenId"/>
-                <div class="card-body">
-                  <p class="card-title">{{ edition.name }}</p>
-                  <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
-                  <span class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
-                </div>
-                <div class="card-footer">
-                  <div class="row">
-                    <div class="col text-left">
-                      <high-res-label :high-res-available="edition.highResAvailable"></high-res-label>
-                    </div>
-                    <div class="col text-right">{{ edition.priceInEther }} ETH</div>
-                  </div>
-                </div>
-              </div>
-            </router-link>
+          <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in accountOwnedEditions" :key="editionNumber">
+            <token-card :edition="edition" :editionNumber="editionNumber"></token-card>
           </div>
 
         </div>
@@ -93,10 +76,11 @@
   import { PAGES } from '../../store/loadingPageState';
   import * as actions from '../../store/actions';
   import HighResLabel from '../ui-controls/generic/HighResLabel';
+  import TokenCard from '../ui-controls/cards/TokenCard';
 
   export default {
     name: 'account',
-    components: {HighResLabel, LoadingSection, Asset, AddressIcon, EthAddress, ClickableAddress},
+    components: {HighResLabel, LoadingSection, Asset, AddressIcon, EthAddress, ClickableAddress, TokenCard},
     data () {
       return {
         PAGES: PAGES
