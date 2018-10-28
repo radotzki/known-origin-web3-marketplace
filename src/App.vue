@@ -38,7 +38,13 @@
           <li class="nav-item d-none d-md-block">
             <router-link :to="{ name: 'artists' }" class="nav-link">Artists</router-link>
           </li>
-          <li class="nav-item">
+          <li class="nav-item d-none d-md-block">
+            <router-link :to="{ name: 'contracts' }" class="nav-link">Contracts</router-link>
+          </li>
+          <li class="nav-item d-none d-md-block">
+            <router-link :to="{ name: 'activity' }" class="nav-link">Activity</router-link>
+          </li>
+          <li class="nav-item ml-4">
             <router-link :to="{ name: 'account' }" class="nav-link">
               Account
               <span class="badge badge-primary" v-if="totalPurchases() > 0">{{ totalPurchases() }}</span>
@@ -51,7 +57,6 @@
 
     <main role="main" class="container-fluid">
       <router-view></router-view>
-      <current-network class="small text-muted float-right mr-4"></current-network>
     </main>
 
     <footer class="footer">
@@ -64,7 +69,7 @@
             <small>
               <router-link :to="{ name: 'gallery' }">Gallery</router-link> &bull;
               <router-link :to="{ name: 'artists' }">Artists</router-link> &bull;
-              <router-link :to="{ name: 'contracts' }">Contract</router-link> &bull;
+              <router-link :to="{ name: 'contracts' }">Contracts</router-link> &bull;
               <router-link :to="{ name: 'activity' }">Activity</router-link>
             </small>
           </div>
@@ -84,7 +89,7 @@
           </div>
         </div>
         <div class="row mt-2">
-          <div class="col">
+          <div class="col ml-5 mr-5">
             <!-- Begin Mailchimp Signup Form -->
             <div id="mc_embed_signup">
               <form action="https://knownorigin.us19.list-manage.com/subscribe/post?u=84b0312927af7712ac2e6dd5a&amp;id=ebee270c72" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
@@ -97,6 +102,11 @@
               </form>
             </div>
             <!--End mc_embed_signup-->
+          </div>
+        </div>
+        <div class="row mt-2 mb-2">
+          <div class="col text-center text-white">
+          <current-network class="small"></current-network>
           </div>
         </div>
       </div>
@@ -182,7 +192,7 @@
   }
 
   body {
-    margin-bottom: 80px;
+    margin-bottom: 120px;
     padding-top: 50px;
     padding-bottom: 20px;
   }
