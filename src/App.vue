@@ -23,9 +23,11 @@
 
     <header>
       <nav class="navbar navbar-expand-md navbar-light bg-white text-primary fixed-top floating-nav">
-        <router-link :to="{ name: 'home' }" class="navbar-brand">
+        <router-link :to="{ name: 'home' }" class="navbar-brand" v-if="['home', 'gallery'].indexOf($route.name) > -1">
           KnownOrigin.io
         </router-link>
+
+        <a @click="goBack" class="back-arrow" v-if="['home', 'gallery'].indexOf($route.name) === -1">&lt;</a>
 
         <ul class="navbar-nav mr-auto">
         </ul>
@@ -124,7 +126,13 @@
       ...mapGetters(['totalPurchases']),
       ...mapState([]),
     },
-    methods: {},
+    methods: {
+      goBack () {
+        window.history.length > 1
+          ? this.$router.go(-1)
+          : this.$router.push('/');
+      }
+    },
     mounted() {
       if (window.ethereum) {
         window.web3 = new Web3(ethereum);
@@ -185,6 +193,11 @@
 
   [v-cloak] {
     display: none
+  }
+
+  .navbar {
+    padding: 5px;
+    min-height: 50px;
   }
 
   .navbar-light .navbar-brand {
@@ -292,6 +305,14 @@
   .badge-nav {
     background-color: rgba(255, 255, 255, 0.5);
     color: $primary;
+  }
+
+  .back-arrow {
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0px;
+    margin-left: 25px;
+    /*font-weight: bold;*/
   }
 
   .card-desc {
