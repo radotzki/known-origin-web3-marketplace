@@ -39,9 +39,6 @@
             <router-link :to="{ name: 'artists' }" class="nav-link">Artists</router-link>
           </li>
           <li class="nav-item d-none d-md-block">
-            <router-link :to="{ name: 'contracts' }" class="nav-link">Contracts</router-link>
-          </li>
-          <li class="nav-item d-none d-md-block">
             <router-link :to="{ name: 'activity' }" class="nav-link">Activity</router-link>
           </li>
           <li class="nav-item ml-4">
