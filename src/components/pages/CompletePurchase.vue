@@ -44,15 +44,19 @@
 
             <div class="mt-2 small">
               <div class="text-center mb-2" v-if="isPurchaseTriggered(edition.edition, account)">
-                <loading-spinner></loading-spinner>
-                <p class="card-text text-dark mt-2">Your purchase has been initiated</p>
-                <p class="card-text text-dark mt-2">Please be patient. Blockchains need to be mined.</p>
+                <code class="mt-2">
+                  Your purchase has been initiated.<br/>
+                  Please be patient.
+                  <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
+                </code>
                 <hr/>
               </div>
 
               <div class="text-center mb-2 " v-if="isPurchaseStarted(edition.edition, account)">
-                <loading-spinner></loading-spinner>
-                <p class="card-text text-dark mt-2">Your purchase is being confirmed...</p>
+                <code class="mt-2">
+                  Your purchase is being confirmed...
+                  <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
+                </code>
                 <span class="text-muted">
                   <clickable-transaction
                     :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>
@@ -67,13 +71,14 @@
                   <clickable-transaction
                     :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>
                 </span>
-                <hr/>
               </div>
 
               <div class="text-center mb-2" v-if="isPurchaseFailed(edition.edition, account)">
                 <img src="../../../static/Failure.svg" style="width: 50px"/>
                 <p class="card-text text-danger mt-2">Your purchase failed!</p>
-                <hr/>
+                <button type="button" v-on:click="retryPurchase" class="btn btn-secondary">
+                  Retry
+                </button>
               </div>
             </div>
 
@@ -97,9 +102,7 @@
               </div>
 
               <div v-if="isPurchaseFailed(edition.edition, account)">
-                <button type="button" v-on:click="retryPurchase" class="btn btn-outline-primary btn">
-                  Retry
-                </button>
+
               </div>
             </div>
 
@@ -107,7 +110,7 @@
               Sold out
             </div>
 
-            <div class="mt-2 text-center" v-if="!haveNotPurchasedEditionBefore(edition.edition)">
+            <div class="mt-4 text-center text-success" v-if="!haveNotPurchasedEditionBefore(edition.edition)">
               You own this asset
             </div>
 
@@ -152,6 +155,7 @@
   import LoadingSection from '../ui-controls/generic/LoadingSection';
   import USDPrice from '../ui-controls/generic/USDPrice';
   import Availability from '../ui-controls/v2/Availability';
+  import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 
   export default {
     name: 'completePurchase',
@@ -167,7 +171,8 @@
       LoadingSpinner,
       ClickableAddress,
       USDPrice,
-      Availability
+      Availability,
+      FontAwesomeIcon
     },
     data () {
       return {
