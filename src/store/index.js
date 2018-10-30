@@ -13,6 +13,7 @@ import knownOriginDigitalAssetJsonV2 from '../../build/contracts/KnownOriginDigi
 import ArtistAcceptingBidsJson from '../../build/contracts/ArtistAcceptingBids.json';
 
 import createLogger from 'vuex/dist/logger';
+// import createPersistedState from 'vuex-persistedstate';
 
 import purchase from './modules/purchase';
 import highres from './modules/highres';
@@ -31,6 +32,17 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
   plugins: [
     createLogger()
+    // TODO can we utilise this?
+    // createPersistedState({
+    //   key: 'koda',
+    //   paths: [
+    //     'artists',
+    //     'artistLookupCache',
+    //     'kodaV1',
+    //     'kodaV2',
+    //     'activity'
+    //   ]
+    // }),
   ],
   modules: {
     kodaV1,

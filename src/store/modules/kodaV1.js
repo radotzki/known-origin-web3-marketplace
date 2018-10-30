@@ -114,6 +114,14 @@ const contractStateModule = {
   }
 };
 
+const safeToCheckSumAddress = (address) => {
+  try {
+    return Web3.utils.toChecksumAddress(address);
+  } catch (e) {
+    return "0x00000000000000000000000000000000";
+  }
+};
+
 const lookupAssetInfo = async (contract, index) => {
   const results = await Promise.all([
     contract.assetInfo(index),
@@ -139,7 +147,7 @@ const lookupAssetInfo = async (contract, index) => {
   // Populate all data - minus tokenURI data
   const asset = {
     tokenId: assetInfo[0].toNumber(),
-    owner: Web3.utils.toChecksumAddress(owner),
+    owner: safeToCheckSumAddress(owner),
     purchased: assetInfo[2].toNumber(),
     priceInWei: assetInfo[3].toString(),
     priceInEther: Web3.utils.fromWei(assetInfo[3].toString(10), 'ether').valueOf(),

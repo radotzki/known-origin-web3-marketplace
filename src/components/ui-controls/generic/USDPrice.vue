@@ -19,7 +19,7 @@
       ]),
       usdPrice: function () {
         if (this.currentUsdPrice && this.priceInEther) {
-          let value = this.currentUsdPrice * this.priceInEther;
+          const value = this.currentUsdPrice * this.priceInEther;
           return value.toFixed(2);
         }
         return null;
