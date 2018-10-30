@@ -26,10 +26,18 @@ const auctionStateModule = {
       let currentEditionHighestBid = _.get(state.auction[edition], 'highestBidWei', 0);
       let minBid = _.get(state, 'minBidAmountWei', 0);
 
-      if (currentEditionHighestBid === 0 && minBid === 0) {
+      // Check not set
+      if (currentEditionHighestBid.toString() === "0") {
         return "0.01";
       }
-      return Web3.utils.fromWei(currentEditionHighestBid.add(minBid).toString("10"), 'ether');
+
+      // Handle BN
+      if (Web3.utils.isBN(currentEditionHighestBid)) {
+        return Web3.utils.fromWei(currentEditionHighestBid.add(minBid).toString("10"), 'ether');
+      }
+
+      // Fall back to min bid
+      return Web3.utils.fromWei(minBid.toString("10"), 'ether');
     },
     accountIsHighestBidder: (state, getters, rootState) => (edition) => {
       if (!rootState.account) {
