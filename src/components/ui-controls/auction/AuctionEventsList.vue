@@ -1,29 +1,29 @@
 <template>
   <div class="mt-4 shadow-sm bg-white p-4"
-       v-if="isEditionAuctionEnabled(edition.edition) && auctionEditionEvents(edition.edition).length > 0">
+       v-if="isEditionAuctionEnabled(edition.edition) && auctionEvents.length > 0">
     <h6>Recent events</h6>
 
-    <div v-for="event in limitBy(auctionEditionEvents(edition.edition), 5)">
+    <div v-for="event in limitBy(orderBy(auctionEvents, 'blockNumber', -1), 10)">
 
       <div>
         <code>{{event.event | humanize}}</code>
-        <span class="float-right" v-if="event.args._amount">
-          <price-in-eth :value="event.args._amount | toEth"></price-in-eth>
-          <u-s-d-price :price-in-ether="event.args._amount | toEth"></u-s-d-price>
+        <span class="float-right" v-if="event._args._amount">
+          <price-in-eth :value="event._args._amount | toEth"></price-in-eth>
+          <u-s-d-price :price-in-ether="event._args._amount | toEth"></u-s-d-price>
         </span>
       </div>
 
-      <div v-if="event.args._bidder" class="mb-2">
-        <clickable-address :eth-address="event.args._bidder" class="small"></clickable-address>
-        <view-transaction-details :transaction="event.transactionHash" class="float-right small"></view-transaction-details>
+      <div v-if="event._args._bidder" class="mb-2">
+        <clickable-address :eth-address="event._args._bidder" class="small"></clickable-address>
+        <view-transaction-details :transaction="event.transactionHash"
+                                  class="float-right small"></view-transaction-details>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-  import { mapGetters, mapState } from 'vuex';
-  import * as actions from '../../../store/actions';
+  import {mapGetters, mapState} from 'vuex';
   import ClickableAddress from '../generic/ClickableAddress';
   import PriceInEth from '../generic/PriceInEth';
   import USDPrice from '../generic/USDPrice';
@@ -44,28 +44,48 @@
         type: Object
       }
     },
-    data () {
-      return {};
+    data() {
+      return {
+        auctionEvents: []
+      };
     },
     computed: {
       ...mapGetters('auction', [
         'isEditionAuctionEnabled',
-        'auctionEditionEvents'
       ]),
-      ...mapState('auction', []),
     },
     methods: {},
-    created () {
-      const loadData = function () {
-        this.$store.dispatch(`auction/${actions.GET_AUCTION_EVENTS_FOR_EDITION}`, this.edition.edition);
-      }.bind(this);
+    created() {
+
+      const loadData = () => {
+        const rootReference = this.$store.state.firestore
+          .collection('raw')
+          .doc(this.$store.state.firebasePath);
+
+        const auctionRef = rootReference.collection('auction-v1');
+        const editionString = this.edition.edition.toString();
+
+        Promise.all([
+          auctionRef.where("event", '==', "BidPlaced").where("_args._editionNumber", '==', editionString).orderBy("blockNumber", "desc").limit(5).get(),
+          auctionRef.where("event", '==', "BidAccepted").where("_args._editionNumber", '==', editionString).orderBy("blockNumber", "desc").limit(5).get(),
+          auctionRef.where("event", '==', "BidIncreased").where("_args._editionNumber", '==', editionString).orderBy("blockNumber", "desc").limit(5).get(),
+          auctionRef.where("event", '==', "AuctionCancelled").where("_args._editionNumber", '==', editionString).orderBy("blockNumber", "desc").limit(5).get(),
+        ])
+          .then((querySet) => {
+            _.forEach(querySet, (querySnapshot) => {
+              querySnapshot.forEach((doc) => {
+                this.auctionEvents.push(doc.data());
+              });
+            });
+          });
+      };
 
       this.$store.watch(
-        () => this.$store.state.ArtistAcceptingBids,
+        () => this.$store.state.firebasePath,
         () => loadData()
       );
 
-      if (this.$store.state.ArtistAcceptingBids) {
+      if (this.$store.state.firebasePath) {
         loadData();
       }
     },
