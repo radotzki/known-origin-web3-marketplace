@@ -9,7 +9,7 @@
         <code>{{event.event | humanize}}</code>
         <span class="float-right" v-if="event.args._amount">
           <price-in-eth :value="event.args._amount | toEth"></price-in-eth>
-          <usd-price :price-in-ether="event.args._amount"></usd-price>
+          <u-s-d-price :price-in-ether="event.args._amount | toEth"></u-s-d-price>
         </span>
       </div>
 
@@ -55,8 +55,19 @@
       ...mapState('auction', []),
     },
     methods: {},
-    mounted () {
-      this.$store.dispatch(`auction/${actions.GET_AUCTION_EVENTS_FOR_EDITION}`, this.edition.edition);
+    created () {
+      const loadData = function () {
+        this.$store.dispatch(`auction/${actions.GET_AUCTION_EVENTS_FOR_EDITION}`, this.edition.edition);
+      }.bind(this);
+
+      this.$store.watch(
+        () => this.$store.state.ArtistAcceptingBids,
+        () => loadData()
+      );
+
+      if (this.$store.state.ArtistAcceptingBids) {
+        loadData();
+      }
     },
   };
 </script>
