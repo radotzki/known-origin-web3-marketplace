@@ -484,6 +484,16 @@ const artists = [
     img: '/static/artists/Stroke_AProfile@x2.png',
     ethAddress: '0x4AF4aEBe930e938FA11aD28cD2c88645cCe739A1',
     live: true,
+  },
+  {
+    artistCode: 'CTA',
+    name: 'Cryp_to_Art',
+    bio: 'A tribute to the Crypto culture',
+    strapline: 'A tribute to the Crypto culture',
+    twitter: '@Cryp_to_Art',
+    img: '/static/artists/Crypto_art_@x2.png',
+    ethAddress: '0x8ff69972bd0AC1Ed1569EC09564F51A80825ffCf',
+    live: true,
   }
 ];
 
