@@ -21,7 +21,7 @@
       <div class="clearfix"></div>
       <hr/>
 
-      <fieldset :disabled="isLoading(PAGES.ARTIST_ACCEPTING_BID)">
+      <fieldset>
         <form class="form-inline was-validated">
 
           <!-- When you are NOT the top bidder -->
@@ -45,7 +45,7 @@
             </button>
 
             <!--<div class="invalid-feedback" v-if="nextMinimumNewBid(edition.edition) > form.bid">Minimum bid:-->
-              <!--{{nextMinimumNewBid(edition.edition)}} ETH-->
+            <!--{{nextMinimumNewBid(edition.edition)}} ETH-->
             <!--</div>-->
 
           </div>
@@ -62,7 +62,7 @@
                    class="form-control is-invalid mr-sm-2" id="increaseBidValue"
                    :step="minBidAmount" :min="minBidAmount"
                    v-model="form.bid"
-                   :placeholder="nextMinimumNewBid(edition.edition)" />
+                   :placeholder="nextMinimumNewBid(edition.edition)"/>
 
             <button class="btn btn-secondary"
                     v-if="accountIsHighestBidder(edition.edition)" v-on:click="increaseBid"
@@ -71,7 +71,7 @@
             </button>
 
             <!--<div class="invalid-feedback" v-if="nextMinimumNewBid(edition.edition) > form.bid">-->
-              <!--Minimum increase: {{minBidAmount}} ETH-->
+            <!--Minimum increase: {{minBidAmount}} ETH-->
             <!--</div>-->
 
           </div>
@@ -167,8 +167,7 @@
     },
     data() {
       return {
-        PAGES: PAGES,
-        form: {
+        form: { 
           bid: null
         }
       };
@@ -218,15 +217,8 @@
       }
     },
     created() {
-      this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.ARTIST_ACCEPTING_BID);
-
       const loadData = () => {
-        this.$store.dispatch(`auction/${actions.GET_AUCTION_DETAILS}`, this.edition.edition)
-          .then(() => {
-            this.$nextTick(function () {
-              this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.ARTIST_ACCEPTING_BID);
-            });
-          });
+        this.$store.dispatch(`auction/${actions.GET_AUCTION_DETAILS}`, this.edition.edition);
       };
 
       this.$store.watch(
