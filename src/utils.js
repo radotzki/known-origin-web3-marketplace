@@ -141,6 +141,11 @@ const isHighRes = (editionNumber) => {
     22900,
     23000,
     23100,
+    23200,
+    23300,
+    23400,
+    23500,
+    23600
   ];
 
   const HIGH_RES_EDITIONS = [
