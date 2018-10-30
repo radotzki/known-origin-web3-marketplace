@@ -474,6 +474,16 @@ const artists = [
     img: '/static/artists/SarahL_Profile@x2.png',
     ethAddress: '0xd2cb8b4f7635f4081b4c3109c9bb35ae2bbee516',
     live: true,
+  },
+  {
+    artistCode: 'BDK',
+    name: 'Brandi Kyle',
+    bio: 'Velvet paintings • Crypto • 3D Printing  • Being nice',
+    strapline: 'Velvet paintings • Crypto • 3D Printing  • Being nice',
+    twitter: '@Placeofmany',
+    img: '/static/artists/Stroke_AProfile@x2.png',
+    ethAddress: '0x4AF4aEBe930e938FA11aD28cD2c88645cCe739A1',
+    live: true,
   }
 ];
 

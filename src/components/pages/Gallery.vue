@@ -78,6 +78,7 @@
                   <p class="card-title">{{ edition.name }}</p>
                   <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
                   <a class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name | truncate(18) }}</a>
+                  <creative-challenge-label :attributes="edition.attributes"></creative-challenge-label>
                 </div>
                 <div class="card-footer">
                   <div class="row">
@@ -107,10 +108,12 @@
   import LoadingSection from '../ui-controls/generic/LoadingSection';
   import Availability from '../ui-controls/v2/Availability';
   import HighResLabel from '../ui-controls/generic/HighResLabel';
+  import CreativeChallengeLabel from "../ui-controls/generic/CreativeChallengeLabel";
 
   export default {
     name: 'galleryKODAV2',
     components: {
+      CreativeChallengeLabel,
       LoadingSection,
       Availability,
       ClickableAddress,

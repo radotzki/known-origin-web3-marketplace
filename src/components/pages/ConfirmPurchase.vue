@@ -37,6 +37,10 @@
 
           <metadata-attributes :attributes="edition.attributes"></metadata-attributes>
 
+          <div class="mt-2">
+            <creative-challenge-label :attributes="edition.attributes"></creative-challenge-label>
+          </div>
+
           <div class="mt-4">
             <hr/>
             <price-in-eth :value="edition.priceInEther"></price-in-eth>
@@ -97,10 +101,12 @@
   import Availability from "../ui-controls/v2/Availability";
   import PlaceEditionBid from "../ui-controls/auction/PlaceEditionBid";
   import AuctionEventsList from "../ui-controls/auction/AuctionEventsList";
+  import CreativeChallengeLabel from "../ui-controls/generic/CreativeChallengeLabel";
 
   export default {
     name: 'confirmPurchase',
     components: {
+      CreativeChallengeLabel,
       AuctionEventsList,
       PlaceEditionBid,
       Availability,
