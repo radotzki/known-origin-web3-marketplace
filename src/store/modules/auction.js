@@ -2,7 +2,6 @@ import * as actions from '../actions';
 import * as mutations from '../mutation';
 import _ from 'lodash';
 import Web3 from "web3";
-import Vue from "vue";
 
 const auctionStateModule = {
   namespaced: true,
@@ -11,7 +10,6 @@ const auctionStateModule = {
     contractAddress: null,
 
     auction: {},
-    auctionEvents: {},
     bidState: {},
     acceptingBidState: {},
     withdrawingBidState: {},
@@ -48,9 +46,6 @@ const auctionStateModule = {
         return false;
       }
       return Web3.utils.toChecksumAddress(currentHighestBidder) === Web3.utils.toChecksumAddress(rootState.account);
-    },
-    auctionEditionEvents: (state) => (edition) => {
-      return _.orderBy(state.auctionEvents[edition], 'blockNumber', 'desc');
     },
     /////////////////////////
     // Accepting Bid State //
@@ -120,18 +115,6 @@ const auctionStateModule = {
     [mutations.SET_AUCTION_OWNER](state, {owner, address}) {
       state.owner = Web3.utils.toChecksumAddress(owner);
       state.contractAddress = address;
-    },
-    [mutations.SET_AUCTION_EVENTS](state, {results, edition}) {
-      if (!_.isArray(state.auctionEvents[edition])) {
-        state.auctionEvents[edition] = [];
-      }
-      const updatedEvents = state.auctionEvents[edition].concat(results);
-      Vue.set(state, 'auctionEvents', {
-        [edition]: updatedEvents
-      });
-    },
-    [mutations.RESET_EDITION_AUCTION_EVENTS](state, {edition}) {
-      state.auctionEvents[edition] = {};
     },
     [mutations.SET_AUCTION_DETAILS](state, data) {
       state.auction = {
@@ -516,29 +499,6 @@ const auctionStateModule = {
           if (timer) clearInterval(timer);
         });
     },
-    [actions.GET_AUCTION_EVENTS_FOR_EDITION]: async function ({commit, dispatch, state, getters, rootState}, edition) {
-      commit(mutations.RESET_EDITION_AUCTION_EVENTS, {edition});
-
-      const contract = await rootState.ArtistAcceptingBids.deployed();
-      const config = {fromBlock: 0, toBlock: 'latest'};
-      const filter = {_editionNumber: edition};
-
-      [
-        contract.BidPlaced(filter, config),
-        contract.BidIncreased(filter, config),
-        // contract.BidWithdrawn(filter, config),
-        contract.BidAccepted(filter, config),
-        // contract.BidderRefunded(filter, config),
-        contract.AuctionCancelled(filter, config)
-      ].map((event) => {
-        event.get((error, results) => {
-          if (!error) {
-            commit(mutations.SET_AUCTION_EVENTS, {results, edition});
-          }
-        });
-      });
-
-    }
   }
 };
 

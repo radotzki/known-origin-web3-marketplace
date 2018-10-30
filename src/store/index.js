@@ -21,11 +21,21 @@ import kodaV1 from './modules/kodaV1';
 import kodaV2 from './modules/kodaV2';
 import loading from './modules/loading';
 import auction from './modules/auction';
-import activity from './modules/activity';
 
 const KnownOriginDigitalAssetV1 = truffleContract(knownOriginDigitalAssetJson);
 const KnownOriginDigitalAssetV2 = truffleContract(knownOriginDigitalAssetJsonV2);
 const ArtistAcceptingBids = truffleContract(ArtistAcceptingBidsJson);
+
+import * as Firebase from 'firebase/app';
+import 'firebase/firestore';
+
+const firebaseApp = Firebase.initializeApp({
+  databaseURL: "https://known-origin-io.firebaseio.com",
+  projectId: "known-origin-io",
+});
+
+const firestore = firebaseApp.firestore();
+firestore.settings({timestampsInSnapshots: true});
 
 Vue.use(Vuex);
 
@@ -51,7 +61,6 @@ const store = new Vuex.Store({
     highres,
     loading,
     auction,
-    activity,
   },
   state: {
     // connectivity
@@ -72,7 +81,10 @@ const store = new Vuex.Store({
     ArtistAcceptingBids: null,
 
     KnownOriginDigitalAssetV2MainBlockNumber: 6270484,
-    ArtistAcceptingBidsMainBlockNumber: 6568535
+    ArtistAcceptingBidsMainBlockNumber: 6568535,
+
+    firestore: firestore,
+    firebasePath: null
   },
   getters: {
     findArtist: (state) => (artistCode) => {
@@ -120,16 +132,10 @@ const store = new Vuex.Store({
     [mutations.SET_ACCOUNT](state, {account, accountBalance}) {
       state.account = Web3.utils.toChecksumAddress(account);
       state.accountBalance = accountBalance;
-
-      // Full story identification of account for tracking
-      /* global FS:true */
-      // FS.identify(account, {
-      //   accountBalance: accountBalance,
-      //   currentNetwork: state.currentNetwork
-      // });
     },
-    [mutations.SET_CURRENT_NETWORK](state, currentNetwork) {
-      state.currentNetwork = currentNetwork;
+    [mutations.SET_CURRENT_NETWORK](state, {human, firebasePath}) {
+      state.currentNetwork = human;
+      state.firebasePath = firebasePath;
     },
     [mutations.SET_USD_PRICE](state, currentUsdPrice) {
       state.currentUsdPrice = currentUsdPrice;

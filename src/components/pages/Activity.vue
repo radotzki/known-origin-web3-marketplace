@@ -10,28 +10,29 @@
 
     <div class="container-fluid mt-4">
       <div class="row editions-wrap">
-
+        <div class="text-muted small float-right">Updated every 1 minute</div>
         <table class="table table-striped">
           <tbody>
-          <tr v-for="event in limitBy(orderBy(activity, 'blockNumber', -1), 50)" :key="event.transactionHash + event.logIndex + event.event">
+          <tr v-for="event in limitBy(orderBy(activity, 'blockNumber', -1), 75)">
             <td class="w-25 text-center">
-              <router-link :to="{ name: 'confirmPurchaseSimple', params: { editionNumber: parseInt(event.args._editionNumber) }}">
-                <img v-if="findEdition(parseInt(event.args._editionNumber))"
+              <router-link
+                :to="{ name: 'confirmPurchaseSimple', params: { editionNumber: parseInt(event._args._editionNumber) }}">
+                <img v-if="findEdition(parseInt(event._args._editionNumber))"
                      class="img-thumbnail"
-                     :src="findEdition(parseInt(event.args._editionNumber)).lowResImg"/>
+                     :src="findEdition(parseInt(event._args._editionNumber)).lowResImg"/>
               </router-link>
             </td>
             <td>
               <code>{{ mapEvent(event.event)}}</code>
             </td>
             <td>
-              <div v-if="event.args._amount">
-                  {{ event.args._amount | toEth}} ETH
+              <div v-if="event._args._amount">
+                {{ event._args._amount | toEth}} ETH
               </div>
-              <div v-if="event.args._tokenId">
-                <router-link :to="{ name: 'edition-token', params: { tokenId: event.args._tokenId.toString() }}"
+              <div v-if="event._args._tokenId">
+                <router-link :to="{ name: 'edition-token', params: { tokenId: event._args._tokenId.toString() }}"
                              class="badge badge-primary">
-                  {{ event.args._tokenId.toString() }}
+                  {{ event._args._tokenId.toString() }}
                 </router-link>
               </div>
             </td>
@@ -39,13 +40,13 @@
               <span class="text-muted small">Block:</span> <code>{{ event.blockNumber }}</code>
             </td>
             <td class="d-none d-md-table-cell">
-              <div v-if="event.args._buyer">
+              <div v-if="event._args._buyer">
                 <span class="text-muted small">Owner: </span>
-                <clickable-address :eth-address="event.args._buyer"></clickable-address>
+                <clickable-address :eth-address="event._args._buyer"></clickable-address>
               </div>
-              <div v-if="event.args._bidder">
+              <div v-if="event._args._bidder">
                 <span class="text-muted small">Bidder: </span>
-                <clickable-address :eth-address="event.args._bidder"></clickable-address>
+                <clickable-address :eth-address="event._args._bidder"></clickable-address>
               </div>
             </td>
             <td class="d-none d-md-table-cell">
@@ -79,7 +80,8 @@
     },
     data() {
       return {
-        PAGES
+        PAGES,
+        activity: []
       };
     },
     methods: {
@@ -106,27 +108,40 @@
       ...mapGetters('kodaV2', [
         'findEdition'
       ]),
-      ...mapState('activity',
-        ['activity']
-      )
     },
     created() {
-
-      this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.ACTIVITY);
-
       const loadData = () => {
-        this.$store.dispatch(`activity/${actions.ACTIVITY}`)
-          .finally(() => {
-            this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.ACTIVITY);
+        const rootReference = this.$store.state.firestore
+          .collection('raw')
+          .doc(this.$store.state.firebasePath);
+
+        const auctionRef = rootReference.collection('auction-v1');
+        const kodaRef = rootReference.collection('koda-v2');
+
+        Promise.all([
+          auctionRef.where("event", '==', "BidPlaced").orderBy("blockNumber", "desc").limit(25).get(),
+          auctionRef.where("event", '==', "BidAccepted").orderBy("blockNumber", "desc").limit(25).get(),
+          auctionRef.where("event", '==', "BidIncreased").orderBy("blockNumber", "desc").limit(25).get(),
+          kodaRef.where("event", '==', "EditionCreated").orderBy("blockNumber", "desc").limit(25).get(),
+          kodaRef.where("event", '==', "Minted").orderBy("blockNumber", "desc").limit(25).get()
+        ])
+          .then((querySet) => {
+            _.forEach(querySet, (querySnapshot) => {
+              querySnapshot.forEach((doc) => {
+                this.activity.push(doc.data());
+              });
+            });
+
+            this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, _.uniq(_.map(this.activity, '_args._editionNumber')));
           });
       };
 
       this.$store.watch(
-        () => this.$store.state.KnownOriginDigitalAssetV2,
+        () => this.$store.state.firebasePath,
         () => loadData()
       );
 
-      if (this.$store.state.KnownOriginDigitalAssetV2) {
+      if (this.$store.state.firebasePath) {
         loadData();
       }
     }

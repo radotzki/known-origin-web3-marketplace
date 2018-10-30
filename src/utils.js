@@ -7,25 +7,19 @@ const getNetId = async () => {
 const getNetIdString = () => {
   return window.web3.eth.net.getId()
     .then((id) => {
-
       // N.B - be careful changing this as the warning banner uses this string
-
       console.log(`Running on network ID ${id}`);
-
       switch (id) {
         case 1:
-          return 'Main';
+          return {human: 'Main', firebasePath: 'mainnet'};
         case 3:
-          return 'Ropsten';
+          return {human: 'Ropsten', firebasePath: 'ropsten'};
         case 4:
-          return 'Rinkeby';
+          return {human: 'Rinkeby', firebasePath: 'rinkeby'};
         case 42:
-          return 'Kovan';
-        case 'loading':
-          return 'loading..';
-        // Will be some random number when connected locally
+          return {human: 'kovan', firebasePath: 'mainnet'};
         default:
-          return 'Local';
+          return {human: 'Local', firebasePath: 'local'};
       }
     });
 };
