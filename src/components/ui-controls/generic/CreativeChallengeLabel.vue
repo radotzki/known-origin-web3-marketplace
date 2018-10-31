@@ -1,7 +1,7 @@
 <template>
-  <div class="text-muted small mt-1" v-if="devcon4">
-    <img src="../../../../static/devcon_iv_logo.svg" class="img-fluid creative-challenge"/> <span class="align-bottom">Creative Challenge</span>
-  </div>
+  <span v-if="devcon4">
+    <img src="../../../../static/devcon_iv_logo.svg" class="img-fluid creative-challenge mr-2"/>
+  </span>
 </template>
 
 <script>

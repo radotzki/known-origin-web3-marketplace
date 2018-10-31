@@ -75,10 +75,10 @@
                   <high-res-label :high-res-available="edition.highResAvailable"></high-res-label>
                 </div>
                 <div class="card-body">
-                  <p class="card-title">{{ edition.name }}</p>
+                  <p class="card-title"><creative-challenge-label :attributes="edition.attributes"></creative-challenge-label>{{ edition.name }}</p>
                   <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
                   <a class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name | truncate(18) }}</a>
-                  <creative-challenge-label :attributes="edition.attributes"></creative-challenge-label>
+
                 </div>
                 <div class="card-footer">
                   <div class="row">
