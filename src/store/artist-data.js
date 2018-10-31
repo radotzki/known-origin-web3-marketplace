@@ -494,6 +494,15 @@ const artists = [
     img: '/static/artists/Crypto_art_@x2.png',
     ethAddress: '0x8ff69972bd0AC1Ed1569EC09564F51A80825ffCf',
     live: true,
+  },
+  {
+    artistCode: 'PSL',
+    name: 'PelfSollution',
+    bio: 'Illustrator, designer & digital Collage artists',
+    strapline: 'Illustrator, designer & digital Collage artists',
+    img: '/static/artists/PelfSollution_AProfile@x2.png',
+    ethAddress: '0x925E54d0C6A36eC596c84470CB0bE85A638A8Da5',
+    live: true,
   }
 ];
 
