@@ -268,6 +268,7 @@ const artists = [
     img: '/static/artists/MartinOk@x2.png',
     live: true,
     twitter: '@ArtByMLO',
+    website: 'https://ostachowski.com',
     ethAddress: '0xe0F228070D8F7b5C25E9375Fa70FA418f8dfEDf8'
   },
   {
