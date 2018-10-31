@@ -13,22 +13,32 @@ function featureArtworks(network) {
     case 'Ropsten':
     case 'Local':
       return [
-        22200,
-        22300,
+        // START cheaper selection
+        9500,
+        18100,
+        7500,
+        8400,
+        18800,
+        19500,
+        // END cheaper selection
+
         22400,
         22500,
         22600,
         22700,
-        22800,
         22900,
         23000,
         23100,
+
+        // START devcon4
         23200,
         23300,
         23400,
         23500,
         23600,
         23700,
+        23800
+        // END devcon4
       ];
     default:
       return [];
