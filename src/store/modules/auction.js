@@ -8,6 +8,8 @@ const auctionStateModule = {
   state: {
     owner: null,
     contractAddress: null,
+    contractBalance: null,
+    ethPlaced: null,
 
     auction: {},
     bidState: {},
@@ -112,6 +114,17 @@ const auctionStateModule = {
     },
   },
   mutations: {
+    [mutations.SET_AUCTION_ADDRESS](state, {address}) {
+      state.contractAddress = address;
+    },
+    [mutations.SET_AUCTION_STATS](state, {ethPlaced, contractBalance}) {
+      state.ethPlaced = ethPlaced;
+      state.contractBalance = contractBalance;
+    },
+    [mutations.SET_AUCTION_OWNER](state, {owner, address}) {
+      state.owner = Web3.utils.toChecksumAddress(owner);
+      state.contractAddress = address;
+    },
     [mutations.SET_AUCTION_OWNER](state, {owner, address}) {
       state.owner = Web3.utils.toChecksumAddress(owner);
       state.contractAddress = address;
@@ -498,6 +511,42 @@ const auctionStateModule = {
           commit(mutations.BID_WITHDRAWN_FAILED, {auction, account});
           if (timer) clearInterval(timer);
         });
+    },
+    async [actions.REFRESH_CONTRACT_DETAILS]({commit, dispatch, state, rootState}) {
+      let contract = await rootState.ArtistAcceptingBids.deployed();
+
+      commit(mutations.SET_AUCTION_ADDRESS, {address: contract.address});
+
+      const rootReference = rootState.firestore
+        .collection('raw')
+        .doc(rootState.firebasePath);
+
+      const auctionRef = rootReference.collection('auction-v1');
+
+      let ethPlaced = 0;
+
+      Promise.all([
+        auctionRef.where("event", '==', "BidPlaced").get(),
+        auctionRef.where("event", '==', "BidIncreased").get()
+      ])
+        .then(async (querySet) => {
+          _.forEach(querySet, (querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              const data = doc.data();
+
+              if (ethPlaced === 0) {
+                ethPlaced = new web3.utils.BN(_.get(data, '_args._amount'));
+              } else {
+                ethPlaced = ethPlaced.add(new web3.utils.BN(_.get(data, '_args._amount')));
+              }
+            });
+          });
+          commit(mutations.SET_AUCTION_STATS, {
+            ethPlaced: Web3.utils.fromWei(ethPlaced.toString(10), 'ether').valueOf(),
+            contractBalance: Web3.utils.fromWei(await rootState.web3.eth.getBalance(contract.address), 'ether').valueOf()
+          });
+        });
+
     },
   }
 };
