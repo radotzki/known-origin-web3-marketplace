@@ -268,6 +268,7 @@ const artists = [
     img: '/static/artists/MartinOk@x2.png',
     live: true,
     twitter: '@ArtByMLO',
+    website: 'https://ostachowski.com',
     ethAddress: '0xe0F228070D8F7b5C25E9375Fa70FA418f8dfEDf8'
   },
   {
@@ -473,6 +474,35 @@ const artists = [
     twitter: '@sarahlouisej',
     img: '/static/artists/SarahL_Profile@x2.png',
     ethAddress: '0xd2cb8b4f7635f4081b4c3109c9bb35ae2bbee516',
+    live: true,
+  },
+  {
+    artistCode: 'BDK',
+    name: 'Brandi Kyle',
+    bio: 'Velvet paintings • Crypto • 3D Printing  • Being nice',
+    strapline: 'Velvet paintings • Crypto • 3D Printing  • Being nice',
+    twitter: '@Placeofmany',
+    img: '/static/artists/Stroke_AProfile@x2.png',
+    ethAddress: '0x4AF4aEBe930e938FA11aD28cD2c88645cCe739A1',
+    live: true,
+  },
+  {
+    artistCode: 'CTA',
+    name: 'Cryp_to_Art',
+    bio: 'A tribute to the Crypto culture',
+    strapline: 'A tribute to the Crypto culture',
+    twitter: '@Cryp_to_Art',
+    img: '/static/artists/Crypto_art_@x2.png',
+    ethAddress: '0x8ff69972bd0AC1Ed1569EC09564F51A80825ffCf',
+    live: true,
+  },
+  {
+    artistCode: 'PSL',
+    name: 'PelfSollution',
+    bio: 'Illustrator, designer & digital Collage artists',
+    strapline: 'Illustrator, designer & digital Collage artists',
+    img: '/static/artists/PelfSollution_AProfile@x2.png',
+    ethAddress: '0x925E54d0C6A36eC596c84470CB0bE85A638A8Da5',
     live: true,
   }
 ];

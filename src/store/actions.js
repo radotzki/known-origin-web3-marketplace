@@ -6,7 +6,6 @@ export const GET_CURRENT_NETWORK = 'GET_CURRENT_NETWORK';
 
 // External API calls
 export const GET_USD_PRICE = 'GET_USD_PRICE';
-export const ACTIVITY = 'ACTIVITY';
 
 ///////////////////
 // V2 Page Loads //
@@ -57,4 +56,3 @@ export const PLACE_BID = 'PLACE_BID';
 export const INCREASE_BID = 'INCREASE_BID';
 export const ACCEPT_BID = 'ACCEPT_BID';
 export const WITHDRAW_BID = 'WITHDRAW_BID';
-export const GET_AUCTION_EVENTS_FOR_EDITION = 'GET_AUCTION_EVENTS_FOR_EDITION';

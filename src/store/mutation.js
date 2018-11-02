@@ -8,8 +8,6 @@ export const SET_KODA_CONTRACT = 'SET_KODA_CONTRACT';
 
 // External API calls
 export const SET_USD_PRICE = 'SET_USD_PRICE';
-export const SET_ACTIVITY = 'SET_ACTIVITY';
-export const CLEAR_ACTIVITY = 'CLEAR_ACTIVITY';
 
 ///////////////////
 // Contract Data //
@@ -62,8 +60,6 @@ export const SET_CONTRACT_ADDRESS_V2 = 'SET_CONTRACT_ADDRESS_V2';
 export const SET_AUCTION_OWNER = 'SET_AUCTION_OWNER';
 export const SET_AUCTION_DETAILS = 'SET_AUCTION_DETAILS';
 export const SET_MINIMUM_BID = 'SET_MINIMUM_BID';
-export const SET_AUCTION_EVENTS = 'SET_AUCTION_EVENTS';
-export const RESET_EDITION_AUCTION_EVENTS = 'RESET_EDITION_AUCTION_EVENTS';
 
 // Auction Flow
 export const RESET_BID_STATE = 'RESET_BID_STATE';

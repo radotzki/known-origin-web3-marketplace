@@ -8,7 +8,7 @@
         <high-res-label :high-res-available="edition.highResAvailable"></high-res-label>
       </div>
       <div class="card-body">
-        <p class="card-title">{{ edition.name }}</p>
+        <p class="card-title"><creative-challenge-label :attributes="edition.attributes"></creative-challenge-label> {{ edition.name }}</p>
       </div>
       <div class="card-footer bg-white no-top-border">
         <div class="row">
@@ -36,6 +36,7 @@
   import ClickableAddress from '../generic/ClickableAddress';
   import Availability from '../v2/Availability';
   import HighResLabel from '../generic/HighResLabel';
+  import CreativeChallengeLabel from "../../ui-controls/generic/CreativeChallengeLabel";
 
   export default {
     name: 'gallery-card',
@@ -43,7 +44,8 @@
     components: {
       Availability,
       ClickableAddress,
-      HighResLabel
+      HighResLabel,
+      CreativeChallengeLabel
     },
     computed: {
       ...mapGetters([
