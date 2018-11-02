@@ -13,21 +13,32 @@ function featureArtworks(network) {
     case 'Ropsten':
     case 'Local':
       return [
-        21600,
-        21700,
-        21800,
-        21900,
-        22000,
-        22200,
-        22300,
+        // START cheaper selection
+        9500,
+        18100,
+        7500,
+        8400,
+        18800,
+        19500,
+        // END cheaper selection
+
         22400,
         22500,
         22600,
         22700,
-        22800,
         22900,
         23000,
-        23100
+        23100,
+
+        // START devcon4
+        23200,
+        23300,
+        23400,
+        23500,
+        23600,
+        23700,
+        23800
+        // END devcon4
       ];
     default:
       return [];
@@ -98,7 +109,11 @@ const contractStateModule = {
         return availableEditions(value);
       });
 
-      if (_.includes(['featured', 'artist', 'sold'], priceFilter)) {
+      if (_.includes(['featured'], priceFilter)) {
+        return _.orderBy(results, 'priceInEther', 'asc');
+      }
+
+      if (_.includes(['artist', 'sold'], priceFilter)) {
         return _.shuffle(results);
       }
 
