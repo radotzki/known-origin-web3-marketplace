@@ -5,127 +5,86 @@
       <loading-section v-if="!edition" :page="PAGES.COMPLETE_PURCHASE"></loading-section>
 
       <div class="col-sm-3 order-2 order-sm-1 mb-5" v-if="edition">
-        <div class="shadow-sm bg-white p-4">
-
-          <router-link
-            :to="{ name: 'artist-v2', params: { artistAccount: getArtistAddress(findArtistsForAddress(edition.artistAccount)) } }" class="artist-link">
-            <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
-            <span class="pl-1 artist-name-lg" v-on:click="goToArtist(edition.artistAccount)">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
-          </router-link>
-
-          <div class="clearfix"></div>
-
-          <hr/>
-
-          <div>
-            <strong>{{ edition.name }}</strong>
-          </div>
-
-          <div class="small mt-2">
-            {{ edition.description }}
-          </div>
-
-          <hr/>
-
-          <!--<small class="text-danger" v-if="isStartDateInTheFuture(edition.startDate)">-->
-          <!--<span>Available {{ edition.startDate | moment('from') }}</span>-->
-          <!--</small>-->
-
-          <high-res-label :high-res-available="edition.highResAvailable"></high-res-label>
-
-          <rarity-indicator :total-available="edition.totalAvailable"></rarity-indicator>
-
-          <metadata-attributes :attributes="edition.attributes"></metadata-attributes>
-
-          <div class="mt-4">
-            <hr/>
-            <price-in-eth :value="edition.priceInEther"></price-in-eth>
-            <span class="pl-1"><u-s-d-price :price-in-ether="edition.priceInEther"></u-s-d-price></span>
-
-            <div class="mt-2 small">
-              <div class="text-center mb-2" v-if="isPurchaseTriggered(edition.edition, account)">
-                <code class="mt-2">
-                  Your purchase has been initiated.<br/>
-                  Please be patient.
-                  <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
-                </code>
-                <hr/>
-              </div>
-
-              <div class="text-center mb-2 " v-if="isPurchaseStarted(edition.edition, account)">
-                <code class="mt-2">
-                  Your purchase is being confirmed...
-                  <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
-                </code>
-                <span class="text-muted">
-                  <clickable-transaction
-                    :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>
-                </span>
-                <hr/>
-              </div>
-
-              <div class="text-center mb-2" v-if="isPurchaseSuccessful(edition.edition, account)">
-                <img src="../../../static/GreenTick.svg" style="width: 50px"/>
-                <p class="card-text text-success mt-2">Your purchase was successful!</p>
-                <span class="text-muted">
-                  <clickable-transaction
-                    :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>
-                </span>
-              </div>
-
-              <div class="text-center mb-2" v-if="isPurchaseFailed(edition.edition, account)">
-                <img src="../../../static/Failure.svg" style="width: 50px"/>
-                <p class="card-text text-danger mt-2">Your purchase failed!</p>
-                <button type="button" v-on:click="retryPurchase" class="btn btn-secondary">
-                  Retry
-                </button>
-              </div>
-            </div>
-
-            <div class="mt-2" v-if="account && (edition.totalAvailable - edition.totalSupply > 0) && !isStartDateInTheFuture(edition.startDate) && haveNotPurchasedEditionBefore(edition.edition) && !isPurchaseFailed(edition.edition, account)">
-              <div v-if="edition || !editionPurchaseState(edition.edition)">
-
-                <div class="form-check mb-2">
-                  <label class="form-check-label" :for="'confirm_terms'">
-                    <input type="checkbox" :id="'confirm_terms'" v-model="confirm_terms">
-                    <span class="pl-2 small">I agree with the KODA terms of service. <router-link :to="{ name: 'terms' }" target="_blank">Terms of Service</router-link></span>
-                  </label>
-                </div>
-
-                <button type="button" class="btn btn-success btn text-white"
-                        :disabled="!confirm_terms || isPurchaseTriggered(edition.edition, account) || isPurchaseSuccessful(edition.edition, account)"
-                        v-on:click="completePurchase"
-                        v-if="isNotSoldOut || !isPurchaseSuccessful(edition.edition, account)">
-                  Confirm
-                </button>
-
-              </div>
-
-              <div v-if="isPurchaseFailed(edition.edition, account)">
-
-              </div>
-            </div>
-
-            <div class="mt-2 text-center" v-if="(edition.totalAvailable - edition.totalSupply === 0)">
-              Sold out
-            </div>
-
-            <div class="mt-4 text-center text-success" v-if="!haveNotPurchasedEditionBefore(edition.edition)">
-              You own this asset
-            </div>
-
-            <div class="mt-2 text-center" v-if="!account">
-              <code>Your account is locked!</code>
-            </div>
-
-          </div>
-
+        <edition-card :edition="edition"></edition-card>
+        <div class="shadow-sm bg-white pt-0 pl-4 pr-4 pb-4">
           <div class="small">
-            <hr/>
-            Edition 1 of {{ edition.totalAvailable }}
-            <availability class="float-right" :totalAvailable="edition.totalAvailable"
-                          :totalSupply="edition.totalSupply"></availability>
+            <div class="text-center mb-2" v-if="isPurchaseTriggered(edition.edition, account)">
+              <code class="mt-2">
+                Your purchase has been initiated.<br/>
+                Please be patient.
+                <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
+              </code>
+              <hr/>
+            </div>
+
+            <div class="text-center mb-2" v-if="isPurchaseStarted(edition.edition, account)">
+              <code class="mt-2">
+                Your purchase is being confirmed...
+                <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
+              </code>
+              <br/>
+              <span class="text-muted">
+                  <clickable-transaction
+                    :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>
+                </span>
+              <hr/>
+            </div>
+
+            <div class="text-center mb-2" v-if="isPurchaseSuccessful(edition.edition, account)">
+              <img src="../../../static/GreenTick.svg" style="width: 50px"/>
+              <p class="card-text text-success mt-2">Your purchase was successful!</p>
+              <span class="text-muted">
+                  <clickable-transaction
+                    :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>
+                </span>
+            </div>
+
+            <div class="text-center mb-2" v-if="isPurchaseFailed(edition.edition, account)">
+              <img src="../../../static/Failure.svg" style="width: 50px"/>
+              <p class="card-text text-danger mt-2">Your purchase failed!</p>
+              <button type="button" v-on:click="retryPurchase" class="btn btn-secondary">
+                Retry
+              </button>
+            </div>
           </div>
+
+          <div class=""
+               v-if="account && (edition.totalAvailable - edition.totalSupply > 0) && !isStartDateInTheFuture(edition.startDate) && haveNotPurchasedEditionBefore(edition.edition) && !isPurchaseFailed(edition.edition, account)">
+            <div v-if="edition || !editionPurchaseState(edition.edition)">
+
+              <div class="form-check mb-2">
+                <label class="form-check-label" :for="'confirm_terms'">
+                  <input type="checkbox" :id="'confirm_terms'" v-model="confirm_terms">
+                  <span class="pl-2 small">I agree with the KODA terms of service. <router-link :to="{ name: 'terms' }" target="_blank">Terms of Service</router-link></span>
+                </label>
+              </div>
+
+              <button type="button" class="btn btn-success btn text-white"
+                      :disabled="!confirm_terms || isPurchaseTriggered(edition.edition, account) || isPurchaseSuccessful(edition.edition, account)"
+                      v-on:click="completePurchase"
+                      v-if="isNotSoldOut || !isPurchaseSuccessful(edition.edition, account)">
+                Confirm
+              </button>
+
+            </div>
+
+            <div v-if="isPurchaseFailed(edition.edition, account)">
+
+            </div>
+          </div>
+
+          <div class="mt-2 text-center" v-if="(edition.totalAvailable - edition.totalSupply === 0)">
+            Sold out
+          </div>
+
+          <div class="mt-4 text-center text-success" v-if="!haveNotPurchasedEditionBefore(edition.edition)">
+            You own this asset
+          </div>
+
+          <div class="mt-2 text-center" v-if="!account">
+            <code>Your account is locked!</code>
+          </div>
+
         </div>
       </div>
 
@@ -156,10 +115,12 @@
   import USDPrice from '../ui-controls/generic/USDPrice';
   import Availability from '../ui-controls/v2/Availability';
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
+  import EditionCard from '../ui-controls/cards/EditionCard';
 
   export default {
     name: 'completePurchase',
     components: {
+      EditionCard,
       LoadingSection,
       TweetEditionButton,
       MetadataAttributes,
