@@ -29,16 +29,19 @@
                   <p class="card-title">
                     {{ asset.artworkName }}
                   </p>
+                </div>
+                <div class="card-footer bg-white no-top-border">
+                  <div class="row">
+                    <div class="col text-left">{{ asset.priceInEther }} ETH</div>
+                    <div class="col text-right">
+                      <span class="badge badge-primary">{{ asset.tokenId }}</span>
+                      <!--<high-res-label :high-res-available="asset.highResAvailable"></high-res-label>-->
+                    </div>
+                  </div>
+                </div>
+                <div class="card-footer bg-white no-top-border">
                   <img :src="findArtist(asset.artistCode).img" class="artist-avatar"/>
                   <span class="pl-1 artist-name">{{ asset.otherMeta.artist }}</span>
-                </div>
-                <div class="card-footer">
-                  <div class="row">
-                    <div class="col text-left">
-                      <high-res-label :high-res-available="asset.highResAvailable"></high-res-label>
-                    </div>
-                    <div class="col text-right">{{ asset.priceInEther }} ETH</div>
-                  </div>
                 </div>
               </div>
             </router-link>
@@ -57,7 +60,6 @@
         class="row justify-content-sm-center">
         <div class="col col-sm-6 text-center">
           <div class="alert alert-secondary" role="alert">You don't own any digital assets yet.</div>
-          <router-link :to="{ name: 'gallery' }" class="btn btn-outline-primary btn-lg">Gallery</router-link>
         </div>
       </div>
 

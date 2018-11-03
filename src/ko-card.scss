@@ -10,12 +10,18 @@
 
   .card {
     width: 14rem;
-    height: 21rem;
+    height: 22rem;
   }
 
   .card-title {
+    font-size: 0.85rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+    margin-top: 5px;
+  }
+
+  .card-price {
     font-size: 1rem;
-    margin-bottom: 15px;
   }
 
   .card-body {
@@ -24,7 +30,7 @@
 
   .card-footer {
     padding: 0.5rem;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
   }
 
   .card-target {

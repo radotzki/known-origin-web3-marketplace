@@ -11,7 +11,7 @@
       </div>
       <div class="card-footer bg-white no-top-border">
         <div class="row">
-          <div class="col"><strong>{{ edition.priceInEther }} ETH</strong></div>
+          <div class="col"><price-in-eth :value="edition.priceInEther"></price-in-eth></div>
           <div class="col text-right">
             <span class="badge badge-primary">{{ edition.tokenId }}</span>
           </div>
@@ -20,7 +20,7 @@
     </router-link>
 
     <router-link :to="{ name: 'artist-v2', params: { artistAccount: edition.artistAccount } }" class="floating-artist-link">
-      <div class="card-footer bg-white">
+      <div class="card-footer bg-white no-top-border">
         <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
         <a class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name | truncate(18) }}</a>
       </div>
@@ -34,13 +34,15 @@
   import { mapGetters, mapState } from 'vuex';
   import ClickableAddress from '../generic/ClickableAddress';
   import HighResLabel from '../generic/HighResLabel';
+  import PriceInEth from '../generic/PriceInEth';
 
   export default {
     name: 'token-card',
     props: ['edition', 'editionNumber'],
     components: {
       ClickableAddress,
-      HighResLabel
+      HighResLabel,
+      PriceInEth
     },
     computed: {
       ...mapGetters([
