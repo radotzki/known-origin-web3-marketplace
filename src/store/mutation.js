@@ -58,8 +58,10 @@ export const SET_CONTRACT_ADDRESS_V2 = 'SET_CONTRACT_ADDRESS_V2';
 // Auction //
 /////////////
 export const SET_AUCTION_OWNER = 'SET_AUCTION_OWNER';
+export const SET_AUCTION_ADDRESS = 'SET_AUCTION_ADDRESS';
 export const SET_AUCTION_DETAILS = 'SET_AUCTION_DETAILS';
 export const SET_MINIMUM_BID = 'SET_MINIMUM_BID';
+export const SET_AUCTION_STATS = 'SET_AUCTION_STATS';
 
 // Auction Flow
 export const RESET_BID_STATE = 'RESET_BID_STATE';
