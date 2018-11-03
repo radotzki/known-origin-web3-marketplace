@@ -358,4 +358,8 @@
     width: 100%;
   }
 
+  .no-top-border {
+    border-top: 0 none !important;
+  }
+
 </style>
