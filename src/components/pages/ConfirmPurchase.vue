@@ -45,22 +45,6 @@
             <hr/>
             <price-in-eth :value="edition.priceInEther"></price-in-eth>
             <span class="pl-1"><u-s-d-price :price-in-ether="edition.priceInEther"></u-s-d-price></span>
-
-            <div class="mt-2"
-                 v-if="(edition.totalAvailable - edition.totalSupply > 0) && !isStartDateInTheFuture(edition.startDate) && haveNotPurchasedEditionBefore(edition.edition)">
-              <a v-on:click="proceedWithPurchase" class="btn btn-primary text-white">Buy Now</a>
-            </div>
-
-            <div class="mt-2" v-if="(edition.totalAvailable - edition.totalSupply === 0)">
-              Sold out
-            </div>
-
-            <div class="mt-2" v-if="!haveNotPurchasedEditionBefore(edition.edition)">
-              <p class="text-center pt-2">
-                You have already purchased this edition!
-              </p>
-            </div>
-
           </div>
 
           <div class="small">
@@ -68,6 +52,23 @@
             Edition 1 of {{ edition.totalAvailable }}
             <availability class="float-right" :totalAvailable="edition.totalAvailable"
                           :totalSupply="edition.totalSupply"></availability>
+          </div>
+        </div>
+
+        <div class="shadow-sm bg-white p-4">
+          <div class="mt-2"
+               v-if="(edition.totalAvailable - edition.totalSupply > 0) && !isStartDateInTheFuture(edition.startDate) && haveNotPurchasedEditionBefore(edition.edition)">
+            <a v-on:click="proceedWithPurchase" class="btn btn-primary text-white">Buy Now</a>
+          </div>
+
+          <div class="mt-2" v-if="(edition.totalAvailable - edition.totalSupply === 0)">
+            Sold out
+          </div>
+
+          <div class="mt-2" v-if="!haveNotPurchasedEditionBefore(edition.edition)">
+            <p class="text-center pt-2">
+              You have already purchased this edition!
+            </p>
           </div>
         </div>
 
