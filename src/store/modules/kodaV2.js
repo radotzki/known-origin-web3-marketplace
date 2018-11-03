@@ -13,15 +13,7 @@ function featureArtworks(network) {
     case 'Ropsten':
     case 'Local':
       return [
-        // START cheaper selection
-        9500,
-        18100,
-        7500,
-        8400,
-        18800,
         19500,
-        // END cheaper selection
-
         22400,
         22500,
         22600,
@@ -29,16 +21,12 @@ function featureArtworks(network) {
         22900,
         23000,
         23100,
-
-        // START devcon4
-        23200,
-        23300,
-        23400,
-        23500,
-        23600,
-        23700,
-        23800
-        // END devcon4
+        23900,
+        24000,
+        24100,
+        24200,
+        24300,
+        24400
       ];
     default:
       return [];
@@ -64,13 +52,13 @@ const contractStateModule = {
 
     // must be 7 as rotated daily
     featuredArtistAccounts: [
-      '0xedB3DefCD7f2B17aBd937C966a4067fe832Ea0C2',
-      '0xdFa4feED08974A587139aF3e52826f41B6a82A8C',
+      '0x8ff69972bd0AC1Ed1569EC09564F51A80825ffCf',
+      '0x4AF4aEBe930e938FA11aD28cD2c88645cCe739A1',
       '0x3768225622d53FfCc1E00eaC53a2A870ECd825C8',
       '0x43a7634eb14c12b59be599487c1d7898a3d864c1',
       '0x08f950816358F4306B70fB319E4F35c592d1B8a8',
       '0xd2cb8b4f7635f4081b4c3109c9bb35ae2bbee516',
-      '0x8ddfb56566d7ae614a65f9f966837a66387cde47'
+      '0x08f950816358F4306B70fB319E4F35c592d1B8a8'
     ]
   },
   getters: {
@@ -109,11 +97,7 @@ const contractStateModule = {
         return availableEditions(value);
       });
 
-      if (_.includes(['featured'], priceFilter)) {
-        return _.orderBy(results, 'priceInEther', 'asc');
-      }
-
-      if (_.includes(['artist', 'sold'], priceFilter)) {
+      if (_.includes(['artist', 'sold', 'featured'], priceFilter)) {
         return _.shuffle(results);
       }
 
