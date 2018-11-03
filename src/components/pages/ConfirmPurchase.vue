@@ -5,67 +5,19 @@
       <loading-section v-if="!edition" :page="PAGES.CONFIRM_PURCHASE"></loading-section>
 
       <div class="col-sm-3 order-2 order-sm-1 mb-5" v-if="edition">
-        <div class="shadow-sm bg-white p-4">
 
-          <router-link
-            :to="{ name: 'artist-v2', params: { artistAccount: getArtistAddress(findArtistsForAddress(edition.artistAccount)) } }" class="artist-link">
-            <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
-            <span class="pl-1 artist-name-lg" v-on:click="goToArtist(edition.artistAccount)">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
-          </router-link>
-
-          <div class="clearfix"></div>
-
-          <hr/>
-
-          <div>
-            <strong>{{ edition.name }}</strong>
-          </div>
-
-          <div class="small mt-2">
-            {{ edition.description }}
-          </div>
-
-          <hr/>
-
-          <!--<small class="text-danger" v-if="isStartDateInTheFuture(edition.startDate)">-->
-          <!--<span>Available {{ edition.startDate | moment('from') }}</span>-->
-          <!--</small>-->
-
-          <high-res-label :high-res-available="edition.highResAvailable"></high-res-label>
-
-          <rarity-indicator :total-available="edition.totalAvailable"></rarity-indicator>
-
-          <metadata-attributes :attributes="edition.attributes"></metadata-attributes>
-
-          <div class="mt-2">
-            <creative-challenge-label :attributes="edition.attributes"></creative-challenge-label>
-          </div>
-
-          <div class="mt-4">
-            <hr/>
-            <price-in-eth :value="edition.priceInEther"></price-in-eth>
-            <span class="pl-1"><u-s-d-price :price-in-ether="edition.priceInEther"></u-s-d-price></span>
-          </div>
-
-          <div class="small">
-            <hr/>
-            Edition 1 of {{ edition.totalAvailable }}
-            <availability class="float-right" :totalAvailable="edition.totalAvailable"
-                          :totalSupply="edition.totalSupply"></availability>
-          </div>
-        </div>
-
-        <div class="shadow-sm bg-white p-4">
-          <div class="mt-2"
+        <edition-card :edition="edition"></edition-card>
+        <div class="shadow-sm bg-white pt-0 pl-4 pr-4 pb-4">
+          <div class=""
                v-if="(edition.totalAvailable - edition.totalSupply > 0) && !isStartDateInTheFuture(edition.startDate) && haveNotPurchasedEditionBefore(edition.edition)">
             <a v-on:click="proceedWithPurchase" class="btn btn-primary text-white">Buy Now</a>
           </div>
 
-          <div class="mt-2" v-if="(edition.totalAvailable - edition.totalSupply === 0)">
+          <div class="" v-if="(edition.totalAvailable - edition.totalSupply === 0)">
             Sold out
           </div>
 
-          <div class="mt-2" v-if="!haveNotPurchasedEditionBefore(edition.edition)">
+          <div class="" v-if="!haveNotPurchasedEditionBefore(edition.edition)">
             <p class="text-center pt-2">
               You have already purchased this edition!
             </p>
@@ -103,10 +55,12 @@
   import PlaceEditionBid from "../ui-controls/auction/PlaceEditionBid";
   import AuctionEventsList from "../ui-controls/auction/AuctionEventsList";
   import CreativeChallengeLabel from "../ui-controls/generic/CreativeChallengeLabel";
+  import EditionCard from '../ui-controls/cards/EditionCard';
 
   export default {
     name: 'confirmPurchase',
     components: {
+      EditionCard,
       CreativeChallengeLabel,
       AuctionEventsList,
       PlaceEditionBid,
