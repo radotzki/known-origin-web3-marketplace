@@ -8,14 +8,14 @@
     </div>
     <div class="card-body">
       <router-link class="card-target" :to="{ name: 'confirmPurchase', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
-        <p class="card-title">
+        <p class="card-title mt-2">
           <creative-challenge-label :attributes="edition.attributes"></creative-challenge-label>
           {{ edition.name }}
         </p>
       </router-link>
     </div>
     <div class="card-footer bg-white no-top-border">
-      <div class="row mb-3">
+      <div class="row mb-2">
         <div class="col">
           <router-link class="card-target" :to="{ name: 'confirmPurchase', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
             <p class="card-text">
