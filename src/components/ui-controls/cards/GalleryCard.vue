@@ -11,11 +11,12 @@
         <p class="card-title mt-2">
           <creative-challenge-label :attributes="edition.attributes"></creative-challenge-label>
           {{ edition.name }}
+          <span class="badge badge-primary float-right" v-if="edition && edition.tokenId">{{ edition.tokenId }}</span>
         </p>
       </router-link>
     </div>
     <div class="card-footer bg-white no-top-border">
-      <div class="row mb-2">
+      <div class="row mb-2" v-if="edition && !edition.tokenId">
         <div class="col">
           <router-link class="card-target" :to="{ name: 'confirmPurchase', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}">
             <p class="card-text">
