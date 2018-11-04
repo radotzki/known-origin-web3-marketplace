@@ -7,6 +7,7 @@
       <div class="col-sm-3 order-2 order-sm-1 mb-5" v-if="edition">
 
         <edition-card :edition="edition"></edition-card>
+
         <div class="shadow-sm bg-white pt-0 pl-4 pr-4 pb-4">
           <div class=""
                v-if="(edition.totalAvailable - edition.totalSupply > 0) && !isStartDateInTheFuture(edition.startDate) && haveNotPurchasedEditionBefore(edition.edition)">

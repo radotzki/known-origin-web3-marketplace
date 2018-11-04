@@ -51,7 +51,7 @@
         v-if="totalPurchases() === 0"
         class="row justify-content-sm-center">
         <div class="col col-sm-6 text-center">
-          <div class="alert alert-secondary" role="alert">You don't own any digital assets yet.</div>
+          <code>You don't own any digital assets yet.</code>
         </div>
       </div>
 
