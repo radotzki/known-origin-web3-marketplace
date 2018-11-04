@@ -28,16 +28,8 @@
                 <div class="card-body">
                   <p class="card-title">
                     {{ asset.artworkName }}
+                    <span class="badge badge-primary float-right">{{ asset.tokenId }}</span>
                   </p>
-                </div>
-                <div class="card-footer bg-white no-top-border">
-                  <div class="row">
-                    <div class="col text-left">{{ asset.priceInEther }} ETH</div>
-                    <div class="col text-right">
-                      <span class="badge badge-primary">{{ asset.tokenId }}</span>
-                      <!--<high-res-label :high-res-available="asset.highResAvailable"></high-res-label>-->
-                    </div>
-                  </div>
                 </div>
                 <div class="card-footer bg-white no-top-border">
                   <img :src="findArtist(asset.artistCode).img" class="artist-avatar"/>
@@ -49,7 +41,7 @@
 
           <!-- V2 -->
           <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in accountOwnedEditions" :key="editionNumber">
-            <token-card :edition="edition" :editionNumber="editionNumber"></token-card>
+            <gallery-card :edition="edition" :editionNumber="editionNumber"></gallery-card>
           </div>
 
         </div>
@@ -78,11 +70,11 @@
   import { PAGES } from '../../store/loadingPageState';
   import * as actions from '../../store/actions';
   import HighResLabel from '../ui-controls/generic/HighResLabel';
-  import TokenCard from '../ui-controls/cards/TokenCard';
+  import GalleryCard from '../ui-controls/cards/GalleryCard';
 
   export default {
     name: 'account',
-    components: {HighResLabel, LoadingSection, Asset, AddressIcon, EthAddress, ClickableAddress, TokenCard},
+    components: {GalleryCard, HighResLabel, LoadingSection, Asset, AddressIcon, EthAddress, ClickableAddress},
     data () {
       return {
         PAGES: PAGES
