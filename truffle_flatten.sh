@@ -7,3 +7,5 @@ node ./node_modules/.bin/truffle-flattener ./contracts/v1/KnownOriginDigitalAsse
 node ./node_modules/.bin/truffle-flattener ./contracts/v2/KnownOriginDigitalAssetV2.sol > ./contracts-flat/FLAT-KnownOriginDigitalAssetV2.sol;
 
 node ./node_modules/.bin/truffle-flattener ./contracts/v2/auctions/ArtistAcceptingBids.sol > ./contracts-flat/FLAT-ArtistAcceptingBids.sol;
+
+node ./node_modules/.bin/truffle-flattener ./contracts/v2/tools/ArtistEditionControls.sol > ./contracts-flat/FLAT-ArtistEditionControls.sol;
