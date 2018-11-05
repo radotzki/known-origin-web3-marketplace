@@ -1,10 +1,7 @@
 <template>
   <div class="card shadow-sm">
 
-    <router-link :to="{ name: 'edition-token', params: { tokenId: edition.tokenId }, props: { edition: edition } }" class="card-target" v-if="edition && edition.tokenId">
-      <img class="card-img-top" :src="edition.lowResImg" :id="editionNumber"/>
-    </router-link>
-    <router-link class="card-target" :to="{ name: 'confirmPurchase', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}" v-else>
+    <router-link :to="routeData()" class="card-target" v-if="edition">
       <img class="card-img-top" :src="edition.lowResImg" :id="editionNumber"/>
     </router-link>
 
@@ -12,14 +9,7 @@
       <high-res-label :high-res-available="edition.highResAvailable"></high-res-label>
     </div>
     <div class="card-body">
-      <router-link :to="{ name: 'edition-token', params: { tokenId: edition.tokenId }, props: { edition: edition } }" class="card-target" v-if="edition && edition.tokenId">
-        <p class="card-title mt-2">
-          <creative-challenge-label :attributes="edition.attributes"></creative-challenge-label>
-          {{ edition.name }}
-          <span class="badge badge-primary float-right" v-if="edition && edition.tokenId">{{ edition.tokenId }}</span>
-        </p>
-      </router-link>
-      <router-link class="card-target" :to="{ name: 'confirmPurchase', params: { artistAccount: edition.artistAccount, editionNumber: edition.edition }}" v-else>
+      <router-link :to="routeData()" class="card-target" v-if="edition">
         <p class="card-title mt-2">
           <creative-challenge-label :attributes="edition.attributes"></creative-challenge-label>
           {{ edition.name }}
@@ -31,12 +21,16 @@
       <div class="row mb-2" v-if="edition && !edition.tokenId">
         <div class="col">
           <p class="card-text">
-            <price-in-eth :value="edition.priceInEther"></price-in-eth>
+            <router-link :to="routeData()" class="card-target" v-if="edition">
+              <price-in-eth :value="edition.priceInEther"></price-in-eth>
+            </router-link>
           </p>
         </div>
         <div class="col text-right">
           <p class="card-text">
-            <availability :total-available="edition.totalAvailable" :total-supply="edition.totalSupply"></availability>
+            <router-link :to="routeData()" class="card-target" v-if="edition">
+              <availability :total-available="edition.totalAvailable" :total-supply="edition.totalSupply"></availability>
+            </router-link>
           </p>
         </div>
       </div>
@@ -49,8 +43,6 @@
 </template>
 
 <script>
-  import _ from 'lodash';
-
   import { mapGetters, mapState } from 'vuex';
   import ClickableAddress from '../generic/ClickableAddress';
   import Availability from '../v2/Availability';
@@ -73,7 +65,18 @@
         'findArtistsForAddress'
       ])
     },
-    methods: {}
+    methods: {
+      routeData: function () {
+        if (this.edition) {
+          if (this.edition.tokenId) {
+            return {name: 'edition-token', params: {tokenId: this.edition.tokenId}, props: {edition: this.edition}};
+          }
+
+          return {name: 'confirmPurchase', params: {artistAccount: this.edition.artistAccount, editionNumber: this.edition.edition}};
+        }
+        return {};
+      }
+    }
   };
 </script>
 
