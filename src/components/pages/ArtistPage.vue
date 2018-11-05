@@ -1,41 +1,49 @@
 <template>
-  <div class="container-fluid mt-4">
-    <div class="row editions-wrap">
-
-      <div class="col-sm-3">
-        <artist-panel :artist="lookupArtist()"></artist-panel>
-      </div>
-
-      <div class="col-sm-9">
-
-        <loading-section :page="PAGES.ARTISTS"></loading-section>
-
-        <div class="card-deck">
-          <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions" :key="editionNumber"
-               v-if="edition.active">
-            <gallery-card :edition="edition" :edition-number="editionNumber"></gallery-card>
-          </div>
-        </div>
+  <div>
+    <div class="row bg-secondary text-white full-banner">
+      <div class="col text-center m-5">
+        <p>Showcase and Discover Rare Digital Art</p>
       </div>
     </div>
 
-    <accept-edition-bids :editions="editions"></accept-edition-bids>
+    <div class="container-fluid mt-4">
+      <div class="row editions-wrap">
 
+        <div class="col-sm-3">
+          <artist-panel :artist="lookupArtist()"></artist-panel>
+        </div>
+
+        <div class="col-sm-9">
+
+          <loading-section :page="PAGES.ARTISTS"></loading-section>
+
+          <div class="card-deck">
+            <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions" :key="editionNumber"
+                 v-if="edition.active">
+              <gallery-card :edition="edition" :edition-number="editionNumber"></gallery-card>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <accept-edition-bids :editions="editions"></accept-edition-bids>
+
+    </div>
   </div>
 </template>
 
 <script>
 
-  import {mapGetters, mapState} from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
   import ArtistPanel from '../ui-controls/artist/ArtistPanel';
   import LoadingSpinner from '../ui-controls/generic/LoadingSpinner';
   import * as actions from '../../store/actions';
-  import {PAGES} from '../../store/loadingPageState';
+  import { PAGES } from '../../store/loadingPageState';
   import LoadingSection from '../ui-controls/generic/LoadingSection';
   import Availability from '../ui-controls/v2/Availability';
   import _ from 'lodash';
-  import AcceptEditionBids from "../ui-controls/auction/AcceptEditionBids";
-  import AuctionEventsList from "../ui-controls/auction/AuctionEventsList";
+  import AcceptEditionBids from '../ui-controls/auction/AcceptEditionBids';
+  import AuctionEventsList from '../ui-controls/auction/AuctionEventsList';
   import GalleryCard from '../ui-controls/cards/GalleryCard';
 
   export default {
@@ -49,7 +57,7 @@
       ArtistPanel,
       LoadingSpinner,
     },
-    data() {
+    data () {
       return {
         PAGES: PAGES
       };
@@ -94,7 +102,7 @@
         this.$store.dispatch(`auction/${actions.ACCEPT_BID}`, auction);
       },
     },
-    created() {
+    created () {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.ARTISTS);
 
       const loadData = function () {
@@ -113,7 +121,7 @@
         loadData();
       }
     },
-    destroyed() {
+    destroyed () {
     }
   };
 </script>
