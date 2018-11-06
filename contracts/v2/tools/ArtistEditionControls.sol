@@ -43,19 +43,19 @@ contract ArtistEditionControls is Ownable, Pausable {
   }
 
   /**
-   * @dev Ability to mint new NFTs from an edition
+   * @dev Ability to gift new NFTs to an address, from a KODA edition
    * @dev Only callable from edition artists defined in KODA NFT contract
    * @dev Only callable when contract is not paused
    * @dev Reverts if edition is invalid
    * @dev Reverts if edition is not active in KDOA NFT contract
    * @dev Reverts if remaining assets in an edition are great than 2
    */
-  function mint(address _to, uint256 _editionNumber)
+  function gift(address _receivingAddress, uint256 _editionNumber)
   external
   whenNotPaused
   returns (uint256)
   {
-    require(_to == address(0), "Unable to send to zero address");
+    require(_receivingAddress == address(0), "Unable to send to zero address");
 
     address artistAccount;
     uint256 artistCommission;
@@ -66,9 +66,9 @@ contract ArtistEditionControls is Ownable, Pausable {
     require(isActive, "Only when edition is active");
 
     uint256 totalRemaining = kodaAddress.totalRemaining(_editionNumber);
-    require(totalRemaining > 2, "Cannot mint any more from here");
+    require(totalRemaining > 2, "Cannot gift any more from here");
 
-    return kodaAddress.mint(_to, _editionNumber);
+    return kodaAddress.mint(_receivingAddress, _editionNumber);
   }
 
   /**
@@ -78,7 +78,7 @@ contract ArtistEditionControls is Ownable, Pausable {
    * @dev Reverts if edition is invalid
    * @dev Reverts if edition is not active in KDOA NFT contract
    */
-  function setPriceInWei(uint256 _editionNumber, uint256 _priceInWei)
+  function updateEditionPrice(uint256 _editionNumber, uint256 _priceInWei)
   external
   whenNotPaused
   returns (bool)
