@@ -40,7 +40,7 @@
           </div>
 
           <!-- V2 -->
-          <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in accountOwnedEditions" :key="editionNumber">
+          <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in accountOwnedEditions" :key="edition.tokenId">
             <gallery-card :edition="edition" :editionNumber="editionNumber"></gallery-card>
           </div>
 
