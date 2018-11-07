@@ -35,14 +35,24 @@ Vue.filter('toEth', function (value) {
   return Web3.utils.fromWei(value.toString(10), 'ether').valueOf();
 });
 
+Vue.filter('to4Dp', function (value) {
+  if (!value) return '';
+  return parseFloat(value).toFixed(4);
+});
+
+Vue.filter('to3Dp', function (value) {
+  if (!value) return '';
+  return parseFloat(value).toFixed(3);
+});
+
 Vue.filter('to2Dp', function (value) {
   if (!value) return '';
-  return Web3.utils.BN(value.toString(10)).toFormat(2);
+  return parseFloat(value).toFixed(2);
 });
 
 Vue.filter('to0Dp', function (value) {
   if (!value) return '';
-  return Web3.utils.BN(value.toString(10)).toFormat(0);
+  return parseFloat(value).toFixed(0);
 });
 
 Vue.filter('humanize', function (value) {

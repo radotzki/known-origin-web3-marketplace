@@ -176,11 +176,7 @@ interface IKODAV2Controls {
 
   function artistCommission(uint256 _editionNumber) external view returns (address _artistAccount, uint256 _artistCommission);
 
-  function totalAvailableEdition(uint256 _editionNumber) external view returns (uint256);
-
   function updatePriceInWei(uint256 _editionNumber, uint256 _priceInWei) external;
-
-  function totalRemaining(uint256 _editionNumber) external view returns (uint256);
 }
 
 /**
@@ -198,6 +194,12 @@ contract ArtistEditionControls is Ownable, Pausable {
   // Interface into the KODA world
   IKODAV2Controls public kodaAddress;
 
+  event PriceChanged(
+    uint256 indexed _editionNumber,
+    address indexed _artist,
+    uint256 _priceInWei
+  );
+
   constructor(IKODAV2Controls _kodaAddress) public {
     kodaAddress = _kodaAddress;
   }
@@ -208,25 +210,21 @@ contract ArtistEditionControls is Ownable, Pausable {
    * @dev Only callable when contract is not paused
    * @dev Reverts if edition is invalid
    * @dev Reverts if edition is not active in KDOA NFT contract
-   * @dev Reverts if remaining assets in an edition are great than 2
    */
   function gift(address _receivingAddress, uint256 _editionNumber)
   external
   whenNotPaused
   returns (uint256)
   {
-    require(_receivingAddress == address(0), "Unable to send to zero address");
+    require(_receivingAddress != address(0), "Unable to send to zero address");
 
     address artistAccount;
     uint256 artistCommission;
     (artistAccount, artistCommission) = kodaAddress.artistCommission(_editionNumber);
-    require(msg.sender == artistAccount, "Only from the edition artist account");
+    require(msg.sender == artistAccount || msg.sender == owner, "Only from the edition artist account");
 
     bool isActive = kodaAddress.editionActive(_editionNumber);
     require(isActive, "Only when edition is active");
-
-    uint256 totalRemaining = kodaAddress.totalRemaining(_editionNumber);
-    require(totalRemaining > 2, "Cannot gift any more from here");
 
     return kodaAddress.mint(_receivingAddress, _editionNumber);
   }
@@ -246,12 +244,14 @@ contract ArtistEditionControls is Ownable, Pausable {
     address artistAccount;
     uint256 artistCommission;
     (artistAccount, artistCommission) = kodaAddress.artistCommission(_editionNumber);
-    require(msg.sender == artistAccount, "Only from the edition artist account");
+    require(msg.sender == artistAccount || msg.sender == owner, "Only from the edition artist account");
 
     bool isActive = kodaAddress.editionActive(_editionNumber);
     require(isActive, "Only when edition is active");
 
     kodaAddress.updatePriceInWei(_editionNumber, _priceInWei);
+
+    emit PriceChanged(_editionNumber, msg.sender, _priceInWei);
 
     return true;
   }
