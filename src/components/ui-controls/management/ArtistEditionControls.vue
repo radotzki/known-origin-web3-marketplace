@@ -6,7 +6,7 @@
       <h3>Artist Controls
       </h3>
       <p>
-        Gifting NFTs and change prices for your own artwork.
+        Control prices for your artworks and gift NFTs.
       </p>
       <p>
         Please check <a :href="etherscanBase" target="_blank">Etherscan</a> to confirm your transactions complete
@@ -25,7 +25,11 @@
           </td>
           <td class="d-none d-md-table-cell align-middle">
             <div>
-              <span>{{edition.name}}</span>
+              {{edition.name}}
+            </div>
+            <div class="text-muted small">
+              <remaining-count :totalAvailable="edition.totalAvailable" :totalSupply="edition.totalSupply">
+              </remaining-count>
             </div>
           </td>
           <td class="align-middle">
@@ -52,7 +56,7 @@
                   </div>
                   <input type="number" class="form-control" style="max-width: 100px;"
                          :id="'price_' + editionNumber"
-                         placeholder="0.1" min="0" step="0.01"
+                         placeholder="0.1" min="0" step="0.02"
                          v-model="form.price[edition.edition]">
                   <div class="input-group-append">
                     <div class="input-group-text">${{toUsdPrice(form.price[edition.edition])}}</div>
@@ -88,10 +92,12 @@
   import Web3 from 'web3';
   import _ from 'lodash';
   import Vue from 'vue';
+  import RemainingCount from "../v2/RemainingCount";
 
   export default {
     name: 'artistEditionControls',
     components: {
+      RemainingCount,
       ViewTransactionDetails,
       ClickableTransaction,
       PriceInEth,
