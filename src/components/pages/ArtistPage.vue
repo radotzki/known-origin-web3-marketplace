@@ -28,6 +28,8 @@
 
       <accept-edition-bids :editions="editions"></accept-edition-bids>
 
+      <artist-edition-controls :editions="editions"></artist-edition-controls>
+
     </div>
   </div>
 </template>
@@ -45,10 +47,12 @@
   import AcceptEditionBids from '../ui-controls/auction/AcceptEditionBids';
   import AuctionEventsList from '../ui-controls/auction/AuctionEventsList';
   import GalleryCard from '../ui-controls/cards/GalleryCard';
+  import ArtistEditionControls from "../ui-controls/management/ArtistEditionControls";
 
   export default {
     name: 'artistPage',
     components: {
+      ArtistEditionControls,
       GalleryCard,
       AuctionEventsList,
       AcceptEditionBids,

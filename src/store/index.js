@@ -11,6 +11,7 @@ import truffleContract from 'truffle-contract';
 import knownOriginDigitalAssetJson from '../../build/contracts/KnownOriginDigitalAsset.json';
 import knownOriginDigitalAssetJsonV2 from '../../build/contracts/KnownOriginDigitalAssetV2.json';
 import ArtistAcceptingBidsJson from '../../build/contracts/ArtistAcceptingBids.json';
+import ArtistEditionControlsJson from '../../build/contracts/ArtistEditionControls.json';
 
 import createLogger from 'vuex/dist/logger';
 // import createPersistedState from 'vuex-persistedstate';
@@ -21,10 +22,12 @@ import kodaV1 from './modules/kodaV1';
 import kodaV2 from './modules/kodaV2';
 import loading from './modules/loading';
 import auction from './modules/auction';
+import artistControls from './modules/artistEditionControls';
 
 const KnownOriginDigitalAssetV1 = truffleContract(knownOriginDigitalAssetJson);
 const KnownOriginDigitalAssetV2 = truffleContract(knownOriginDigitalAssetJsonV2);
 const ArtistAcceptingBids = truffleContract(ArtistAcceptingBidsJson);
+const ArtistEditionControls = truffleContract(ArtistEditionControlsJson);
 
 import * as Firebase from 'firebase/app';
 import 'firebase/firestore';
@@ -61,6 +64,7 @@ const store = new Vuex.Store({
     highres,
     loading,
     auction,
+    artistControls,
   },
   state: {
     // connectivity
@@ -79,6 +83,7 @@ const store = new Vuex.Store({
     KnownOriginDigitalAssetV1: null,
     KnownOriginDigitalAssetV2: null,
     ArtistAcceptingBids: null,
+    ArtistEditionControls: null,
 
     KnownOriginDigitalAssetV2MainBlockNumber: 6270484,
     ArtistAcceptingBidsMainBlockNumber: 6568535,
@@ -146,10 +151,11 @@ const store = new Vuex.Store({
     [mutations.SET_WEB3](state, web3) {
       state.web3 = web3;
     },
-    [mutations.SET_KODA_CONTRACT](state, {v1, v2, auction}) {
+    [mutations.SET_KODA_CONTRACT](state, {v1, v2, auction, editionControls}) {
       state.KnownOriginDigitalAssetV1 = v1;
       state.KnownOriginDigitalAssetV2 = v2;
       state.ArtistAcceptingBids = auction;
+      state.ArtistEditionControls = editionControls;
     },
   },
   actions: {
@@ -182,6 +188,7 @@ const store = new Vuex.Store({
       KnownOriginDigitalAssetV1.setProvider(web3.currentProvider);
       KnownOriginDigitalAssetV2.setProvider(web3.currentProvider);
       ArtistAcceptingBids.setProvider(web3.currentProvider);
+      ArtistEditionControls.setProvider(web3.currentProvider);
 
       //dirty hack for web3@1.0.0 support for localhost testrpc, see https://github.com/trufflesuite/truffle-contract/issues/56#issuecomment-331084530
       if (typeof KnownOriginDigitalAssetV1.currentProvider.sendAsync !== "function") {
@@ -210,6 +217,15 @@ const store = new Vuex.Store({
         };
       }
 
+      //dirty hack for web3@1.0.0 support for localhost testrpc, see https://github.com/trufflesuite/truffle-contract/issues/56#issuecomment-331084530
+      if (typeof ArtistEditionControls.currentProvider.sendAsync !== "function") {
+        ArtistEditionControls.currentProvider.sendAsync = function () {
+          return ArtistEditionControls.currentProvider.send.apply(
+            ArtistEditionControls.currentProvider, arguments
+          );
+        };
+      }
+
       // Set the web3 instance
       commit(mutations.SET_WEB3, web3);
 
@@ -217,6 +233,7 @@ const store = new Vuex.Store({
         v1: KnownOriginDigitalAssetV1,
         v2: KnownOriginDigitalAssetV2,
         auction: ArtistAcceptingBids,
+        editionControls: ArtistEditionControls,
       });
 
       // Find current network
@@ -240,6 +257,9 @@ const store = new Vuex.Store({
 
                 // Load auction contract owner
                 dispatch(`auction/${actions.GET_AUCTION_OWNER}`);
+
+                // Load control contract owner
+                dispatch(`artistControls/${actions.GET_ARTIST_EDITION_CONTROLS_DETAILS}`);
               });
           };
 

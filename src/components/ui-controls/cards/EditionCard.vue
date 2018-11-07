@@ -4,7 +4,7 @@
     <router-link
       :to="{ name: 'artist-v2', params: { artistAccount: getArtistAddress(findArtistsForAddress(edition.artistAccount)) } }" class="artist-link">
       <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
-      <span class="pl-1 artist-name-lg" v-on:click="goToArtist(edition.artistAccount)">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
+      <span class="pl-1 artist-name-lg">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
     </router-link>
 
     <div class="clearfix"></div>

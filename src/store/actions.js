@@ -56,3 +56,11 @@ export const PLACE_BID = 'PLACE_BID';
 export const INCREASE_BID = 'INCREASE_BID';
 export const ACCEPT_BID = 'ACCEPT_BID';
 export const WITHDRAW_BID = 'WITHDRAW_BID';
+
+
+/////////////////////
+// Artist Controls //
+/////////////////////
+export const GET_ARTIST_EDITION_CONTROLS_DETAILS = 'GET_ARTIST_EDITION_CONTROLS_DETAILS';
+export const UPDATE_EDITION_PRICE = 'UPDATE_EDITION_PRICE';
+export const GIFT_EDITION = 'GIFT_EDITION';
