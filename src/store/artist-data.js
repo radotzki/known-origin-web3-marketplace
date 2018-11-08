@@ -473,7 +473,10 @@ const artists = [
     strapline: 'I began creating digital artwork back in my university days with fractals and photoshop creations.',
     twitter: '@sarahlouisej',
     img: '/static/artists/SarahL_Profile@x2.png',
-    ethAddress: '0xd2cb8b4f7635f4081b4c3109c9bb35ae2bbee516',
+    ethAddress: [
+      '0x67ABA2722Cc92D9021f61B869D9c2081066b3e1D', // new
+      '0xd2cb8b4f7635f4081b4c3109c9bb35ae2bbee516' // old
+    ],
     live: true,
   },
   {
