@@ -22,7 +22,7 @@
         <div class="col">
           <p class="card-text">
             <router-link :to="routeData()" class="card-target" v-if="edition">
-              <price-in-eth :value="edition.priceInEther | to2Dp"></price-in-eth>
+              <price-in-eth :value="edition.priceInEther | to4Dp"></price-in-eth>
             </router-link>
           </p>
         </div>
