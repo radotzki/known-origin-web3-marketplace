@@ -56,6 +56,7 @@ export const PLACE_BID = 'PLACE_BID';
 export const INCREASE_BID = 'INCREASE_BID';
 export const ACCEPT_BID = 'ACCEPT_BID';
 export const WITHDRAW_BID = 'WITHDRAW_BID';
+export const CANCEL_AUCTION = 'CANCEL_AUCTION';
 
 
 /////////////////////

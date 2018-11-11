@@ -4,7 +4,7 @@ import * as mutations from '../mutation';
 import _ from 'lodash';
 import Web3 from 'web3';
 import axios from 'axios';
-import {isHighRes} from '../../utils';
+import {isHighRes, safeToCheckSumAddress} from '../../utils';
 
 function featureArtworks(network) {
   switch (network) {
@@ -75,12 +75,12 @@ const contractStateModule = {
     },
     filterEditions: (state, getters, rootState) => (priceFilter = 'asc') => {
       const artworks = featureArtworks(rootState.currentNetwork);
-      const todaysArtist = Web3.utils.toChecksumAddress(getters.featuredArtistAccount());
+      const todaysArtist = safeToCheckSumAddress(getters.featuredArtistAccount());
 
       const soldOutEditions = (edition) => edition.totalSupply === edition.totalAvailable;
       const availableEditions = (edition) => edition.totalSupply !== edition.totalAvailable;
       const featuredEditions = (edition) => artworks.indexOf(_.toNumber(edition.edition)) > -1;
-      const featuredArtistEditions = (edition) => todaysArtist === Web3.utils.toChecksumAddress(edition.artistAccount);
+      const featuredArtistEditions = (edition) => todaysArtist === safeToCheckSumAddress(edition.artistAccount);
 
       const results = _.pickBy(state.assets, function (value, key) {
         if (priceFilter === 'featured') {
@@ -106,7 +106,7 @@ const contractStateModule = {
         let artistEditions = {};
         _.forEach(artistAccount, (account) => {
           let found = _.pickBy(state.assets, function (value, key) {
-            return Web3.utils.toChecksumAddress(value.artistAccount) === Web3.utils.toChecksumAddress(account);
+            return safeToCheckSumAddress(value.artistAccount) === safeToCheckSumAddress(account);
           });
           if (found) {
             _.merge(artistEditions, found);
@@ -116,7 +116,7 @@ const contractStateModule = {
         return artistEditions;
       } else {
         return _.pickBy(state.assets, function (value, key) {
-          return Web3.utils.toChecksumAddress(value.artistAccount) === Web3.utils.toChecksumAddress(artistAccount);
+          return safeToCheckSumAddress(value.artistAccount) === safeToCheckSumAddress(artistAccount);
         });
       }
     },
@@ -212,11 +212,11 @@ const contractStateModule = {
       let editions;
       if (_.isArray(artistAccount)) {
         let found = await Promise.all(_.map(artistAccount, async (account) => {
-          return await contract.artistsEditions(Web3.utils.toChecksumAddress(account));
+          return await contract.artistsEditions(safeToCheckSumAddress(account));
         }));
         editions = _.flatten(found);
       } else {
-        editions = await contract.artistsEditions(Web3.utils.toChecksumAddress(artistAccount));
+        editions = await contract.artistsEditions(safeToCheckSumAddress(artistAccount));
       }
 
       dispatch(`auction/${actions.GET_AUCTION_DETAILS_FOR_EDITION_NUMBERS}`, {editions}, {root: true});
@@ -332,7 +332,7 @@ const mapTokenData = async (contract, tokenId) => {
     edition: typeof tokenData[0] === 'number' ? tokenData[0] : _.toNumber(tokenData[0]),
     editionType: tokenData[1].toNumber(),
     editionData: editionData,
-    owner: Web3.utils.toChecksumAddress(tokenData[4]),
+    owner: safeToCheckSumAddress(tokenData[4]),
   };
 };
 
@@ -343,7 +343,7 @@ const mapData = (rawData) => {
     editionType: rawData[1].toNumber(),
     startDate: rawData[2].toNumber(),
     endDate: rawData[3].toNumber(),
-    artistAccount: Web3.utils.toChecksumAddress(rawData[4]),
+    artistAccount: safeToCheckSumAddress(rawData[4]),
     artistCommission: rawData[5].toNumber(),
     priceInWei: rawData[6].toNumber(),
     priceInEther: Web3.utils.fromWei(rawData[6].toString(10), 'ether').valueOf(),

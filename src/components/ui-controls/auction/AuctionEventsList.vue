@@ -1,6 +1,5 @@
 <template>
-  <div class="mt-4 shadow-sm bg-white p-4"
-       v-if="isEditionAuctionEnabled(edition.edition) && auctionEvents.length > 0">
+  <div class="mt-4 shadow-sm bg-white p-4" v-if="auctionEvents.length > 0">
     <h6>Recent events</h6>
 
     <div v-for="event in limitBy(orderBy(auctionEvents, 'blockNumber', -1), 10)">
@@ -23,7 +22,6 @@
 </template>
 
 <script>
-  import {mapGetters, mapState} from 'vuex';
   import ClickableAddress from '../generic/ClickableAddress';
   import PriceInEth from '../generic/PriceInEth';
   import USDPrice from '../generic/USDPrice';
@@ -50,9 +48,6 @@
       };
     },
     computed: {
-      ...mapGetters('auction', [
-        'isEditionAuctionEnabled',
-      ]),
     },
     methods: {},
     created() {

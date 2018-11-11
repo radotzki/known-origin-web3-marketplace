@@ -94,6 +94,10 @@
             <td>{{ auctionV1.ethPlaced }}</td>
           </tr>
           <tr>
+            <td>ETH Accepted</td>
+            <td>{{ auctionV1.ethAccepted }}</td>
+          </tr>
+          <tr>
             <td>Current Balance</td>
             <td>{{ auctionV1.contractBalance }}</td>
           </tr>
@@ -142,6 +146,7 @@
         return {
           contractAddress: this.$store.state.auction.contractAddress,
           ethPlaced: this.$store.state.auction.ethPlaced,
+          ethAccepted: this.$store.state.auction.ethAccepted,
           contractBalance: this.$store.state.auction.contractBalance,
         };
       },

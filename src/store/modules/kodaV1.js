@@ -3,7 +3,7 @@ import * as actions from '../actions';
 import * as mutations from '../mutation';
 import _ from 'lodash';
 import Web3 from 'web3';
-import {isHighResV1Old} from '../../utils';
+import {isHighResV1Old, safeToCheckSumAddress} from '../../utils';
 import axios from 'axios';
 
 const contractStateModule = {
@@ -111,14 +111,6 @@ const contractStateModule = {
           });
         });
     },
-  }
-};
-
-const safeToCheckSumAddress = (address) => {
-  try {
-    return Web3.utils.toChecksumAddress(address);
-  } catch (e) {
-    return "0x00000000000000000000000000000000";
   }
 };
 
