@@ -6,7 +6,7 @@ import _ from 'lodash';
 import Web3 from 'web3';
 import axios from 'axios';
 import artistData from './artist-data';
-import {getEtherscanAddress, getNetIdString} from '../utils';
+import {getEtherscanAddress, getNetIdString, safeToCheckSumAddress} from '../utils';
 import truffleContract from 'truffle-contract';
 import knownOriginDigitalAssetJson from '../../build/contracts/KnownOriginDigitalAsset.json';
 import knownOriginDigitalAssetJsonV2 from '../../build/contracts/KnownOriginDigitalAssetV2.json';
@@ -100,11 +100,11 @@ const store = new Vuex.Store({
         return state.artistLookupCache[artistAddress];
       }
 
-      const artistsAddress = Web3.utils.toChecksumAddress(artistAddress);
+      const artistsAddress = safeToCheckSumAddress(artistAddress);
 
       const artist = _.find(state.artists, (artist) => {
         if (_.isArray(artist.ethAddress)) {
-          return _.find(artist.ethAddress, (address) => Web3.utils.toChecksumAddress(address) === artistsAddress);
+          return _.find(artist.ethAddress, (address) => safeToCheckSumAddress(address) === artistsAddress);
         }
         return Web3.utils.toChecksumAddress(artist.ethAddress) === artistsAddress;
       });

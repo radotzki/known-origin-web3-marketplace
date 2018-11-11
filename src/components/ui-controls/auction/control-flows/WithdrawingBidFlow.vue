@@ -52,7 +52,7 @@
   import UsdPrice from '../../../ui-controls/generic/USDPrice';
   import ClickableTransaction from '../../../ui-controls/generic/ClickableTransaction';
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
-  import Web3 from "web3";
+  import {safeToCheckSumAddress} from "../../../../utils";
 
   export default {
     name: 'withdrawingBidFlow',
@@ -90,7 +90,7 @@
       canWithdrawBid: function () {
         return (this.account && this.auction) &&
           this.auction.highestBidWei > 0 &&
-          (Web3.utils.toChecksumAddress(this.auction.highestBidder) === Web3.utils.toChecksumAddress(this.account));
+          (safeToCheckSumAddress(this.auction.highestBidder) === safeToCheckSumAddress(this.account));
       },
       withdrawBid: function () {
         this.$store.dispatch(`auction/${actions.WITHDRAW_BID}`, this.auction);

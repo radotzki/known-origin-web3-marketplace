@@ -2,6 +2,7 @@ import * as actions from '../actions';
 import * as mutations from '../mutation';
 import _ from 'lodash';
 import Web3 from "web3";
+import {safeToCheckSumAddress} from "../../utils";
 
 const auctionStateModule = {
   namespaced: true,
@@ -10,6 +11,7 @@ const auctionStateModule = {
     contractAddress: null,
     contractBalance: null,
     ethPlaced: null,
+    ethAccepted: null,
 
     auction: {},
     bidState: {},
@@ -47,7 +49,7 @@ const auctionStateModule = {
       if (currentHighestBidder === 0) {
         return false;
       }
-      return Web3.utils.toChecksumAddress(currentHighestBidder) === Web3.utils.toChecksumAddress(rootState.account);
+      return safeToCheckSumAddress(currentHighestBidder) === safeToCheckSumAddress(rootState.account);
     },
     /////////////////////////
     // Accepting Bid State //
@@ -117,16 +119,17 @@ const auctionStateModule = {
     [mutations.SET_AUCTION_ADDRESS](state, {address}) {
       state.contractAddress = address;
     },
-    [mutations.SET_AUCTION_STATS](state, {ethPlaced, contractBalance}) {
+    [mutations.SET_AUCTION_STATS](state, {ethPlaced, contractBalance, ethAccepted}) {
       state.ethPlaced = ethPlaced;
+      state.ethAccepted = ethAccepted;
       state.contractBalance = contractBalance;
     },
     [mutations.SET_AUCTION_OWNER](state, {owner, address}) {
-      state.owner = Web3.utils.toChecksumAddress(owner);
+      state.owner = safeToCheckSumAddress(owner);
       state.contractAddress = address;
     },
     [mutations.SET_AUCTION_OWNER](state, {owner, address}) {
-      state.owner = Web3.utils.toChecksumAddress(owner);
+      state.owner = safeToCheckSumAddress(owner);
       state.contractAddress = address;
     },
     [mutations.SET_AUCTION_DETAILS](state, data) {
@@ -463,7 +466,7 @@ const auctionStateModule = {
           if (timer) clearInterval(timer);
         });
     },
-    [actions.WITHDRAW_BID]: async function ({commit, dispatch, state, getters, rootState}, auction) {
+    async [actions.WITHDRAW_BID]({commit, dispatch, state, getters, rootState}, auction) {
       commit(mutations.RESET_BID_WITHDRAWN_STATE, {auction});
 
       const account = rootState.account;
@@ -512,6 +515,11 @@ const auctionStateModule = {
           if (timer) clearInterval(timer);
         });
     },
+    async [actions.CANCEL_AUCTION]({commit, dispatch, state, getters, rootState}, auction) {
+      let contract = await rootState.ArtistAcceptingBids.deployed();
+      const account = rootState.account;
+      return contract.cancelAuction(auction.edition, {from: account});
+    },
     async [actions.REFRESH_CONTRACT_DETAILS]({commit, dispatch, state, rootState}) {
       let contract = await rootState.ArtistAcceptingBids.deployed();
 
@@ -524,9 +532,11 @@ const auctionStateModule = {
       const auctionRef = rootReference.collection('auction-v1');
 
       let ethPlaced = 0;
+      let ethAccepted = 0;
 
       Promise.all([
         auctionRef.where("event", '==', "BidPlaced").get(),
+        auctionRef.where("event", '==', "BidAccepted").get(),
         auctionRef.where("event", '==', "BidIncreased").get()
       ])
         .then(async (querySet) => {
@@ -534,15 +544,23 @@ const auctionStateModule = {
             querySnapshot.forEach((doc) => {
               const data = doc.data();
 
-              if (ethPlaced === 0) {
-                ethPlaced = new web3.utils.BN(_.get(data, '_args._amount'));
+              if (data.event === 'BidAccepted') {
+
+                ethAccepted = ethAccepted === 0
+                  ? new web3.utils.BN(_.get(data, '_args._amount'))
+                  : ethAccepted.add(new web3.utils.BN(_.get(data, '_args._amount')));
+
               } else {
-                ethPlaced = ethPlaced.add(new web3.utils.BN(_.get(data, '_args._amount')));
+
+                ethPlaced = ethPlaced === 0
+                  ? new web3.utils.BN(_.get(data, '_args._amount'))
+                  : ethPlaced.add(new web3.utils.BN(_.get(data, '_args._amount')));
               }
             });
           });
           commit(mutations.SET_AUCTION_STATS, {
             ethPlaced: Web3.utils.fromWei(ethPlaced.toString(10), 'ether').valueOf(),
+            ethAccepted: Web3.utils.fromWei(ethAccepted.toString(10), 'ether').valueOf(),
             contractBalance: Web3.utils.fromWei(await rootState.web3.eth.getBalance(contract.address), 'ether').valueOf()
           });
         });
@@ -558,7 +576,7 @@ const transformAuctionDetails = (value, edition) => {
     highestBidder: value[1],
     highestBid: Web3.utils.fromWei(value[2].toString("10"), 'ether'),
     highestBidWei: value[2],
-    controller: Web3.utils.toChecksumAddress(value[3]),
+    controller: safeToCheckSumAddress(value[3]),
   };
 };
 

@@ -23,6 +23,10 @@
             <div>
               <span>{{getEdition(auction.edition).name}}</span>
             </div>
+            <remaining-count class="small"
+                             :totalAvailable="getEdition(auction.edition).totalAvailable"
+                             :totalSupply="getEdition(auction.edition).totalSupply">
+            </remaining-count>
           </td>
           <td class="align-middle">
             <div v-if="auction.highestBid > 0">
@@ -40,6 +44,7 @@
           <td class="w-25 text-center align-middle">
             <accepting-bid-flow :auction="auction"></accepting-bid-flow>
             <withdrawing-bid-flow :auction="auction"></withdrawing-bid-flow>
+            <cancelling-auction-flow :auction="auction"></cancelling-auction-flow>
           </td>
         </tr>
         </tbody>
@@ -55,7 +60,6 @@
   import ArtistShortBio from '../../ui-controls/artist/ArtistShortBio';
   import ArtistPanel from '../../ui-controls/artist/ArtistPanel';
   import LoadingSpinner from '../../ui-controls/generic/LoadingSpinner';
-  import * as actions from '../../../store/actions';
   import RarityIndicator from '../../ui-controls/v2/RarityIndicator';
   import MetadataAttributes from '../../ui-controls/v2/MetadataAttributes';
   import TweetEditionButton from '../../ui-controls/v2/TweetEditionButton';
@@ -72,10 +76,14 @@
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
   import AcceptingBidFlow from "./control-flows/AcceptingBidFlow";
   import WithdrawingBidFlow from "./control-flows/WithdrawingBidFlow";
+  import RemainingCount from "../v2/RemainingCount";
+  import CancellingAuctionFlow from "./control-flows/CancelAuctionFlow";
 
   export default {
     name: 'acceptEditionBids',
     components: {
+      CancellingAuctionFlow,
+      RemainingCount,
       WithdrawingBidFlow,
       AcceptingBidFlow,
       FontAwesomeIcon,

@@ -1,3 +1,5 @@
+import Web3 from "web3";
+
 const _ = require('lodash');
 
 const getNetId = async () => {
@@ -223,8 +225,18 @@ const isHighResV1Old = ({artistCode, attributes, edition}) => {
   return (isFlaggedAsHighRes && isEnabledForArtist) || forcedEditions;
 };
 
+const safeToCheckSumAddress = (address) => {
+  try {
+    return Web3.utils.toChecksumAddress(address);
+  } catch (e) {
+    return "0x00000000000000000000000000000000";
+  }
+};
+
+
 export {
   getNetId,
+  safeToCheckSumAddress,
   getNetIdString,
   getEtherscanAddress,
   isHighResV1Old,
