@@ -12,6 +12,7 @@ const auctionStateModule = {
     contractBalance: null,
     ethPlaced: null,
     ethAccepted: null,
+    bidsAccepted: null,
 
     auction: {},
     bidState: {},
@@ -119,9 +120,10 @@ const auctionStateModule = {
     [mutations.SET_AUCTION_ADDRESS](state, {address}) {
       state.contractAddress = address;
     },
-    [mutations.SET_AUCTION_STATS](state, {ethPlaced, contractBalance, ethAccepted}) {
+    [mutations.SET_AUCTION_STATS](state, {ethPlaced, contractBalance, ethAccepted, bidsAccepted}) {
       state.ethPlaced = ethPlaced;
       state.ethAccepted = ethAccepted;
+      state.bidsAccepted = bidsAccepted;
       state.contractBalance = contractBalance;
     },
     [mutations.SET_AUCTION_OWNER](state, {owner, address}) {
@@ -533,6 +535,7 @@ const auctionStateModule = {
 
       let ethPlaced = 0;
       let ethAccepted = 0;
+      let bidsAccepted = 0;
 
       Promise.all([
         auctionRef.where("event", '==', "BidPlaced").get(),
@@ -545,6 +548,8 @@ const auctionStateModule = {
               const data = doc.data();
 
               if (data.event === 'BidAccepted') {
+
+                bidsAccepted++;
 
                 ethAccepted = ethAccepted === 0
                   ? new web3.utils.BN(_.get(data, '_args._amount'))
@@ -561,6 +566,7 @@ const auctionStateModule = {
           commit(mutations.SET_AUCTION_STATS, {
             ethPlaced: Web3.utils.fromWei(ethPlaced.toString(10), 'ether').valueOf(),
             ethAccepted: Web3.utils.fromWei(ethAccepted.toString(10), 'ether').valueOf(),
+            bidsAccepted: bidsAccepted,
             contractBalance: Web3.utils.fromWei(await rootState.web3.eth.getBalance(contract.address), 'ether').valueOf()
           });
         });
