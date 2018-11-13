@@ -10,7 +10,7 @@
 
     <div class="container-fluid mt-4">
       <div class="text-muted small mb-2 text-right">Updated every 5 minutes</div>
-      <div class="row editions-wrap">
+      <div class="row">
         <div class="col">
           <table class="table table-striped">
             <tbody>
