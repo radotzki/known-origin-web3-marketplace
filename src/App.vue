@@ -22,35 +22,37 @@
     </modal>
 
     <header>
-      <nav class="navbar navbar-expand-md navbar-light bg-white text-primary fixed-top floating-nav">
-        <router-link :to="{ name: 'home' }" class="navbar-brand" v-if="['home', 'gallery'].indexOf($route.name) > -1">
+      <b-navbar toggleable="md" variant="light" class="fixed-top floating-nav">
+
+        <b-navbar-brand href="/home" v-if="['home', 'gallery'].indexOf($route.name) > -1">
           KnownOrigin.io
-        </router-link>
+        </b-navbar-brand>
 
-        <a @click="goBack" v-if="['home', 'gallery'].indexOf($route.name) === -1">
-          <img src="../static/back_arrow.svg" class="back-arrow"/>
-        </a>
+        <b-navbar-brand v-if="['home', 'gallery'].indexOf($route.name) === -1">
+          <a @click="goBack">
+            <img src="../static/back_arrow.svg" class="back-arrow"/>
+          </a>
+        </b-navbar-brand>
 
-        <ul class="navbar-nav mr-auto">
-        </ul>
-        <ul class="navbar-nav">
-          <li class="nav-item d-none d-md-block">
+        <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
+
+        <b-collapse is-nav id="nav_collapse">
+          <b-navbar-nav class="ml-auto">
+
             <router-link :to="{ name: 'gallery' }" class="nav-link">Gallery</router-link>
-          </li>
-          <li class="nav-item d-none d-md-block">
+
             <router-link :to="{ name: 'artists' }" class="nav-link">Artists</router-link>
-          </li>
-          <li class="nav-item d-none d-md-block">
-            <router-link :to="{ name: 'activity' }" class="nav-link">Activity</router-link>
-          </li>
-          <li class="nav-item ml-4">
+
+            <router-link :to="{ name: 'activity' }" class="nav-link mr-3">Activity</router-link>
+
             <router-link :to="{ name: 'account' }" class="nav-link">
               Account
               <span class="badge badge-primary" v-if="totalPurchases() > 0">{{ totalPurchases() }}</span>
             </router-link>
-          </li>
-        </ul>
-      </nav>
+
+          </b-navbar-nav>
+        </b-collapse>
+      </b-navbar>
       <network-warning-banner></network-warning-banner>
     </header>
 
