@@ -504,6 +504,37 @@ const artists = [
     img: '/static/artists/PelfSollution_AProfile@x2.png',
     ethAddress: '0x925E54d0C6A36eC596c84470CB0bE85A638A8Da5',
     live: true,
+  },
+  {
+    artistCode: 'ALS',
+    name: 'Alexander Skobeleff',
+    bio: 'Patience, iron discipline, & endurance, we\'ll get there',
+    twitter: '@AlexSkobeleff',
+    strapline: 'Patience, iron discipline, & endurance, we\'ll get there',
+    img: '/static/artists/AlexSK@x2.jpg',
+    ethAddress: '0x0EC6FF565B0a4b4D4e0C92C112c5068520F1f9e4',
+    live: true,
+  },
+  {
+    artistCode: 'ILK',
+    name: 'ilan katin',
+    strapline: 'ilan katin is a Berlin based artist',
+    bio: 'ilan katin is a Berlin based artist who currently makes non-figurative drawings, occasionally collaborates with musicians doing live visual performances, and sometimes ventures into the creation of installations',
+    twitter: '@ilan_katin',
+    website: 'https://ilankatin.com',
+    img: '/static/artists/ilan_Profile@x2.png',
+    ethAddress: '0xaB3627317c43D394eb171170f818153B976D28A3',
+    live: true,
+  },
+  {
+    artistCode: 'NRA',
+    name: 'Núria Aguado',
+    strapline: 'Núria Aguado Aka Baddstories',
+    bio: 'Núria Aguado Aka Baddstories.\n Storyteller on any medium.\n Join the family #baddstories',
+    twitter: '@Baddstories',
+    img: '/static/artists/N_AguadoAProfile@x2.png',
+    ethAddress: '0x6072857906ecdbb38c5b2f8e1eb38b4bbf834fbe',
+    live: true,
   }
 ];
 
