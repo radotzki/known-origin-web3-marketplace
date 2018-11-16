@@ -1,11 +1,5 @@
 <template>
   <div>
-    <!--<div class="row bg-secondary text-white full-banner">-->
-      <!--<div class="col text-center m-5">-->
-        <!--<p>Showcase and Discover Rare Digital Art</p>-->
-      <!--</div>-->
-    <!--</div>-->
-
     <div class="row bg-primary full-banner-secondary pt-3 mt-1">
       <div class="col text-center">
         <p>
@@ -134,6 +128,7 @@
 
 <style scoped lang="scss">
   @import '../../ko-colours.scss';
+  @import '../../ko-card.scss';
 
   .full-banner {
     p {
@@ -146,11 +141,6 @@
     padding-left: 3rem;
     padding-right: 3rem;
     color: $body-bg;
-  }
-
-  .editions-wrap {
-    margin-left: 50px;
-    margin-right: 50px;
   }
 
   /* mobile only */
