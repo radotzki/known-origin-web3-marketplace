@@ -230,7 +230,7 @@
   }
 
   .floating-nav {
-    box-shadow: 0px 1px 3px #999;
+    box-shadow: 0px 1px 1px #999;
   }
 
   .full-banner {
@@ -364,4 +364,8 @@
     border-top: 0 none !important;
   }
 
+  .full-banner-secondary {
+    height: 50px;
+    color: $body-bg;
+  }
 </style>

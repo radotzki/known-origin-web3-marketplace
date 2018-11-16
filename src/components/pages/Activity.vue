@@ -1,15 +1,14 @@
 <template>
   <div>
-    <div class="row bg-secondary text-white full-banner">
-      <div class="col text-center m-5">
-        <p>Activity</p>
+    <div class="row bg-primary full-banner-secondary pt-3 mt-1">
+      <div class="col text-center">
+        Activity
       </div>
     </div>
 
     <loading-section :page="PAGES.ACTIVITY" class="mt-5"></loading-section>
 
     <div class="container-fluid mt-4">
-      <div class="text-muted small mb-2 text-right">Updated every 5 minutes</div>
       <div class="row">
         <div class="col">
           <table class="table table-striped">
@@ -43,21 +42,23 @@
               <td class="d-none d-md-table-cell">
                 <div v-if="event._args._buyer">
                   <span class="text-muted small">Owner: </span>
-                  <clickable-address :eth-address="event._args._buyer"></clickable-address>
+                  <clickable-address :eth-address="event._args._buyer" class="small"></clickable-address>
                 </div>
                 <div v-if="event._args._bidder">
                   <span class="text-muted small">Bidder: </span>
-                  <clickable-address :eth-address="event._args._bidder"></clickable-address>
+                  <clickable-address :eth-address="event._args._bidder" class="small"></clickable-address>
                 </div>
               </td>
               <td class="d-none d-md-table-cell">
-                <clickable-transaction :transaction="event.transactionHash"></clickable-transaction>
+                <view-transaction-details :transaction="event.transactionHash" class="small"></view-transaction-details>
               </td>
             </tr>
             </tbody>
           </table>
         </div>
       </div>
+
+      <div class="text-muted small mb-5 mt-3 text-right">Updated every 5 minutes</div>
     </div>
   </div>
 </template>
@@ -71,6 +72,7 @@
   import Availability from '../ui-controls/v2/Availability';
   import { PAGES } from '../../store/loadingPageState';
   import LoadingSection from '../ui-controls/generic/LoadingSection';
+  import ViewTransactionDetails from '../ui-controls/generic/ViewTransactionDetails';
 
   export default {
     name: 'activity',
@@ -78,7 +80,8 @@
       LoadingSection,
       Availability,
       ClickableAddress,
-      ClickableTransaction
+      ClickableTransaction,
+      ViewTransactionDetails
     },
     data () {
       return {
@@ -152,11 +155,15 @@
 
 
 <style scoped lang="scss">
+  @import '../../ko-colours.scss';
+
   .full-banner {
     p {
       margin-bottom: 0;
     }
   }
+
+
 
   .img-thumbnail {
     max-width: 100px;

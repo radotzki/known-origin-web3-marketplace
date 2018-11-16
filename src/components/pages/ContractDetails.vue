@@ -1,6 +1,10 @@
 <template>
   <div class="container">
-    <h1>Contract</h1>
+    <div class="row bg-primary full-banner-secondary pt-3 mt-1">
+      <div class="col text-center">
+        Smart Contracts
+      </div>
+    </div>
 
     <div class="row mt-4 justify-content-sm-center">
       <div class="col-sm-6">
