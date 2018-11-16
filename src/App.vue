@@ -318,6 +318,16 @@
     color: $primary;
   }
 
+  .badge-extra-data {
+    background-color: $primary-light;
+    color: $white;
+
+    a {
+      color: $white;
+      text-decoration: none;
+    }
+  }
+
   .back-arrow {
     cursor: pointer;
   }
