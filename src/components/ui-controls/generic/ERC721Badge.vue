@@ -1,6 +1,6 @@
 <template>
      <span class="badge badge-pill badge-extra-data">
-       <a href="http://erc721.org" target="_blank">
+       <a href="https://erc721.org" target="_blank">
          <font-awesome-icon :icon="['fab', 'ethereum']"></font-awesome-icon> ERC721
        </a>
     </span>
