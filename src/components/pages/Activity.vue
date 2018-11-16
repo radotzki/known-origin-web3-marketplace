@@ -23,7 +23,8 @@
                 </router-link>
               </td>
               <td>
-                <code>{{ mapEvent(event.event)}}</code>
+                {{ mapMobileEvent(event.event) }}
+                <code class="d-none d-md-inline">{{ mapEvent(event.event)}}</code>
               </td>
               <td>
                 <div v-if="event._args._amount" class="small">
@@ -49,7 +50,7 @@
                   <clickable-address :eth-address="event._args._bidder" class="small"></clickable-address>
                 </div>
               </td>
-              <td class="d-none d-md-table-cell">
+              <td>
                 <view-transaction-details :transaction="event.transactionHash" class="small"></view-transaction-details>
               </td>
             </tr>
@@ -92,19 +93,37 @@
     methods: {
       mapEvent: function (eventStr) {
         if (eventStr === 'EditionCreated') {
-          return '👶 Birth';
+          return 'Birth';
         }
         if (eventStr === 'Minted') {
-          return '💸 Purchase';
+          return 'Purchase';
         }
         if (eventStr === 'BidPlaced') {
-          return '💵 Bid Placed';
+          return 'Bid Placed';
         }
         if (eventStr === 'BidIncreased') {
-          return '📈 Bid Increased';
+          return 'Bid Increased';
         }
         if (eventStr === 'BidAccepted') {
-          return '💰 Bid Accepted';
+          return 'Bid Accepted';
+        }
+        return eventStr;
+      },
+      mapMobileEvent: function (eventStr) {
+        if (eventStr === 'EditionCreated') {
+          return '👶';
+        }
+        if (eventStr === 'Minted') {
+          return '💸';
+        }
+        if (eventStr === 'BidPlaced') {
+          return '💵';
+        }
+        if (eventStr === 'BidIncreased') {
+          return '📈';
+        }
+        if (eventStr === 'BidAccepted') {
+          return '💰';
         }
         return eventStr;
       }

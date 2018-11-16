@@ -2,7 +2,7 @@
   <div>
     <div class="row bg-primary full-banner-secondary pt-3 mt-1">
       <div class="col text-center">
-        Account
+        Artist
       </div>
     </div>
 
@@ -133,16 +133,4 @@
 <style scoped lang="scss">
   @import '../../ko-colours.scss';
   @import '../../ko-card.scss';
-
-  /* mobile only */
-  @media screen and (max-width: 767px) {
-    .full-banner {
-      font-size: 1.5rem;
-    }
-
-    .sub-filter {
-      padding-left: 0.7rem;
-      padding-right: 0.7rem;
-    }
-  }
 </style>
