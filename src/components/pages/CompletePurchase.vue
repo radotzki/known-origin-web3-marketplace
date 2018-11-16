@@ -228,7 +228,7 @@
 
 <style scoped lang="scss">
   @import '../../ko-colours.scss';
-  @import '../../ko-card.scss';
+  @import '../../ko-card-flex.scss';
 
 
   li.no-bottom-border {
