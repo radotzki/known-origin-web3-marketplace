@@ -182,7 +182,13 @@
     }
   }
 
-
+  /* mobile only */
+  @media screen and (max-width: 767px) {
+    .container-fluid {
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
 
   .img-thumbnail {
     max-width: 100px;
