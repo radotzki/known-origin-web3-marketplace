@@ -145,6 +145,9 @@
 </script>
 
 <style scoped lang="scss">
+  @import '../../ko-colours.scss';
+  @import '../../ko-card-flex.scss';
+
   a {
     text-decoration: none;
   }
