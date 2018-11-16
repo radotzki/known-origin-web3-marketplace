@@ -47,8 +47,6 @@
 
     <ipfs-badge :edition="edition"></ipfs-badge>
 
-    <!--<artist-account-badge :edition="edition"></artist-account-badge>-->
-
     <birth-transaction-lookup :edition="edition"></birth-transaction-lookup>
 
     <div class="mt-2">
@@ -72,7 +70,6 @@
   import USDPrice from '../generic/USDPrice';
   import RarityIndicator from '../v2/RarityIndicator';
   import IpfsBadge from "../generic/IpfsBadge";
-  import ArtistAccountBadge from "../generic/ArtistAccountBadge";
   import Erc721Badge from "../generic/ERC721Badge";
   import BirthTransactionLookup from "../generic/BirthTransactionLookup";
 
@@ -82,7 +79,6 @@
     components: {
       BirthTransactionLookup,
       Erc721Badge,
-      ArtistAccountBadge,
       IpfsBadge,
       Availability,
       ClickableAddress,
