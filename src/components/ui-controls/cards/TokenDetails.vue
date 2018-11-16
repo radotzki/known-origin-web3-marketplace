@@ -31,6 +31,12 @@
 
       <metadata-attributes :attributes="edition.attributes"></metadata-attributes>
 
+      <erc721-badge></erc721-badge>
+
+      <ipfs-badge :edition="edition"></ipfs-badge>
+
+      <birth-transaction-lookup :edition="edition"></birth-transaction-lookup>
+
       <span class="clearfix"></span>
     </div>
 
@@ -66,7 +72,9 @@
   import TokenId from '../generic/TokenId';
   import HighResLabel from "../generic/HighResLabel";
   import HighResDownload from "../generic/HighResDownload";
-
+  import IpfsBadge from "../generic/IpfsBadge";
+  import Erc721Badge from "../generic/ERC721Badge";
+  import BirthTransactionLookup from "../generic/BirthTransactionLookup";
   export default {
     name: 'tokenDetails',
     components: {
@@ -79,7 +87,10 @@
       MetadataAttributes,
       ClickableAddress,
       TokenId,
-      TweetEditionButton
+      TweetEditionButton,
+      BirthTransactionLookup,
+      Erc721Badge,
+      IpfsBadge,
     },
     props: {
       edition: {
