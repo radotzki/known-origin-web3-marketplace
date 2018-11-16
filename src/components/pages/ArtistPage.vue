@@ -133,4 +133,16 @@
 <style scoped lang="scss">
   @import '../../ko-colours.scss';
   @import '../../ko-card.scss';
+
+  /* mobile only */
+  @media screen and (max-width: 767px) {
+    .full-banner {
+      font-size: 1.5rem;
+    }
+
+    .sub-filter {
+      padding-left: 0.7rem;
+      padding-right: 0.7rem;
+    }
+  }
 </style>

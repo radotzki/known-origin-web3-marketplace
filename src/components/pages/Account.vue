@@ -49,7 +49,7 @@
 
       <div
         v-if="totalPurchases() === 0"
-        class="row justify-content-sm-center">
+        class="row justify-content-sm-center no-assets">
         <div class="col col-sm-6 text-center">
           <code>You don't own any digital assets yet.</code>
         </div>
@@ -132,6 +132,10 @@
   .editions-wrap {
     margin-left: 50px;
     margin-right: 50px;
+  }
+
+  .no-assets {
+    min-height: 350px;
   }
 
   @import '../../ko-card.scss';

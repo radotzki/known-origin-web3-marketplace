@@ -38,17 +38,17 @@
                    v-model="form.bid"
                    :placeholder="nextMinimumNewBid(edition.edition)"/>
 
-            <button class="btn btn-secondary"
-                    v-if="!accountIsHighestBidder(edition.edition)" v-on:click="placeBid"
-                    :disabled="form.bid < nextMinimumNewBid(edition.edition)">
-              Make Bid
-            </button>
-
             <!--<div class="invalid-feedback" v-if="nextMinimumNewBid(edition.edition) > form.bid">Minimum bid:-->
             <!--{{nextMinimumNewBid(edition.edition)}} ETH-->
             <!--</div>-->
 
           </div>
+
+          <button class="btn btn-secondary mt-2"
+                  v-if="!accountIsHighestBidder(edition.edition)" v-on:click="placeBid"
+                  :disabled="form.bid < nextMinimumNewBid(edition.edition)">
+            Make Bid
+          </button>
 
           <!-- When you are top bidder -->
           <div class="input-group" v-if="accountIsHighestBidder(edition.edition)">
@@ -64,17 +64,18 @@
                    v-model="form.bid"
                    :placeholder="nextMinimumNewBid(edition.edition)"/>
 
-            <button class="btn btn-secondary"
-                    v-if="accountIsHighestBidder(edition.edition)" v-on:click="increaseBid"
-                    :disabled="form.bid < minBidAmount">
-              Make Bid
-            </button>
+
 
             <!--<div class="invalid-feedback" v-if="nextMinimumNewBid(edition.edition) > form.bid">-->
             <!--Minimum increase: {{minBidAmount}} ETH-->
             <!--</div>-->
-
           </div>
+
+          <button class="btn btn-secondary mt-2"
+                  v-if="accountIsHighestBidder(edition.edition)" v-on:click="increaseBid"
+                  :disabled="form.bid < minBidAmount">
+            Make Bid
+          </button>
         </form>
       </fieldset>
 
@@ -126,7 +127,7 @@
         If accepted, the highest bid will purchase the artwork. Other bids are refunded automatically.
       </p>
 
-      <p class="text-muted text-center auction-info">
+      <p class="text-muted auction-info">
         Questions? Reach us on
         <a href="https://t.me/knownorigin_io" target="_blank" title="Telegram">telegram</a>
         or <a href="mailto:hello@knownorigin.io" target="_blank" title="Mail">email</a>
@@ -167,7 +168,7 @@
     },
     data() {
       return {
-        form: { 
+        form: {
           bid: null
         }
       };
