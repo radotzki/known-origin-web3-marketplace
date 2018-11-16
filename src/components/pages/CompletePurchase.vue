@@ -55,7 +55,7 @@
               <div class="form-check mb-2">
                 <label class="form-check-label" :for="'confirm_terms'">
                   <input type="checkbox" :id="'confirm_terms'" v-model="confirm_terms">
-                  <span class="pl-2 small">I agree with the KODA terms of service. <router-link :to="{ name: 'terms' }" target="_blank">Terms of Service</router-link></span>
+                  <span class="pl-1 small">I agree with the KODA terms of service. <router-link :to="{ name: 'terms' }" target="_blank">Terms of Service</router-link></span>
                 </label>
               </div>
 
@@ -226,7 +226,11 @@
   };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+  @import '../../ko-colours.scss';
+  @import '../../ko-card.scss';
+
+
   li.no-bottom-border {
     border-bottom: 0 none;
   }
