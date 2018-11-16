@@ -8,7 +8,7 @@
 
     <loading-section :page="PAGES.ACTIVITY" class="mt-5"></loading-section>
 
-    <div class="container-fluid mt-4">
+    <div class="container-fluid mt-2">
       <div class="row">
         <div class="col">
           <table class="table table-striped">

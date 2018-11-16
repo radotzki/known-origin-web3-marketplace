@@ -321,6 +321,8 @@
   .badge-extra-data {
     background-color: $primary-light;
     color: $white;
+    padding: 6px;
+    margin: 2px;
 
     a {
       color: $white;

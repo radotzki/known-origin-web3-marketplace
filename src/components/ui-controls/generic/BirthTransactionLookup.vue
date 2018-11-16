@@ -1,6 +1,5 @@
 <template>
-     <span class="badge badge-pill badge-extra-data"
-           v-if="edition" style="height: 20px">
+     <span class="badge badge-pill badge-extra-data" v-if="edition">
         <a :href="link" target="_blank">
          <font-awesome-icon :icon="['fas', 'bolt']"></font-awesome-icon> Birth
         </a>
