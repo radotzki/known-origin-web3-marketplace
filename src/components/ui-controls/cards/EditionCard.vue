@@ -41,6 +41,14 @@
                     :totalSupply="edition.totalSupply"></availability>
     </div>
 
+    <hr />
+
+    <erc721-badge></erc721-badge>
+
+    <ipfs-badge :edition="edition"></ipfs-badge>
+
+    <birth-transaction-lookup :edition="edition"></birth-transaction-lookup>
+
     <div class="mt-2">
       <hr/>
       <price-in-eth :value="edition.priceInEther"></price-in-eth>
@@ -61,11 +69,17 @@
   import MetadataAttributes from '../v2/MetadataAttributes';
   import USDPrice from '../generic/USDPrice';
   import RarityIndicator from '../v2/RarityIndicator';
+  import IpfsBadge from "../generic/IpfsBadge";
+  import Erc721Badge from "../generic/ERC721Badge";
+  import BirthTransactionLookup from "../generic/BirthTransactionLookup";
 
   export default {
     name: 'edition-card',
     props: ['edition'],
     components: {
+      BirthTransactionLookup,
+      Erc721Badge,
+      IpfsBadge,
       Availability,
       ClickableAddress,
       HighResLabel,
