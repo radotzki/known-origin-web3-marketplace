@@ -1,13 +1,6 @@
 <template>
   <div>
 
-    <!--<div class="row bg-secondary text-white full-banner">-->
-      <!--<div class="col text-center m-5">-->
-        <!--<p>Account <span class="badge badge-light" v-if="totalPurchases() > 0 ">{{ totalPurchases() }}</span></p>-->
-
-      <!--</div>-->
-    <!--</div>-->
-
     <div class="row bg-primary full-banner-secondary pt-3 mt-1">
       <div class="col text-center">
         Account
