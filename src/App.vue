@@ -78,7 +78,7 @@
             <a href="mailto:hello@knownorigin.io" target="_blank" class="p-2" title="Mail">
               <font-awesome-icon :icon="['fas', 'envelope-square']" size="lg"></font-awesome-icon>
             </a>
-            <a href="https://twitter.com/knownorigin_io" target="_blank" class="p-2"title="Twitter">
+            <a href="https://twitter.com/knownorigin_io" target="_blank" class="p-2" title="Twitter">
               <font-awesome-icon :icon="['fab', 'twitter']" size="lg"></font-awesome-icon>
             </a>
             <a href="https://t.me/knownorigin_io" target="_blank" class="p-2" title="Telegram">
@@ -93,7 +93,8 @@
           <div class="col ml-5 mr-5">
             <!-- Begin Mailchimp Signup Form -->
             <div id="mc_embed_signup">
-              <form action="https://knownorigin.us19.list-manage.com/subscribe/post?u=84b0312927af7712ac2e6dd5a&amp;id=ebee270c72" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+              <form action="https://knownorigin.us19.list-manage.com/subscribe/post?u=84b0312927af7712ac2e6dd5a&amp;id=ebee270c72" method="post" id="mc-embedded-subscribe-form"
+                    name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
                 <div id="mc_embed_signup_scroll">
                   <input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="Subscribe to The Origin Weekly" required>
                   <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
@@ -107,7 +108,7 @@
         </div>
         <div class="row mt-2 mb-2">
           <div class="col text-center text-white">
-          <current-network class="small"></current-network>
+            <current-network class="small"></current-network>
           </div>
         </div>
       </div>
@@ -144,14 +145,14 @@
           : this.$router.push('/');
       }
     },
-    mounted() {
+    mounted () {
       if (window.ethereum) {
         window.web3 = new Web3(ethereum);
 
         // Request account access if needed
         ethereum.enable()
           .then((value) => {
-            console.log("Bootstrapping web app - provider acknowedgled", value);
+            console.log('Bootstrapping web app - provider acknowedgled', value);
             this.$store.dispatch(actions.INIT_APP, window.web3);
           })
           .catch((error) => {
@@ -161,12 +162,12 @@
           });
 
       } else if (window.web3) {
-        console.log("Running legacy web3 provider");
+        console.log('Running legacy web3 provider');
         window.web3 = new Web3(web3.currentProvider);
         this.$store.dispatch(actions.INIT_APP, window.web3);
 
       } else {
-        console.log("Running without a web3 provider - falling back to infura");
+        console.log('Running without a web3 provider - falling back to infura');
 
         window.web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/nbCbdzC6IG9CF6hmvAVQ'));
         console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
@@ -230,7 +231,7 @@
   }
 
   .floating-nav {
-    box-shadow: 0px 1px 3px #999;
+    box-shadow: 0px 1px 1px #999;
   }
 
   .full-banner {
@@ -262,10 +263,6 @@
 
     h1 {
       font-size: 1.5rem;
-    }
-
-    .editions-wrap {
-      margin: 0 !important;
     }
   }
 
@@ -321,6 +318,8 @@
   .badge-extra-data {
     background-color: $primary-light;
     color: $white;
+    padding: 6px;
+    margin: 2px;
 
     a {
       color: $white;
@@ -357,11 +356,6 @@
     display: inline-block;
   }
 
-  .editions-wrap {
-    margin-left: 50px;
-    margin-right: 50px;
-  }
-
   #mc_embed_signup {
     background: $primary;
     color: $body-bg;
@@ -374,4 +368,8 @@
     border-top: 0 none !important;
   }
 
+  .full-banner-secondary {
+    height: 50px;
+    color: $body-bg;
+  }
 </style>

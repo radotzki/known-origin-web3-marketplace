@@ -1,10 +1,9 @@
 <template>
   <div>
 
-    <div class="row bg-secondary text-white full-banner">
-      <div class="col text-center m-5">
-        <p>Account <span class="badge badge-light" v-if="totalPurchases() > 0 ">{{ totalPurchases() }}</span></p>
-
+    <div class="row bg-primary full-banner-secondary pt-3 mt-1">
+      <div class="col text-center">
+        Account
       </div>
     </div>
 
@@ -12,6 +11,7 @@
       <div class="row mb-4">
         <div class="col">
           <clickable-address :eth-address="account"></clickable-address>
+          <span class="badge badge-primary" v-if="totalPurchases() > 0 ">{{ totalPurchases() }}</span>
         </div>
       </div>
 
@@ -49,7 +49,7 @@
 
       <div
         v-if="totalPurchases() === 0"
-        class="row justify-content-sm-center">
+        class="row justify-content-sm-center no-assets">
         <div class="col col-sm-6 text-center">
           <code>You don't own any digital assets yet.</code>
         </div>
@@ -132,6 +132,10 @@
   .editions-wrap {
     margin-left: 50px;
     margin-right: 50px;
+  }
+
+  .no-assets {
+    min-height: 350px;
   }
 
   @import '../../ko-card.scss';

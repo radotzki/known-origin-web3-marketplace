@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="row bg-secondary text-white full-banner">
-      <div class="col text-center m-5">
-        <p>Artists</p>
+    <div class="row bg-primary full-banner-secondary pt-3 mt-1">
+      <div class="col text-center">
+        Artists
       </div>
     </div>
 
