@@ -41,7 +41,7 @@
 
           <!-- V2 -->
           <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in accountOwnedEditions" :key="edition.tokenId">
-            <gallery-card :edition="edition" :editionNumber="editionNumber"></gallery-card>
+            <gallery-card :edition="edition" :editionNumber="editionNumber" :token-id="edition.tokenId"></gallery-card>
           </div>
 
         </div>
@@ -71,10 +71,20 @@
   import * as actions from '../../store/actions';
   import HighResLabel from '../ui-controls/generic/HighResLabel';
   import GalleryCard from '../ui-controls/cards/GalleryCard';
+  import PurchaseTransactionBadge from "../ui-controls/badges/PurchaseTransactionBadge";
 
   export default {
     name: 'account',
-    components: {GalleryCard, HighResLabel, LoadingSection, Asset, AddressIcon, EthAddress, ClickableAddress},
+    components: {
+      PurchaseTransactionBadge,
+      GalleryCard,
+      HighResLabel,
+      LoadingSection,
+      Asset,
+      AddressIcon,
+      EthAddress,
+      ClickableAddress
+    },
     data () {
       return {
         PAGES: PAGES

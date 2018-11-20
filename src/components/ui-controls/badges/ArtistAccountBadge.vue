@@ -9,7 +9,7 @@
 
 <script>
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
-  import ClickableAddress from "./ClickableAddress";
+  import ClickableAddress from "../generic/ClickableAddress";
   import {mapGetters, mapState} from 'vuex';
 
   export default {
