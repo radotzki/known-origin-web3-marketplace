@@ -35,7 +35,9 @@
 
       <ipfs-badge :edition="edition"></ipfs-badge>
 
-      <birth-transaction-lookup :edition="edition"></birth-transaction-lookup>
+      <birth-transaction-badge :edition="edition"></birth-transaction-badge>
+
+      <purchase-transaction-badge :token-id="edition.tokenId" v-if="edition.tokenId"></purchase-transaction-badge>
 
       <span class="clearfix"></span>
     </div>
@@ -72,12 +74,15 @@
   import TokenId from '../generic/TokenId';
   import HighResLabel from "../generic/HighResLabel";
   import HighResDownload from "../generic/HighResDownload";
-  import IpfsBadge from "../generic/IpfsBadge";
-  import Erc721Badge from "../generic/ERC721Badge";
-  import BirthTransactionLookup from "../generic/BirthTransactionLookup";
+  import IpfsBadge from "../badges/IpfsBadge";
+  import Erc721Badge from "../badges/ERC721Badge";
+  import BirthTransactionBadge from "../badges/BirthTransactionBadge";
+  import PurchaseTransactionBadge from "../badges/PurchaseTransactionBadge";
+
   export default {
     name: 'tokenDetails',
     components: {
+      PurchaseTransactionBadge,
       HighResDownload,
       HighResLabel,
       Availability,
@@ -88,7 +93,7 @@
       ClickableAddress,
       TokenId,
       TweetEditionButton,
-      BirthTransactionLookup,
+      BirthTransactionBadge,
       Erc721Badge,
       IpfsBadge,
     },

@@ -8,15 +8,13 @@
 
 <script>
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
-  import ClickableAddress from "./ClickableAddress";
   import {mapGetters, mapState} from 'vuex';
 
   export default {
     components: {
-      ClickableAddress,
       FontAwesomeIcon
     },
-    name: 'BirthTransactionLookup',
+    name: 'BirthTransactionBadge',
     props: ['edition'],
     computed: {
       ...mapState([

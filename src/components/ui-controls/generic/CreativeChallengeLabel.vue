@@ -16,14 +16,14 @@
           const tags = _.get(this.attributes, 'tags', []);
           return _.includes(tags, 'creative challenge') && _.includes(tags, 'devcon4');
         }
-        return edition;
+        return null;
       },
       _0xcert: function () {
         if (this.attributes) {
           const tags = _.get(this.attributes, 'tags', []);
           return _.includes(tags, 'creative challenge') && _.includes(tags, '0xcert');
         }
-        return edition;
+        return null;
       }
     }
   };
