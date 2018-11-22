@@ -187,5 +187,13 @@
   };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+
+  /* mobile only */
+  @media screen and (max-width: 767px) {
+    .container-fluid {
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
 </style>
