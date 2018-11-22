@@ -1,116 +1,118 @@
 <template>
-  <div class="container">
+  <div>
     <div class="row bg-primary full-banner-secondary pt-3 mt-1">
       <div class="col text-center">
         Smart Contracts
       </div>
     </div>
 
-    <div class="row mt-4 justify-content-sm-center">
-      <div class="col-sm-6">
-        <clickable-address-button :eth-address="v2.contractAddress" :label="'View Smart Contract'"
-                                  v-if="v2.contractAddress" class="float-right"></clickable-address-button>
-        <h3>KODA v2</h3>
-        <small>04-09-2018 - Present</small>
-        <table class="table table-striped bg-white text-center">
-          <tbody>
-          <tr>
-            <td>Smart Contract</td>
-            <td>
-              <clickable-address :eth-address="v2.contractAddress"></clickable-address>
-            </td>
-          </tr>
-          <tr v-if="v2.totalSupply">
-            <td>Purchases</td>
-            <td>{{ v2.totalSupply }}</td>
-          </tr>
-          <tr v-if="v2.totalNumberAvailable">
-            <td>Artworks Available</td>
-            <td>{{ v2.totalNumberAvailable }}</td>
-          </tr>
-          <tr v-if="v2.totalEditions">
-            <td>Editions Available</td>
-            <td>{{ v2.totalEditions }}</td>
-          </tr>
-          <tr>
-            <td>Total Artists</td>
-            <td>{{ liveArtists.length }}</td>
-          </tr>
-          <tr v-if="v2.totalPurchaseValueInEther">
-            <td>Total</td>
-            <td>{{ v2.totalPurchaseValueInEther }} ETH</td>
-          </tr>
-          <tr v-if="v2.koCommissionAccount">
-            <td>Commission Account</td>
-            <td>
-              <clickable-address :eth-address="v2.koCommissionAccount"></clickable-address>
-            </td>
-          </tr>
-          </tbody>
-        </table>
+    <div class="container-fluid mt-4">
+      <div class="row mt-5 justify-content-sm-center">
+        <div class="col-sm-4">
+          <clickable-address-button :eth-address="v2.contractAddress" :label="'View Smart Contract'"
+                                    v-if="v2.contractAddress" class="float-right"></clickable-address-button>
+          <h3>KODA v2</h3>
+          <small>04-09-2018 - Present</small>
+          <table class="table table-striped bg-white text-center">
+            <tbody>
+            <tr>
+              <td>Smart Contract</td>
+              <td>
+                <clickable-address :eth-address="v2.contractAddress"></clickable-address>
+              </td>
+            </tr>
+            <tr v-if="v2.totalSupply">
+              <td>Purchases</td>
+              <td>{{ v2.totalSupply }}</td>
+            </tr>
+            <tr v-if="v2.totalNumberAvailable">
+              <td>Artworks Available</td>
+              <td>{{ v2.totalNumberAvailable }}</td>
+            </tr>
+            <tr v-if="v2.totalEditions">
+              <td>Editions Available</td>
+              <td>{{ v2.totalEditions }}</td>
+            </tr>
+            <tr>
+              <td>Total Artists</td>
+              <td>{{ liveArtists.length }}</td>
+            </tr>
+            <tr v-if="v2.totalPurchaseValueInEther">
+              <td>Total</td>
+              <td>{{ v2.totalPurchaseValueInEther }} ETH</td>
+            </tr>
+            <tr v-if="v2.koCommissionAccount">
+              <td>Commission Account</td>
+              <td>
+                <clickable-address :eth-address="v2.koCommissionAccount"></clickable-address>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
 
-    <div class="row mt-5 justify-content-sm-center">
-      <div class="col-sm-6">
-        <clickable-address-button :eth-address="v1.contractAddress" :label="'View Smart Contract'"
-                                  v-if="v1.contractAddress" class="float-right"></clickable-address-button>
-        <h3>KODA v1</h3>
-        <small>02-04-2018 - 04-09-2018</small>
-        <table class="table table-striped bg-white text-center">
-          <tbody>
-          <tr>
-            <td>Smart Contract</td>
-            <td>
-              <clickable-address :eth-address="v1.contractAddress"></clickable-address>
-            </td>
-          </tr>
-          <tr v-if="v1.totalNumberOfPurchases">
-            <td>Purchases</td>
-            <td>{{ v1.totalNumberOfPurchases }}</td>
-          </tr>
-          <tr v-if="v1.totalPurchaseValueInEther">
-            <td>Total</td>
-            <td>{{ v1.totalPurchaseValueInEther }} ETH</td>
-          </tr>
-          </tbody>
-        </table>
+      <div class="row mt-5 justify-content-sm-center">
+        <div class="col-sm-4">
+          <clickable-address-button :eth-address="v1.contractAddress" :label="'View Smart Contract'"
+                                    v-if="v1.contractAddress" class="float-right"></clickable-address-button>
+          <h3>KODA v1</h3>
+          <small>02-04-2018 - 04-09-2018</small>
+          <table class="table table-striped bg-white text-center">
+            <tbody>
+            <tr>
+              <td>Smart Contract</td>
+              <td>
+                <clickable-address :eth-address="v1.contractAddress"></clickable-address>
+              </td>
+            </tr>
+            <tr v-if="v1.totalNumberOfPurchases">
+              <td>Purchases</td>
+              <td>{{ v1.totalNumberOfPurchases }}</td>
+            </tr>
+            <tr v-if="v1.totalPurchaseValueInEther">
+              <td>Total</td>
+              <td>{{ v1.totalPurchaseValueInEther }} ETH</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
 
-    <div class="row mt-5 justify-content-sm-center">
-      <div class="col-sm-6">
-        <clickable-address-button :eth-address="auctionV1.contractAddress"
-                                  :label="'View Smart Contract'"
-                                  v-if="auctionV1.contractAddress" class="float-right">
-        </clickable-address-button>
-        <h3>Auction</h3>
-        <table class="table table-striped bg-white text-center">
-          <tbody>
-          <tr>
-            <td>Smart Contract</td>
-            <td>
-              <clickable-address :eth-address="auctionV1.contractAddress"></clickable-address>
-            </td>
-          </tr>
-          <tr>
-            <td>Bids Accepted</td>
-            <td>{{ auctionV1.bidsAccepted }}</td>
-          </tr>
-          <tr>
-            <td>ETH Accepted</td>
-            <td>{{ auctionV1.ethAccepted }}</td>
-          </tr>
-          <tr>
-            <td>ETH Placed</td>
-            <td>{{ auctionV1.ethPlaced }}</td>
-          </tr>
-          <tr>
-            <td>Current Balance</td>
-            <td>{{ auctionV1.contractBalance }}</td>
-          </tr>
-          </tbody>
-        </table>
+      <div class="row mt-5 justify-content-sm-center">
+        <div class="col-sm-4">
+          <clickable-address-button :eth-address="auctionV1.contractAddress"
+                                    :label="'View Smart Contract'"
+                                    v-if="auctionV1.contractAddress" class="float-right">
+          </clickable-address-button>
+          <h3>Auction</h3>
+          <table class="table table-striped bg-white text-center">
+            <tbody>
+            <tr>
+              <td>Smart Contract</td>
+              <td>
+                <clickable-address :eth-address="auctionV1.contractAddress"></clickable-address>
+              </td>
+            </tr>
+            <tr>
+              <td>Bids Accepted</td>
+              <td>{{ auctionV1.bidsAccepted }}</td>
+            </tr>
+            <tr>
+              <td>ETH Accepted</td>
+              <td>{{ auctionV1.ethAccepted }}</td>
+            </tr>
+            <tr>
+              <td>ETH Placed</td>
+              <td>{{ auctionV1.ethPlaced }}</td>
+            </tr>
+            <tr>
+              <td>Current Balance</td>
+              <td>{{ auctionV1.contractBalance }}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -121,7 +123,7 @@
   import ClickableAddress from '../ui-controls/generic/ClickableAddress';
   import * as actions from '../../store/actions';
   import ClickableAddressButton from '../ui-controls/generic/ClickableAddressButton';
-  import {mapGetters, mapState} from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
   import Web3 from 'web3';
 
   export default {
