@@ -1,7 +1,7 @@
 <template>
      <span class="badge badge-pill badge-extra-data" v-if="tokenId && link">
         <a :href="link" target="_blank">
-         <font-awesome-icon :icon="['fas', 'shopping-cart']"></font-awesome-icon> Purchase
+         <font-awesome-icon :icon="['fas', 'receipt']"></font-awesome-icon> Receipt
         </a>
     </span>
 </template>
@@ -31,16 +31,19 @@
         .collection('raw')
         .doc(this.$store.state.firebasePath)
         .collection('koda-v2')
-        .where('event', '==', 'Minted')
+        .where('event', '==', 'Transfer')
         .where("_args._tokenId", '==', this.tokenId.toString())
         .limit(1)
         .get()
         .then((querySet) => {
-          console.log(this.tokenId);
+          // console.log(this.tokenId);
           let data = null;
           querySet.forEach((doc) => {
             data = doc.data();
           });
+          if (!data) {
+            return null;
+          }
           this.link = `${this.etherscanBase}/tx/${data.transactionHash}`;
         });
     }

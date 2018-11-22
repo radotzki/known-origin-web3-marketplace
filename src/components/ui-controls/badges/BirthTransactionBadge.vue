@@ -1,7 +1,7 @@
 <template>
      <span class="badge badge-pill badge-extra-data" v-if="edition">
         <a :href="link" target="_blank">
-         <font-awesome-icon :icon="['fas', 'bolt']"></font-awesome-icon> Birth
+         <font-awesome-icon :icon="['fas', 'bolt']"></font-awesome-icon> Creation
         </a>
     </span>
 </template>
@@ -33,6 +33,7 @@
         .collection('koda-v2')
         .where('event', '==', 'EditionCreated')
         .where("_args._editionNumber", '==', this.edition.edition.toString())
+        .orderBy('blockNumber', 'desc')
         .limit(1)
         .get()
         .then((querySet) => {
