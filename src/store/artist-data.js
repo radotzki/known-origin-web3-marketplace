@@ -411,7 +411,10 @@ const artists = [
     live: true,
     twitter: '@artofosiris',
     website: 'https://maxosiris.com/',
-    ethAddress: '0x0b715ca8dc39e7f8a480d28d9822ae02f0a57008'
+    ethAddress: [
+      '0x2e0B873d26f6d90f347757ed0d041bC65E02a89f', // new
+      '0x0b715ca8dc39e7f8a480d28d9822ae02f0a57008' // old
+    ]
   },
   {
     artistCode: 'AZB',
