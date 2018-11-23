@@ -93,7 +93,7 @@
     methods: {
       mapEvent: function (eventStr) {
         if (eventStr === 'EditionCreated') {
-          return 'Birth';
+          return 'Creation';
         }
         if (eventStr === 'Minted') {
           return 'Purchase';
@@ -111,19 +111,19 @@
       },
       mapMobileEvent: function (eventStr) {
         if (eventStr === 'EditionCreated') {
-          return '👶';
+          return '⚡';
         }
         if (eventStr === 'Minted') {
           return '💸';
         }
         if (eventStr === 'BidPlaced') {
-          return '💵';
+          return '💌';
         }
         if (eventStr === 'BidIncreased') {
           return '📈';
         }
         if (eventStr === 'BidAccepted') {
-          return '💰';
+          return '👍';
         }
         return eventStr;
       }
