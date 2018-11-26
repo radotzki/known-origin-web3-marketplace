@@ -1,15 +1,17 @@
 <template>
-  <div class="container-fluid" v-if="listOpenAuctions.length > 0">
+  <div class="container-fluid">
 
-    <div class="editions-wrap">
-      <h3>Open Offers</h3>
-      <p>
-        Artists can accept offers or the highest bidder can withdraw them.
-      </p>
+    <h3>Open Offers</h3>
+    <p>
+      Artists can accept offers or the highest bidder can withdraw them.
+    </p>
 
+    <div v-if="listOpenAuctions.length === 0" class="pb-4">
+      <code>No open offers yet!</code>
     </div>
 
-    <div class="row col editions-wrap pb-4">
+    <div v-if="listOpenAuctions.length > 0"
+         class="pb-4">
 
       <table class="table table-striped">
         <tbody>

@@ -15,32 +15,47 @@
 
         <div class="col-sm-9">
 
-          <loading-section :page="PAGES.ARTISTS"></loading-section>
+          <!-- ARTWORKS -->
+          <b-tabs>
+            <b-tab title="Artworks" class="mt-2" active>
 
-          <div class="card-deck">
-            <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions" :key="editionNumber"
-                 v-if="edition.active">
-              <gallery-card :edition="edition" :edition-number="editionNumber"></gallery-card>
-            </div>
-          </div>
+              <loading-section :page="PAGES.ARTISTS"></loading-section>
+
+              <div class="card-deck">
+                <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions" :key="editionNumber"
+                     v-if="edition.active">
+                  <gallery-card :edition="edition" :edition-number="editionNumber"></gallery-card>
+                </div>
+              </div>
+            </b-tab>
+
+            <!-- OFFERS/BIDS -->
+            <b-tab title="Offers">
+              <accept-edition-bids class="mt-2" :editions="editions"></accept-edition-bids>
+            </b-tab>
+
+            <!-- ARTISTS CONTROLS -->
+            <b-tab title="Controls"
+                   title-item-class="d-none d-md-block"
+                   v-if="editions && account && !paused && anyOfTheEditionsAreOwnedByTheLoggedInAccount()">
+              <artist-edition-controls  class="mt-2" :editions="editions"></artist-edition-controls>
+            </b-tab>
+
+          </b-tabs>
         </div>
+
       </div>
-
-      <accept-edition-bids :editions="editions"></accept-edition-bids>
-
-      <artist-edition-controls :editions="editions"></artist-edition-controls>
-
     </div>
   </div>
 </template>
 
 <script>
 
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import ArtistPanel from '../ui-controls/artist/ArtistPanel';
   import LoadingSpinner from '../ui-controls/generic/LoadingSpinner';
   import * as actions from '../../store/actions';
-  import { PAGES } from '../../store/loadingPageState';
+  import {PAGES} from '../../store/loadingPageState';
   import LoadingSection from '../ui-controls/generic/LoadingSection';
   import Availability from '../ui-controls/v2/Availability';
   import _ from 'lodash';
@@ -61,7 +76,7 @@
       ArtistPanel,
       LoadingSpinner,
     },
-    data () {
+    data() {
       return {
         PAGES: PAGES
       };
@@ -77,15 +92,15 @@
         'editionsForArtist',
         'isStartDateInTheFuture'
       ]),
+      ...mapState('artistControls', [
+        'owner',
+        'paused',
+      ]),
       editions: function () {
         return this.editionsForArtist(this.getArtistAddress());
       }
     },
     methods: {
-      canAcceptBid: function (auction) {
-        // The owner and the artist can accept bids
-        return auction.controller === this.account || this.account === this.owner;
-      },
       lookupArtist: function () {
         return this.findArtistsForAddress(this.$route.params.artistAccount);
       },
@@ -99,14 +114,19 @@
         }
         return artists.ethAddress;
       },
-      getEdition: function (edition) {
-        return this.editions[edition] || {};
-      },
-      acceptBid: function (auction) {
-        this.$store.dispatch(`auction/${actions.ACCEPT_BID}`, auction);
+      anyOfTheEditionsAreOwnedByTheLoggedInAccount() {
+        // If logged in account is the smrat contract owner
+        if (this.account === this.owner) {
+          return true;
+        }
+
+        // Otherwise if any of the artworks are by the currently logged in user
+        return _.find(this.editions, (edition) => {
+          return edition.artistAccount === this.account;
+        });
       },
     },
-    created () {
+    created() {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.ARTISTS);
 
       const loadData = function () {
@@ -125,7 +145,7 @@
         loadData();
       }
     },
-    destroyed () {
+    destroyed() {
     }
   };
 </script>
