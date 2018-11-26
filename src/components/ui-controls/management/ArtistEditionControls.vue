@@ -1,6 +1,5 @@
 <template>
-  <div class="container-fluid d-none d-md-block"
-       v-if="editions && account && !paused && anyOfTheEditionsAreOwnedByTheLoggedInAccount()">
+  <div class="container-fluid d-none d-md-block">
 
     <div class="editions-wrap">
       <h3>Artist Controls
@@ -14,7 +13,7 @@
       </p>
     </div>
 
-    <div class="row col editions-wrap pb-4">
+    <div class="pb-4">
       <table class="table table-striped">
         <tbody>
         <tr v-for="edition, editionNumber in editions" :key="editionNumber" v-if="shouldShowControls(edition)">
@@ -25,7 +24,7 @@
           </td>
           <td class="d-none d-md-table-cell align-middle">
             <div>
-              {{edition.name}}
+              {{ edition.name | truncate(18) }}
             </div>
             <div class="text-muted small">
               <remaining-count :totalAvailable="edition.totalAvailable" :totalSupply="edition.totalSupply">
@@ -54,7 +53,7 @@
                   <div class="input-group-prepend">
                     <div class="input-group-text">ETH</div>
                   </div>
-                  <input type="number" class="form-control" style="max-width: 100px;"
+                  <input type="number" class="form-control" style="max-width: 60px;"
                          :id="'price_' + editionNumber"
                          placeholder="0.1" min="0" step="0.02"
                          v-model="form.price[edition.edition]">
@@ -148,17 +147,6 @@
               Vue.set(this.form.priceTransactions, edition.edition, _.get(txs, 'tx'));
             });
         }
-      },
-      anyOfTheEditionsAreOwnedByTheLoggedInAccount() {
-        // If logged in account is the smrat contract owner
-        if (this.account === this.owner) {
-          return true;
-        }
-
-        // Otherwise if any of the artworks are by the currently logged in user
-        return _.find(this.editions, (edition) => {
-          return edition.artistAccount === this.account;
-        });
       },
       isValidAddress: function (address) {
         if (!address || address.length === 0) {
