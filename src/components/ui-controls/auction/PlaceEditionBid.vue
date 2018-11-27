@@ -64,8 +64,6 @@
                    v-model="form.bid"
                    :placeholder="nextMinimumNewBid(edition.edition)"/>
 
-
-
             <!--<div class="invalid-feedback" v-if="nextMinimumNewBid(edition.edition) > form.bid">-->
             <!--Minimum increase: {{minBidAmount}} ETH-->
             <!--</div>-->

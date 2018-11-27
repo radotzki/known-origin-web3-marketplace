@@ -31,25 +31,28 @@
               </remaining-count>
             </div>
           </td>
-          <td class="align-middle">
+          <td class="align-middle" style="padding-bottom: 30px">
+
             <form class="form-inline">
-              <div class="form-group mx-sm-3">
-                <input type="text" class="form-control"
+              <div class="form-group mx-sm-2">
+                <input type="text" class="form-control form-control-sm"
                        :id="'address_' + editionNumber" placeholder="0x123...."
                        v-model="form.gift[edition.edition]">
               </div>
-              <button type="button" class="btn btn-primary"
+              <button type="button" class="btn btn-outline-primary btn-sm"
                       :disabled="!isValidAddress(form.gift[edition.edition])"
                       @click="giftEdition(edition, form.gift[edition.edition])">Gift
               </button>
             </form>
+
             <view-transaction-details :transaction="form.giftTransactions[edition.edition]">
             </view-transaction-details>
           </td>
           <td class="align-middle">
+
             <form class="form-inline">
-              <div class="form-group mx-sm-3">
-                <div class="input-group">
+              <div class="form-group mx-sm-2">
+                <div class="input-group input-group-sm">
                   <div class="input-group-prepend">
                     <div class="input-group-text">ETH</div>
                   </div>
@@ -62,14 +65,16 @@
                   </div>
                 </div>
               </div>
-              <button type="button" class="btn btn-primary"
+              <button type="button" class="btn btn-outline-primary btn-sm"
                       :disabled="!form.price[edition.edition] || form.price[edition.edition] < 0"
                       @click="updatePrice(edition, form.price[edition.edition])">Set Price
               </button>
             </form>
+
             <small class="text-muted pl-3">
               Currently {{edition.priceInEther}} ETH = $ {{toUsdPrice(edition.priceInEther)}}
             </small>
+
             <view-transaction-details :transaction="form.priceTransactions[edition.edition]">
             </view-transaction-details>
           </td>
