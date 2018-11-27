@@ -134,6 +134,8 @@
       ]),
     },
     created () {
+      this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.ACTIVITY);
+
       const loadData = () => {
         const rootReference = this.$store.state.firestore
           .collection('raw')
@@ -156,6 +158,7 @@
               });
             });
 
+            this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.ACTIVITY);
             this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, _.uniq(_.map(this.activity, '_args._editionNumber')));
           });
       };

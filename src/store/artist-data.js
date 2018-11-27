@@ -538,6 +538,16 @@ const artists = [
     img: '/static/artists/N_AguadoAProfile@x2.png',
     ethAddress: '0x6072857906ecdbb38c5b2f8e1eb38b4bbf834fbe',
     live: true,
+  },
+  {
+    artistCode: 'DGR',
+    name: 'Danny Greaves',
+    strapline: 'UI designer, brand builder, maker.',
+    bio: 'UI designer, brand builder, maker, fairweather runner.',
+    twitter: '@builtby_robots',
+    img: '/static/artists/Dannygr_Profile@x2.png',
+    ethAddress: '0x166b9fa61F2C203e4EEe129ed0813401d4CAfaDe',
+    live: true,
   }
 ];
 

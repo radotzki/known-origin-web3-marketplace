@@ -7,7 +7,7 @@
     <b-tooltip
       ref="tooltip"
       :target="'tooltipButton-highRes-info-' + uuid">
-      Includes a high resolution version
+      Includes high resolution download
     </b-tooltip>
   </span>
 </template>
