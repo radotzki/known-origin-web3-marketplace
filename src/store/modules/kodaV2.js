@@ -13,18 +13,10 @@ function featureArtworks(network) {
     case 'Ropsten':
     case 'Local':
       return [
-        28700,
-        28000,
-        28800,
-        28100,
+        29700,
+        29800,
         28900,
-        29000,
-        29100,
-        29200,
-        29300,
-        29400,
-        29500,
-        29600,
+        28000
       ];
     default:
       return [];
@@ -96,7 +88,7 @@ const contractStateModule = {
       });
 
       if (_.includes(['artist', 'sold', 'featured'], priceFilter)) {
-        return _.shuffle(results);
+        return results;
       }
 
       return _.orderBy(results, 'priceInEther', priceFilter);

@@ -204,7 +204,9 @@ const isHighRes = (editionNumber) => {
     29300,
     29400,
     29500,
-    29600
+    29600,
+    29700,
+    29800
   ];
 
   const HIGH_RES_EDITIONS = [
