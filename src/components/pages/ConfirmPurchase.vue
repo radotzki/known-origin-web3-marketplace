@@ -34,7 +34,7 @@
 
       <div class="col-sm-6 order-1 order-sm-2 mb-5">
         <div class="card shadow-sm" v-if="edition">
-          <img class="card-img-top" :src="edition.lowResImg"/>
+          <edition-image class="card-img-top" :src="edition.lowResImg" :id="edition.edition" />
         </div>
       </div>
     </div>
@@ -57,10 +57,12 @@
   import AuctionEventsList from "../ui-controls/auction/AuctionEventsList";
   import CreativeChallengeLabel from "../ui-controls/generic/CreativeChallengeLabel";
   import EditionCard from '../ui-controls/cards/EditionCard';
+  import EditionImage from "../ui-controls/generic/EditionImage";
 
   export default {
     name: 'confirmPurchase',
     components: {
+      EditionImage,
       EditionCard,
       CreativeChallengeLabel,
       AuctionEventsList,

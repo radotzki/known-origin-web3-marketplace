@@ -10,7 +10,7 @@
       <div class="row editions-wrap">
 
         <div class="col-sm-3">
-          <artist-panel :artist="lookupArtist()"></artist-panel>
+          <artist-panel :artist="artist"></artist-panel>
         </div>
 
         <div class="col-sm-9">
@@ -34,12 +34,19 @@
               <accept-edition-bids class="mt-2" :editions="editions"></accept-edition-bids>
             </b-tab>
 
-            <!-- ARTISTS CONTROLS -->
-            <b-tab title="Controls"
-                   title-item-class="d-none d-md-block"
-                   v-if="editions && account && !paused && anyOfTheEditionsAreOwnedByTheLoggedInAccount()">
-              <artist-edition-controls  class="mt-2" :editions="editions"></artist-edition-controls>
-            </b-tab>
+            <div v-if="editions && account && !paused && anyOfTheEditionsAreOwnedByTheLoggedInAccount()">
+
+              <!-- ARTWORKS CONTROLS -->
+              <b-tab title="Controls" title-item-class="d-none d-md-block" v-if="!paused">
+                <artist-edition-controls class="mt-2" :editions="editions"></artist-edition-controls>
+              </b-tab>
+
+              <!-- ARTISTS CONTROLS -->
+              <b-tab title="Profile" title-item-class="d-none d-md-block">
+                <artist-data-control-panel :editions="editions" :artist="artist"></artist-data-control-panel>
+              </b-tab>
+
+            </div>
 
           </b-tabs>
         </div>
@@ -63,10 +70,12 @@
   import AuctionEventsList from '../ui-controls/auction/AuctionEventsList';
   import GalleryCard from '../ui-controls/cards/GalleryCard';
   import ArtistEditionControls from "../ui-controls/management/ArtistEditionControls";
+  import ArtistDataControlPanel from "../ui-controls/artist/ArtistDataControlPanel";
 
   export default {
     name: 'artistPage',
     components: {
+      ArtistDataControlPanel,
       ArtistEditionControls,
       GalleryCard,
       AuctionEventsList,
@@ -96,41 +105,46 @@
         'owner',
         'paused',
       ]),
-      editions: function () {
-        return this.editionsForArtist(this.getArtistAddress());
-      }
-    },
-    methods: {
-      lookupArtist: function () {
+      editions() {
+        return this.editionsForArtist(this.artistAddress);
+      },
+      artist() {
         return this.findArtistsForAddress(this.$route.params.artistAccount);
       },
+      artistAddress() {
+        const artist = this.artist;
+        if (!artist) {
+          return {};
+        }
+        if (_.isArray(artist.ethAddress)) {
+          return artist.ethAddress[0];
+        }
+        return artist.ethAddress;
+      },
+    },
+    methods: {
       goToArtist: function (artistAccount) {
         this.$router.push({name: 'artist-v2', params: {artistAccount}});
-      },
-      getArtistAddress: function () {
-        let artists = this.lookupArtist();
-        if (_.isArray(artists.ethAddress)) {
-          return artists.ethAddress[0];
-        }
-        return artists.ethAddress;
       },
       anyOfTheEditionsAreOwnedByTheLoggedInAccount() {
         // If logged in account is the smrat contract owner
         if (this.account === this.owner) {
           return true;
         }
-
         // Otherwise if any of the artworks are by the currently logged in user
         return _.find(this.editions, (edition) => {
           return edition.artistAccount === this.account;
         });
-      },
+      }
     },
     created() {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.ARTISTS);
 
       const loadData = function () {
-        this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS_FOR_ARTIST}`, {artistAccount: this.getArtistAddress()})
+        this.$store.dispatch(actions.LOAD_ARTISTS)
+          .then(() => {
+            return this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS_FOR_ARTIST}`, {artistAccount: this.artistAddress});
+          })
           .finally(() => {
             this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.ARTISTS);
           });

@@ -1,6 +1,6 @@
 <template>
   <div class="card shadow-sm" v-if="edition">
-    <img class="card-img-top" :src="edition.lowResImg"/>
+    <edition-image class="card-img-top" :src="edition.lowResImg" :id="edition.edition" />
 
     <ul class="list-group list-group-flush">
       <li class="list-group-item text-center no-top-border">
@@ -14,7 +14,7 @@
 
     <div class="card-body">
       <p class="card-title">{{ edition.name }}</p>
-      <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
+      <img :src="findArtistsForAddress(edition.artistAccount).logo" class="artist-avatar"/>
       <span class="pl-1 artist-name-lg">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
 
       <p class="card-full-desc pt-4">
@@ -78,10 +78,12 @@
   import Erc721Badge from "../badges/ERC721Badge";
   import BirthTransactionBadge from "../badges/BirthTransactionBadge";
   import PurchaseTransactionBadge from "../badges/PurchaseTransactionBadge";
+  import EditionImage from "../generic/EditionImage";
 
   export default {
     name: 'tokenDetails',
     components: {
+      EditionImage,
       PurchaseTransactionBadge,
       HighResDownload,
       HighResLabel,

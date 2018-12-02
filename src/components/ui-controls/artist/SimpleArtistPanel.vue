@@ -1,9 +1,9 @@
 <template>
-  <div class="shadow-sm bg-white mb-4 card simple-artist-panel">
+  <div class="shadow-sm bg-white mb-4 card simple-artist-panel" v-if="artist">
     <artist-short-bio :artist="artist" :nolinks="true"></artist-short-bio>
 
     <p class="bio mt-4 ml-3 mr-3 text-center">
-      {{ artist.strapline }}
+      {{ artist.shortDescription }}
     </p>
   </div>
 </template>

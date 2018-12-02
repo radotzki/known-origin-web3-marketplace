@@ -5,16 +5,18 @@ import * as mutations from './mutation';
 import _ from 'lodash';
 import Web3 from 'web3';
 import axios from 'axios';
-import artistData from './artist-data';
-import {getEtherscanAddress, getNetIdString, safeToCheckSumAddress} from '../utils';
+import {getApi, getEtherscanAddress, getNetIdString, safeToCheckSumAddress} from '../utils';
 import truffleContract from 'truffle-contract';
 import knownOriginDigitalAssetJson from '../../build/contracts/KnownOriginDigitalAsset.json';
 import knownOriginDigitalAssetJsonV2 from '../../build/contracts/KnownOriginDigitalAssetV2.json';
 import ArtistAcceptingBidsJson from '../../build/contracts/ArtistAcceptingBids.json';
 import ArtistEditionControlsJson from '../../build/contracts/ArtistEditionControls.json';
 
+import * as Firebase from 'firebase/app';
+import 'firebase/firestore';
+
 import createLogger from 'vuex/dist/logger';
-// import createPersistedState from 'vuex-persistedstate';
+import createPersistedState from 'vuex-persistedstate';
 
 import purchase from './modules/purchase';
 import highres from './modules/highres';
@@ -29,8 +31,6 @@ const KnownOriginDigitalAssetV2 = truffleContract(knownOriginDigitalAssetJsonV2)
 const ArtistAcceptingBids = truffleContract(ArtistAcceptingBidsJson);
 const ArtistEditionControls = truffleContract(ArtistEditionControlsJson);
 
-import * as Firebase from 'firebase/app';
-import 'firebase/firestore';
 
 const firebaseApp = Firebase.initializeApp({
   databaseURL: "https://known-origin-io.firebaseio.com",
@@ -44,18 +44,13 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
   plugins: [
-    createLogger()
-    // TODO can we utilise this?
-    // createPersistedState({
-    //   key: 'koda',
-    //   paths: [
-    //     'artists',
-    //     'artistLookupCache',
-    //     'kodaV1',
-    //     'kodaV2',
-    //     'activity'
-    //   ]
-    // }),
+    createLogger(),
+    createPersistedState({
+      key: 'koda',
+      paths: [
+        'artists',
+      ]
+    }),
   ],
   modules: {
     kodaV1,
@@ -76,7 +71,7 @@ const store = new Vuex.Store({
     etherscanBase: null,
 
     // non-contract data
-    artists: _.reverse(artistData),
+    artists: [],
 
     artistLookupCache: {},
 
@@ -116,7 +111,7 @@ const store = new Vuex.Store({
       return artist;
     },
     liveArtists: (state) => {
-      return state.artists.filter((a) => a.live).filter((a) => a.ethAddress);
+      return state.artists.filter((a) => a.enabled).filter((a) => a.ethAddress).filter((a) => a.enabled);
     },
     isOnMainnet: (state) => {
       if (!state.currentNetwork) {
@@ -131,8 +126,10 @@ const store = new Vuex.Store({
     }
   },
   mutations: {
-    [mutations.SET_ARTISTS](state, {artists}) {
-      state.artists = artists;
+    [mutations.SET_ARTISTS](state, artistData) {
+      state.artists = artistData;
+      // clear cache to force update
+      state.artistLookupCache = {};
     },
     [mutations.SET_ACCOUNT](state, {account, accountBalance}) {
       state.account = Web3.utils.toChecksumAddress(account);
@@ -181,6 +178,7 @@ const store = new Vuex.Store({
     [actions.INIT_APP]({commit, dispatch, state}, web3) {
 
       dispatch(actions.GET_USD_PRICE);
+      dispatch(actions.LOAD_ARTISTS);
 
       // TODO can we ditch the hacks below yet?
 
@@ -283,6 +281,39 @@ const store = new Vuex.Store({
         .catch(function (error) {
           console.log('ERROR - account locked', error);
         });
+    },
+    [actions.LOAD_ARTISTS]: async function ({commit, dispatch, state}) {
+      // Return from here so we can change them in views
+      return state.firestore
+        .collection('artist-data')
+        .get()
+        .then((querySnapshot) => {
+          let artistData = [];
+          querySnapshot.forEach((doc) => {
+            artistData.push(doc.data());
+          });
+          commit(mutations.SET_ARTISTS, artistData);
+        });
+    },
+    [actions.UPDATE_ARTIST_DATA]: async function ({commit, dispatch, state}, form) {
+
+      const postToApi = (signedMessage) => axios({
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+        data: {
+          signer: state.account,
+          originalMessage: form,
+          signedMessage: signedMessage
+        },
+        url: `${getApi()}/artist/profile/update`,
+      });
+
+      return state.web3.eth.personal
+        .sign(JSON.stringify(form), state.account)
+        .then((signedMessage) => postToApi(signedMessage));
     }
   }
 });

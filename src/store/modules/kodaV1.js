@@ -191,8 +191,13 @@ const mapAssetType = (rawType) => {
   }
 };
 
+const tokenUriCache = {};
 
 const lookupIPFSData = (tokenUri) => {
+
+  if (tokenUriCache[tokenUri]) {
+    return tokenUriCache[tokenUri];
+  }
 
   // Load root IPFS data
   return axios.get(`${tokenUri}`)
@@ -203,7 +208,7 @@ const lookupIPFSData = (tokenUri) => {
       // Load additional meta about asset from IPFS
       return axios.get(`${rootMeta.meta}`)
         .then((otherMeta) => {
-          return {
+          const value = {
             tokenUri: tokenUri,
             name: rootMeta.name,
             description: rootMeta.description,
@@ -212,6 +217,8 @@ const lookupIPFSData = (tokenUri) => {
             otherMeta: otherMeta.data,
             lowResImg: rootMeta.image
           };
+          tokenUriCache[tokenUri] = value;
+          return value;
         });
     });
 };

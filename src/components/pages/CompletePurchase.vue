@@ -90,7 +90,7 @@
 
       <div class="col-sm-6 order-1 order-sm-2 mb-5">
         <div class="card shadow-sm" v-if="edition">
-          <img class="card-img-top" :src="edition.lowResImg"/>
+          <edition-image  class="card-img-top" :src="edition.lowResImg" :id="edition.edition" />
         </div>
       </div>
     </div>
@@ -116,10 +116,12 @@
   import Availability from '../ui-controls/v2/Availability';
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
   import EditionCard from '../ui-controls/cards/EditionCard';
+  import EditionImage from "../ui-controls/generic/EditionImage";
 
   export default {
     name: 'completePurchase',
     components: {
+      EditionImage,
       EditionCard,
       LoadingSection,
       TweetEditionButton,
