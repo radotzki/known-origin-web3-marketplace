@@ -1,5 +1,5 @@
 <template>
-  <div class="card shadow-sm">
+  <div class="card shadow-sm" :id="'gallery_card_' + edition.edition">
 
     <router-link :to="routeData()" class="card-target" v-if="edition">
       <edition-image class="card-img-top" :src="edition.lowResImg" :id="edition.edition" />
