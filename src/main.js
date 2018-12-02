@@ -9,6 +9,9 @@ import VModal from 'vue-js-modal';
 import Web3 from "web3";
 import _ from 'lodash';
 
+// This pollyfill is required for some browsers
+import 'intersection-observer';
+
 import AsyncComputed from 'vue-async-computed';
 import ToggleButton from 'vue-js-toggle-button';
 import BootstrapVue from 'bootstrap-vue';
