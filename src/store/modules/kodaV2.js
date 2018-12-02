@@ -183,6 +183,7 @@ const contractStateModule = {
       let editions = [];
       try {
         editions = await contract.editionsOfType(editionType);
+        console.log(`Loaded a total of [${_.size(editions)}] for type [${editionType}]`);
       } catch (e) {
         console.error(`Unable to load edition of type [${editionType}]`);
         return;
