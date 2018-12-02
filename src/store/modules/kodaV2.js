@@ -88,7 +88,7 @@ const contractStateModule = {
       });
 
       if (_.includes(['artist', 'sold', 'featured'], priceFilter)) {
-        return _.shuffle(results);
+        return results;
       }
 
       return _.orderBy(results, 'priceInEther', priceFilter);
