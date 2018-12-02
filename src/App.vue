@@ -157,7 +157,7 @@
           })
           .catch((error) => {
             console.log('User denied access, boostrapping application using infura', error);
-            window.web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/nbCbdzC6IG9CF6hmvAVQ'));
+            window.web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/4396873c00c84479991e58a34a54ebd9'));
             this.$store.dispatch(actions.INIT_APP, window.web3);
           });
 
@@ -169,7 +169,7 @@
       } else {
         console.log('Running without a web3 provider - falling back to infura');
 
-        window.web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/nbCbdzC6IG9CF6hmvAVQ'));
+        window.web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/4396873c00c84479991e58a34a54ebd9'));
         console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
         this.$store.dispatch(actions.INIT_APP, window.web3);
       }
