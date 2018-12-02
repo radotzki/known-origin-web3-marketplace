@@ -19,7 +19,7 @@
         <tr v-for="edition, editionNumber in editions" :key="editionNumber" v-if="shouldShowControls(edition)">
           <td>
             <router-link :to="{ name: 'confirmPurchaseSimple', params: { editionNumber: editionNumber }}">
-              <img :src="edition.lowResImg" class="img-thumbnail" style="max-width: 100px" :id="editionNumber"/>
+              <edition-image class="img-thumbnail" style="max-width: 100px" :src="edition.lowResImg" :id="editionNumber" />
             </router-link>
           </td>
           <td class="d-none d-md-table-cell align-middle">
@@ -97,10 +97,12 @@
   import _ from 'lodash';
   import Vue from 'vue';
   import RemainingCount from "../v2/RemainingCount";
+  import EditionImage from "../generic/EditionImage";
 
   export default {
     name: 'artistEditionControls',
     components: {
+      EditionImage,
       RemainingCount,
       ViewTransactionDetails,
       ClickableTransaction,

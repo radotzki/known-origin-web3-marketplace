@@ -17,9 +17,8 @@
               <td class="w-25 text-center">
                 <router-link
                   :to="{ name: 'confirmPurchaseSimple', params: { editionNumber: parseInt(event._args._editionNumber) }}">
-                  <img v-if="findEdition(parseInt(event._args._editionNumber))"
-                       class="img-thumbnail"
-                       :src="findEdition(parseInt(event._args._editionNumber)).lowResImg"/>
+                  <edition-image class="img-thumbnail"
+                                 :src="findEdition(parseInt(event._args._editionNumber)).lowResImg" />
                 </router-link>
               </td>
               <td>
@@ -74,10 +73,12 @@
   import { PAGES } from '../../store/loadingPageState';
   import LoadingSection from '../ui-controls/generic/LoadingSection';
   import ViewTransactionDetails from '../ui-controls/generic/ViewTransactionDetails';
+  import EditionImage from "../ui-controls/generic/EditionImage";
 
   export default {
     name: 'activity',
     components: {
+      EditionImage,
       LoadingSection,
       Availability,
       ClickableAddress,

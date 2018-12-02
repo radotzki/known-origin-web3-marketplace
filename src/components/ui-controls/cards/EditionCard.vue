@@ -3,7 +3,7 @@
 
     <router-link
       :to="{ name: 'artist-v2', params: { artistAccount: getArtistAddress(findArtistsForAddress(edition.artistAccount)) } }" class="artist-link">
-      <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
+      <img :src="findArtistsForAddress(edition.artistAccount).logo" class="artist-avatar" alt="artist-logo" />
       <span class="pl-1 artist-name-lg">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
     </router-link>
 

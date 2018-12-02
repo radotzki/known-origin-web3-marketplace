@@ -2,6 +2,7 @@ import * as actions from '../actions';
 import * as mutations from '../mutation';
 import _ from 'lodash';
 import axios from 'axios';
+import {getApi} from "../../utils";
 
 const highResStateModule = {
   namespaced: true,
@@ -50,30 +51,11 @@ const highResStateModule = {
 
       commit(mutations.HIGH_RES_DOWNLOAD_TRIGGERED, {tokenId: edition.tokenId});
 
-      const highResConfig = {
-        local: {
-          v1: "http://localhost:5000/known-origin-io/us-central1/api/download/highres/v1",
-          v2: "http://localhost:5000/known-origin-io/us-central1/api/download/highres/v2"
-        },
-        live: {
-          v1: "https://us-central1-known-origin-io.cloudfunctions.net/api/download/highres/v1",
-          v2: "https://us-central1-known-origin-io.cloudfunctions.net/api/download/highres/v2"
-        }
-      };
-
+      // TODO test this again
       const getDownloadApi = () => {
-        switch (window.location.hostname) {
-          case "localhost":
-          case "127.0.0.1":
-            // return contractVersion === 1
-            //   ? highResConfig.local.v1
-            //   : highResConfig.local.v2;
-          default:
-            // For now point all to live
-            return contractVersion === 1
-              ? highResConfig.live.v1
-              : highResConfig.live.v2;
-        }
+        return contractVersion === 1
+          ? `${getApi()}/download/highres/v1`
+          : `${getApi()}/download/highres/v2`;
       };
 
       const validateResponse = (response) => {

@@ -18,7 +18,7 @@
         <tr v-for="auction in listOpenAuctions" :key="auction.edition">
           <td>
             <router-link :to="{ name: 'confirmPurchaseSimple', params: { editionNumber: auction.edition }}">
-              <img :src="getEdition(auction.edition).lowResImg" class="img-thumbnail" style="max-width: 100px"/>
+              <edition-image style="max-width: 100px" :src="getEdition(auction.edition).lowResImg" :id="auction.edition" />
             </router-link>
           </td>
           <td class="d-none d-md-table-cell align-middle">
@@ -80,10 +80,12 @@
   import WithdrawingBidFlow from "./control-flows/WithdrawingBidFlow";
   import RemainingCount from "../v2/RemainingCount";
   import CancellingAuctionFlow from "./control-flows/CancelAuctionFlow";
+  import EditionImage from "../generic/EditionImage";
 
   export default {
     name: 'acceptEditionBids',
     components: {
+      EditionImage,
       CancellingAuctionFlow,
       RemainingCount,
       WithdrawingBidFlow,

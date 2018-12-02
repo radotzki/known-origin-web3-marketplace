@@ -2,7 +2,7 @@
   <div class="card shadow-sm">
 
     <router-link :to="routeData()" class="card-target" v-if="edition">
-      <img class="card-img-top" :src="edition.lowResImg" :id="editionNumber"/>
+      <edition-image class="card-img-top" :src="edition.lowResImg" :id="edition.edition" />
     </router-link>
 
     <div class="high-res">
@@ -35,7 +35,7 @@
         </div>
       </div>
       <router-link :to="{ name: 'artist-v2', params: { artistAccount: edition.artistAccount } }" class="floating-artist-link">
-        <img :src="findArtistsForAddress(edition.artistAccount).img" class="artist-avatar"/>
+        <img :src="findArtistsForAddress(edition.artistAccount).logo" class="artist-avatar" alt="artist-logo" />
         <a class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name | truncate(18) }}</a>
       </router-link>
     </div>
@@ -49,11 +49,13 @@
   import HighResLabel from '../generic/HighResLabel';
   import CreativeChallengeLabel from '../../ui-controls/generic/CreativeChallengeLabel';
   import PriceInEth from '../generic/PriceInEth';
+  import EditionImage from "../generic/EditionImage";
 
   export default {
     name: 'gallery-card',
     props: ['edition', 'editionNumber'],
     components: {
+      EditionImage,
       Availability,
       ClickableAddress,
       HighResLabel,

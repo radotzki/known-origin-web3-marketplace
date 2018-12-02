@@ -24,7 +24,7 @@
           <div class="col-auto mx-auto mb-5" v-for="asset in assetsOwnedByAccount" :key="asset.tokenId">
             <router-link :to="{ name: 'legacy-asset', params: { legacyTokenId: asset.tokenId } }" class="card-target">
               <div class="card shadow-sm">
-                <img class="card-img-top" :src="asset.lowResImg"/>
+                <edition-image class="card-img-top" :src="asset.lowResImg" :id="asset.tokenId" />
                 <div class="card-body">
                   <p class="card-title">
                     {{ asset.artworkName }}
@@ -32,7 +32,7 @@
                   </p>
                 </div>
                 <div class="card-footer bg-white no-top-border">
-                  <img :src="findArtist(asset.artistCode).img" class="artist-avatar"/>
+                  <img :src="findArtist(asset.artistCode).logo" class="artist-avatar"/>
                   <span class="pl-1 artist-name">{{ asset.otherMeta.artist }}</span>
                 </div>
               </div>
@@ -72,10 +72,12 @@
   import HighResLabel from '../ui-controls/generic/HighResLabel';
   import GalleryCard from '../ui-controls/cards/GalleryCard';
   import PurchaseTransactionBadge from "../ui-controls/badges/PurchaseTransactionBadge";
+  import EditionImage from "../ui-controls/generic/EditionImage";
 
   export default {
     name: 'account',
     components: {
+      EditionImage,
       PurchaseTransactionBadge,
       GalleryCard,
       HighResLabel,

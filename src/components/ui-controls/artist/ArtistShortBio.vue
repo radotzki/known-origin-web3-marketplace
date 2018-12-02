@@ -1,6 +1,6 @@
 <template>
   <div v-if="artist" class="text-center mt-4 mb-2">
-    <img :src="artist.img"/>
+    <artist-image :logo="artist.logo"></artist-image>
     <h4 class="mt-4">{{ artist.name }}</h4>
     <p v-if="!nolinks">
       <clickable-address :eth-address="getArtistAddress(artist)"></clickable-address>
@@ -10,10 +10,11 @@
 
 <script>
   import ClickableAddress from '../generic/ClickableAddress';
+  import ArtistImage from "./ArtistImage";
 
   export default {
     name: 'artistShortBio',
-    components: {ClickableAddress},
+    components: {ArtistImage, ClickableAddress},
     props: ['artist', 'nolinks'],
     methods: {
       getArtistAddress: function (artist) {
@@ -28,10 +29,6 @@
 
 <style scoped lang="scss">
   @import '../../../ko-colours.scss';
-
-  img {
-    max-height: 75px;
-  }
 
   h4 {
     color: $body-color;

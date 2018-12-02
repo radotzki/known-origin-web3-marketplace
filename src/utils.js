@@ -262,9 +262,24 @@ const safeToCheckSumAddress = (address) => {
   }
 };
 
+const API_CONFIG = {
+  local: "http://localhost:5000/known-origin-io/us-central1/api",
+  live: "https://us-central1-known-origin-io.cloudfunctions.net/api"
+};
+
+const getApi = () => {
+  switch (window.location.hostname) {
+    case "localhost":
+    case "127.0.0.1":
+      return API_CONFIG.local;
+    default:
+      return API_CONFIG.live;
+  }
+};
 
 export {
   getNetId,
+  getApi,
   safeToCheckSumAddress,
   getNetIdString,
   getEtherscanAddress,

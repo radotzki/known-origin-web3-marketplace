@@ -1,7 +1,7 @@
 <template>
   <div class="card shadow-sm" v-if="asset">
 
-    <img class="card-img-top" :src="asset.lowResImg"/>
+    <edition-image class="card-img-top" :src="asset.lowResImg" />
 
     <ul class="list-group list-group-flush">
       <li class="list-group-item text-center no-top-border">
@@ -14,7 +14,7 @@
 
     <div class="card-body">
       <p class="card-title">{{ asset.otherMeta.artworkName }}</p>
-      <img :src="findArtist(asset.artistCode).img" class="artist-avatar"/>
+      <img :src="findArtist(asset.artistCode).logo" class="artist-avatar"/>
       <span class="pl-1 artist-name-lg">{{ asset.otherMeta.artist }}</span>
 
       <p class="card-full-desc pt-4">
@@ -57,9 +57,11 @@
   import MetadataAttributes from './MetadataAttributes';
   import HighResLabel from "../generic/HighResLabel";
   import HighResDownload from "../generic/HighResDownload";
+  import EditionImage from "../generic/EditionImage";
 
   export default {
     components: {
+      EditionImage,
       HighResDownload,
       HighResLabel,
       MetadataAttributes,

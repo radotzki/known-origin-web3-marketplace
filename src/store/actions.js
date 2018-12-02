@@ -7,6 +7,12 @@ export const GET_CURRENT_NETWORK = 'GET_CURRENT_NETWORK';
 // External API calls
 export const GET_USD_PRICE = 'GET_USD_PRICE';
 
+/////////////////
+// Artist Data //
+/////////////////
+export const LOAD_ARTISTS = 'LOAD_ARTIST_DATA';
+export const UPDATE_ARTIST_DATA = 'UPDATE_ARTIST_DATA';
+
 ///////////////////
 // V2 Page Loads //
 ///////////////////
