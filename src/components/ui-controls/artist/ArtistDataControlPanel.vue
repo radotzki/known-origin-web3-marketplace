@@ -101,8 +101,7 @@
               <div class="col">
                 <div class="form-group">
                   <label for="twitterInput">Twitter</label>
-                  <input type="text" class="form-control" id="twitterInput" placeholder="@" minlength="3"
-                         maxlength="100"
+                  <input type="text" class="form-control" id="twitterInput" placeholder="@" minlength="2" maxlength="50"
                          v-model="form.twitter"
                          @input="validateTwitter"
                          :class="{ 'is-invalid': errors.twitter }">
@@ -114,8 +113,7 @@
               <div class="col">
                 <div class="form-group">
                   <label for="instagramInput">Instagram</label>
-                  <input type="text" class="form-control" id="instagramInput" placeholder="@" minlength="3"
-                         maxlength="100"
+                  <input type="text" class="form-control" id="instagramInput" minlength="1" maxlength="30"
                          v-model="form.instagram"
                          @input="validateInstagram"
                          :class="{ 'is-invalid': errors.instagram }">
@@ -242,10 +240,6 @@
         if (value === '') {
           this.errors.instagram = false;
           return true;
-        }
-        if (value.substr(0, 1) !== '@') {
-          this.errors.instagram = true;
-          return false;
         }
         if (this.validMinMaxLength(event, 'instagram')) {
           this.errors.instagram = false;

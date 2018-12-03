@@ -348,7 +348,9 @@
   }
 
   .artist-avatar {
-    max-width: 30px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
   }
 
   .tag {
