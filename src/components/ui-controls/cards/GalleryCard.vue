@@ -36,7 +36,7 @@
       </div>
       <router-link :to="{ name: 'artist-v2', params: { artistAccount: edition.artistAccount } }" class="floating-artist-link">
         <img class="artist-avatar" alt="artist-logo"
-             :src="findArtistsForAddress(edition.artistAccount).logo" :id="edition.artistAccount + edition.edition" />
+             :src="(findArtistsForAddress(edition.artistAccount) || {}).logo" :id="edition.artistAccount + edition.edition" />
         <a class="pl-1 artist-name">{{ findArtistsForAddress(edition.artistAccount).name | truncate(18) }}</a>
       </router-link>
     </div>
