@@ -237,10 +237,27 @@ const store = new Vuex.Store({
       // Find current network
       dispatch(actions.GET_CURRENT_NETWORK);
 
+      // Load auction contract owner
+      dispatch(`auction/${actions.GET_AUCTION_OWNER}`);
+
+      // Load control contract owner
+      dispatch(`artistControls/${actions.GET_ARTIST_EDITION_CONTROLS_DETAILS}`);
+
       web3.eth.getAccounts()
         .then((accounts) => {
 
           let account = accounts[0];
+
+          const loadAccountData = (account) => {
+            console.log(`Loading data for account [${account}]`);
+            try {
+              // Load account owner assets for V1 & V2
+              dispatch(`kodaV1/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account});
+              dispatch(`kodaV2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account});
+            } catch (e) {
+              console.log("Unable to load account assets", e);
+            }
+          };
 
           const setAccountAndBalance = (account) => {
             return web3.eth.getBalance(account)
@@ -249,15 +266,7 @@ const store = new Vuex.Store({
                 // store the account details
                 commit(mutations.SET_ACCOUNT, {account, accountBalance});
 
-                // Load account owner assets for V1 & V2
-                dispatch(`kodaV1/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account});
-                dispatch(`kodaV2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account});
-
-                // Load auction contract owner
-                dispatch(`auction/${actions.GET_AUCTION_OWNER}`);
-
-                // Load control contract owner
-                dispatch(`artistControls/${actions.GET_ARTIST_EDITION_CONTROLS_DETAILS}`);
+                loadAccountData(account);
               });
           };
 
