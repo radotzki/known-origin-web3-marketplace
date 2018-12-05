@@ -18,7 +18,7 @@
                 <router-link
                   :to="{ name: 'confirmPurchaseSimple', params: { editionNumber: parseInt(event._args._editionNumber) }}">
                   <edition-image class="img-thumbnail"
-                                 :src="findEdition(parseInt(event._args._editionNumber)).lowResImg" />
+                                 :src="(findEdition(parseInt(event._args._editionNumber)) || {}).lowResImg"/>
                 </router-link>
               </td>
               <td>
