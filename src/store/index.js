@@ -295,6 +295,7 @@ const store = new Vuex.Store({
       // Return from here so we can change them in views
       return state.firestore
         .collection('artist-data')
+        .orderBy('name')
         .get()
         .then((querySnapshot) => {
           let artistData = [];
