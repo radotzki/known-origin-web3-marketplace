@@ -13,7 +13,6 @@ import _ from 'lodash';
 import 'intersection-observer';
 
 import AsyncComputed from 'vue-async-computed';
-import ToggleButton from 'vue-js-toggle-button';
 import BootstrapVue from 'bootstrap-vue';
 import Vue2Filters from 'vue2-filters';
 import {VLazyImagePlugin} from "v-lazy-image";
@@ -28,7 +27,6 @@ fontawesome.library.add(brands, solid);
 Vue.use(VLazyImagePlugin);
 Vue.use(VModal);
 Vue.use(AsyncComputed);
-Vue.use(ToggleButton);
 Vue.use(BootstrapVue);
 Vue.use(require('vue-moment'));
 Vue.use(Vue2Filters);
