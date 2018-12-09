@@ -65,7 +65,6 @@ const store = new Vuex.Store({
     // connectivity
     account: null,
     currentNetwork: null,
-    accountBalance: null,
     web3: null,
     currentUsdPrice: null,
     etherscanBase: null,
@@ -79,9 +78,6 @@ const store = new Vuex.Store({
     KnownOriginDigitalAssetV2: null,
     ArtistAcceptingBids: null,
     ArtistEditionControls: null,
-
-    KnownOriginDigitalAssetV2MainBlockNumber: 6270484,
-    ArtistAcceptingBidsMainBlockNumber: 6568535,
 
     firestore: firestore,
     firebasePath: null
@@ -131,9 +127,8 @@ const store = new Vuex.Store({
       // clear cache to force update
       state.artistLookupCache = {};
     },
-    [mutations.SET_ACCOUNT](state, {account, accountBalance}) {
+    [mutations.SET_ACCOUNT](state, {account}) {
       state.account = Web3.utils.toChecksumAddress(account);
-      state.accountBalance = accountBalance;
     },
     [mutations.SET_CURRENT_NETWORK](state, {human, firebasePath}) {
       state.currentNetwork = human;
@@ -252,22 +247,16 @@ const store = new Vuex.Store({
             console.log(`Loading data for account [${account}]`);
             try {
               // Load account owner assets for V1 & V2
-              dispatch(`kodaV1/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account});
               dispatch(`kodaV2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account});
+              dispatch(`kodaV1/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account});
             } catch (e) {
               console.log("Unable to load account assets", e);
             }
           };
 
           const setAccountAndBalance = (account) => {
-            return web3.eth.getBalance(account)
-              .then((balance) => {
-                let accountBalance = Web3.utils.fromWei(balance);
-                // store the account details
-                commit(mutations.SET_ACCOUNT, {account, accountBalance});
-
-                loadAccountData(account);
-              });
+            commit(mutations.SET_ACCOUNT, {account});
+            loadAccountData(account);
           };
 
           const refreshHandler = () => {

@@ -24,6 +24,7 @@
     <header>
       <b-navbar toggleable="md" variant="light" class="fixed-top floating-nav">
 
+
         <b-navbar-brand href="/home" v-if="['home', 'gallery'].indexOf($route.name) > -1">
           KnownOrigin.io
         </b-navbar-brand>
@@ -38,6 +39,8 @@
 
         <b-collapse is-nav id="nav_collapse">
           <b-navbar-nav class="ml-auto">
+
+            <router-link :to="{ name: 'feed' }" class="nav-link">Feed</router-link>
 
             <router-link :to="{ name: 'gallery' }" class="nav-link">Gallery</router-link>
 
@@ -68,6 +71,7 @@
           </div>
           <div class="col-xs col-sm text-center mb-2">
             <small>
+              <router-link :to="{ name: 'feed' }">Feed</router-link> &bull;
               <router-link :to="{ name: 'gallery' }">Gallery</router-link> &bull;
               <router-link :to="{ name: 'artists' }">Artists</router-link> &bull;
               <router-link :to="{ name: 'contracts' }">Contracts</router-link> &bull;
@@ -203,6 +207,10 @@
     margin-top: 30px;
   }
 
+  main {
+    min-height: 350px;
+  }
+
   [v-cloak] {
     display: none
   }
@@ -324,6 +332,7 @@
     a {
       color: $white;
       text-decoration: none;
+      cursor: pointer;
     }
   }
 

@@ -151,9 +151,11 @@ const contractStateModule = {
       setEditionData(data, state);
     },
     [mutations.SET_EDITIONS](state, editions) {
+      console.time('SET_EDITIONS');
       _.forEach(editions, (data) => {
         setEditionData(data, state);
       });
+      console.timeEnd('SET_EDITIONS');
     },
     [mutations.SET_CONTRACT_ADDRESS_V2](state, contractAddress) {
       state.contractAddress = contractAddress;
@@ -319,11 +321,15 @@ const loadEditionData = async (contract, edition) => {
       edition: editionNumber,
       ...ipfsData,
       ...allEditionData,
-      highResAvailable: isHighRes(editionNumber)
+      highResAvailable: isHighRes(ipfsData, editionNumber)
     };
   } catch (e) {
+    console.log(`Failed to load edition [${edition}]`);
     // Catch all errors and simply assume an inactive edition which should not be viewable anywhere
-    return {active: false};
+    return {
+      edition,
+      active: false
+    };
   }
 };
 

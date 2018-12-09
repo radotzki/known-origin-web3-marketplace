@@ -6,6 +6,8 @@
       </div>
     </div>
 
+    <loading-section :page="PAGES.ARTISTS"></loading-section>
+
     <div class="container-fluid mt-4">
       <div class="row editions-wrap">
 
@@ -18,11 +20,9 @@
           <!-- ARTWORKS -->
           <b-tabs>
             <b-tab title="Artworks" class="mt-2" active>
-
-              <loading-section :page="PAGES.ARTISTS"></loading-section>
-
               <div class="card-deck">
-                <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions" :key="editionNumber"
+                <div class="col-auto mx-auto mb-5"
+                     v-for="edition, editionNumber in editions" :key="editionNumber"
                      v-if="edition.active">
                   <gallery-card :edition="edition" :edition-number="editionNumber"></gallery-card>
                 </div>
