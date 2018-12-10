@@ -19,6 +19,7 @@
               View all
             </router-link>
           </h5>
+          <hr />
         </div>
         <div class="card-deck">
           <div class="col-auto mx-auto mb-5"
@@ -40,6 +41,7 @@
               View all
             </router-link>
           </h5>
+          <hr />
         </div>
         <div class="card-deck">
           <div class="col-auto mx-auto mb-5"
@@ -61,6 +63,7 @@
               View all
             </router-link>
           </h5>
+          <hr />
         </div>
         <div class="card-deck">
           <div class="col-auto mx-auto mb-5"
