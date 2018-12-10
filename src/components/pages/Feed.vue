@@ -12,7 +12,9 @@
       <div class="row editions-wrap">
         <div class="col-12">
           <h5 class="mb-3">
-            Staff picks <small class="text-muted">some of our favourites</small>
+            <span title="Some of our favourites">
+              Staff picks
+            </span>
             <router-link :to="{ name: 'gallery' }" class="btn-link small float-right">
               View all
             </router-link>
@@ -31,7 +33,9 @@
       <div class="row editions-wrap" v-if="(latest || []).length > 0 && assets">
         <div class="col-12">
           <h5 class="mb-3">
-            Recently added <small class="text-muted">new artworks landing on the platform</small>
+            <span title="New artworks landing on the platform">
+              Recently added
+            </span>
             <router-link :to="{ name: 'gallery' }" class="btn-link small float-right">
               View all
             </router-link>
@@ -50,7 +54,9 @@
       <div class="row editions-wrap" v-if="(trending || []).length > 0 && assets">
         <div class="col-12">
           <h5 class="mb-3">
-            Trending <small class="text-muted">whats hot on the platform, a selection of recent sales and bids</small>
+            <span title="Whats hot on the platform, a selection of recent sales and bids">
+              Trending
+            </span>
             <router-link :to="{ name: 'activity' }" class="btn-link small float-right">
               View all
             </router-link>
