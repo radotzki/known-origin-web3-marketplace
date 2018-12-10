@@ -9,13 +9,15 @@
     <div class="container-fluid">
       <loading-section :page="PAGES.FEED"></loading-section>
 
-      <div class="row editions-wrap" v-if="KO_PICKS && assets">
+      <div class="row editions-wrap">
         <div class="col-12">
-          <h4 class="mb-3">Staff picks</h4>
+          <h4 class="mb-3">
+            Staff picks <small class="text-muted">some of our favourites</small>
+          </h4>
         </div>
         <div class="card-deck">
           <div class="col-auto mx-auto mb-5"
-               v-for="editionNumber in KO_PICKS" :key="editionNumber"
+               v-for="editionNumber in limitBy(KO_PICKS, 8)" :key="editionNumber"
                v-if="assets[editionNumber] && assets[editionNumber].active">
             <gallery-card :edition="assets[editionNumber]" :edition-number="editionNumber">
             </gallery-card>
@@ -23,9 +25,11 @@
         </div>
       </div>
 
-      <div class="row editions-wrap" v-if="latest && assets">
+      <div class="row editions-wrap" v-if="(latest || []).length > 0 && assets">
         <div class="col-12">
-          <h4 class="mb-3">Recently added</h4>
+          <h4 class="mb-3">
+            Recently added <small class="text-muted">new artworks landing on the platform</small>
+          </h4>
         </div>
         <div class="card-deck">
           <div class="col-auto mx-auto mb-5"
@@ -37,9 +41,11 @@
         </div>
       </div>
 
-      <div class="row editions-wrap" v-if="trending && assets">
+      <div class="row editions-wrap" v-if="(trending || []).length > 0 && assets">
         <div class="col-12">
-          <h4 class="mb-3">Trending</h4>
+          <h4 class="mb-3">
+            Trending <small class="text-muted">whats hot on the platform, a selection of recent sales and bids</small>
+          </h4>
         </div>
         <div class="card-deck">
           <div class="col-auto mx-auto mb-5"
@@ -67,12 +73,22 @@
   import GalleryCard from '../ui-controls/cards/GalleryCard';
   import SimpleArtistPanel from '../ui-controls/artist/SimpleArtistPanel';
 
-  const koPicks = [
+  const koPicks = _.shuffle([
     7900,
     20700,
     21700,
-    22000
-  ];
+    22000,
+    7500,
+    18600,
+    25800,
+    20100,
+    26300,
+    19000,
+    27000,
+    19300,
+    22300,
+    27700
+  ]);
 
   export default {
     name: 'feed',
