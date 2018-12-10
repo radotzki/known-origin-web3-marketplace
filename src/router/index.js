@@ -91,7 +91,6 @@ export default new Router({
       name: 'confirmPurchase',
       component: ConfirmPurchase,
       props: true,
-      // TOOD missing edition number?
     },
     {
       path: '/artists-v2/:artistAccount/editions/:editionNumber/buy',

@@ -48,18 +48,7 @@ const contractStateModule = {
     totalNumberMinted: null,
     totalNumberAvailable: null,
     totalEditions: null,
-    koCommissionAccount: null,
-
-    // must be 7 as rotated daily
-    featuredArtistAccounts: [
-      '0x8ff69972bd0AC1Ed1569EC09564F51A80825ffCf',
-      '0x4AF4aEBe930e938FA11aD28cD2c88645cCe739A1',
-      '0x3768225622d53FfCc1E00eaC53a2A870ECd825C8',
-      '0x43a7634eb14c12b59be599487c1d7898a3d864c1',
-      '0x08f950816358F4306B70fB319E4F35c592d1B8a8',
-      '0xd2cb8b4f7635f4081b4c3109c9bb35ae2bbee516',
-      '0x08f950816358F4306B70fB319E4F35c592d1B8a8'
-    ]
+    koCommissionAccount: null
   },
   getters: {
     haveNotPurchasedEditionBefore: (state) => (editionNumber) => {
@@ -71,9 +60,6 @@ const contractStateModule = {
       return _.pickBy(state.assets, function (value, key) {
         return artworks.indexOf(_.toNumber(key)) > -1;
       });
-    },
-    featuredArtistAccount: (state, getters, rootState) => () => {
-      return state.featuredArtistAccounts[new Date().getDay()];
     },
     filterEditions: (state, getters, rootState) => (priceFilter = 'asc') => {
 
@@ -193,6 +179,7 @@ const contractStateModule = {
 
       // Basic sanity check that we are not already loaded
       if (_.size(state.assets) === _.size(editions)) {
+        console.log(`Loaded all editions so not loading - loaded editions [${_.size(editions)}] | store editions [${_.size(state.assets)}]`);
         return;
       }
 
