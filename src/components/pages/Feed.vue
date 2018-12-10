@@ -7,10 +7,11 @@
     </div>
 
     <div class="container-fluid">
-      <div class="row editions-wrap">
+      <loading-section :page="PAGES.FEED"></loading-section>
+
+      <div class="row editions-wrap" v-if="KO_PICKS && assets">
         <div class="col-12">
           <h4 class="mb-3">Staff picks</h4>
-          <loading-section :page="PAGES.FEED_STAFF_PICKS"></loading-section>
         </div>
         <div class="card-deck">
           <div class="col-auto mx-auto mb-5"
@@ -22,12 +23,11 @@
         </div>
       </div>
 
-      <div class="row editions-wrap">
+      <div class="row editions-wrap" v-if="latest && assets">
         <div class="col-12">
           <h4 class="mb-3">Recently added</h4>
-          <loading-section :page="PAGES.FEED_RECENTLY_ADDED"></loading-section>
         </div>
-        <div class="card-deck" v-if="latest">
+        <div class="card-deck">
           <div class="col-auto mx-auto mb-5"
                v-for="editionNumber in limitBy(latest, 12)" :key="editionNumber"
                v-if="assets[editionNumber] && assets[editionNumber].active">
@@ -37,12 +37,11 @@
         </div>
       </div>
 
-      <div class="row editions-wrap">
+      <div class="row editions-wrap" v-if="trending && assets">
         <div class="col-12">
           <h4 class="mb-3">Trending</h4>
-          <loading-section :page="PAGES.FEED_TRENDING"></loading-section>
         </div>
-        <div class="card-deck" v-if="trending">
+        <div class="card-deck">
           <div class="col-auto mx-auto mb-5"
                v-for="editionNumber in limitBy(trending, 12)" :key="editionNumber"
                v-if="assets[editionNumber] && assets[editionNumber].active">
@@ -104,9 +103,7 @@
       ]),
     },
     created() {
-      this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.FEED_TRENDING);
-      this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.FEED_RECENTLY_ADDED);
-      this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.FEED_STAFF_PICKS);
+      this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.FEED);
 
       const loadLatest = () => {
         this.$store.state.firestore
@@ -126,10 +123,7 @@
             console.log(`Loaded latest ediitons of [${this.latest}]`);
           })
           .finally(() => {
-            this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, this.latest)
-              .finally(() => {
-                this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.FEED_RECENTLY_ADDED);
-              });
+            this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, this.latest);
           });
       };
 
@@ -156,10 +150,7 @@
             console.log(`Loaded trending of [${this.trending}]`);
           })
           .finally(() => {
-            this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, this.latest)
-              .finally(() => {
-                this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.FEED_TRENDING);
-              });
+            this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, this.trending);
           });
       };
 
@@ -179,7 +170,7 @@
       const loadStaffPicks = function () {
         this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, koPicks)
           .finally(() => {
-            this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.FEED_STAFF_PICKS);
+            this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.FEED);
           });
       }.bind(this);
 

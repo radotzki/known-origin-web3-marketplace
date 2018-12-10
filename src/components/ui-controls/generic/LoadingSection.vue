@@ -1,5 +1,5 @@
 <template>
-  <div class="text-center">
+  <div class="text-center mt-3">
     <loading-spinner v-if="isLoading(page)" :id="uuid"></loading-spinner>
   </div>
 </template>
