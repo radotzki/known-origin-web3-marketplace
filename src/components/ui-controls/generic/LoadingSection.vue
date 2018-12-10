@@ -1,6 +1,6 @@
 <template>
   <div class="text-center">
-    <loading-spinner v-if="isLoading(page)"></loading-spinner>
+    <loading-spinner v-if="isLoading(page)" :id="uuid"></loading-spinner>
   </div>
 </template>
 
@@ -16,7 +16,13 @@
       ...mapGetters('loading', [
         'isLoading'
       ]),
-    }
+    },
+    data() {
+      return {
+        // We gen a random ID to bind the popup to
+        uuid: Math.floor(Math.random() * Math.floor(1000))
+      };
+    },
   };
 </script>
 

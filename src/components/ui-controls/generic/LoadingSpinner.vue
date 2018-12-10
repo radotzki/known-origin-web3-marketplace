@@ -1,5 +1,5 @@
 <template>
-  <div class="loading" id="uuid">
+  <div class="loading">
     <div class="loading-bar"></div>
     <div class="loading-bar"></div>
     <div class="loading-bar"></div>
@@ -10,13 +10,7 @@
 <script>
   export default {
     components: {},
-    name: 'loadingSpinner',
-    data() {
-      return {
-        // We gen a random ID to bind the popup to
-        uuid: Math.floor(Math.random() * Math.floor(1000))
-      };
-    },
+    name: 'loadingSpinner'
   };
 </script>
 
