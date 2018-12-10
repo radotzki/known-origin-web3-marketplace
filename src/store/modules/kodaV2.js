@@ -76,28 +76,18 @@ const contractStateModule = {
       return state.featuredArtistAccounts[new Date().getDay()];
     },
     filterEditions: (state, getters, rootState) => (priceFilter = 'asc') => {
-      const artworks = featureArtworks(rootState.currentNetwork);
-      const todaysArtist = safeToCheckSumAddress(getters.featuredArtistAccount());
 
       const soldOutEditions = (edition) => edition.totalSupply === edition.totalAvailable;
       const availableEditions = (edition) => edition.totalSupply !== edition.totalAvailable;
-      const featuredEditions = (edition) => artworks.indexOf(_.toNumber(edition.edition)) > -1;
-      const featuredArtistEditions = (edition) => todaysArtist === safeToCheckSumAddress(edition.artistAccount);
 
       const results = _.pickBy(state.assets, function (value, key) {
-        if (priceFilter === 'featured') {
-          return featuredEditions(value);
-        }
-        if (priceFilter === 'artist') {
-          return featuredArtistEditions(value);
-        }
         if (priceFilter === 'sold') {
           return soldOutEditions(value);
         }
         return availableEditions(value);
       });
 
-      if (_.includes(['artist', 'sold', 'featured'], priceFilter)) {
+      if (_.includes(['sold'], priceFilter)) {
         return results;
       }
 

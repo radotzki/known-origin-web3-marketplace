@@ -2,7 +2,7 @@
   <div class="shadow-sm bg-white p-4">
 
     <router-link
-      :to="{ name: 'artist-v2', params: { artistAccount: getArtistAddress(findArtistsForAddress(edition.artistAccount)) } }"
+      :to="{ name: 'artist-v2', params: { artistAccount: artistAddress } }"
       class="artist-link">
       <img :src="findArtistsForAddress(edition.artistAccount).logo" class="artist-avatar" alt="artist-logo"/>
       <span class="pl-1 artist-name-lg">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
@@ -93,15 +93,20 @@
     computed: {
       ...mapGetters([
         'findArtistsForAddress'
-      ])
-    },
-    methods: {
-      getArtistAddress: function (artist) {
+      ]),
+      artist() {
+        return this.findArtistsForAddress(this.edition.artistAccount);
+      },
+      artistAddress() {
+        const artist = this.artist;
+        if (!artist) {
+          return {};
+        }
         if (_.isArray(artist.ethAddress)) {
           return artist.ethAddress[0];
         }
         return artist.ethAddress;
-      }
+      },
     }
   };
 </script>

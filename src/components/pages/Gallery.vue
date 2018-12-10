@@ -3,12 +3,6 @@
     <div class="row bg-primary full-banner-secondary pt-3 mt-1">
       <div class="col text-center">
         <p>
-          <span @click="onSubFilter('featured')"
-                class="sub-filter"
-                v-bind:class="{'font-weight-bold': priceFilter === 'featured'}">Featured Artwork</span>
-          <span @click="onSubFilter('artist')"
-                class="sub-filter d-none d-md-inline"
-                v-bind:class="{'font-weight-bold': priceFilter === 'artist'}">Featured Artist</span>
           <span @click="onSubFilter('asc')"
                 class="sub-filter"
                 v-bind:class="{'font-weight-bold': priceFilter === 'asc'}">Low - High</span>
@@ -24,26 +18,19 @@
       <loading-section :page="PAGES.GALLERY"></loading-section>
 
       <div class="row editions-wrap">
-
-        <div class="col-sm-3" v-if="priceFilter === 'artist'">
-          <artist-panel :artist="findArtistsForAddress(featuredArtistAccount())"></artist-panel>
-        </div>
-
-        <div class="col-sm-9" v-if="priceFilter === 'artist'">
-          <div class="card-deck">
-            <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions" :key="editionNumber" v-if="edition.active">
-              <gallery-card :edition="edition" :edition-number="editionNumber"></gallery-card>
-            </div>
-          </div>
-        </div>
-
-        <!-- extract cards out to prevent duplication -->
-        <div class="card-deck" v-else>
-          <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in editions" :key="editionNumber" v-if="edition.active">
+        <div class="card-deck">
+          <div class="col-auto mx-auto mb-5"
+               v-for="edition, editionNumber in limitBy(editions, currentList)" :key="editionNumber"
+               v-if="edition.active">
             <gallery-card :edition="edition" :edition-number="editionNumber"></gallery-card>
           </div>
         </div>
+      </div>
 
+      <div class="row editions-wrap pt-1 pb-4" v-if="canShowMore">
+        <div class="col-12 text-center">
+          <button @click="showMore" class="btn btn-lg btn-outline-primary">Show more</button>
+        </div>
       </div>
     </div>
   </div>
@@ -51,11 +38,11 @@
 <script>
 
   import _ from 'lodash';
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import ArtistPanel from '../ui-controls/artist/ArtistPanel';
   import ClickableAddress from '../ui-controls/generic/ClickableAddress';
   import * as actions from '../../store/actions';
-  import { PAGES } from '../../store/loadingPageState';
+  import {PAGES} from '../../store/loadingPageState';
   import LoadingSection from '../ui-controls/generic/LoadingSection';
   import Availability from '../ui-controls/v2/Availability';
   import HighResLabel from '../ui-controls/generic/HighResLabel';
@@ -71,10 +58,11 @@
       ArtistPanel,
       HighResLabel
     },
-    data () {
+    data() {
       return {
         PAGES,
-        priceFilter: 'featured'
+        priceFilter: 'asc',
+        currentList: 20
       };
     },
     methods: {
@@ -83,31 +71,33 @@
       },
       goToArtist: function (artistAccount) {
         this.$router.push({name: 'artist-v2', params: {artistAccount}});
-      }
+      },
+      showMore: function () {
+        this.currentList = this.currentList + 20;
+      },
     },
     computed: {
       ...mapGetters('kodaV2', [
         'filterEditions',
-        'featuredArtistAccount'
-      ]),
-      ...mapGetters([
-        'findArtistsForAddress'
       ]),
       editions: function () {
         return this.filterEditions(this.priceFilter);
+      },
+      canShowMore: function () {
+        const totalAvailable = _.size(this.editions);
+        if (totalAvailable === 0) {
+          return false;
+        }
+        return totalAvailable > this.currentList;
       }
     },
-    created () {
+    created() {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.GALLERY);
 
       const loadData = function () {
-        this.$store.dispatch(`kodaV2/${actions.LOAD_FEATURED_EDITIONS}`)
-          .then(() => {
+        this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS_FOR_TYPE}`, {editionType: 1})
+          .finally(() => {
             this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.GALLERY);
-
-            setTimeout(function () {
-              this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS_FOR_TYPE}`, {editionType: 1});
-            }.bind(this), 3000);
           });
       }.bind(this);
 
@@ -120,7 +110,7 @@
         loadData();
       }
     },
-    destroyed () {
+    destroyed() {
     }
   };
 </script>
