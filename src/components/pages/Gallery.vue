@@ -7,7 +7,7 @@
                 class="sub-filter"
                 v-bind:class="{'font-weight-bold': priceFilter === 'asc'}">Low - High</span>
           <span @click="onSubFilter('desc')"
-                class="sub-filter d-none d-md-inline"
+                class="sub-filter d-md-inline"
                 v-bind:class="{'font-weight-bold': priceFilter === 'desc'}">High - Low</span>
         </p>
       </div>
