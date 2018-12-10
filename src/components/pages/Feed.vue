@@ -11,9 +11,12 @@
 
       <div class="row editions-wrap">
         <div class="col-12">
-          <h4 class="mb-3">
+          <h5 class="mb-3">
             Staff picks <small class="text-muted">some of our favourites</small>
-          </h4>
+            <router-link :to="{ name: 'gallery' }" class="btn-link small float-right">
+              View all
+            </router-link>
+          </h5>
         </div>
         <div class="card-deck">
           <div class="col-auto mx-auto mb-5"
@@ -27,9 +30,12 @@
 
       <div class="row editions-wrap" v-if="(latest || []).length > 0 && assets">
         <div class="col-12">
-          <h4 class="mb-3">
+          <h5 class="mb-3">
             Recently added <small class="text-muted">new artworks landing on the platform</small>
-          </h4>
+            <router-link :to="{ name: 'gallery' }" class="btn-link small float-right">
+              View all
+            </router-link>
+          </h5>
         </div>
         <div class="card-deck">
           <div class="col-auto mx-auto mb-5"
@@ -43,9 +49,12 @@
 
       <div class="row editions-wrap" v-if="(trending || []).length > 0 && assets">
         <div class="col-12">
-          <h4 class="mb-3">
+          <h5 class="mb-3">
             Trending <small class="text-muted">whats hot on the platform, a selection of recent sales and bids</small>
-          </h4>
+            <router-link :to="{ name: 'activity' }" class="btn-link small float-right">
+              View all
+            </router-link>
+          </h5>
         </div>
         <div class="card-deck">
           <div class="col-auto mx-auto mb-5"
