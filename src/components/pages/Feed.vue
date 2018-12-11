@@ -6,16 +6,16 @@
       </div>
     </div>
 
-    <div class="container-fluid">
+    <div class="container-fluid mt-4">
       <loading-section :page="PAGES.FEED"></loading-section>
 
-      <div class="row editions-wrap">
+      <div class="row editions-wrap" v-if="assets && Object.keys(assets).length > 0">
         <div class="col-12">
           <h5 class="mb-3">
             <span title="Some of our favourites">
               Staff picks
             </span>
-            <router-link :to="{ name: 'gallery' }" class="btn-link small float-right">
+            <router-link :to="{ name: 'gallery' }" class="small float-right">
               View all
             </router-link>
           </h5>
@@ -81,7 +81,6 @@
 <script>
   import _ from 'lodash';
   import {mapGetters, mapState} from 'vuex';
-  import ArtistPanel from '../ui-controls/artist/ArtistPanel';
   import ClickableAddress from '../ui-controls/generic/ClickableAddress';
   import * as actions from '../../store/actions';
   import {PAGES} from '../../store/loadingPageState';
@@ -89,7 +88,6 @@
   import Availability from '../ui-controls/v2/Availability';
   import HighResLabel from '../ui-controls/generic/HighResLabel';
   import GalleryCard from '../ui-controls/cards/GalleryCard';
-  import SimpleArtistPanel from '../ui-controls/artist/SimpleArtistPanel';
 
   const koPicks = _.shuffle([
     7900,
@@ -115,9 +113,7 @@
       LoadingSection,
       Availability,
       ClickableAddress,
-      ArtistPanel,
       HighResLabel,
-      SimpleArtistPanel
     },
     data() {
       return {
@@ -131,10 +127,7 @@
     computed: {
       ...mapState('kodaV2', [
         'assets',
-      ]),
-      ...mapGetters([
-        'liveArtists',
-      ]),
+      ])
     },
     created() {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.FEED);
