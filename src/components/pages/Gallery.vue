@@ -29,7 +29,7 @@
 
       <div class="row editions-wrap pt-1 pb-4" v-if="canShowMore">
         <div class="col-12 text-center">
-          <button @click="showMore" class="btn btn-lg btn-outline-primary">Show more</button>
+          <button @click="showMore" class="btn btn-block btn-outline-primary">Show more</button>
         </div>
       </div>
     </div>
