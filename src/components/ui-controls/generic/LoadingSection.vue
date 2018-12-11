@@ -1,15 +1,7 @@
 <template>
-  <div>
-    <loading-spinner v-if="isLoading(page)"></loading-spinner>
-
-    <div class="row justify-content-sm-center" v-if="isLoading(page)">
-      <div class="col text-center mt-5">
-        <p>We are loading assets from the Blockchain.</p>
-        <p>Please be patient as we are fully decentralised.</p>
-      </div>
-    </div>
+  <div class="text-center mt-3">
+    <loading-spinner v-if="isLoading(page)" :id="uuid"></loading-spinner>
   </div>
-
 </template>
 
 <script>
@@ -24,7 +16,13 @@
       ...mapGetters('loading', [
         'isLoading'
       ]),
-    }
+    },
+    data() {
+      return {
+        // We gen a random ID to bind the popup to
+        uuid: Math.floor(Math.random() * Math.floor(1000))
+      };
+    },
   };
 </script>
 

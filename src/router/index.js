@@ -4,6 +4,7 @@ import Artists from '@/components/pages/Artists';
 import ContractDetails from '@/components/pages/ContractDetails';
 import Account from '@/components/pages/Account';
 import License from '@/components/pages/License';
+import Feed from '@/components/pages/Feed';
 import Gallery from '@/components/pages/Gallery';
 import ArtistPage from '@/components/pages/ArtistPage';
 import ConfirmPurchase from '@/components/pages/ConfirmPurchase';
@@ -30,6 +31,16 @@ export default new Router({
     {
       path: '/',
       name: 'home',
+      component: Feed
+    },
+    {
+      path: '/feed',
+      name: 'feed',
+      component: Feed
+    },
+    {
+      path: '/gallery',
+      name: 'gallery',
       component: Gallery
     },
     {
@@ -46,11 +57,6 @@ export default new Router({
       path: '/terms',
       name: 'terms',
       component: License
-    },
-    {
-      path: '/gallery',
-      name: 'gallery',
-      component: Gallery
     },
     {
       path: '/artists',
@@ -84,7 +90,7 @@ export default new Router({
       path: '/artists-v2/:artistAccount/editions/:editionNumber',
       name: 'confirmPurchase',
       component: ConfirmPurchase,
-      props: true
+      props: true,
     },
     {
       path: '/artists-v2/:artistAccount/editions/:editionNumber/buy',
