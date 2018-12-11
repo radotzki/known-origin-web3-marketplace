@@ -2,8 +2,9 @@
   <div class="shadow-sm bg-white p-4">
 
     <router-link
-      :to="{ name: 'artist-v2', params: { artistAccount: getArtistAddress(findArtistsForAddress(edition.artistAccount)) } }" class="artist-link">
-      <img :src="findArtistsForAddress(edition.artistAccount).logo" class="artist-avatar" alt="artist-logo" />
+      :to="{ name: 'artist-v2', params: { artistAccount: artistAddress } }"
+      class="artist-link">
+      <img :src="findArtistsForAddress(edition.artistAccount).logo" class="artist-avatar" alt="artist-logo"/>
       <span class="pl-1 artist-name-lg">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
     </router-link>
 
@@ -41,13 +42,13 @@
                     :totalSupply="edition.totalSupply"></availability>
     </div>
 
-    <hr />
+    <hr/>
 
-    <erc721-badge></erc721-badge>
-
-    <ipfs-badge :edition="edition"></ipfs-badge>
-
-    <birth-transaction-badge :edition="edition"></birth-transaction-badge>
+    <div class="text-center">
+      <erc721-badge></erc721-badge>
+      <ipfs-badge :edition="edition"></ipfs-badge>
+      <birth-transaction-badge :edition="edition"></birth-transaction-badge>
+    </div>
 
     <div class="mt-2">
       <hr/>
@@ -60,7 +61,7 @@
 <script>
   import _ from 'lodash';
 
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import ClickableAddress from '../generic/ClickableAddress';
   import Availability from '../v2/Availability';
   import HighResLabel from '../generic/HighResLabel';
@@ -92,21 +93,25 @@
     computed: {
       ...mapGetters([
         'findArtistsForAddress'
-      ])
-    },
-    methods: {
-      getArtistAddress: function (artist) {
+      ]),
+      artist() {
+        return this.findArtistsForAddress(this.edition.artistAccount);
+      },
+      artistAddress() {
+        const artist = this.artist;
+        if (!artist) {
+          return {};
+        }
         if (_.isArray(artist.ethAddress)) {
           return artist.ethAddress[0];
         }
         return artist.ethAddress;
-      }
+      },
     }
   };
 </script>
 
 <style scoped lang="scss">
   @import '../../../ko-colours.scss';
-
   @import '../../../ko-card.scss';
 </style>

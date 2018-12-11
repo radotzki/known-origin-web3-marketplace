@@ -48,18 +48,7 @@ const contractStateModule = {
     totalNumberMinted: null,
     totalNumberAvailable: null,
     totalEditions: null,
-    koCommissionAccount: null,
-
-    // must be 7 as rotated daily
-    featuredArtistAccounts: [
-      '0x8ff69972bd0AC1Ed1569EC09564F51A80825ffCf',
-      '0x4AF4aEBe930e938FA11aD28cD2c88645cCe739A1',
-      '0x3768225622d53FfCc1E00eaC53a2A870ECd825C8',
-      '0x43a7634eb14c12b59be599487c1d7898a3d864c1',
-      '0x08f950816358F4306B70fB319E4F35c592d1B8a8',
-      '0xd2cb8b4f7635f4081b4c3109c9bb35ae2bbee516',
-      '0x08f950816358F4306B70fB319E4F35c592d1B8a8'
-    ]
+    koCommissionAccount: null
   },
   getters: {
     haveNotPurchasedEditionBefore: (state) => (editionNumber) => {
@@ -72,32 +61,19 @@ const contractStateModule = {
         return artworks.indexOf(_.toNumber(key)) > -1;
       });
     },
-    featuredArtistAccount: (state, getters, rootState) => () => {
-      return state.featuredArtistAccounts[new Date().getDay()];
-    },
     filterEditions: (state, getters, rootState) => (priceFilter = 'asc') => {
-      const artworks = featureArtworks(rootState.currentNetwork);
-      const todaysArtist = safeToCheckSumAddress(getters.featuredArtistAccount());
 
       const soldOutEditions = (edition) => edition.totalSupply === edition.totalAvailable;
       const availableEditions = (edition) => edition.totalSupply !== edition.totalAvailable;
-      const featuredEditions = (edition) => artworks.indexOf(_.toNumber(edition.edition)) > -1;
-      const featuredArtistEditions = (edition) => todaysArtist === safeToCheckSumAddress(edition.artistAccount);
 
       const results = _.pickBy(state.assets, function (value, key) {
-        if (priceFilter === 'featured') {
-          return featuredEditions(value);
-        }
-        if (priceFilter === 'artist') {
-          return featuredArtistEditions(value);
-        }
         if (priceFilter === 'sold') {
           return soldOutEditions(value);
         }
         return availableEditions(value);
       });
 
-      if (_.includes(['artist', 'sold', 'featured'], priceFilter)) {
+      if (_.includes(['sold'], priceFilter)) {
         return results;
       }
 
@@ -151,9 +127,11 @@ const contractStateModule = {
       setEditionData(data, state);
     },
     [mutations.SET_EDITIONS](state, editions) {
+      console.time('SET_EDITIONS');
       _.forEach(editions, (data) => {
         setEditionData(data, state);
       });
+      console.timeEnd('SET_EDITIONS');
     },
     [mutations.SET_CONTRACT_ADDRESS_V2](state, contractAddress) {
       state.contractAddress = contractAddress;
@@ -201,6 +179,7 @@ const contractStateModule = {
 
       // Basic sanity check that we are not already loaded
       if (_.size(state.assets) === _.size(editions)) {
+        console.log(`Loaded all editions so not loading - loaded editions [${_.size(editions)}] | store editions [${_.size(state.assets)}]`);
         return;
       }
 
@@ -319,11 +298,15 @@ const loadEditionData = async (contract, edition) => {
       edition: editionNumber,
       ...ipfsData,
       ...allEditionData,
-      highResAvailable: isHighRes(editionNumber)
+      highResAvailable: isHighRes(ipfsData, editionNumber)
     };
   } catch (e) {
+    console.log(`Failed to load edition [${edition}]`);
     // Catch all errors and simply assume an inactive edition which should not be viewable anywhere
-    return {active: false};
+    return {
+      edition,
+      active: false
+    };
   }
 };
 
