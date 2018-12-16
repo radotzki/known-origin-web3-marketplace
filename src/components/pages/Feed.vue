@@ -6,20 +6,20 @@
       </div>
     </div>
 
-    <div class="container-fluid">
+    <div class="container-fluid mt-4">
       <loading-section :page="PAGES.FEED"></loading-section>
 
-      <div class="row editions-wrap">
+      <div class="row editions-wrap" v-if="assets && Object.keys(assets).length > 0">
         <div class="col-12">
           <h5 class="mb-3">
             <span title="Some of our favourites">
-              Staff picks
+              Community picks
             </span>
-            <router-link :to="{ name: 'gallery' }" class="btn-link small float-right">
+            <router-link :to="{ name: 'gallery' }" class="small float-right">
               View all
             </router-link>
           </h5>
-          <hr />
+          <hr/>
         </div>
         <div class="card-deck">
           <div class="col-auto mx-auto mb-5"
@@ -41,7 +41,7 @@
               View all
             </router-link>
           </h5>
-          <hr />
+          <hr/>
         </div>
         <div class="card-deck">
           <div class="col-auto mx-auto mb-5"
@@ -63,7 +63,7 @@
               View all
             </router-link>
           </h5>
-          <hr />
+          <hr/>
         </div>
         <div class="card-deck">
           <div class="col-auto mx-auto mb-5"
@@ -80,32 +80,33 @@
 </template>
 <script>
   import _ from 'lodash';
-  import {mapGetters, mapState} from 'vuex';
-  import ArtistPanel from '../ui-controls/artist/ArtistPanel';
+  import { mapGetters, mapState } from 'vuex';
   import ClickableAddress from '../ui-controls/generic/ClickableAddress';
   import * as actions from '../../store/actions';
-  import {PAGES} from '../../store/loadingPageState';
+  import { PAGES } from '../../store/loadingPageState';
   import LoadingSection from '../ui-controls/generic/LoadingSection';
   import Availability from '../ui-controls/v2/Availability';
   import HighResLabel from '../ui-controls/generic/HighResLabel';
   import GalleryCard from '../ui-controls/cards/GalleryCard';
-  import SimpleArtistPanel from '../ui-controls/artist/SimpleArtistPanel';
 
   const koPicks = _.shuffle([
-    7900,
-    20700,
-    21700,
-    22000,
-    7500,
-    18600,
-    25800,
-    20100,
-    26300,
+    17000,
+    22700,
+    26700,
+    19200,
+    30000,
+    13000,
+    6700,
+    9900,
+    8900,
     19000,
-    27000,
-    19300,
-    22300,
-    27700
+    27800,
+    20400,
+    9400,
+    29600,
+    18500,
+    28700,
+    28100
   ]);
 
   export default {
@@ -115,11 +116,9 @@
       LoadingSection,
       Availability,
       ClickableAddress,
-      ArtistPanel,
       HighResLabel,
-      SimpleArtistPanel
     },
-    data() {
+    data () {
       return {
         PAGES,
         latest: [],
@@ -131,12 +130,9 @@
     computed: {
       ...mapState('kodaV2', [
         'assets',
-      ]),
-      ...mapGetters([
-        'liveArtists',
-      ]),
+      ])
     },
-    created() {
+    created () {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.FEED);
 
       const loadLatest = () => {
@@ -217,7 +213,7 @@
         loadStaffPicks();
       }
     },
-    destroyed() {
+    destroyed () {
     }
   };
 </script>
