@@ -149,34 +149,48 @@
           : this.$router.push('/');
       }
     },
-    mounted () {
-      if (window.ethereum) {
-        window.web3 = new Web3(ethereum);
+    beforeMount() {
+      const INFURA_MAINNET = 'https://mainnet.infura.io/v3/4396873c00c84479991e58a34a54ebd9';
 
-        // Request account access if needed
-        ethereum.enable()
-          .then((value) => {
-            console.log('Bootstrapping web app - provider acknowedgled', value);
-            this.$store.dispatch(actions.INIT_APP, window.web3);
-          })
-          .catch((error) => {
-            console.log('User denied access, boostrapping application using infura', error);
-            window.web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/4396873c00c84479991e58a34a54ebd9'));
-            this.$store.dispatch(actions.INIT_APP, window.web3);
-          });
+      try {
+        // Check for newer style ethereum provider
+        if (window.ethereum) {
 
-      } else if (window.web3) {
-        console.log('Running legacy web3 provider');
-        window.web3 = new Web3(web3.currentProvider);
-        this.$store.dispatch(actions.INIT_APP, window.web3);
+          // Boot strap web3 via ethereum provider
+          window.web3 = new Web3(window.ethereum);
 
-      } else {
-        console.log('Running without a web3 provider - falling back to infura');
+          // Request account access if needed
+          ethereum.enable()
+            .then((value) => {
+              console.log('Bootstrapping web app - provider acknowledged', value);
+              this.$store.dispatch(actions.INIT_APP, window.web3);
+            })
+            .catch((error) => {
+              console.log('User denied access, bootstrapping application using Infura', error);
+              window.web3 = new Web3(new Web3.providers.HttpProvider(INFURA_MAINNET));
+              this.$store.dispatch(actions.INIT_APP, window.web3);
+            });
 
-        window.web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/4396873c00c84479991e58a34a54ebd9'));
-        console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+          // Check for legacy web3
+        } else if (typeof web3 !== 'undefined') {
+          console.log('Running legacy web3 provider');
+          window.web3 = new Web3(web3.currentProvider);
+          this.$store.dispatch(actions.INIT_APP, window.web3);
+
+        } else {
+          console.log('Running without a web3 provider - falling back to Infura');
+
+          window.web3 = new Web3(new Web3.providers.HttpProvider(INFURA_MAINNET));
+          console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+          this.$store.dispatch(actions.INIT_APP, window.web3);
+        }
+
+      } catch (e) {
+        console.log(`Something really bad happened - attempting once again to go via Infura`, e);
+        window.web3 = new Web3(new Web3.providers.HttpProvider(INFURA_MAINNET));
         this.$store.dispatch(actions.INIT_APP, window.web3);
       }
+
     }
   };
 
