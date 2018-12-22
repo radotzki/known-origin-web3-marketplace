@@ -4,8 +4,8 @@
     <router-link
       :to="{ name: 'artist-v2', params: { artistAccount: artistAddress } }"
       class="artist-link">
-      <img :src="findArtistsForAddress(edition.artistAccount).logo" class="artist-avatar" alt="artist-logo"/>
-      <span class="pl-1 artist-name-lg">{{ findArtistsForAddress(edition.artistAccount).name }}</span>
+      <img :src="artist.logo" class="artist-avatar" alt="artist-logo"/>
+      <span class="pl-1 artist-name-lg">{{ artist.name }}</span>
     </router-link>
 
     <div class="clearfix"></div>
@@ -95,7 +95,7 @@
         'findArtistsForAddress'
       ]),
       artist() {
-        return this.findArtistsForAddress(this.edition.artistAccount);
+        return this.findArtistsForAddress(this.edition.artistAccount) || {};
       },
       artistAddress() {
         const artist = this.artist;
