@@ -2,7 +2,8 @@
   <div>
     <modal name="no-web3-found" :clickToClose="true" :width="300">
       <div class="alert alert-light fade show" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close" @click="$modal.hide('no-web3-found')">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"
+                @click="$modal.hide('no-web3-found')">
           <span aria-hidden="true">&times;</span>
         </button>
 
@@ -11,12 +12,15 @@
         </p>
 
         <p>
-          On a chrome browser add <a href="https://metamask.io" target="_blank">metamask.io</a> or install a mobile wallet such as <a href="https://trustwalletapp.com" target="_blank">TrustWallet</a>
+          On a chrome browser add <a href="https://metamask.io" target="_blank">metamask.io</a> or install a mobile
+          wallet such as <a href="https://trustwalletapp.com" target="_blank">TrustWallet</a>
         </p>
 
         <div class="text-center">
-          <a href='https://metamask.io' target="_blank" class="pr-4"><img src="../static/metamask-logo-eyes.png" style="height: 50px"/></a>
-          <a href="https://trustwalletapp.com" target="_blank"><img src="/../static/trustwallet_logo.svg" style="height:50px"/></a>
+          <a href='https://metamask.io' target="_blank" class="pr-4"><img src="../static/metamask-logo-eyes.png"
+                                                                          style="height: 50px"/></a>
+          <a href="https://trustwalletapp.com" target="_blank"><img src="/../static/trustwallet_logo.svg"
+                                                                    style="height:50px"/></a>
         </div>
       </div>
     </modal>
@@ -97,13 +101,20 @@
           <div class="col ml-5 mr-5">
             <!-- Begin Mailchimp Signup Form -->
             <div id="mc_embed_signup">
-              <form action="https://knownorigin.us19.list-manage.com/subscribe/post?u=84b0312927af7712ac2e6dd5a&amp;id=ebee270c72" method="post" id="mc-embedded-subscribe-form"
-                    name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+              <form
+                action="https://knownorigin.us19.list-manage.com/subscribe/post?u=84b0312927af7712ac2e6dd5a&amp;id=ebee270c72"
+                method="post" id="mc-embedded-subscribe-form"
+                name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
                 <div id="mc_embed_signup_scroll">
-                  <input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="Subscribe to The Origin Weekly" required>
+                  <input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL"
+                         placeholder="Subscribe to The Origin Weekly" required>
                   <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
-                  <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_84b0312927af7712ac2e6dd5a_ebee270c72" tabindex="-1" value=""></div>
-                  <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
+                  <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text"
+                                                                                            name="b_84b0312927af7712ac2e6dd5a_ebee270c72"
+                                                                                            tabindex="-1" value="">
+                  </div>
+                  <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe"
+                                            class="button"></div>
                 </div>
               </form>
             </div>
@@ -124,9 +135,8 @@
   /* global web3:true */
 
   import Web3 from 'web3';
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import * as actions from './store/actions';
-  import * as mutations from './store/mutation';
   import CurrentNetwork from './components/ui-controls/generic/CurrentNetwork';
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
   import NetworkWarningBanner from './components/ui-controls/generic/NetworkWarningBanner';
@@ -143,14 +153,21 @@
       ...mapState([]),
     },
     methods: {
-      goBack () {
+      goBack() {
         window.history.length > 1
           ? this.$router.go(-1)
           : this.$router.push('/');
       }
     },
     beforeMount() {
+      console.log("Attempting to bootstrap application");
+
       const INFURA_MAINNET = 'https://mainnet.infura.io/v3/4396873c00c84479991e58a34a54ebd9';
+
+      const useFallBack = () => {
+        window.web3 = new Web3(new Web3.providers.HttpProvider(INFURA_MAINNET));
+        this.$store.dispatch(actions.INIT_APP, window.web3);
+      };
 
       try {
         // Check for newer style ethereum provider
@@ -167,8 +184,7 @@
             })
             .catch((error) => {
               console.log('User denied access, bootstrapping application using Infura', error);
-              window.web3 = new Web3(new Web3.providers.HttpProvider(INFURA_MAINNET));
-              this.$store.dispatch(actions.INIT_APP, window.web3);
+              useFallBack();
             });
 
           // Check for legacy web3
@@ -179,16 +195,12 @@
 
         } else {
           console.log('Running without a web3 provider - falling back to Infura');
-
-          window.web3 = new Web3(new Web3.providers.HttpProvider(INFURA_MAINNET));
-          console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
-          this.$store.dispatch(actions.INIT_APP, window.web3);
+          useFallBack();
         }
 
       } catch (e) {
         console.log(`Something really bad happened - attempting once again to go via Infura`, e);
-        window.web3 = new Web3(new Web3.providers.HttpProvider(INFURA_MAINNET));
-        this.$store.dispatch(actions.INIT_APP, window.web3);
+        useFallBack();
       }
 
     }
