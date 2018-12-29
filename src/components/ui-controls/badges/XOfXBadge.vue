@@ -1,6 +1,6 @@
 <template>
      <span class="">
-       #{{ edition.tokenId -  edition.edition}} of {{ edition.totalAvailable }}
+       #{{ edition.tokenId -  edition.edition}} <small>of {{ edition.totalAvailable }}</small>
     </span>
 </template>
 

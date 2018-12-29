@@ -3,11 +3,7 @@
 
     <loading-section :page="PAGES.EDITION_TOKEN_OVERVIEW"></loading-section>
 
-    <div v-if="edition" class="row justify-content-sm-center">
-      <div class="col col-sm-6">
-        <token-details :edition="edition"></token-details>
-      </div>
-    </div>
+    <token-details :edition="edition" v-if="edition"></token-details>
 
     <div v-if="!isLoading(PAGES.EDITION_TOKEN_OVERVIEW) && !edition"
          class="row justify-content-sm-center">
@@ -22,10 +18,10 @@
 </template>
 
 <script>
-  import {mapGetters, mapState} from 'vuex';
-  import LoadingSection from "../ui-controls/generic/LoadingSection";
-  import TokenDetails from "../ui-controls/cards/TokenDetails";
-  import {PAGES} from '../../store/loadingPageState';
+  import { mapGetters, mapState } from 'vuex';
+  import LoadingSection from '../ui-controls/generic/LoadingSection';
+  import TokenDetails from '../ui-controls/cards/TokenDetails';
+  import { PAGES } from '../../store/loadingPageState';
   import * as actions from '../../store/actions';
 
   export default {
@@ -34,7 +30,7 @@
       TokenDetails,
       LoadingSection,
     },
-    data() {
+    data () {
       return {
         PAGES: PAGES
       };
@@ -51,7 +47,7 @@
         return this.findPurchasedEdition({tokenId: this.$route.params.tokenId});
       }
     },
-    created() {
+    created () {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.EDITION_TOKEN_OVERVIEW);
 
       const loadData = function () {

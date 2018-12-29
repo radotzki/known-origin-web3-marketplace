@@ -1,5 +1,5 @@
 <template>
-     <span class="badge badge-pill badge-extra-data">
+     <span class="token-id">
          #{{ tokenId }}
     </span>
 </template>
@@ -12,4 +12,7 @@
 </script>
 
 <style scoped lang="scss">
+  .token-id {
+    color: #000;
+  }
 </style>
