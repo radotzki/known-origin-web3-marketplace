@@ -1,6 +1,6 @@
 <template>
      <span class="badge badge-pill badge-extra-data">
-         {{ tokenId }}
+         #{{ tokenId }}
     </span>
 </template>
 
