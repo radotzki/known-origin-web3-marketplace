@@ -51,9 +51,8 @@ const contractStateModule = {
     koCommissionAccount: null
   },
   getters: {
-    haveNotPurchasedEditionBefore: (state) => (editionNumber) => {
-      const found = _.find(state.accountOwnedEditions, {edition: editionNumber});
-      return !found;
+    alreadyPurchasedEdition: (state) => (editionNumber) => {
+      return _.find(state.accountOwnedEditions, {edition: editionNumber});
     },
     featuredEditions: (state, getters, rootState) => () => {
       const artworks = featureArtworks(rootState.currentNetwork);

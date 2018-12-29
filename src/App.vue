@@ -17,10 +17,12 @@
         </p>
 
         <div class="text-center">
-          <a href='https://metamask.io' target="_blank" class="pr-4"><img src="../static/metamask-logo-eyes.png"
-                                                                          style="height: 50px"/></a>
-          <a href="https://trustwalletapp.com" target="_blank"><img src="/../static/trustwallet_logo.svg"
-                                                                    style="height:50px"/></a>
+          <a href='https://metamask.io' target="_blank" class="pr-4">
+            <img src="../static/metamask-logo-eyes.png" style="height: 50px"/>
+          </a>
+          <a href="https://trustwalletapp.com" target="_blank">
+            <img src="../static/trustwallet_logo.svg" style="height:50px"/>
+          </a>
         </div>
       </div>
     </modal>
