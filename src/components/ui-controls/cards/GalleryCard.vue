@@ -8,6 +8,7 @@
     <div class="high-res">
       <high-res-label :high-res-available="edition.highResAvailable"></high-res-label>
     </div>
+
     <div class="card-body">
       <router-link :to="routeData()" class="card-target" v-if="edition">
         <p class="card-title mt-2">
@@ -35,7 +36,7 @@
       </div>
       <div class="row mb-2" v-if="edition && edition.tokenId">
         <div class="col">
-          <token-id-badge :token-id="edition.tokenId" v-if="edition && edition.tokenId"></token-id-badge>
+          <!--<token-id-badge :token-id="edition.tokenId"></token-id-badge>-->
         </div>
         <div class="col text-right">
           <p class="card-text small">
