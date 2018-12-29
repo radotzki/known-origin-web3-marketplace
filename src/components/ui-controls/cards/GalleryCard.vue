@@ -39,7 +39,7 @@
         </div>
         <div class="col text-right">
           <p class="card-text small">
-            #{{ edition.tokenId -  edition.edition}} of {{ edition.totalAvailable }}
+            <x-of-x-badge :edition="edition" v-if="edition && edition.tokenId"></x-of-x-badge>
           </p>
         </div>
       </div>
@@ -61,11 +61,13 @@
   import PriceInEth from '../generic/PriceInEth';
   import EditionImage from "../generic/EditionImage";
   import TokenIdBadge from '../badges/TokenIdBadge';
+  import XOfXBadge from '../badges/XOfXBadge';
 
   export default {
     name: 'gallery-card',
     props: ['edition', 'editionNumber'],
     components: {
+      XOfXBadge,
       TokenIdBadge,
       EditionImage,
       Availability,
