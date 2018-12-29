@@ -45,7 +45,10 @@ const purchaseStateModule = {
       state.purchaseState = {
         ...state.purchaseState,
         [editionNumber]: {
-          editionNumber, account, state: 'PURCHASE_FAILED'
+          editionNumber,
+          account,
+          transaction: _.get(state.purchaseState[editionNumber], 'transaction'),
+          state: 'PURCHASE_FAILED'
         }
       };
     },
