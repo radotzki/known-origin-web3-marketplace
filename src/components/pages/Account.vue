@@ -28,7 +28,9 @@
                 <div class="card-body">
                   <p class="card-title">
                     {{ asset.artworkName }}
-                    <span class="badge badge-primary float-right">{{ asset.tokenId }}</span>
+                  </p>
+                  <p>
+                    <token-id-badge :token-id="asset.tokenId" v-if="asset && asset.tokenId"></token-id-badge>
                   </p>
                 </div>
                 <div class="card-footer bg-white no-top-border">
@@ -73,10 +75,12 @@
   import GalleryCard from '../ui-controls/cards/GalleryCard';
   import PurchaseTransactionBadge from "../ui-controls/badges/PurchaseTransactionBadge";
   import EditionImage from "../ui-controls/generic/EditionImage";
+  import TokenIdBadge from '../ui-controls/badges/TokenIdBadge';
 
   export default {
     name: 'account',
     components: {
+      TokenIdBadge,
       EditionImage,
       PurchaseTransactionBadge,
       GalleryCard,

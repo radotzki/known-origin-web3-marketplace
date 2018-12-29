@@ -13,7 +13,6 @@
         <p class="card-title mt-2">
           <creative-challenge-label :attributes="edition.attributes"></creative-challenge-label>
           {{ edition.name }}
-          <span class="badge badge-primary float-right" v-if="edition && edition.tokenId">{{ edition.tokenId }}</span>
         </p>
       </router-link>
     </div>
@@ -34,6 +33,16 @@
           </p>
         </div>
       </div>
+      <div class="row mb-2" v-if="edition && edition.tokenId">
+        <div class="col">
+          <token-id-badge :token-id="edition.tokenId" v-if="edition && edition.tokenId"></token-id-badge>
+        </div>
+        <div class="col text-right">
+          <p class="card-text small">
+            #{{ edition.tokenId -  edition.edition}} of {{ edition.totalAvailable }}
+          </p>
+        </div>
+      </div>
       <router-link :to="{ name: 'artist-v2', params: { artistAccount: edition.artistAccount } }" class="floating-artist-link">
         <img class="artist-avatar" alt="artist-logo"
              :src="(findArtistsForAddress(edition.artistAccount) || {}).logo" :id="edition.artistAccount + edition.edition" />
@@ -51,17 +60,19 @@
   import CreativeChallengeLabel from '../../ui-controls/generic/CreativeChallengeLabel';
   import PriceInEth from '../generic/PriceInEth';
   import EditionImage from "../generic/EditionImage";
+  import TokenIdBadge from '../badges/TokenIdBadge';
 
   export default {
     name: 'gallery-card',
     props: ['edition', 'editionNumber'],
     components: {
+      TokenIdBadge,
       EditionImage,
       Availability,
       ClickableAddress,
       HighResLabel,
       CreativeChallengeLabel,
-      PriceInEth
+      PriceInEth,
     },
     computed: {
       ...mapGetters([
