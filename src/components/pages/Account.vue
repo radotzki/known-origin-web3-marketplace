@@ -30,7 +30,7 @@
                     {{ asset.artworkName }}
                   </p>
                   <p>
-                    <token-id-badge :token-id="asset.tokenId" v-if="asset && asset.tokenId"></token-id-badge>
+                    <!--<token-id-badge :token-id="asset.tokenId" v-if="asset && asset.tokenId"></token-id-badge>-->
                   </p>
                 </div>
                 <div class="card-footer bg-white no-top-border">
