@@ -45,7 +45,7 @@
         </div>
         <div class="card-deck">
           <div class="col-auto mx-auto mb-5"
-               v-for="editionNumber in limitBy(latest, 12)" :key="editionNumber"
+               v-for="editionNumber in limitBy(latest, 8)" :key="editionNumber"
                v-if="assets[editionNumber] && assets[editionNumber].active">
             <gallery-card :edition="assets[editionNumber]" :edition-number="editionNumber">
             </gallery-card>
@@ -67,7 +67,7 @@
         </div>
         <div class="card-deck">
           <div class="col-auto mx-auto mb-5"
-               v-for="editionNumber in limitBy(trending, 12)" :key="editionNumber"
+               v-for="editionNumber in limitBy(trending, 8)" :key="editionNumber"
                v-if="assets[editionNumber] && assets[editionNumber].active">
             <gallery-card :edition="assets[editionNumber]" :edition-number="editionNumber">
             </gallery-card>

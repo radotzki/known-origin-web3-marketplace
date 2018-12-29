@@ -159,49 +159,81 @@
           : this.$router.push('/');
       }
     },
-    beforeMount() {
+    /*eslint brace-style: "off"*/
+    mounted() {
       console.log("Attempting to bootstrap application");
 
       const INFURA_MAINNET = 'https://mainnet.infura.io/v3/4396873c00c84479991e58a34a54ebd9';
 
+      const bootstrapAndCheckWeb3Running = () => {
+        console.log('Checking is web3 is connected');
+        // Check web3 is connected
+        window.web3.eth.net.isListening()
+          .then(() => {
+            console.log('Web appears to be connected, launching application');
+            this.$store.dispatch(actions.INIT_APP, window.web3);
+          })
+          .catch((e) => {
+            console.log('Looks like Web3 is not connected, throwing error to force fallback', e);
+            throw e;
+          });
+      };
+
       const useFallBack = () => {
         window.web3 = new Web3(new Web3.providers.HttpProvider(INFURA_MAINNET));
-        this.$store.dispatch(actions.INIT_APP, window.web3);
+        bootstrapAndCheckWeb3Running();
       };
+
+      const triggerModernWeb3Access = () => {
+        // Boot strap web3 via ethereum provider
+        window.web3 = new Web3(window.ethereum);
+
+        // Request account access if needed
+        ethereum
+          .enable()
+          .then((value) => {
+            console.log('Bootstrapping web app - provider acknowledged', value);
+            bootstrapAndCheckWeb3Running();
+          })
+          .catch((error) => {
+            console.log('User denied access, bootstrapping application using Infura', error);
+            useFallBack();
+          });
+      };
+
+      const legacyWeb3Access = () => {
+        console.log('Running legacy web3 provider');
+        window.web3 = new Web3(web3.currentProvider);
+        bootstrapAndCheckWeb3Running();
+      };
+
+      ///////////////////////////////
+      // START BOOTSTRAPPING LOGIC //
+      ///////////////////////////////
 
       try {
         // Check for newer style ethereum provider
         if (window.ethereum) {
-
-          // Boot strap web3 via ethereum provider
-          window.web3 = new Web3(window.ethereum);
-
-          // Request account access if needed
-          ethereum.enable()
-            .then((value) => {
-              console.log('Bootstrapping web app - provider acknowledged', value);
-              this.$store.dispatch(actions.INIT_APP, window.web3);
-            })
-            .catch((error) => {
-              console.log('User denied access, bootstrapping application using Infura', error);
-              useFallBack();
-            });
-
-          // Check for legacy web3
-        } else if (typeof web3 !== 'undefined') {
-          console.log('Running legacy web3 provider');
-          window.web3 = new Web3(web3.currentProvider);
-          this.$store.dispatch(actions.INIT_APP, window.web3);
-
-        } else {
+          triggerModernWeb3Access();
+        }
+        // Check for legacy web3
+        else if (typeof web3 !== 'undefined') {
+          legacyWeb3Access();
+        }
+        // Fallback to Infura
+        else {
           console.log('Running without a web3 provider - falling back to Infura');
           useFallBack();
         }
 
       } catch (e) {
-        console.log(`Something really bad happened - attempting once again to go via Infura`, e);
+        console.log('Something really bad happened - attempting once again to go via Infura', e);
         useFallBack();
       }
+
+      ///////////////////////////////
+      // END BOOTSTRAPPING LOGIC //
+      ///////////////////////////////
 
     }
   };
