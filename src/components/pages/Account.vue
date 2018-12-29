@@ -29,11 +29,11 @@
                   <p class="card-title">
                     {{ asset.artworkName }}
                   </p>
-                  <p>
-                    <!--<token-id-badge :token-id="asset.tokenId" v-if="asset && asset.tokenId"></token-id-badge>-->
-                  </p>
                 </div>
                 <div class="card-footer bg-white no-top-border">
+                  <div class="mb-2">
+                    <token-id-badge :token-id="asset.tokenId" v-if="asset && asset.tokenId"></token-id-badge>
+                  </div>
                   <img :src="findArtist(asset.artistCode).logo" class="artist-avatar"/>
                   <span class="pl-1 artist-name">{{ asset.otherMeta.artist }}</span>
                 </div>

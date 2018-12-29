@@ -1,6 +1,5 @@
 <template>
   <div class="shadow-sm bg-white p-4">
-
     <router-link
       :to="{ name: 'artist-v2', params: { artistAccount: artistAddress } }"
       class="artist-link">
@@ -20,6 +19,18 @@
       {{ edition.description }}
     </div>
 
+    <div class="small" v-if="edition && edition.tokenId">
+      <hr/>
+      <div class="row">
+        <div class="col text-left">
+          <token-id-badge :token-id="edition.tokenId"></token-id-badge>
+        </div>
+        <div class="col text-right">
+          <x-of-x-badge :edition="edition" v-if="edition && edition.tokenId"></x-of-x-badge>
+        </div>
+      </div>
+    </div>
+
     <hr/>
 
     <!--<small class="text-danger" v-if="isStartDateInTheFuture(edition.startDate)">-->
@@ -36,7 +47,7 @@
       <creative-challenge-label :attributes="edition.attributes"></creative-challenge-label>
     </div>
 
-    <div class="small mt-2">
+    <div class="small mt-2" v-if="edition && !edition.tokenId">
       Edition 1 of {{ edition.totalAvailable }}
       <availability class="float-right" :totalAvailable="edition.totalAvailable"
                     :totalSupply="edition.totalSupply"></availability>
@@ -48,9 +59,10 @@
       <erc721-badge></erc721-badge>
       <ipfs-badge :edition="edition"></ipfs-badge>
       <birth-transaction-badge :edition="edition"></birth-transaction-badge>
+      <purchase-transaction-badge :token-id="edition.tokenId" v-if="edition && edition.tokenId"></purchase-transaction-badge>
     </div>
 
-    <div class="mt-2">
+    <div class="mt-2" v-if="edition && !edition.tokenId">
       <hr/>
       <price-in-eth :value="edition.priceInEther"></price-in-eth>
       <span class="pl-1"><u-s-d-price :price-in-ether="edition.priceInEther"></u-s-d-price></span>
@@ -61,23 +73,29 @@
 <script>
   import _ from 'lodash';
 
-  import {mapGetters, mapState} from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
   import ClickableAddress from '../generic/ClickableAddress';
   import Availability from '../v2/Availability';
   import HighResLabel from '../generic/HighResLabel';
-  import CreativeChallengeLabel from "../../ui-controls/generic/CreativeChallengeLabel";
+  import CreativeChallengeLabel from '../../ui-controls/generic/CreativeChallengeLabel';
   import PriceInEth from '../generic/PriceInEth';
   import MetadataAttributes from '../v2/MetadataAttributes';
   import USDPrice from '../generic/USDPrice';
   import RarityIndicator from '../v2/RarityIndicator';
-  import IpfsBadge from "../badges/IpfsBadge";
-  import Erc721Badge from "../badges/ERC721Badge";
-  import BirthTransactionBadge from "../badges/BirthTransactionBadge";
+  import IpfsBadge from '../badges/IpfsBadge';
+  import Erc721Badge from '../badges/ERC721Badge';
+  import BirthTransactionBadge from '../badges/BirthTransactionBadge';
+  import TokenIdBadge from '../badges/TokenIdBadge';
+  import XOfXBadge from '../badges/XOfXBadge';
+  import PurchaseTransactionBadge from '../badges/PurchaseTransactionBadge';
 
   export default {
     name: 'edition-card',
     props: ['edition'],
     components: {
+      PurchaseTransactionBadge,
+      XOfXBadge,
+      TokenIdBadge,
       BirthTransactionBadge,
       Erc721Badge,
       IpfsBadge,
@@ -94,10 +112,10 @@
       ...mapGetters([
         'findArtistsForAddress'
       ]),
-      artist() {
+      artist () {
         return this.findArtistsForAddress(this.edition.artistAccount) || {};
       },
-      artistAddress() {
+      artistAddress () {
         const artist = this.artist;
         if (!artist) {
           return {};

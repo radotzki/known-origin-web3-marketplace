@@ -2,7 +2,7 @@
   <div class="card shadow-sm" :id="'gallery_card_' + edition.edition">
 
     <router-link :to="routeData()" class="card-target" v-if="edition">
-      <edition-image class="card-img-top" :src="edition.lowResImg" :id="edition.edition" />
+      <edition-image class="card-img-top" :src="edition.lowResImg" :id="edition.edition"/>
     </router-link>
 
     <div class="high-res">
@@ -36,17 +36,15 @@
       </div>
       <div class="row mb-2" v-if="edition && edition.tokenId">
         <div class="col">
-          <!--<token-id-badge :token-id="edition.tokenId"></token-id-badge>-->
+          <token-id-badge :token-id="edition.tokenId"></token-id-badge>
         </div>
         <div class="col text-right">
-          <p class="card-text small">
-            <x-of-x-badge :edition="edition" v-if="edition && edition.tokenId"></x-of-x-badge>
-          </p>
+          <x-of-x-badge :edition="edition" v-if="edition && edition.tokenId"></x-of-x-badge>
         </div>
       </div>
       <router-link :to="{ name: 'artist-v2', params: { artistAccount: edition.artistAccount } }" class="floating-artist-link">
         <img class="artist-avatar" alt="artist-logo"
-             :src="(findArtistsForAddress(edition.artistAccount) || {}).logo" :id="edition.artistAccount + edition.edition" />
+             :src="(findArtistsForAddress(edition.artistAccount) || {}).logo" :id="edition.artistAccount + edition.edition"/>
         <a class="pl-1 artist-name">{{ (findArtistsForAddress(edition.artistAccount) || {}).name | truncate(18) }}</a>
       </router-link>
     </div>
@@ -60,7 +58,7 @@
   import HighResLabel from '../generic/HighResLabel';
   import CreativeChallengeLabel from '../../ui-controls/generic/CreativeChallengeLabel';
   import PriceInEth from '../generic/PriceInEth';
-  import EditionImage from "../generic/EditionImage";
+  import EditionImage from '../generic/EditionImage';
   import TokenIdBadge from '../badges/TokenIdBadge';
   import XOfXBadge from '../badges/XOfXBadge';
 
