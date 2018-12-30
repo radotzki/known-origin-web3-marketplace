@@ -7,7 +7,7 @@
     <p class="text-mute pt-3">
       You need an Web 3 enabled wallet like
       <a href="https://metamask.io" target="_blank">MetaMask</a>,
-      <a href="https://trustwalletapp.com" target="_blank">Trust Wallet</a> or
+      <a href="https://trustwalletapp.com" target="_blank">Trust Wallet</a>,
       <a href="https://wallet.coinbase.com" target="_blank">Coinbase Wallet</a> or
       <a href="https://www.opera.com/mobile" target="_blank">Opera Mobile</a>
       to buy this item.
