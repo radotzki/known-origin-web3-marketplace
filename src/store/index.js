@@ -269,8 +269,8 @@ const store = new Vuex.Store({
               });
           };
 
-          // Every second check if the main account has changed
-          setInterval(refreshHandler, 1000);
+          // Every few seconds, check if the main account has changed
+          setInterval(refreshHandler, 2500);
 
           if (account) {
             return setAccountAndBalance(account);
