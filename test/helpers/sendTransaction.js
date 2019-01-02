@@ -1,22 +1,26 @@
-const _ = require('lodash');
 const ethjsABI = require('ethjs-abi');
+const { ethSendTransaction } = require('./web3');
 
-const findMethod = function (abi, name, args) {
-  for (var i = 0; i < abi.length; i++) {
-    const methodArgs = _.map(abi[i].inputs, 'type').join(',');
+function findMethod (abi, name, args) {
+  for (let i = 0; i < abi.length; i++) {
+    const methodArgs = abi[i].inputs.map(input => input.type).join(',');
     if ((abi[i].name === name) && (methodArgs === args)) {
       return abi[i];
     }
   }
-};
+}
 
-const sendTransaction = function (target, name, argsTypes, argsValues, opts) {
+async function sendTransaction (target, name, argsTypes, argsValues, opts) {
   const abiMethod = findMethod(target.abi, name, argsTypes);
   const encodedData = ethjsABI.encodeMethod(abiMethod, argsValues);
-  return target.sendTransaction(Object.assign({data: encodedData}, opts));
-};
+  return target.sendTransaction(Object.assign({ data: encodedData }, opts));
+}
+
+function ether (from, to, value) {
+  return ethSendTransaction({ from, to, value, gasPrice: 0 });
+}
 
 module.exports = {
-  findMethod: findMethod,
-  sendTransaction: sendTransaction
+  ether,
+  sendTransaction,
 };

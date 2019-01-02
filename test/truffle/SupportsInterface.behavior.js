@@ -1,4 +1,4 @@
-const { makeInterfaceId } = require('../../helpers/makeInterfaceId');
+const {makeInterfaceId} = require('../helpers/makeInterfaceId');
 
 const INTERFACE_IDS = {
   ERC165: makeInterfaceId([
@@ -30,7 +30,7 @@ const INTERFACE_IDS = {
   ]),
 };
 
-function shouldSupportInterfaces (interfaces = []) {
+function shouldSupportInterfaces(interfaces = []) {
   describe('ERC165\'s supportsInterface(bytes4)', function () {
     beforeEach(function () {
       this.thing = this.mock || this.token;
@@ -41,12 +41,12 @@ function shouldSupportInterfaces (interfaces = []) {
       describe(k, function () {
         it('should use less than 30k gas', async function () {
           const gasEstimate = await this.thing.supportsInterface.estimateGas(interfaceId);
-          gasEstimate.should.be.lte(30000);
+          assert(gasEstimate <= 30000);
         });
 
         it('is supported', async function () {
           const isSupported = await this.thing.supportsInterface(interfaceId);
-          isSupported.should.eq(true);
+          assert(isSupported === true);
         });
       });
     }

@@ -95,43 +95,34 @@ const purchaseStateModule = {
 
       commit(mutations.PURCHASE_TRIGGERED, {editionNumber: edition.edition, account});
 
-      let purchase = contract.purchase(edition.edition, {
-        from: account,
-        value: edition.priceInWei
-      });
-
-      const blockNumber = await rootState.web3.eth.getBlockNumber();
-      let mintedEvent = contract.Minted({_editionNumber: edition.edition, _buyer: account}, {
-        fromBlock: blockNumber,
-        toBlock: 'latest' // wait until event comes through
-      });
-
       // Trigger a timer to check the accounts purchases - can provide update faster waiting for the event
       const timer = setInterval(function () {
         dispatch(`kodaV2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account}, {root: true});
-      }, 1000);
+      }, 2000);
 
-      mintedEvent.watch(function (error, event) {
-        if (!error) {
-          console.log('Purchase successful', event);
+      contract
+        .purchase(edition.edition, {
+          from: account,
+          value: edition.priceInWei
+        })
+        .on('transactionHash', hash => {
+          console.log('Purchase transaction submitted', hash);
+          commit(mutations.PURCHASE_STARTED, {editionNumber: edition.edition, account, transaction: hash});
+        })
+        .on('receipt', receipt => {
+          console.log('Purchase successful', receipt);
           dispatch(`kodaV2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account}, {root: true});
           commit(mutations.PURCHASE_SUCCESSFUL, {editionNumber: edition.edition, account});
-        } else {
-          console.log('Failure', error);
+        })
+        .on('error', error => {
+          console.log('Purchase rejection/error', error);
           commit(mutations.PURCHASE_FAILED, {editionNumber: edition.edition, account});
-          mintedEvent.stopWatching();
-        }
-        if (timer) clearInterval(timer);
-      });
-
-      purchase
-        .then((data) => {
-          console.log('Purchase transaction submitted', data);
-          commit(mutations.PURCHASE_STARTED, {editionNumber: edition.edition, account, transaction: data.tx});
         })
         .catch((error) => {
           console.log('Purchase rejection/error', error);
           commit(mutations.PURCHASE_FAILED, {editionNumber: edition.edition, account});
+        })
+        .finally(() => {
           if (timer) clearInterval(timer);
         });
     },

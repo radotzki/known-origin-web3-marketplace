@@ -1,8 +1,10 @@
 const assertRevert = require('../../helpers/assertRevert');
 const etherToWei = require('../../helpers/etherToWei');
 const _ = require('lodash');
+const bnChai = require('bn-chai');
 
-const BigNumber = web3.BigNumber;
+const getBalance = require('../../helpers/getBalance');
+const toBN = require('../../helpers/toBN');
 
 const KnownOriginDigitalAssetV2 = artifacts.require('KnownOriginDigitalAssetV2');
 const ArtistAcceptingBids = artifacts.require('ArtistAcceptingBids');
@@ -10,7 +12,7 @@ const AuctionReentrancyAttack = artifacts.require('AuctionReentrancyAttack');
 
 require('chai')
   .use(require('chai-as-promised'))
-  .use(require('chai-bignumber')(BigNumber))
+  .use(bnChai(web3.utils.BN))
   .should();
 
 contract('ArtistAcceptingBids - re-entrency tests', function (accounts) {
@@ -30,7 +32,7 @@ contract('ArtistAcceptingBids - re-entrency tests', function (accounts) {
   const editionNumber2 = 200000;
 
   const editionType = 1;
-  const editionData = "editionData";
+  const editionData = web3.utils.asciiToHex("editionData");
   const editionTokenUri = "edition1";
   const edition1Price = etherToWei(0.1);
 
@@ -75,30 +77,30 @@ contract('ArtistAcceptingBids - re-entrency tests', function (accounts) {
       await this.attackContract.makeBid({from: attacker, value: this.minBidAmount});
 
       // Load up the auction contract with more ether, specifically for edition 2 which we can demonstrate the attack against
-      await this.auction.placeBid(editionNumber2, {from: bidder1, value: this.minBidAmount.mul(4)});
+      await this.auction.placeBid(editionNumber2, {from: bidder1, value: this.minBidAmount.mul(toBN(4))});
     });
 
     it('total balance shows for both edition 1 & 2', async function () {
-      let auctionBalance = await web3.eth.getBalance(this.auction.address);
+      let auctionBalance = await getBalance(this.auction.address);
       // should have original edition 1 bid plus edition 2 bid ether
-      auctionBalance.should.be.bignumber.equal(this.minBidAmount.mul(5));
+      auctionBalance.should.be.eq.BN(this.minBidAmount.mul(toBN(5)));
     });
 
     it('attacker contract has balance', async function () {
-      let attackContractBalance = await web3.eth.getBalance(this.attackContract.address);
-      attackContractBalance.should.be.bignumber.equal(etherToWei(0.1));
+      let attackContractBalance = await getBalance(this.attackContract.address);
+      attackContractBalance.should.be.eq.BN(etherToWei(0.1));
     });
 
     it('edition 1 bid has been placed, attack contract is the winner', async function () {
       let details = await this.auction.highestBidForEdition(editionNumber1);
       details[0].should.be.equal(this.attackContract.address);
-      details[1].should.be.bignumber.equal(this.minBidAmount);
+      details[1].should.be.eq.BN(this.minBidAmount);
     });
 
     it('edition 2 bid has been placed', async function () {
       let details = await this.auction.highestBidForEdition(editionNumber2);
       details[0].should.be.equal(bidder1);
-      details[1].should.be.bignumber.equal(this.minBidAmount.mul(4));
+      details[1].should.be.eq.BN(this.minBidAmount.mul(toBN(4)));
     });
 
     it('attempt hack - can withdraw more ether than placed in', async function () {
@@ -110,12 +112,12 @@ contract('ArtistAcceptingBids - re-entrency tests', function (accounts) {
       await assertRevert(this.attackContract.attack({from: attacker}));
 
       // Auction balance unchanged
-      const auctionBalance = await web3.eth.getBalance(this.auction.address);
-      auctionBalance.should.be.bignumber.equal(this.minBidAmount.mul(5));
+      const auctionBalance = await getBalance(this.auction.address);
+      auctionBalance.should.be.eq.BN(this.minBidAmount.mul(toBN(5)));
 
       // Attacker balance unchanged
-      let attackContractBalance = await web3.eth.getBalance(this.attackContract.address);
-      attackContractBalance.should.be.bignumber.equal(etherToWei(0.1));
+      let attackContractBalance = await getBalance(this.attackContract.address);
+      attackContractBalance.should.be.eq.BN(etherToWei(0.1));
     });
   });
 

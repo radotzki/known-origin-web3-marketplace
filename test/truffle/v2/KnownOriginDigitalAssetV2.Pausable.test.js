@@ -11,7 +11,7 @@ contract('Pausable', function (accounts) {
   const artistShare = 76;
   const editionType = 1;
   const editionNumber1 = 100000;
-  const editionData1 = "editionData1";
+  const editionData1 = web3.utils.asciiToHex("editionData1");
   const editionTokenUri1 = "edition1";
   const edition1Price = etherToWei(0.1);
 

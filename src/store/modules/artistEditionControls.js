@@ -1,7 +1,5 @@
 import * as actions from '../actions';
 import * as mutations from '../mutation';
-import Web3 from "web3";
-import {safeToCheckSumAddress} from "../../utils";
 
 const artistEditionControlsStateModule = {
   namespaced: true,
@@ -15,7 +13,7 @@ const artistEditionControlsStateModule = {
   },
   mutations: {
     [mutations.SET_ARTIST_CONTROLS_DETAILS](state, {owner, address, paused}) {
-      state.owner = safeToCheckSumAddress(owner);
+      state.owner = owner;
       state.contractAddress = address;
       state.paused = paused;
     },
