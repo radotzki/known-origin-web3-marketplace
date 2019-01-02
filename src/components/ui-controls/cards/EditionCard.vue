@@ -26,7 +26,7 @@
           <token-id-badge :token-id="edition.tokenId"></token-id-badge>
         </div>
         <div class="col text-right">
-          <x-of-x-badge :edition="edition" v-if="edition && edition.tokenId"></x-of-x-badge>
+          <x-of-x-badge :edition="edition"></x-of-x-badge>
         </div>
       </div>
     </div>
