@@ -3,10 +3,10 @@
   <div v-if="shouldDisplayHighRes()" class="btn-block">
 
     <!-- Initial download button -->
-    <a class="btn btn-success btn-block text-white"
+    <a class="btn btn-success text-white"
        v-if="!isHighResDownloadTriggered(edition.tokenId) && !isHighResDownloadSuccess(edition.tokenId) && !isHighResDownloadFailed(edition.tokenId)"
        @click="verifyPurchase">
-      High-res asset available
+      High-res download
     </a>
 
     <!-- Triggered -->
@@ -30,15 +30,14 @@
     <span v-if="isHighResDownloadFailed(edition.tokenId)">
       <a class="btn btn-danger btn-block text-white disabled"
          @click="noop">
-         <font-awesome-icon :icon="['fas', 'times']"></font-awesome-icon> Something went wrong
+         <font-awesome-icon :icon="['fas', 'times']"></font-awesome-icon> Failure
       </a>
       <small class="text-muted">
         Please contact us on
         <a href="https://t.me/knownorigin_io" target="_blank" class="community-icon" title="Telegram">telegram</a>
         or
         <a href="mailto:hello@knownorigin.io" target="_blank" title="Hello">email</a> if you think this is incorrect.
-        <button class="btn btn-sm btn-link text-muted" v-on:click="showMore = !showMore"
-                v-if="!showMore">details</button>
+        <button class="btn btn-sm btn-link text-muted" v-on:click="showMore = !showMore" v-if="!showMore">details</button>
       </small>
       <pre class="text-muted" v-show="showMore">{{highResDownload[edition.tokenId].message}} | {{hostname()}}</pre>
     </span>

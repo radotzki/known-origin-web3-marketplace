@@ -2,18 +2,18 @@
   <div class="card shadow-sm" :id="'gallery_card_' + edition.edition">
 
     <router-link :to="routeData()" class="card-target" v-if="edition">
-      <edition-image class="card-img-top" :src="edition.lowResImg" :id="edition.edition" />
+      <edition-image class="card-img-top" :src="edition.lowResImg" :id="edition.edition"/>
     </router-link>
 
     <div class="high-res">
       <high-res-label :high-res-available="edition.highResAvailable"></high-res-label>
     </div>
+
     <div class="card-body">
       <router-link :to="routeData()" class="card-target" v-if="edition">
         <p class="card-title mt-2">
           <creative-challenge-label :attributes="edition.attributes"></creative-challenge-label>
           {{ edition.name }}
-          <span class="badge badge-primary float-right" v-if="edition && edition.tokenId">{{ edition.tokenId }}</span>
         </p>
       </router-link>
     </div>
@@ -34,9 +34,17 @@
           </p>
         </div>
       </div>
+      <div class="row mb-2" v-if="edition && edition.tokenId">
+        <div class="col">
+          <token-id-badge :token-id="edition.tokenId"></token-id-badge>
+        </div>
+        <div class="col text-right">
+          <x-of-x-badge :edition="edition"></x-of-x-badge>
+        </div>
+      </div>
       <router-link :to="{ name: 'artist-v2', params: { artistAccount: edition.artistAccount } }" class="floating-artist-link">
         <img class="artist-avatar" alt="artist-logo"
-             :src="(findArtistsForAddress(edition.artistAccount) || {}).logo" :id="edition.artistAccount + edition.edition" />
+             :src="(findArtistsForAddress(edition.artistAccount) || {}).logo" :id="edition.artistAccount + edition.edition"/>
         <a class="pl-1 artist-name">{{ (findArtistsForAddress(edition.artistAccount) || {}).name | truncate(18) }}</a>
       </router-link>
     </div>
@@ -50,18 +58,22 @@
   import HighResLabel from '../generic/HighResLabel';
   import CreativeChallengeLabel from '../../ui-controls/generic/CreativeChallengeLabel';
   import PriceInEth from '../generic/PriceInEth';
-  import EditionImage from "../generic/EditionImage";
+  import EditionImage from '../generic/EditionImage';
+  import TokenIdBadge from '../badges/TokenIdBadge';
+  import XOfXBadge from '../badges/XOfXBadge';
 
   export default {
     name: 'gallery-card',
     props: ['edition', 'editionNumber'],
     components: {
+      XOfXBadge,
+      TokenIdBadge,
       EditionImage,
       Availability,
       ClickableAddress,
       HighResLabel,
       CreativeChallengeLabel,
-      PriceInEth
+      PriceInEth,
     },
     computed: {
       ...mapGetters([
