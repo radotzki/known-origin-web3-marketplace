@@ -6,7 +6,6 @@
 
 <script>
   /* global web3:true */
-  import EthAddress from './EthAddress';
   import {mapGetters, mapState} from 'vuex';
 
   export default {
@@ -21,12 +20,6 @@
       ...mapState([
         'etherscanBase',
       ]),
-      dotDotDot: function () {
-        if (this.transaction) {
-          return this.transaction.substr(0, 6) + '...' + this.transaction.substr(this.transaction.length - 6, this.transaction.length);
-        }
-        return '';
-      },
       buildLink: function () {
         return `${this.etherscanBase}/tx/${this.transaction}`;
       }

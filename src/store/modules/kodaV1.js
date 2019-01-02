@@ -3,7 +3,7 @@ import * as actions from '../actions';
 import * as mutations from '../mutation';
 import _ from 'lodash';
 import Web3 from 'web3';
-import {isHighResV1Old, safeToCheckSumAddress} from '../../utils';
+import {isHighResV1Old} from '../../utils';
 import axios from 'axios';
 
 const contractStateModule = {
@@ -138,20 +138,20 @@ const lookupAssetInfo = async (contract, index) => {
 
   // Populate all data - minus tokenURI data
   const asset = {
-    tokenId: assetInfo[0].toNumber(),
-    owner: safeToCheckSumAddress(owner),
-    purchased: assetInfo[2].toNumber(),
+    tokenId: assetInfo[0].toString(10),
+    owner: owner,
+    purchased: assetInfo[2].toString(10),
     priceInWei: assetInfo[3].toString(),
     priceInEther: Web3.utils.fromWei(assetInfo[3].toString(10), 'ether').valueOf(),
     priceInEtherSortable: Web3.utils.fromWei(assetInfo[3].toString(10), 'ether'),
-    auctionStartDate: assetInfo[4].toNumber(),
+    auctionStartDate: assetInfo[4].toString(10),
 
     edition: edition,
     // Last 3 chars of edition are type
     type: mapAssetType(edition.substring(13, 16)),
     // First 3 chars of edition are artist code
     artistCode: edition.substring(0, 3),
-    editionNumber: editionInfo[2].toNumber(),
+    editionNumber: editionInfo[2].toString(10),
     tokenUri: tokenUri
   };
 

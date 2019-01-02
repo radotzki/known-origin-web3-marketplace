@@ -4,7 +4,7 @@ import * as mutations from '../mutation';
 import _ from 'lodash';
 import Web3 from 'web3';
 import axios from 'axios';
-import {isHighRes, safeToCheckSumAddress} from '../../utils';
+import {isHighRes} from '../../utils';
 
 function featureArtworks(network) {
   switch (network) {
@@ -51,9 +51,8 @@ const contractStateModule = {
     koCommissionAccount: null
   },
   getters: {
-    haveNotPurchasedEditionBefore: (state) => (editionNumber) => {
-      const found = _.find(state.accountOwnedEditions, {edition: editionNumber});
-      return !found;
+    alreadyPurchasedEdition: (state) => (editionNumber) => {
+      return _.find(state.accountOwnedEditions, {edition: editionNumber});
     },
     featuredEditions: (state, getters, rootState) => () => {
       const artworks = featureArtworks(rootState.currentNetwork);
@@ -83,9 +82,7 @@ const contractStateModule = {
       if (_.isArray(artistAccount)) {
         let artistEditions = {};
         _.forEach(artistAccount, (account) => {
-          let found = _.pickBy(state.assets, function (value, key) {
-            return safeToCheckSumAddress(value.artistAccount) === safeToCheckSumAddress(account);
-          });
+          let found = _.pickBy(state.assets, (value, key) => value.artistAccount === account);
           if (found) {
             _.merge(artistEditions, found);
           }
@@ -93,9 +90,7 @@ const contractStateModule = {
 
         return artistEditions;
       } else {
-        return _.pickBy(state.assets, function (value, key) {
-          return safeToCheckSumAddress(value.artistAccount) === safeToCheckSumAddress(artistAccount);
-        });
+        return _.pickBy(state.assets, (value, key) => value.artistAccount === artistAccount);
       }
     },
     findEdition: (state) => (editionNumber) => {
@@ -194,11 +189,11 @@ const contractStateModule = {
       let editions;
       if (_.isArray(artistAccount)) {
         let found = await Promise.all(_.map(artistAccount, async (account) => {
-          return await contract.artistsEditions(safeToCheckSumAddress(account));
+          return await contract.artistsEditions(account);
         }));
         editions = _.flatten(found);
       } else {
-        editions = await contract.artistsEditions(safeToCheckSumAddress(artistAccount));
+        editions = await contract.artistsEditions(artistAccount);
       }
 
       dispatch(`auction/${actions.GET_AUCTION_DETAILS_FOR_EDITION_NUMBERS}`, {editions}, {root: true});
@@ -221,7 +216,9 @@ const contractStateModule = {
 
       const tokenIds = await contract.tokensOf(account);
       const tokenAndEditions = await Promise.all(
-        _.map(tokenIds, (tokenId) => editionOfTokenId(contract, tokenId.toString('10')))
+        _.map(tokenIds, (tokenId) => {
+          return editionOfTokenId(contract, tokenId.toString(10));
+        })
       );
       commit(mutations.SET_ACCOUNT_TOKENS, tokenAndEditions);
 
@@ -316,9 +313,9 @@ const mapTokenData = async (contract, tokenId) => {
   return {
     tokenId,
     edition: typeof tokenData[0] === 'number' ? tokenData[0] : _.toNumber(tokenData[0]),
-    editionType: tokenData[1].toNumber(),
+    editionType: tokenData[1].toString(10),
     editionData: editionData,
-    owner: safeToCheckSumAddress(tokenData[4]),
+    owner: tokenData[4],
   };
 };
 
@@ -326,16 +323,16 @@ const mapData = (rawData) => {
   const editionData = Web3.utils.toAscii(rawData[0]);
   return {
     editionData: editionData,
-    editionType: rawData[1].toNumber(),
-    startDate: rawData[2].toNumber(),
-    endDate: rawData[3].toNumber(),
-    artistAccount: safeToCheckSumAddress(rawData[4]),
-    artistCommission: rawData[5].toNumber(),
-    priceInWei: rawData[6].toNumber(),
+    editionType: rawData[1].toString(10),
+    startDate: rawData[2].toString(10),
+    endDate: rawData[3].toString(10),
+    artistAccount: rawData[4],
+    artistCommission: rawData[5].toString(10),
+    priceInWei: rawData[6].toString(10),
     priceInEther: Web3.utils.fromWei(rawData[6].toString(10), 'ether').valueOf(),
     tokenURI: rawData[7],
-    totalSupply: rawData[8].toNumber(),
-    totalAvailable: rawData[9].toNumber(),
+    totalSupply: rawData[8].toString(10),
+    totalAvailable: rawData[9].toString(10),
     active: rawData[10],
     // V1 properties back port
     v1: {

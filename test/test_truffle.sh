@@ -40,12 +40,15 @@ start_ganache() {
   )
 
   if [ "$SOLIDITY_COVERAGE" = true ]; then
-    node_modules/.bin/testrpc-sc --gasLimit 0xfffffffffff --gasPrice 0x01 --port "$ganache_port" "${accounts[@]}" > /dev/null &
+    node_modules/.bin/testrpc-sc --gasLimit 0xfffffffffff --gasPrice 0x01 --port "$ganache_port" "${accounts[@]}" --quiet &
   else
-    node_modules/.bin/ganache-cli --gasLimit 0xfffffffffff --gasPrice 0x01 "${accounts[@]}" > /dev/null &
+    echo "Launching ganache-cli"
+    node_modules/.bin/ganache-cli --gasLimit 0xfffffffffff --gasPrice 0x01 --accounts 11 --quiet &
+    sleep 5;
   fi
 
   ganache_pid=$!
+  echo "ganache_pid = $ganache_pid"
 }
 
 if ganache_running; then
@@ -62,5 +65,6 @@ if [ "$SOLIDITY_COVERAGE" = true ]; then
     cat coverage/lcov.info | node_modules/.bin/coveralls
   fi
 else
-  node_modules/.bin/truffle test --show-events "$@"
+  echo "Triggering truffle test"
+  node $NODE_DEBUG_OPTION ./node_modules/.bin/truffle test "$@"
 fi

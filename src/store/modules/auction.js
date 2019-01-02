@@ -2,7 +2,6 @@ import * as actions from '../actions';
 import * as mutations from '../mutation';
 import _ from 'lodash';
 import Web3 from "web3";
-import {safeToCheckSumAddress} from "../../utils";
 
 const auctionStateModule = {
   namespaced: true,
@@ -27,7 +26,7 @@ const auctionStateModule = {
     },
     nextMinimumNewBid: (state, getters) => (edition) => {
       let currentEditionHighestBid = _.get(state.auction[edition], 'highestBidWei', 0);
-      let minBid = _.get(state, 'minBidAmountWei', 0);
+      let minBid = _.get(state, 'minBidAmountWei');
 
       // Check not set
       if (currentEditionHighestBid.toString() === "0") {
@@ -35,12 +34,16 @@ const auctionStateModule = {
       }
 
       // Handle BN
-      if (Web3.utils.isBN(currentEditionHighestBid)) {
-        return Web3.utils.fromWei(currentEditionHighestBid.add(minBid).toString("10"), 'ether');
+      if (Web3.utils.isBN(currentEditionHighestBid) && minBid) {
+        return Web3.utils.fromWei(currentEditionHighestBid.add(minBid).toString(10), 'ether');
       }
 
-      // Fall back to min bid
-      return Web3.utils.fromWei(minBid.toString("10"), 'ether');
+      if (minBid) {
+        // Fall back to min bid
+        return Web3.utils.fromWei(minBid.toString(10), 'ether');
+      }
+
+      return 0;
     },
     accountIsHighestBidder: (state, getters, rootState) => (edition) => {
       if (!rootState.account) {
@@ -50,7 +53,7 @@ const auctionStateModule = {
       if (currentHighestBidder === 0) {
         return false;
       }
-      return safeToCheckSumAddress(currentHighestBidder) === safeToCheckSumAddress(rootState.account);
+      return currentHighestBidder === rootState.account;
     },
     /////////////////////////
     // Accepting Bid State //
@@ -127,11 +130,7 @@ const auctionStateModule = {
       state.contractBalance = contractBalance;
     },
     [mutations.SET_AUCTION_OWNER](state, {owner, address}) {
-      state.owner = safeToCheckSumAddress(owner);
-      state.contractAddress = address;
-    },
-    [mutations.SET_AUCTION_OWNER](state, {owner, address}) {
-      state.owner = safeToCheckSumAddress(owner);
+      state.owner = owner;
       state.contractAddress = address;
     },
     [mutations.SET_AUCTION_DETAILS](state, data) {
@@ -140,7 +139,7 @@ const auctionStateModule = {
       };
     },
     [mutations.SET_MINIMUM_BID](state, minBidAmount) {
-      state.minBidAmount = Web3.utils.fromWei(minBidAmount.toString("10"), 'ether');
+      state.minBidAmount = Web3.utils.fromWei(minBidAmount.toString(10), 'ether');
       state.minBidAmountWei = minBidAmount;
     },
     [mutations.RESET_BID_STATE](state, {edition}) {
@@ -336,89 +335,73 @@ const auctionStateModule = {
 
       const weiValue = Web3.utils.toWei(value, 'ether');
 
-      const bidIncrease = contract.placeBid(edition, {from: account, value: weiValue});
-
-      const blockNumber = await rootState.web3.eth.getBlockNumber();
-      let bidIncreasedEvent = contract.BidPlaced({_bidder: account, _editionNumber: edition}, {
-        fromBlock: blockNumber,
-        toBlock: 'latest' // wait until event comes through
-      });
-
-      bidIncreasedEvent.watch(function (error, event) {
-        if (!error) {
-          console.log('Auction - place bid - successful', event);
+      contract
+        .placeBid(edition, {
+          from: account,
+          value: weiValue
+        })
+        .on('transactionHash', hash => {
+          console.log('Auction - place bid - transaction submitted', hash);
+          commit(mutations.AUCTION_STARTED, {edition, account, transaction: hash});
+        })
+        .on('receipt', receipt => {
+          console.log('Auction - place bid - successful', receipt);
           dispatch(actions.GET_AUCTION_DETAILS, edition);
           commit(mutations.AUCTION_PLACED_SUCCESSFUL, {edition, account});
-        } else {
-          console.log('Failure', error);
+        })
+        .on('error', error => {
+          console.log('Auction - place bid - rejection/error', error);
           commit(mutations.AUCTION_FAILED, {edition, account});
           dispatch(actions.GET_AUCTION_DETAILS, edition);
-          bidIncreasedEvent.stopWatching();
-        }
-        if (timer) clearInterval(timer);
-      });
-
-      bidIncrease
-        .then((data) => {
-          console.log('Auction - place bid - transaction submitted', data);
-          commit(mutations.AUCTION_STARTED, {edition, account, transaction: data.tx});
         })
         .catch((error) => {
           console.log('Auction - place bid - rejection/error', error);
-          dispatch(actions.GET_AUCTION_DETAILS, edition);
           commit(mutations.AUCTION_FAILED, {edition, account});
+          dispatch(actions.GET_AUCTION_DETAILS, edition);
+        })
+        .finally(() => {
           if (timer) clearInterval(timer);
         });
-
     },
     [actions.INCREASE_BID]: async function ({commit, dispatch, state, getters, rootState}, {edition, value}) {
       commit(mutations.RESET_BID_STATE, {edition});
 
       const account = rootState.account;
-
       const contract = await rootState.ArtistAcceptingBids.deployed();
 
       commit(mutations.AUCTION_TRIGGERED, {edition, account});
-
-      const weiValue = Web3.utils.toWei(value, 'ether');
-      const bidIncrease = contract.increaseBid(edition, {
-        from: account,
-        value: weiValue
-      });
-
-      const blockNumber = await rootState.web3.eth.getBlockNumber();
-      let bidIncreasedEvent = contract.BidIncreased({_bidder: account, _editionNumber: edition}, {
-        fromBlock: blockNumber,
-        toBlock: 'latest' // wait until event comes through
-      });
 
       const timer = setInterval(function () {
         dispatch(actions.GET_AUCTION_DETAILS, edition);
       }, 2000);
 
-      bidIncreasedEvent.watch(function (error, event) {
-        if (!error) {
-          console.log('Auction - increase bid - successful', event);
+      const weiValue = Web3.utils.toWei(value, 'ether');
+
+      contract
+        .increaseBid(edition, {
+          from: account,
+          value: weiValue
+        })
+        .on('transactionHash', hash => {
+          console.log('Auction - increase bid - transaction submitted', hash);
+          commit(mutations.AUCTION_STARTED, {edition, account, transaction: hash});
+        })
+        .on('receipt', receipt => {
+          console.log('Auction - increase bid - successful', receipt);
           dispatch(actions.GET_AUCTION_DETAILS, edition);
           commit(mutations.AUCTION_PLACED_SUCCESSFUL, {edition, account});
-        } else {
-          console.log('Failure', error);
+        })
+        .on('error', error => {
+          console.log('Auction - increase bid - rejection/error', error);
           commit(mutations.AUCTION_FAILED, {edition, account});
           dispatch(actions.GET_AUCTION_DETAILS, edition);
-          bidIncreasedEvent.stopWatching();
-        }
-        if (timer) clearInterval(timer);
-      });
-
-      bidIncrease
-        .then((data) => {
-          console.log('Auction - increase bid - transaction submitted', data);
-          commit(mutations.AUCTION_STARTED, {edition, account, transaction: data.tx});
         })
         .catch((error) => {
           console.log('Auction - increase bid - rejection/error', error);
           commit(mutations.AUCTION_FAILED, {edition, account});
           dispatch(actions.GET_AUCTION_DETAILS, edition);
+        })
+        .finally(() => {
           if (timer) clearInterval(timer);
         });
     },
@@ -428,43 +411,36 @@ const auctionStateModule = {
       const account = rootState.account;
       const contract = await rootState.ArtistAcceptingBids.deployed();
 
-      const blockNumber = await rootState.web3.eth.getBlockNumber();
-      let bidAcceptedEvent = contract.BidAccepted({_bidder: auction.highestBidder, _editionNumber: auction.edition}, {
-        fromBlock: blockNumber,
-        toBlock: 'latest' // wait until event comes through
-      });
-
       commit(mutations.BID_ACCEPTED_TRIGGERED, {auction, account});
 
       const timer = setInterval(function () {
         dispatch(actions.GET_AUCTION_DETAILS, auction.edition);
       }, 2000);
 
-      const acceptBid = contract.acceptBid(auction.edition, {from: account});
-
-      bidAcceptedEvent.watch(function (error, event) {
-        if (!error) {
-          console.log('Auction - accepted bid - successful', event);
+      contract
+        .acceptBid(auction.edition, {
+          from: account
+        })
+        .on('transactionHash', hash => {
+          console.log('Auction - accepted bid - transaction submitted', hash);
+          commit(mutations.BID_ACCEPTED_STARTED, {auction, account, transaction: hash});
+        })
+        .on('receipt', receipt => {
+          console.log('Auction - accepted bid - successful', receipt);
           dispatch(actions.GET_AUCTION_DETAILS, auction.edition);
           commit(mutations.BID_ACCEPTED_SUCCESSFUL, {auction, account});
-        } else {
-          console.log('Failure', error);
+        })
+        .on('error', error => {
+          console.log('Auction - accepted bid - rejection/error', error);
           commit(mutations.BID_ACCEPTED_FAILED, {auction, account});
           dispatch(actions.GET_AUCTION_DETAILS, auction.edition);
-          bidAcceptedEvent.stopWatching();
-        }
-        if (timer) clearInterval(timer);
-      });
-
-      acceptBid
-        .then((data) => {
-          console.log('Auction - accepted bid - transaction submitted', data);
-          commit(mutations.BID_ACCEPTED_STARTED, {auction, account, transaction: data.tx});
         })
         .catch((error) => {
           console.log('Auction - accepted bid - rejection/error', error);
           commit(mutations.BID_ACCEPTED_FAILED, {auction, account});
           dispatch(actions.GET_AUCTION_DETAILS, auction.edition);
+        })
+        .finally(() => {
           if (timer) clearInterval(timer);
         });
     },
@@ -472,48 +448,39 @@ const auctionStateModule = {
       commit(mutations.RESET_BID_WITHDRAWN_STATE, {auction});
 
       const account = rootState.account;
+
       const contract = await rootState.ArtistAcceptingBids.deployed();
 
-      const blockNumber = await rootState.web3.eth.getBlockNumber();
-      let bidWithdrawnEvent = contract.BidWithdrawn({
-        _bidder: auction.highestBidder,
-        _editionNumber: auction.edition
-      }, {
-        fromBlock: blockNumber,
-        toBlock: 'latest' // wait until event comes through
-      });
+      commit(mutations.BID_WITHDRAWN_TRIGGERED, {auction, account});
 
       const timer = setInterval(function () {
         dispatch(actions.GET_AUCTION_DETAILS, auction.edition);
       }, 2000);
 
-      commit(mutations.BID_WITHDRAWN_TRIGGERED, {auction, account});
-
-      const withdrawBid = contract.withdrawBid(auction.edition, {from: account});
-
-      bidWithdrawnEvent.watch(function (error, event) {
-        if (!error) {
-          console.log('Auction - withdraw bid - successful', event);
+      contract
+        .withdrawBid(auction.edition, {
+          from: account
+        })
+        .on('transactionHash', hash => {
+          console.log('Auction - withdraw bid - transaction submitted', hash);
+          commit(mutations.BID_WITHDRAWN_STARTED, {auction, account, transaction: hash});
+        })
+        .on('receipt', receipt => {
+          console.log('Auction - withdraw bid - successful', receipt);
           dispatch(actions.GET_AUCTION_DETAILS, auction.edition);
           commit(mutations.BID_WITHDRAWN_SUCCESSFUL, {auction, account});
-        } else {
-          console.log('Failure', error);
-          commit(mutations.BID_WITHDRAWN_FAILED, {auction, account});
+        })
+        .on('error', error => {
+          console.log('Auction - withdraw bid - rejection/error', error);
           dispatch(actions.GET_AUCTION_DETAILS, auction.edition);
-          bidWithdrawnEvent.stopWatching();
-        }
-        if (timer) clearInterval(timer);
-      });
-
-      withdrawBid
-        .then((data) => {
-          console.log('Auction - withdraw bid - transaction submitted', data);
-          commit(mutations.BID_WITHDRAWN_STARTED, {auction, account, transaction: data.tx});
+          commit(mutations.BID_WITHDRAWN_FAILED, {auction, account});
         })
         .catch((error) => {
           console.log('Auction - withdraw bid - rejection/error', error);
           dispatch(actions.GET_AUCTION_DETAILS, auction.edition);
           commit(mutations.BID_WITHDRAWN_FAILED, {auction, account});
+        })
+        .finally(() => {
           if (timer) clearInterval(timer);
         });
     },
@@ -577,12 +544,12 @@ const auctionStateModule = {
 
 const transformAuctionDetails = (value, edition) => {
   return {
-    edition: edition.toString("10"),
+    edition: edition.toString(10),
     enabled: value[0],
     highestBidder: value[1],
-    highestBid: Web3.utils.fromWei(value[2].toString("10"), 'ether'),
+    highestBid: Web3.utils.fromWei(value[2].toString(10), 'ether'),
     highestBidWei: value[2],
-    controller: safeToCheckSumAddress(value[3]),
+    controller: value[3],
   };
 };
 

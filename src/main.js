@@ -35,7 +35,7 @@ Vue.config.productionTip = false;
 
 Vue.filter('toEth', function (value) {
   if (!value) return '';
-  return Web3.utils.fromWei(value.toString(10), 'ether').valueOf();
+  return Web3.utils.fromWei(value.toString(), 'ether').valueOf();
 });
 
 Vue.filter('to4Dp', function (value) {

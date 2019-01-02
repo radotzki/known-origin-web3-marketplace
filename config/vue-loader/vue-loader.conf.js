@@ -1,15 +1,25 @@
-var path = require('path')
-var utils = require('../../scripts/utils')
-var config = require('../webpack')
-var postcssPlugins = require('../postcss/postcss.config.js').plugins
-var isProduction = process.env.NODE_ENV === 'production'
+var path = require('path');
+var utils = require('../../scripts/utils');
+var config = require('../webpack');
+var postcssPlugins = require('../postcss/postcss.config.js').plugins;
+var isProduction = process.env.NODE_ENV === 'production';
 
 module.exports = {
   loaders: utils.cssLoaders({
     sourceMap: isProduction
       ? config.build.productionSourceMap
       : config.dev.cssSourceMap,
-    extract: isProduction
+    extract: isProduction,
+    'scss': [
+      'vue-style-loader',
+      'css-loader',
+      'sass-loader'
+    ],
+    'sass': [
+      'vue-style-loader',
+      'css-loader',
+      'sass-loader?indentedSyntax'
+    ]
   }),
   transformToRequire: {
     video: 'src',
@@ -18,6 +28,6 @@ module.exports = {
     image: 'xlink:href'
   },
   postcss: {
-   plugins: postcssPlugins
- }
-}
+    plugins: postcssPlugins
+  }
+};
