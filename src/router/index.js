@@ -31,7 +31,8 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: Feed
+      alias: '/home',
+      component: Feed,
     },
     {
       path: '/feed',

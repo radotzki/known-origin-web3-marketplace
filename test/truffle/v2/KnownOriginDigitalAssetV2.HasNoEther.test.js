@@ -4,14 +4,16 @@ const {ethSendTransaction, ethGetBalance} = require('../../helpers/web3');
 const KnownOriginDigitalAssetV2 = artifacts.require('KnownOriginDigitalAssetV2');
 const ForceEther = artifacts.require('ForceEther');
 
-const BigNumber = web3.BigNumber;
+const bnChai = require('bn-chai');
+const toBN = require('../../helpers/toBN');
 
 require('chai')
-  .use(require('chai-bignumber')(BigNumber))
+  .use(require('chai-as-promised'))
+  .use(bnChai(web3.utils.BN))
   .should();
 
 contract('HasNoEther', function ([_, owner, anyone]) {
-  const amount = web3.toWei('1', 'ether');
+  const amount = web3.utils.toWei('1', 'ether');
 
   beforeEach(async function () {
     this.hasNoEther = await KnownOriginDigitalAssetV2.new({from: owner});
@@ -48,7 +50,7 @@ contract('HasNoEther', function ([_, owner, anyone]) {
     const finalBalance = await ethGetBalance(this.hasNoEther.address);
     assert.equal(finalBalance, 0);
 
-    ownerFinalBalance.should.be.bignumber.gt(ownerStartBalance);
+    toBN(ownerFinalBalance).gt(toBN(ownerStartBalance)).should.be.true;
   });
 
   it('should allow only owner to reclaim ether', async function () {

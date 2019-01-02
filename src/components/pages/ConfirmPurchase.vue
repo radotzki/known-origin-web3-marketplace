@@ -9,23 +9,13 @@
         <edition-card :edition="edition"></edition-card>
 
         <div class="shadow-sm bg-white pt-0 pl-4 pr-4 pb-4">
-          <div class=""
-               v-if="(edition.totalAvailable - edition.totalSupply > 0) && !isStartDateInTheFuture(edition.startDate) && haveNotPurchasedEditionBefore(edition.edition)">
-            <a v-on:click="proceedWithPurchase" class="btn btn-primary text-white">Buy Now</a>
-          </div>
 
-          <div class="" v-if="(edition.totalAvailable - edition.totalSupply === 0)">
-            Sold out
-          </div>
+          <a v-on:click="proceedWithPurchase" class="btn btn-primary text-white">Buy Now</a>
 
-          <div class="" v-if="!haveNotPurchasedEditionBefore(edition.edition)">
-            <p class="text-center pt-2">
-              You have already purchased this edition!
-            </p>
-          </div>
+          <EditionSoldOut :edition="edition"></EditionSoldOut>
         </div>
 
-        <div v-if="(edition.totalAvailable - edition.totalSupply > 0) && haveNotPurchasedEditionBefore(edition.edition)">
+        <div v-if="canProceedWithPurchase">
           <place-edition-bid :edition="edition"></place-edition-bid>
         </div>
 
@@ -34,9 +24,10 @@
 
       <div class="col-sm-6 order-1 order-sm-2 mb-5">
         <div class="card shadow-sm" v-if="edition">
-          <edition-image class="card-img-top" :src="edition.lowResImg" :id="edition.edition" />
+          <edition-image class="card-img-top" :src="edition.lowResImg" :id="edition.edition"/>
         </div>
       </div>
+
     </div>
   </div>
 </template>
@@ -47,33 +38,21 @@
   import * as actions from '../../store/actions';
   import LoadingSection from '../ui-controls/generic/LoadingSection';
   import {PAGES} from '../../store/loadingPageState';
-  import PriceInEth from '../ui-controls/generic/PriceInEth';
-  import USDPrice from '../ui-controls/generic/USDPrice';
-  import RarityIndicator from '../ui-controls/v2/RarityIndicator';
-  import MetadataAttributes from '../ui-controls/v2/MetadataAttributes';
-  import HighResLabel from '../ui-controls/generic/HighResLabel';
-  import Availability from "../ui-controls/v2/Availability";
   import PlaceEditionBid from "../ui-controls/auction/PlaceEditionBid";
   import AuctionEventsList from "../ui-controls/auction/AuctionEventsList";
-  import CreativeChallengeLabel from "../ui-controls/generic/CreativeChallengeLabel";
   import EditionCard from '../ui-controls/cards/EditionCard';
   import EditionImage from "../ui-controls/generic/EditionImage";
+  import EditionSoldOut from "../ui-controls/purhcase/EditionSoldOut";
 
   export default {
     name: 'confirmPurchase',
     components: {
+      EditionSoldOut,
       EditionImage,
       EditionCard,
-      CreativeChallengeLabel,
       AuctionEventsList,
       PlaceEditionBid,
-      Availability,
       LoadingSection,
-      PriceInEth,
-      USDPrice,
-      RarityIndicator,
-      MetadataAttributes,
-      HighResLabel
     },
     data() {
       return {
@@ -87,16 +66,20 @@
       ...mapGetters('kodaV2', [
         'findEdition',
         'isStartDateInTheFuture',
-        'haveNotPurchasedEditionBefore',
+        'alreadyPurchasedEdition',
       ]),
-      ...mapGetters([
-        'findArtistsForAddress'
-      ]),
-      edition: function () {
+      edition() {
         return this.findEdition(this.$route.params.editionNumber);
       },
-      title: function () {
-        return `${this.edition.editionName} #${this.edition.edition}`;
+      canProceedWithPurchase() {
+        const hasEditionLeftToPurchase = this.edition.totalAvailable - this.edition.totalSupply > 0;
+
+        return hasEditionLeftToPurchase &&
+          !this.isStartDateInTheFuture(this.edition.startDate) &&
+          !this.alreadyPurchased;
+      },
+      alreadyPurchased() {
+        return this.alreadyPurchasedEdition(this.edition.edition);
       },
     },
     methods: {
@@ -153,4 +136,5 @@
   a {
     text-decoration: none;
   }
+
 </style>

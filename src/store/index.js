@@ -97,7 +97,7 @@ const store = new Vuex.Store({
         if (_.isArray(artist.ethAddress)) {
           return _.find(artist.ethAddress, (address) => safeToCheckSumAddress(address) === artistsAddress);
         }
-        return Web3.utils.toChecksumAddress(artist.ethAddress) === artistsAddress;
+        return safeToCheckSumAddress(artist.ethAddress) === artistsAddress;
       });
 
       if (!artist) {
@@ -175,49 +175,11 @@ const store = new Vuex.Store({
       dispatch(actions.GET_USD_PRICE);
       dispatch(actions.LOAD_ARTISTS);
 
-      // TODO can we ditch the hacks below yet?
-
       // NON-ASYNC action - set web3 provider on init
       KnownOriginDigitalAssetV1.setProvider(web3.currentProvider);
       KnownOriginDigitalAssetV2.setProvider(web3.currentProvider);
       ArtistAcceptingBids.setProvider(web3.currentProvider);
       ArtistEditionControls.setProvider(web3.currentProvider);
-
-      //dirty hack for web3@1.0.0 support for localhost testrpc, see https://github.com/trufflesuite/truffle-contract/issues/56#issuecomment-331084530
-      if (typeof KnownOriginDigitalAssetV1.currentProvider.sendAsync !== "function") {
-        KnownOriginDigitalAssetV1.currentProvider.sendAsync = function () {
-          return KnownOriginDigitalAssetV1.currentProvider.send.apply(
-            KnownOriginDigitalAssetV1.currentProvider, arguments
-          );
-        };
-      }
-
-      //dirty hack for web3@1.0.0 support for localhost testrpc, see https://github.com/trufflesuite/truffle-contract/issues/56#issuecomment-331084530
-      if (typeof KnownOriginDigitalAssetV2.currentProvider.sendAsync !== "function") {
-        KnownOriginDigitalAssetV2.currentProvider.sendAsync = function () {
-          return KnownOriginDigitalAssetV2.currentProvider.send.apply(
-            KnownOriginDigitalAssetV2.currentProvider, arguments
-          );
-        };
-      }
-
-      //dirty hack for web3@1.0.0 support for localhost testrpc, see https://github.com/trufflesuite/truffle-contract/issues/56#issuecomment-331084530
-      if (typeof ArtistAcceptingBids.currentProvider.sendAsync !== "function") {
-        ArtistAcceptingBids.currentProvider.sendAsync = function () {
-          return ArtistAcceptingBids.currentProvider.send.apply(
-            ArtistAcceptingBids.currentProvider, arguments
-          );
-        };
-      }
-
-      //dirty hack for web3@1.0.0 support for localhost testrpc, see https://github.com/trufflesuite/truffle-contract/issues/56#issuecomment-331084530
-      if (typeof ArtistEditionControls.currentProvider.sendAsync !== "function") {
-        ArtistEditionControls.currentProvider.sendAsync = function () {
-          return ArtistEditionControls.currentProvider.send.apply(
-            ArtistEditionControls.currentProvider, arguments
-          );
-        };
-      }
 
       // Set the web3 instance
       commit(mutations.SET_WEB3, web3);
@@ -269,8 +231,8 @@ const store = new Vuex.Store({
               });
           };
 
-          // Every second check if the main account has changed
-          setInterval(refreshHandler, 1000);
+          // Every few seconds, check if the main account has changed
+          setInterval(refreshHandler, 2500);
 
           if (account) {
             return setAccountAndBalance(account);
