@@ -1,3 +1,3 @@
 module.exports = (n) => {
-  return new web3.BigNumber(web3.toWei(n, 'ether'));
+  return web3.utils.toBN(web3.utils.toWei(n.toString("10"), 'ether'));
 };

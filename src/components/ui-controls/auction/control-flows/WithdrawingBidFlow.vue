@@ -52,7 +52,6 @@
   import UsdPrice from '../../../ui-controls/generic/USDPrice';
   import ClickableTransaction from '../../../ui-controls/generic/ClickableTransaction';
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
-  import {safeToCheckSumAddress} from "../../../../utils";
 
   export default {
     name: 'withdrawingBidFlow',
@@ -89,8 +88,7 @@
     methods: {
       canWithdrawBid: function () {
         return (this.account && this.auction) &&
-          this.auction.highestBidWei > 0 &&
-          (safeToCheckSumAddress(this.auction.highestBidder) === safeToCheckSumAddress(this.account));
+          this.auction.highestBidWei > 0 && (this.auction.highestBidder === this.account);
       },
       withdrawBid: function () {
         this.$store.dispatch(`auction/${actions.WITHDRAW_BID}`, this.auction);

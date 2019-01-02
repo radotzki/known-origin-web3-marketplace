@@ -1,20 +1,18 @@
 const assertRevert = require('../../helpers/assertRevert');
 const etherToWei = require('../../helpers/etherToWei');
 
-const advanceBlock = require('../../helpers/advanceToBlock');
-const increaseTimeTo = require('../../helpers/increaseTime').increaseTimeTo;
-const duration = require('../../helpers/increaseTime').duration;
-const latestTime = require('../../helpers/latestTime');
+const {increaseTo, latest, duration, advanceBlock} = require('../../helpers/time');
+const bnChai = require('bn-chai');
+const toBN = require('../../helpers/toBN');
+const getBalance = require('../../helpers/getBalance');
 
 const _ = require('lodash');
-
-const BigNumber = web3.BigNumber;
 
 const KnownOriginDigitalAsset = artifacts.require('KnownOriginDigitalAsset');
 
 require('chai')
   .use(require('chai-as-promised'))
-  .use(require('chai-bignumber')(BigNumber))
+  .use(bnChai(web3.utils.BN))
   .should();
 
 contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
@@ -35,9 +33,9 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
   const _baseUri = 'https://ipfs.infura.io/ipfs/';
-  const _tokenURI = 'abc123';
-  const _editionDigital = 'ABC0000000000DIG';
-  const _editionPhysical = 'ABC0000000000PHY';
+  const _tokenURI = web3.utils.asciiToHex('abc123');
+  const _editionDigital = web3.utils.asciiToHex('ABC0000000000DIG');
+  const _editionPhysical = web3.utils.asciiToHex('ABC0000000000PHY');
 
   const _priceInWei = etherToWei(0.5);
   let _purchaseFromTime;
@@ -50,9 +48,9 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
   beforeEach(async function () {
     // developers will mine the contract and pass the curator account into it...
     this.token = await KnownOriginDigitalAsset.new(_curatorAccount, {from: _developmentAccount});
-    _purchaseFromTime = latestTime(); // opens immediately
+    _purchaseFromTime = await latest(); // opens immediately
 
-    await increaseTimeTo(_purchaseFromTime + duration.seconds(1)); // force time to move 1 seconds so normal tests pass
+    await increaseTo(_purchaseFromTime + duration.seconds(1)); // force time to move 1 seconds so normal tests pass
 
     // set base commission rates
     await this.token.updateCommission('DIG', 12, 12, {from: _developmentAccount});
@@ -72,13 +70,13 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
         describe('when the given address owns some tokens', function () {
           it('returns the amount of tokens owned by the given address', async function () {
             const balance = await this.token.balanceOf(_curatorAccount);
-            balance.should.be.bignumber.equal(1);
+            balance.should.be.eq.BN(1);
           });
         });
         describe('when the given address does not own any tokens', function () {
           it('returns 0', async function () {
             const balance = await this.token.balanceOf(_buyer);
-            balance.should.be.bignumber.equal(0);
+            balance.should.be.eq.BN(0);
           });
         });
       });
@@ -88,31 +86,31 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
         const assetInfo = await this.token.assetInfo(firstTokenId);
 
         let tokenId = assetInfo[0];
-        tokenId.should.be.bignumber.equal(firstTokenId);
+        tokenId.should.be.eq.BN(firstTokenId);
 
         let owner = assetInfo[1];
         owner.should.be.equal(_curatorAccount);
 
         let purchaseState = assetInfo[2];
-        purchaseState.should.be.bignumber.equal(Unsold);
+        purchaseState.should.be.eq.BN(Unsold);
 
         let priceInWei = assetInfo[3];
-        priceInWei.should.be.bignumber.equal(_priceInWei);
+        priceInWei.should.be.eq.BN(_priceInWei);
 
         let auctionStartDate = assetInfo[4];
-        auctionStartDate.should.be.bignumber.equal(_purchaseFromTime);
+        auctionStartDate.should.be.eq.BN(_purchaseFromTime);
 
         // Edition info
         const editionInfo = await this.token.editionInfo(firstTokenId);
 
         let tokenId2 = editionInfo[0];
-        tokenId2.should.be.bignumber.equal(firstTokenId);
+        tokenId2.should.be.eq.BN(firstTokenId);
 
         let edition = editionInfo[1];
-        web3.toAscii(edition).should.be.equal(_editionDigital);
+        web3.utils.toAscii(edition).should.be.equal("ABC0000000000DIG");
 
         let editionNumber = editionInfo[2];
-        editionNumber.should.be.bignumber.equal(1);
+        editionNumber.should.be.eq.BN(1);
 
         let tokenUri = editionInfo[3];
         tokenUri.toString().should.be.equal(_baseUri + _tokenURI);
@@ -120,23 +118,23 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
 
       it('editionOf()', async function () {
         const edition = await this.token.editionOf(firstTokenId);
-        web3.toAscii(edition).should.be.equal(_editionDigital);
+        web3.utils.toAscii(edition).should.be.equal("ABC0000000000DIG");
       });
 
       it('tokenAuctionOpenDate()', async function () {
         const purchaseFromTime = await this.token.purchaseFromTime(firstTokenId);
-        purchaseFromTime.should.be.bignumber.equal(_purchaseFromTime);
+        purchaseFromTime.should.be.eq.BN(_purchaseFromTime);
       });
 
       it('priceInWei()', async function () {
         const priceInWei = await this.token.priceInWei(firstTokenId);
-        priceInWei.should.be.bignumber.equal(_priceInWei);
+        priceInWei.should.be.eq.BN(_priceInWei);
       });
     });
 
     describe('purchaseWithEther()', function () {
       const NUMBER_OF_EDITIONS = 10;
-      const tokenToPurchase = new BigNumber(3);
+      const tokenToPurchase = new web3.utils.BN(3);
 
       beforeEach(async function () {
         const totalInEdition = _.range(0, NUMBER_OF_EDITIONS);
@@ -150,7 +148,7 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
         const range = _.range(0, NUMBER_OF_EDITIONS);
         for (let tokenId of range) {
           let isPurchased = await this.token.isPurchased(tokenId);
-          isPurchased.should.be.bignumber.equal(Unsold);
+          isPurchased.should.be.eq.BN(Unsold);
 
           let ownerOf = await this.token.ownerOf(tokenId);
           ownerOf.should.be.equal(_curatorAccount);
@@ -176,31 +174,31 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
           logs.length.should.be.equal(4);
 
           // Approve new _buyer
-          logs[0].event.should.be.eq('Approval');
+          logs[0].event.should.be.equal('Approval');
           logs[0].args._owner.should.be.equal(_curatorAccount);
           logs[0].args._approved.should.be.equal(_buyer);
-          logs[0].args._tokenId.should.be.bignumber.equal(tokenToPurchase);
+          logs[0].args._tokenId.should.be.eq.BN(tokenToPurchase);
 
           // Approval cleared on transfer
-          logs[1].event.should.be.eq('Approval');
+          logs[1].event.should.be.equal('Approval');
           logs[1].args._owner.should.be.equal(_curatorAccount);
           logs[1].args._approved.should.be.equal(ZERO_ADDRESS);
-          logs[1].args._tokenId.should.be.bignumber.equal(tokenToPurchase);
+          logs[1].args._tokenId.should.be.eq.BN(tokenToPurchase);
 
           // Transferred
-          logs[2].event.should.be.eq('Transfer');
+          logs[2].event.should.be.equal('Transfer');
           logs[2].args._from.should.be.equal(_curatorAccount);
           logs[2].args._to.should.be.equal(_buyer);
-          logs[2].args._tokenId.should.be.bignumber.equal(tokenToPurchase);
+          logs[2].args._tokenId.should.be.eq.BN(tokenToPurchase);
 
           // Internal event fired
-          logs[3].event.should.be.eq('PurchasedWithEther');
+          logs[3].event.should.be.equal('PurchasedWithEther');
           logs[3].args._buyer.should.be.equal(_buyer);
-          logs[3].args._tokenId.should.be.bignumber.equal(tokenToPurchase);
+          logs[3].args._tokenId.should.be.eq.BN(tokenToPurchase);
 
           // check is purchased with ether
           let isPurchased = await this.token.isPurchased(tokenToPurchase);
-          isPurchased.should.be.bignumber.equal(EtherPurchase);
+          isPurchased.should.be.eq.BN(EtherPurchase);
 
           // check token is now the owner
           let ownerOf = await this.token.ownerOf(tokenToPurchase);
@@ -217,20 +215,23 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
         });
 
         it('succeeds purchase is price greater than amount asked for', async function () {
-          await this.token.purchaseWithEther(tokenToPurchase, {value: _priceInWei.add(1), from: _buyer});
+          await this.token.purchaseWithEther(tokenToPurchase, {value: _priceInWei.add(toBN(1)), from: _buyer});
 
           let isPurchased = await this.token.isPurchased(tokenToPurchase);
-          isPurchased.should.be.bignumber.equal(EtherPurchase);
+          isPurchased.should.be.eq.BN(EtherPurchase);
 
           let ownerOf = await this.token.ownerOf(tokenToPurchase);
           ownerOf.should.be.equal(_buyer);
         });
 
         it('fails purchase is price less than amount asked for', async function () {
-          await assertRevert(this.token.purchaseWithEther(tokenToPurchase, {value: _priceInWei.sub(1), from: _buyer}));
+          await assertRevert(this.token.purchaseWithEther(tokenToPurchase, {
+            value: _priceInWei.sub(toBN(1)),
+            from: _buyer
+          }));
 
           let isPurchased = await this.token.isPurchased(tokenToPurchase);
-          isPurchased.should.be.bignumber.equal(Unsold);
+          isPurchased.should.be.eq.BN(Unsold);
 
           let ownerOf = await this.token.ownerOf(tokenToPurchase);
           ownerOf.should.be.equal(_curatorAccount);
@@ -249,7 +250,7 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
           ownerOf.should.be.equal(_buyer);
 
           let isPurchased = await this.token.isPurchased(tokenToPurchase);
-          isPurchased.should.be.bignumber.equal(EtherPurchase);
+          isPurchased.should.be.eq.BN(EtherPurchase);
         });
 
         it('reverts if already sold', async function () {
@@ -268,7 +269,7 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
           ownerOf.should.be.equal(_curatorAccount);
 
           let isPurchased = await this.token.isPurchased(tokenToPurchase);
-          isPurchased.should.be.bignumber.equal(EtherPurchase);
+          isPurchased.should.be.eq.BN(EtherPurchase);
         });
 
         it('can purchase if currently owned by contractDeveloper', async function () {
@@ -281,14 +282,14 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
           ownerOf.should.be.equal(_developmentAccount);
 
           let isPurchased = await this.token.isPurchased(tokenToPurchase);
-          isPurchased.should.be.bignumber.equal(EtherPurchase);
+          isPurchased.should.be.eq.BN(EtherPurchase);
         });
       });
 
       describe('should not transfer ownership if artwork has value and purchaser sends zero', function () {
         it('should fail with invalid amount', async function () {
           await assertRevert(this.token.purchaseWithEther(tokenToPurchase, {
-            value: _priceInWei.sub(1),
+            value: _priceInWei.sub(toBN(1)),
             from: _buyer
           }));
 
@@ -296,7 +297,7 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
           ownerOf.should.be.equal(_curatorAccount);
 
           let isPurchased = await this.token.isPurchased(tokenToPurchase);
-          isPurchased.should.be.bignumber.equal(Unsold);
+          isPurchased.should.be.eq.BN(Unsold);
         });
       });
 
@@ -311,14 +312,14 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
           ownerOf.should.be.equal(_buyer);
 
           let isPurchased = await this.token.isPurchased(tokenToPurchase);
-          isPurchased.should.be.bignumber.equal(EtherPurchase);
+          isPurchased.should.be.eq.BN(EtherPurchase);
         });
       });
 
       describe('should transfer ownership if artwork has value is greater', function () {
         it('should transfer ownership', async function () {
           await this.token.purchaseWithEther(tokenToPurchase, {
-            value: _priceInWei.add(1),
+            value: _priceInWei.add(toBN(1)),
             from: _buyer
           });
 
@@ -326,7 +327,7 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
           ownerOf.should.be.equal(_buyer);
 
           let isPurchased = await this.token.isPurchased(tokenToPurchase);
-          isPurchased.should.be.bignumber.equal(EtherPurchase);
+          isPurchased.should.be.eq.BN(EtherPurchase);
         });
       });
     });
@@ -351,7 +352,7 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
       describe('purchaseWithFiat()', async function () {
 
         beforeEach(async function () {
-          await increaseTimeTo(_purchaseFromTime + duration.seconds(60));
+          await increaseTo((await latest()) + duration.minutes(1));
         });
 
         it('should be able to buy once open', async function () {
@@ -363,14 +364,14 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
           ownerOf.should.be.equal(_curatorAccount);
 
           let isPurchased = await this.token.isPurchased(firstTokenId);
-          isPurchased.should.be.bignumber.equal(FiatPurchase);
+          isPurchased.should.be.eq.BN(FiatPurchase);
         });
       });
 
       describe('purchaseWithEther()', async function () {
 
         beforeEach(async function () {
-          await increaseTimeTo(_purchaseFromTime + duration.seconds(60));
+          await increaseTo((await latest()) + duration.minutes(1));
         });
 
         it('should be able to buy once open', async function () {
@@ -383,7 +384,7 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
           ownerOf.should.be.equal(_buyer);
 
           let isPurchased = await this.token.isPurchased(firstTokenId);
-          isPurchased.should.be.bignumber.equal(EtherPurchase);
+          isPurchased.should.be.eq.BN(EtherPurchase);
         });
 
       });
@@ -396,7 +397,7 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
         });
 
         let isPurchased = await this.token.isPurchased(firstTokenId);
-        isPurchased.should.be.bignumber.equal(Unsold);
+        isPurchased.should.be.eq.BN(Unsold);
 
         let ownerOf = await this.token.ownerOf(firstTokenId);
         ownerOf.should.be.equal(_curatorAccount);
@@ -404,7 +405,7 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
 
       describe('can actually make purchaseWithFiat() if _curatorAccount', function () {
         it('updates owner and sets as sold', async function () {
-          let {logs} = await this.token.purchaseWithFiat(new BigNumber(firstTokenId), {
+          let {logs} = await this.token.purchaseWithFiat(firstTokenId, {
             from: _developmentAccount
           });
 
@@ -412,12 +413,12 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
           ownerOf.should.be.equal(_curatorAccount);
 
           let isPurchased = await this.token.isPurchased(firstTokenId);
-          isPurchased.should.be.bignumber.equal(FiatPurchase);
+          isPurchased.should.be.eq.BN(FiatPurchase);
 
           //emit correct logs
           logs.length.should.be.equal(1);
-          logs[0].event.should.be.eq('PurchasedWithFiat');
-          logs[0].args._tokenId.should.be.bignumber.equal(firstTokenId);
+          logs[0].event.should.be.equal('PurchasedWithFiat');
+          logs[0].args._tokenId.should.be.eq.BN(firstTokenId);
         });
       });
 
@@ -428,7 +429,7 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
             from: _buyer
           });
           let isPurchased = await this.token.isPurchased(firstTokenId);
-          isPurchased.should.be.bignumber.equal(EtherPurchase);
+          isPurchased.should.be.eq.BN(EtherPurchase);
         });
 
         it('reverts if already sold', async function () {
@@ -444,7 +445,7 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
             from: _developmentAccount
           });
           let isPurchased = await this.token.isPurchased(firstTokenId);
-          isPurchased.should.be.bignumber.equal(FiatPurchase);
+          isPurchased.should.be.eq.BN(FiatPurchase);
         });
 
         it('reverts if already sold', async function () {
@@ -481,7 +482,7 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
         });
 
         let isPurchased = await this.token.isPurchased(firstTokenId);
-        isPurchased.should.be.bignumber.equal(EtherPurchase);
+        isPurchased.should.be.eq.BN(EtherPurchase);
 
         await assertRevert(this.token.reverseFiatPurchase(firstTokenId));
       });
@@ -493,7 +494,7 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
             from: _developmentAccount
           });
           let isPurchased = await this.token.isPurchased(firstTokenId);
-          isPurchased.should.be.bignumber.equal(FiatPurchase);
+          isPurchased.should.be.eq.BN(FiatPurchase);
         });
 
         describe('can be called by _curatorAccount', async function () {
@@ -501,11 +502,11 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
             let {logs} = await this.token.reverseFiatPurchase(firstTokenId, {from: _curatorAccount});
 
             let isPurchased = await this.token.isPurchased(firstTokenId);
-            isPurchased.should.be.bignumber.equal(Unsold);
+            isPurchased.should.be.eq.BN(Unsold);
 
             logs.length.should.be.equal(1);
-            logs[0].event.should.be.eq('PurchasedWithFiatReversed');
-            logs[0].args._tokenId.should.be.bignumber.equal(firstTokenId);
+            logs[0].event.should.be.equal('PurchasedWithFiatReversed');
+            logs[0].args._tokenId.should.be.eq.BN(firstTokenId);
           });
         });
 
@@ -514,11 +515,11 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
             let {logs} = await this.token.reverseFiatPurchase(firstTokenId, {from: _developmentAccount});
 
             let isPurchased = await this.token.isPurchased(firstTokenId);
-            isPurchased.should.be.bignumber.equal(Unsold);
+            isPurchased.should.be.eq.BN(Unsold);
 
             logs.length.should.be.equal(1);
-            logs[0].event.should.be.eq('PurchasedWithFiatReversed');
-            logs[0].args._tokenId.should.be.bignumber.equal(firstTokenId);
+            logs[0].event.should.be.equal('PurchasedWithFiatReversed');
+            logs[0].args._tokenId.should.be.eq.BN(firstTokenId);
           });
         });
 
@@ -570,23 +571,23 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
       });
 
       it('can be called by _curatorAccount', async function () {
-        await this.token.setPriceInWei(firstTokenId, _priceInWei.add(1), {
+        await this.token.setPriceInWei(firstTokenId, _priceInWei.add(toBN(1)), {
           from: _curatorAccount
         });
         let assetInfo = await this.token.assetInfo(firstTokenId);
-        assetInfo[3].should.be.bignumber.equal(_priceInWei.add(1));
+        assetInfo[3].should.be.eq.BN(_priceInWei.add(toBN(1)));
       });
 
       it('can be called by developer', async function () {
-        await this.token.setPriceInWei(firstTokenId, _priceInWei.sub(1), {
+        await this.token.setPriceInWei(firstTokenId, _priceInWei.sub(toBN(1)), {
           from: _developmentAccount
         });
         let assetInfo = await this.token.assetInfo(firstTokenId);
-        assetInfo[3].should.be.bignumber.equal(_priceInWei.sub(1));
+        assetInfo[3].should.be.eq.BN(_priceInWei.sub(toBN(1)));
       });
 
       it('will fail if called by _buyer', async function () {
-        await assertRevert(this.token.setPriceInWei(firstTokenId, _priceInWei.sub(1), {
+        await assertRevert(this.token.setPriceInWei(firstTokenId, toBN(_priceInWei).sub(toBN(1)), {
           from: _buyer
         }));
       });
@@ -597,11 +598,11 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
             from: _developmentAccount
           });
           let isPurchased = await this.token.isPurchased(firstTokenId);
-          isPurchased.should.be.bignumber.equal(FiatPurchase);
+          isPurchased.should.be.eq.BN(FiatPurchase);
         });
 
         it('cannot be called', async function () {
-          await assertRevert(this.token.setPriceInWei(firstTokenId, _priceInWei.sub(1), {
+          await assertRevert(this.token.setPriceInWei(firstTokenId, _priceInWei.sub(toBN(1)), {
             from: _curatorAccount
           }));
         });
@@ -614,54 +615,54 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
 
     it('should get default commission for contract', async function () {
       let commission = await this.token.getCommissionForType('DIG');
-      commission[0].should.be.bignumber.equal(12);
-      commission[1].should.be.bignumber.equal(12);
+      commission[0].should.be.eq.BN(12);
+      commission[1].should.be.eq.BN(12);
 
       commission = await this.token.getCommissionForType('PHY');
-      commission[0].should.be.bignumber.equal(24);
-      commission[1].should.be.bignumber.equal(15);
+      commission[0].should.be.eq.BN(24);
+      commission[1].should.be.eq.BN(15);
     });
 
     it('should get type from edition', async function () {
-      let type = await this.token.getTypeFromEdition('ABC0000000000DIG');
+      let type = await this.token.getTypeFromEdition(web3.utils.asciiToHex('ABC0000000000DIG'));
       type.should.be.equal('DIG');
 
-      type = await this.token.getTypeFromEdition('ABC0000000000PHY');
+      type = await this.token.getTypeFromEdition(web3.utils.asciiToHex('ABC0000000000PHY'));
       type.should.be.equal('PHY');
 
-      type = await this.token.getTypeFromEdition('ABC0000000000ABC');
+      type = await this.token.getTypeFromEdition(web3.utils.asciiToHex('ABC0000000000ABC'));
       type.should.be.equal('ABC');
     });
 
     it('convert DIG to bytes', async function () {
-      console.log(web3.fromAscii('DIG')); // 0x444947
-      console.log(web3.fromAscii('PHY')); // 0x504859
+      console.log(web3.utils.fromAscii('DIG')); // 0x444947
+      console.log(web3.utils.fromAscii('PHY')); // 0x504859
     });
 
     describe('updating commission', function () {
 
       it('should be able to update as _curatorAccount', async function () {
         let commission = await this.token.getCommissionForType('DIG');
-        commission[0].should.be.bignumber.equal(12);
-        commission[1].should.be.bignumber.equal(12);
+        commission[0].should.be.eq.BN(12);
+        commission[1].should.be.eq.BN(12);
 
         await this.token.updateCommission('DIG', 5, 5, {from: _curatorAccount});
 
         commission = await this.token.getCommissionForType('DIG');
-        commission[0].should.be.bignumber.equal(5);
-        commission[1].should.be.bignumber.equal(5);
+        commission[0].should.be.eq.BN(5);
+        commission[1].should.be.eq.BN(5);
       });
 
       it('should be able to update as developer', async function () {
         let commission = await this.token.getCommissionForType('DIG');
-        commission[0].should.be.bignumber.equal(12);
-        commission[1].should.be.bignumber.equal(12);
+        commission[0].should.be.eq.BN(12);
+        commission[1].should.be.eq.BN(12);
 
         await this.token.updateCommission('DIG', 1, 2, {from: _developmentAccount});
 
         commission = await this.token.getCommissionForType('DIG');
-        commission[0].should.be.bignumber.equal(1);
-        commission[1].should.be.bignumber.equal(2);
+        commission[0].should.be.eq.BN(1);
+        commission[1].should.be.eq.BN(2);
       });
 
       it('should fail when _buyer', async function () {
@@ -681,30 +682,17 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
       });
 
       it('should be able to add a new commission', async function () {
-        let commission = await this.token.getCommissionForType('ABC');
-        commission[0].should.be.bignumber.equal(0);
-        commission[1].should.be.bignumber.equal(0);
+        let commission = await this.token.getCommissionForType(web3.utils.asciiToHex('ABC'));
+        commission[0].should.be.eq.BN(0);
+        commission[1].should.be.eq.BN(0);
 
-        await this.token.updateCommission('ABC', 30, 20, {from: _developmentAccount});
+        await this.token.updateCommission(web3.utils.asciiToHex('ABC'), 30, 20, {from: _developmentAccount});
 
-        commission = await this.token.getCommissionForType('ABC');
-        commission[0].should.be.bignumber.equal(30);
-        commission[1].should.be.bignumber.equal(20);
+        commission = await this.token.getCommissionForType(web3.utils.asciiToHex('ABC'));
+        commission[0].should.be.eq.BN(30);
+        commission[1].should.be.eq.BN(20);
       });
 
-      it('should fail when updating curator commission with decimals', async function () {
-        this.token.updateCommission('EFG', 98, 1.9, {from: _curatorAccount});
-        let commission = await this.token.getCommissionForType('EFG');
-        commission[0].should.be.bignumber.equal(98);
-        commission[1].should.be.bignumber.equal(1);
-      });
-
-      it('should fail when updating developer commission with decimals', async function () {
-        this.token.updateCommission('EFG', 1.9, 98, {from: _curatorAccount});
-        let commission = await this.token.getCommissionForType('EFG');
-        commission[0].should.be.bignumber.equal(1);
-        commission[1].should.be.bignumber.equal(98);
-      });
     });
 
     describe('allocating commissions for digital purchases', function () {
@@ -715,8 +703,8 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
         await this.token.mint(_tokenURI, _editionDigital, _priceInWei, _purchaseFromTime, _curatorAccount, {
           from: _curatorAccount
         });
-        this.curatorBalance = await web3.eth.getBalance(_curatorAccount);
-        this.contractDeveloperBalance = await web3.eth.getBalance(_developmentAccount);
+        this.curatorBalance = await getBalance(_curatorAccount);
+        this.contractDeveloperBalance = await getBalance(_developmentAccount);
 
         await this.token.purchaseWithEther(tokenToPurchase, {
           value: _priceInWei,
@@ -727,25 +715,30 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
         ownerOf.should.be.equal(_buyer);
 
         let isPurchased = await this.token.isPurchased(tokenToPurchase);
-        isPurchased.should.be.bignumber.equal(EtherPurchase);
+        isPurchased.should.be.eq.BN(EtherPurchase);
       });
 
       it('curator account receives correct value', async function () {
-        let updatedCuratorBalance = await web3.eth.getBalance(_curatorAccount);
+        let updatedCuratorBalance = await getBalance(_curatorAccount);
 
         // curator is set as the artist account (as artist may not have account)
         // therefore curator gets the artist amount (to forward on)
-        updatedCuratorBalance.should.be.bignumber.equal(
+        updatedCuratorBalance.should.be.eq.BN(
           this.curatorBalance
-            .add(_priceInWei.dividedBy(100).times(12))
-            .add(_priceInWei.dividedBy(100).times(76)) // 12% + 76%
+            .add(_priceInWei.div(toBN(100)).mul(toBN(12)))
+            .add(_priceInWei.div(toBN(100)).mul(toBN(76))) // 12% + 76%
         );
       });
 
       it('developer account receives correct value', async function () {
-        let updatedContractDeveloperBalance = await web3.eth.getBalance(_developmentAccount);
-        updatedContractDeveloperBalance.should.be.bignumber.equal(
-          this.contractDeveloperBalance.add(_priceInWei.dividedBy(100).times(12)) // 12%
+        let updatedContractDeveloperBalance = await getBalance(_developmentAccount);
+        updatedContractDeveloperBalance.should.be.eq.BN(
+          this.contractDeveloperBalance
+            .add(
+              _priceInWei
+                .div(toBN(100))
+                .mul(toBN(12))// 12%
+            )
         );
       });
     });
@@ -758,9 +751,9 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
         await this.token.mint(_tokenURI, _editionDigital, _priceInWei, _purchaseFromTime, _artist, {
           from: _curatorAccount
         });
-        this.curatorBalance = await web3.eth.getBalance(_curatorAccount);
-        this.contractDeveloperBalance = await web3.eth.getBalance(_developmentAccount);
-        this.artistBalance = await web3.eth.getBalance(_artist);
+        this.curatorBalance = await getBalance(_curatorAccount);
+        this.contractDeveloperBalance = await getBalance(_developmentAccount);
+        this.artistBalance = await getBalance(_artist);
 
         await this.token.purchaseWithEther(tokenToPurchase, {
           value: _priceInWei,
@@ -771,29 +764,37 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
         ownerOf.should.be.equal(_buyer);
 
         let isPurchased = await this.token.isPurchased(tokenToPurchase);
-        isPurchased.should.be.bignumber.equal(EtherPurchase);
+        isPurchased.should.be.eq.BN(EtherPurchase);
       });
 
       it('curator account receives correct value', async function () {
-        let updatedCuratorBalance = await web3.eth.getBalance(_curatorAccount);
+        let updatedCuratorBalance = await getBalance(_curatorAccount);
 
-        updatedCuratorBalance.should.be.bignumber.equal(
+        updatedCuratorBalance.should.be.eq.BN(
           this.curatorBalance
-            .add(_priceInWei.dividedBy(100).times(12))
+            .add(_priceInWei.div(toBN(100)).mul(toBN(12)))
         );
       });
 
       it('developer account receives correct value', async function () {
-        let updatedContractDeveloperBalance = await web3.eth.getBalance(_developmentAccount);
-        updatedContractDeveloperBalance.should.be.bignumber.equal(
-          this.contractDeveloperBalance.add(_priceInWei.dividedBy(100).times(12)) // 12%
+        let updatedContractDeveloperBalance = await getBalance(_developmentAccount);
+        updatedContractDeveloperBalance.should.be.eq.BN(
+          this.contractDeveloperBalance.add(
+            _priceInWei
+              .div(toBN(100))
+              .mul(toBN(12)) // 12%
+          )
         );
       });
 
       it('artist account receives correct value', async function () {
-        let updatedArtistBalance = await web3.eth.getBalance(_artist);
-        updatedArtistBalance.should.be.bignumber.equal(
-          this.artistBalance.add(_priceInWei.dividedBy(100).times(76)) // 76%%
+        let updatedArtistBalance = await getBalance(_artist);
+        updatedArtistBalance.should.be.eq.BN(
+          this.artistBalance.add(
+            _priceInWei
+              .div(toBN(100))
+              .mul(toBN(76))// 76%
+          )
         );
       });
     });
@@ -815,8 +816,8 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
         await this.token.mint(_tokenURI, _editionPhysical, _priceInWei, _purchaseFromTime, _curatorAccount, {
           from: _curatorAccount
         });
-        this.curatorBalance = await web3.eth.getBalance(_curatorAccount);
-        this.contractDeveloperBalance = await web3.eth.getBalance(_developmentAccount);
+        this.curatorBalance = await getBalance(_curatorAccount);
+        this.contractDeveloperBalance = await getBalance(_developmentAccount);
 
         await this.token.purchaseWithEther(tokenToPurchase, {
           value: _priceInWei,
@@ -827,22 +828,26 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
         ownerOf.should.be.equal(_buyer);
 
         let isPurchased = await this.token.isPurchased(tokenToPurchase);
-        isPurchased.should.be.bignumber.equal(EtherPurchase);
+        isPurchased.should.be.eq.BN(EtherPurchase);
       });
 
       it('curator account receives correct value', async function () {
-        let updatedCuratorBalance = await web3.eth.getBalance(_curatorAccount);
-        updatedCuratorBalance.should.be.bignumber.equal(
+        let updatedCuratorBalance = await getBalance(_curatorAccount);
+        updatedCuratorBalance.should.be.eq.BN(
           this.curatorBalance
-            .add(_priceInWei.dividedBy(100).times(24)) // 24%
-            .add(_priceInWei.dividedBy(100).times(61)) // 61%
+            .add(_priceInWei.div(toBN(100)).mul(toBN(24))) // 24%
+            .add(_priceInWei.div(toBN(100)).mul(toBN(61))) // 61%
         );
       });
 
       it('developer account receives correct value', async function () {
-        let updatedContractDeveloperBalance = await web3.eth.getBalance(_developmentAccount);
-        updatedContractDeveloperBalance.should.be.bignumber.equal(
-          this.contractDeveloperBalance.add(_priceInWei.dividedBy(100).times(15))// 15%
+        let updatedContractDeveloperBalance = await getBalance(_developmentAccount);
+        updatedContractDeveloperBalance.should.be.eq.BN(
+          this.contractDeveloperBalance.add(
+            _priceInWei
+              .div(toBN(100))
+              .mul(toBN(15)) // 15%
+          )
         );
       });
 
@@ -851,15 +856,15 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
     describe('missing commission rates still allow purchase', function () {
 
       const tokenToPurchase = 0;
-      const _editionWithMissingType = 'ABC0000000000MIA';
+      const _editionWithMissingType = web3.utils.asciiToHex('ABC0000000000MIA');
 
       beforeEach(async function () {
         await this.token.mint(_tokenURI, _editionWithMissingType, _priceInWei, _purchaseFromTime, _artist, {
           from: _curatorAccount
         });
-        this.curatorBalance = await web3.eth.getBalance(_curatorAccount);
-        this.contractDeveloperBalance = await web3.eth.getBalance(_developmentAccount);
-        this.artistBalance = await web3.eth.getBalance(_artist);
+        this.curatorBalance = await getBalance(_curatorAccount);
+        this.contractDeveloperBalance = await getBalance(_developmentAccount);
+        this.artistBalance = await getBalance(_artist);
 
         await this.token.purchaseWithEther(tokenToPurchase, {
           value: _priceInWei,
@@ -870,22 +875,22 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
         ownerOf.should.be.equal(_buyer);
 
         let isPurchased = await this.token.isPurchased(tokenToPurchase);
-        isPurchased.should.be.bignumber.equal(EtherPurchase);
+        isPurchased.should.be.eq.BN(EtherPurchase);
       });
 
       it('curator account receives correct value', async function () {
-        let updatedCuratorBalance = await web3.eth.getBalance(_curatorAccount);
-        updatedCuratorBalance.should.be.bignumber.equal(this.curatorBalance);
+        let updatedCuratorBalance = await getBalance(_curatorAccount);
+        updatedCuratorBalance.should.be.eq.BN(this.curatorBalance);
       });
 
       it('developer account receives correct value', async function () {
-        let updatedContractDeveloperBalance = await web3.eth.getBalance(_developmentAccount);
-        updatedContractDeveloperBalance.should.be.bignumber.equal(this.contractDeveloperBalance);
+        let updatedContractDeveloperBalance = await getBalance(_developmentAccount);
+        updatedContractDeveloperBalance.should.be.eq.BN(this.contractDeveloperBalance);
       });
 
       it('commission account receives correct value', async function () {
-        let updatedArtistBalance = await web3.eth.getBalance(_artist);
-        updatedArtistBalance.should.be.bignumber.equal(
+        let updatedArtistBalance = await getBalance(_artist);
+        updatedArtistBalance.should.be.eq.BN(
           this.artistBalance.add(_priceInWei)
         );
       });
@@ -900,9 +905,9 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
         await this.token.mint(_tokenURI, _editionPhysical, 0, _purchaseFromTime, _artist, {
           from: _curatorAccount
         });
-        this.curatorBalance = await web3.eth.getBalance(_curatorAccount);
-        this.contractDeveloperBalance = await web3.eth.getBalance(_developmentAccount);
-        this.artistBalance = await web3.eth.getBalance(_artist);
+        this.curatorBalance = await getBalance(_curatorAccount);
+        this.contractDeveloperBalance = await getBalance(_developmentAccount);
+        this.artistBalance = await getBalance(_artist);
 
         await this.token.purchaseWithEther(tokenToPurchase, {
           from: _buyer
@@ -912,22 +917,22 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
         ownerOf.should.be.equal(_buyer);
 
         let isPurchased = await this.token.isPurchased(tokenToPurchase);
-        isPurchased.should.be.bignumber.equal(EtherPurchase);
+        isPurchased.should.be.eq.BN(EtherPurchase);
       });
 
       it('curator account receives correct value of zero', async function () {
-        let updatedCuratorBalance = await web3.eth.getBalance(_curatorAccount);
-        updatedCuratorBalance.should.be.bignumber.equal(this.curatorBalance);
+        let updatedCuratorBalance = await getBalance(_curatorAccount);
+        updatedCuratorBalance.should.be.eq.BN(this.curatorBalance);
       });
 
       it('developer account receives correct value of zero', async function () {
-        let updatedContractDeveloperBalance = await web3.eth.getBalance(_developmentAccount);
-        updatedContractDeveloperBalance.should.be.bignumber.equal(this.contractDeveloperBalance);
+        let updatedContractDeveloperBalance = await getBalance(_developmentAccount);
+        updatedContractDeveloperBalance.should.be.eq.BN(this.contractDeveloperBalance);
       });
 
       it('artist account receives correct value of zero', async function () {
-        let updatedArtistBalance = await web3.eth.getBalance(_artist);
-        updatedArtistBalance.should.be.bignumber.equal(this.artistBalance);
+        let updatedArtistBalance = await getBalance(_artist);
+        updatedArtistBalance.should.be.eq.BN(this.artistBalance);
       });
 
     });
@@ -977,7 +982,7 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
       await this.token.mint(_tokenURI, _editionDigital, _priceInWei, _purchaseFromTime, _curatorAccount, {from: _curatorAccount});
 
       const balance = await this.token.balanceOf(_curatorAccount);
-      balance.should.be.bignumber.equal(3);
+      balance.should.be.eq.BN(3);
     });
 
     describe('can only be called by management', async function () {
@@ -993,24 +998,24 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
     describe('keeps track of the token ID pointer', async function () {
       it('tracks id correctly even after burn', async function () {
         let tokenIdPointer = await this.token.tokenIdPointer();
-        tokenIdPointer.should.be.bignumber.equal(3); // zero indexed
+        tokenIdPointer.should.be.eq.BN(3); // zero indexed
 
         await this.token.burn(2, {from: _curatorAccount});
 
         tokenIdPointer = await this.token.tokenIdPointer();
-        tokenIdPointer.should.be.bignumber.equal(3); // zero indexed
+        tokenIdPointer.should.be.eq.BN(3); // zero indexed
       });
     });
 
     describe('keeps track of the edition total number correctly', async function () {
       it('tracks total in edition correctly', async function () {
         let editionNumber = await this.token.numberOf(_editionDigital);
-        editionNumber.should.be.bignumber.equal(3);
+        editionNumber.should.be.eq.BN(3);
 
         await this.token.burn(2, {from: _curatorAccount});
 
         editionNumber = await this.token.numberOf(_editionDigital);
-        editionNumber.should.be.bignumber.equal(2);
+        editionNumber.should.be.eq.BN(2);
       });
     });
 
@@ -1029,7 +1034,7 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
 
       it('balanceOf() is reduced', async function () {
         const balance = await this.token.balanceOf(_curatorAccount);
-        balance.should.be.bignumber.equal(2);
+        balance.should.be.eq.BN(2);
       });
 
       it('should not exist', async function () {
@@ -1062,34 +1067,34 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
         const assetInfo = await this.token.assetInfo(tokenToBurn);
 
         let tokenId = assetInfo[0];
-        tokenId.should.be.bignumber.equal(tokenToBurn);
+        tokenId.should.be.eq.BN(tokenToBurn);
 
         let owner = assetInfo[1];
         owner.should.be.equal(ZERO_ADDRESS);
 
         let purchaseState = assetInfo[2];
-        purchaseState.should.be.bignumber.equal(Unsold);
+        purchaseState.should.be.eq.BN(Unsold);
 
         let priceInWei = assetInfo[3];
-        priceInWei.should.be.bignumber.equal(0);
+        priceInWei.should.be.eq.BN(0);
 
         let auctionStartDate = assetInfo[4];
-        auctionStartDate.should.be.bignumber.equal(0);
+        auctionStartDate.should.be.eq.BN(0);
       });
 
       it('editionInfo() returns missing data', async function () {
         let editionInfo = await this.token.editionInfo(tokenToBurn);
 
         let tokenId = editionInfo[0];
-        tokenId.should.be.bignumber.equal(tokenToBurn);
+        tokenId.should.be.eq.BN(tokenToBurn);
 
         let edition = editionInfo[1];
-        web3.toAscii(edition).should.be.equal(
+        web3.utils.toAscii(edition).should.be.equal(
           '\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000'
         );
 
         let editionNumber = editionInfo[2];
-        editionNumber.should.be.bignumber.equal(0);
+        editionNumber.should.be.eq.BN(0);
 
         let tokenUri = editionInfo[3];
         tokenUri.toString().should.be.equal(_baseUri);
@@ -1126,10 +1131,10 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
 
       beforeEach(async function () {
         const totalSupply = await this.token.totalSupply();
-        totalSupply.should.be.bignumber.equal(3);
+        totalSupply.should.be.eq.BN(3);
 
         let editionNumber = await this.token.numberOf(_editionDigital);
-        editionNumber.should.be.bignumber.equal(3);
+        editionNumber.should.be.eq.BN(3);
 
         // Burn 2 from same edition
         await this.token.burn(tokenToBurn, {from: _curatorAccount});
@@ -1141,17 +1146,17 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
 
       it('tracks total in edition correctly', async function () {
         let editionNumber = await this.token.numberOf(_editionDigital);
-        editionNumber.should.be.bignumber.equal(2);
+        editionNumber.should.be.eq.BN(2);
       });
 
       it('totalSupply() is correct', async function () {
         const totalSupply = await this.token.totalSupply();
-        totalSupply.should.be.bignumber.equal(2);
+        totalSupply.should.be.eq.BN(2);
       });
 
       it('balanceOf() is correct', async function () {
         const balance = await this.token.balanceOf(_curatorAccount);
-        balance.should.be.bignumber.equal(2);
+        balance.should.be.eq.BN(2);
       });
 
       it('tokensOf() is correct', async function () {
@@ -1171,32 +1176,32 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
           const assetInfo = await this.token.assetInfo(newlyMintedTokenId);
 
           let tokenId = assetInfo[0];
-          tokenId.should.be.bignumber.equal(newlyMintedTokenId);
+          tokenId.should.be.eq.BN(newlyMintedTokenId);
 
           let owner = assetInfo[1];
           owner.should.be.equal(_curatorAccount);
 
           let purchaseState = assetInfo[2];
-          purchaseState.should.be.bignumber.equal(Unsold);
+          purchaseState.should.be.eq.BN(Unsold);
 
           let priceInWei = assetInfo[3];
-          priceInWei.should.be.bignumber.equal(priceInWei);
+          priceInWei.should.be.eq.BN(priceInWei);
 
           let auctionStartDate = assetInfo[4];
-          auctionStartDate.should.be.bignumber.equal(auctionStartDate);
+          auctionStartDate.should.be.eq.BN(auctionStartDate);
         });
 
         it('editionInfo() returns correct data', async function () {
           let editionInfo = await this.token.editionInfo(newlyMintedTokenId);
 
           let tokenId = editionInfo[0];
-          tokenId.should.be.bignumber.equal(newlyMintedTokenId);
+          tokenId.should.be.eq.BN(newlyMintedTokenId);
 
           let edition = editionInfo[1];
-          web3.toAscii(edition).should.be.equal(_editionDigital);
+          web3.utils.toAscii(edition).should.be.equal("ABC0000000000DIG");
 
           let editionNumber = editionInfo[2];
-          editionNumber.should.be.bignumber.equal(2);
+          editionNumber.should.be.eq.BN(2);
 
           let tokenUri = editionInfo[3];
           tokenUri.toString().should.be.equal(_baseUri + _tokenURI);
@@ -1218,15 +1223,15 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
             let editionInfo = await this.token.editionInfo(id);
 
             let tokenId = editionInfo[0];
-            tokenId.should.be.bignumber.equal(id);
+            tokenId.should.be.eq.BN(id);
 
             let edition = editionInfo[1];
-            web3.toAscii(edition).should.be.equal(
+            web3.utils.toAscii(edition).should.be.equal(
               '\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000'
             );
 
             let editionNumber = editionInfo[2];
-            editionNumber.should.be.bignumber.equal(0);
+            editionNumber.should.be.eq.BN(0);
 
             let tokenUri = editionInfo[3];
             tokenUri.toString().should.be.equal(_baseUri);
@@ -1238,19 +1243,19 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
             const assetInfo = await this.token.assetInfo(id);
 
             let tokenId = assetInfo[0];
-            tokenId.should.be.bignumber.equal(id);
+            tokenId.should.be.eq.BN(id);
 
             let owner = assetInfo[1];
             owner.should.be.equal(ZERO_ADDRESS);
 
             let purchaseState = assetInfo[2];
-            purchaseState.should.be.bignumber.equal(0);
+            purchaseState.should.be.eq.BN(0);
 
             let priceInWei = assetInfo[3];
-            priceInWei.should.be.bignumber.equal(0);
+            priceInWei.should.be.eq.BN(0);
 
             let auctionStartDate = assetInfo[4];
-            auctionStartDate.should.be.bignumber.equal(0);
+            auctionStartDate.should.be.eq.BN(0);
           });
         });
       });
@@ -1264,10 +1269,10 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
 
       beforeEach(async function () {
         const totalSupply = await this.token.totalSupply();
-        totalSupply.should.be.bignumber.equal(3);
+        totalSupply.should.be.eq.BN(3);
 
         let editionNumber = await this.token.numberOf(_editionDigital);
-        editionNumber.should.be.bignumber.equal(3);
+        editionNumber.should.be.eq.BN(3);
 
         // Burn 2 so only 1 left
         await this.token.burn(tokenToBurn, {from: _curatorAccount});
@@ -1280,12 +1285,12 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
 
       it('totalSupply() is correct', async function () {
         const totalSupply = await this.token.totalSupply();
-        totalSupply.should.be.bignumber.equal(3);
+        totalSupply.should.be.eq.BN(3);
       });
 
       it('balanceOf() is correct', async function () {
         const balance = await this.token.balanceOf(_curatorAccount);
-        balance.should.be.bignumber.equal(3);
+        balance.should.be.eq.BN(3);
       });
 
       it('tokensOf() is correct', async function () {
@@ -1297,14 +1302,14 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
       describe('existing edition', async function () {
         it('tracks total in edition correctly', async function () {
           let editionNumber = await this.token.numberOf(_editionDigital);
-          editionNumber.should.be.bignumber.equal(1);
+          editionNumber.should.be.eq.BN(1);
         });
       });
 
       describe('newly minted edition edition', async function () {
         it('tracks total in edition correctly', async function () {
           let editionNumber = await this.token.numberOf(_editionPhysical);
-          editionNumber.should.be.bignumber.equal(2);
+          editionNumber.should.be.eq.BN(2);
         });
       });
 
@@ -1322,19 +1327,19 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
             const assetInfo = await this.token.assetInfo(id);
 
             let tokenId = assetInfo[0];
-            tokenId.should.be.bignumber.equal(id);
+            tokenId.should.be.eq.BN(id);
 
             let owner = assetInfo[1];
             owner.should.be.equal(_curatorAccount);
 
             let purchaseState = assetInfo[2];
-            purchaseState.should.be.bignumber.equal(Unsold);
+            purchaseState.should.be.eq.BN(Unsold);
 
             let priceInWei = assetInfo[3];
-            priceInWei.should.be.bignumber.equal(priceInWei);
+            priceInWei.should.be.eq.BN(priceInWei);
 
             let auctionStartDate = assetInfo[4];
-            auctionStartDate.should.be.bignumber.equal(auctionStartDate);
+            auctionStartDate.should.be.eq.BN(auctionStartDate);
           });
         });
 
@@ -1343,13 +1348,13 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
             let editionInfo = await this.token.editionInfo(id);
 
             let tokenId = editionInfo[0];
-            tokenId.should.be.bignumber.equal(id);
+            tokenId.should.be.eq.BN(id);
 
             let edition = editionInfo[1];
-            web3.toAscii(edition).should.be.equal(_editionPhysical);
+            web3.utils.toAscii(edition).should.be.equal(_editionPhysical);
 
             let editionNumber = editionInfo[2];
-            editionNumber.should.be.bignumber.equal(2);
+            editionNumber.should.be.eq.BN(2);
 
             let tokenUri = editionInfo[3];
             tokenUri.toString().should.be.equal(_baseUri + _tokenURI);
@@ -1371,15 +1376,15 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
             let editionInfo = await this.token.editionInfo(id);
 
             let tokenId = editionInfo[0];
-            tokenId.should.be.bignumber.equal(id);
+            tokenId.should.be.eq.BN(id);
 
             let edition = editionInfo[1];
-            web3.toAscii(edition).should.be.equal(
+            web3.utils.toAscii(edition).should.be.equal(
               '\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000'
             );
 
             let editionNumber = editionInfo[2];
-            editionNumber.should.be.bignumber.equal(0);
+            editionNumber.should.be.eq.BN(0);
 
             let tokenUri = editionInfo[3];
             tokenUri.toString().should.be.equal(_baseUri);
@@ -1391,19 +1396,19 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
             const assetInfo = await this.token.assetInfo(id);
 
             let tokenId = assetInfo[0];
-            tokenId.should.be.bignumber.equal(id);
+            tokenId.should.be.eq.BN(id);
 
             let owner = assetInfo[1];
             owner.should.be.equal(ZERO_ADDRESS);
 
             let purchaseState = assetInfo[2];
-            purchaseState.should.be.bignumber.equal(0);
+            purchaseState.should.be.eq.BN(0);
 
             let priceInWei = assetInfo[3];
-            priceInWei.should.be.bignumber.equal(0);
+            priceInWei.should.be.eq.BN(0);
 
             let auctionStartDate = assetInfo[4];
-            auctionStartDate.should.be.bignumber.equal(0);
+            auctionStartDate.should.be.eq.BN(0);
           });
         });
       });
@@ -1413,7 +1418,7 @@ contract('KnownOriginDigitalAssetV1 custom code', function (accounts) {
   });
 
   describe('resetting artist address', async function () {
-    const _editionXXXDigital = 'XXX0000000000DIG';
+    const _editionXXXDigital = web3.utils.asciiToHex('XXX0000000000DIG');
 
     beforeEach(async function () {
       await this.token.mint(_tokenURI, _editionXXXDigital, _priceInWei, _purchaseFromTime, _curatorAccount, {from: _curatorAccount});

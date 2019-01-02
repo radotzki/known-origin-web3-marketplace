@@ -48,18 +48,22 @@ Originally created by [KnownOrigin](https://twitter.com/knownorigin_io) and [Blo
 * **Full ERC-721 Metadata Compatibility** - Each ERC-721 token uses latest standards for ERC-721 metadata
 * **Full ERC-165 Compatibility** - Smart Contract is fully ERC-165 compliant
 * **IPFS Support** - Internally IPFS is used for storing asset files and metadata
-
+* **Artist Controls** - the ability for artists to modify prices and gift NFTs
+* **Auctions/Offers** - the ability for users to make offers on artworks and artists to accept these offers
+* **Artist Profiles** - artists can update and modify there own profiles and details
 
 ## Installation
 1. Install [Node](https://nodejs.org/en/) v8.x or above
 
 2. Install [Ganache](http://truffleframework.com/ganache/).
 
-3. Install [Truffle](http://truffleframework.com).
+3. Install [Truffle](http://truffleframework.com). (**Truffle 5**)
 	```
 	npm install -g truffle
 	```
 4. Install [Metamask](https://metamask.io/) in chrome so you can test purchasing assets
+   * Tested in Chrome, Brave Browser, TrustWallet, Coinbase Wallet, Opera Mobile 
+   * Should work in any modern web 3 enabled browser
 
 5. Install node modules for project
   ```
@@ -93,9 +97,9 @@ npm run build
 #### History
 
 * Original project based on https://github.com/wespr/truffle-vue
-* Base contracts based on https://github.com/OpenZeppelin/zeppelin-solidity
+* Some contracts based on https://github.com/OpenZeppelin/zeppelin-solidity
 
 # License
 
 [MIT](https://opensource.org/licenses/MIT)
-# erc721-ipfs-uploader
+
