@@ -1,7 +1,9 @@
 <template>
-     <span class="token-id">
-         #{{ tokenId }}
-    </span>
+  <span>
+    <code>
+      {{ tokenId }}
+    </code>
+  </span>
 </template>
 
 <script>
@@ -12,7 +14,4 @@
 </script>
 
 <style scoped lang="scss">
-  .token-id {
-    color: #000;
-  }
 </style>
