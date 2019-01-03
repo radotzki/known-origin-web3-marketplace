@@ -7,10 +7,7 @@ import Web3 from 'web3';
 import axios from 'axios';
 import {getApi, getEtherscanAddress, getNetIdString, safeToCheckSumAddress} from '../utils';
 import truffleContract from 'truffle-contract';
-import knownOriginDigitalAssetJson from '../../build/contracts/KnownOriginDigitalAsset.json';
-import knownOriginDigitalAssetJsonV2 from '../../build/contracts/KnownOriginDigitalAssetV2.json';
-import ArtistAcceptingBidsJson from '../../build/contracts/ArtistAcceptingBids.json';
-import ArtistEditionControlsJson from '../../build/contracts/ArtistEditionControls.json';
+import {truffleSchema} from 'koda-contract-tools';
 
 import * as Firebase from 'firebase/app';
 import 'firebase/firestore';
@@ -26,10 +23,10 @@ import loading from './modules/loading';
 import auction from './modules/auction';
 import artistControls from './modules/artistEditionControls';
 
-const KnownOriginDigitalAssetV1 = truffleContract(knownOriginDigitalAssetJson);
-const KnownOriginDigitalAssetV2 = truffleContract(knownOriginDigitalAssetJsonV2);
-const ArtistAcceptingBids = truffleContract(ArtistAcceptingBidsJson);
-const ArtistEditionControls = truffleContract(ArtistEditionControlsJson);
+const KnownOriginDigitalAssetV1 = truffleContract(truffleSchema.KnownOriginDigitalAsset);
+const KnownOriginDigitalAssetV2 = truffleContract(truffleSchema.KnownOriginDigitalAssetV2);
+const ArtistAcceptingBids = truffleContract(truffleSchema.ArtistAcceptingBids);
+const ArtistEditionControls = truffleContract(truffleSchema.ArtistEditionControls);
 
 
 const firebaseApp = Firebase.initializeApp({
