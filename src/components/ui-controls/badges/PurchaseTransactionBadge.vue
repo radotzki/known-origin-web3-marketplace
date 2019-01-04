@@ -27,20 +27,9 @@
       };
     },
     created() {
-      this.$store.state.firestore
-        .collection('raw')
-        .doc(this.$store.state.firebasePath)
-        .collection('koda-v2')
-        .where('event', '==', 'Transfer')
-        .where("_args._tokenId", '==', this.tokenId.toString())
-        .limit(1)
-        .get()
-        .then((querySet) => {
-          // console.log(this.tokenId);
-          let data = null;
-          querySet.forEach((doc) => {
-            data = doc.data();
-          });
+      this.$store.state.eventService
+        .findPurchaseTransaction(this.tokenId)
+        .then((data) => {
           if (!data) {
             return null;
           }

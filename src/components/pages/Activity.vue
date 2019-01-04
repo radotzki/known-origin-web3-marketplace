@@ -50,7 +50,8 @@
                 </div>
               </td>
               <td>
-                <view-transaction-details :transaction="event.transactionHash" class="small"></view-transaction-details>
+                <view-transaction-details :transaction="event.transactionHash"
+                                          class="small"></view-transaction-details>
               </td>
             </tr>
             </tbody>
@@ -65,12 +66,12 @@
 <script>
 
   import _ from 'lodash';
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import ClickableAddress from '../ui-controls/generic/ClickableAddress';
   import ClickableTransaction from '../ui-controls/generic/ClickableTransaction.vue';
   import * as actions from '../../store/actions';
   import Availability from '../ui-controls/v2/Availability';
-  import { PAGES } from '../../store/loadingPageState';
+  import {PAGES} from '../../store/loadingPageState';
   import LoadingSection from '../ui-controls/generic/LoadingSection';
   import ViewTransactionDetails from '../ui-controls/generic/ViewTransactionDetails';
   import EditionImage from "../ui-controls/generic/EditionImage";
@@ -85,7 +86,7 @@
       ClickableTransaction,
       ViewTransactionDetails
     },
-    data () {
+    data() {
       return {
         PAGES,
         activity: []
@@ -134,42 +135,25 @@
         'findEdition'
       ]),
     },
-    created () {
+    created() {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.ACTIVITY);
 
       const loadData = () => {
-        const rootReference = this.$store.state.firestore
-          .collection('raw')
-          .doc(this.$store.state.firebasePath);
-
-        const auctionRef = rootReference.collection('auction-v1');
-        const kodaRef = rootReference.collection('koda-v2');
-
-        Promise.all([
-          auctionRef.where('event', '==', 'BidPlaced').orderBy('blockNumber', 'desc').limit(25).get(),
-          auctionRef.where('event', '==', 'BidAccepted').orderBy('blockNumber', 'desc').limit(25).get(),
-          auctionRef.where('event', '==', 'BidIncreased').orderBy('blockNumber', 'desc').limit(25).get(),
-          kodaRef.where('event', '==', 'EditionCreated').orderBy('blockNumber', 'desc').limit(25).get(),
-          kodaRef.where('event', '==', 'Minted').orderBy('blockNumber', 'desc').limit(25).get()
-        ])
-          .then((querySet) => {
-            _.forEach(querySet, (querySnapshot) => {
-              querySnapshot.forEach((doc) => {
-                this.activity.push(doc.data());
-              });
-            });
-
+        this.$store.state.eventService
+          .loadActivity()
+          .then((activity) => {
+            this.activity = activity;
             this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.ACTIVITY);
             this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, _.uniq(_.map(this.activity, '_args._editionNumber')));
           });
       };
 
       this.$store.watch(
-        () => this.$store.state.firebasePath,
+        () => this.$store.state.eventService,
         () => loadData()
       );
 
-      if (this.$store.state.firebasePath) {
+      if (this.$store.state.eventService) {
         loadData();
       }
     }

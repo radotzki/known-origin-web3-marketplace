@@ -80,10 +80,10 @@
 </template>
 <script>
   import _ from 'lodash';
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import ClickableAddress from '../ui-controls/generic/ClickableAddress';
   import * as actions from '../../store/actions';
-  import { PAGES } from '../../store/loadingPageState';
+  import {PAGES} from '../../store/loadingPageState';
   import LoadingSection from '../ui-controls/generic/LoadingSection';
   import Availability from '../ui-controls/v2/Availability';
   import HighResLabel from '../ui-controls/generic/HighResLabel';
@@ -118,7 +118,7 @@
       ClickableAddress,
       HighResLabel,
     },
-    data () {
+    data() {
       return {
         PAGES,
         latest: [],
@@ -132,69 +132,27 @@
         'assets',
       ])
     },
-    created () {
+    created() {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.FEED);
 
-      const loadLatest = () => {
-        this.$store.state.firestore
-          .collection('raw')
-          .doc(this.$store.state.firebasePath)
-          .collection('koda-v2')
-          .where('event', '==', 'EditionCreated')
-          .orderBy('blockNumber', 'desc')
-          .limit(15)
-          .get()
-          .then((querySet) => {
-            const editionNumbers = new Set();
-            querySet.forEach((doc) => {
-              editionNumbers.add(doc.data()._args._editionNumber);
-            });
-            this.latest = Array.from(editionNumbers);
-            console.log(`Loaded latest ediitons of [${this.latest}]`);
-          })
-          .finally(() => {
-            this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, this.latest);
-          });
-      };
-
-      const loadTrending = () => {
-        const rootReference = this.$store.state.firestore
-          .collection('raw')
-          .doc(this.$store.state.firebasePath);
-
-        const auctionRef = rootReference.collection('auction-v1');
-        const kodaRef = rootReference.collection('koda-v2');
-
+      const loadEventData = () => {
         Promise.all([
-          kodaRef.where('event', '==', 'Purchase').orderBy('blockNumber', 'desc').limit(30).get(),
-          auctionRef.where('event', '==', 'BidPlaced').orderBy('blockNumber', 'desc').limit(10).get(),
-        ])
-          .then((querySet) => {
-            const editionNumbers = new Set();
-            _.forEach(querySet, (querySnapshot) => {
-              querySnapshot.forEach((doc) => {
-                editionNumbers.add(doc.data()._args._editionNumber);
-              });
-            });
-            this.trending = Array.from(editionNumbers);
-            console.log(`Loaded trending of [${this.trending}]`);
-          })
-          .finally(() => {
-            this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, this.trending);
-          });
+          this.$store.state.eventService.loadLatestCreations(),
+          this.$store.state.eventService.loadTrendingEditions()
+        ]).then(([latest, trending]) => {
+          this.trending = trending;
+          this.latest = latest;
+          this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, _.uniq(this.latest.concat(this.trending)));
+        });
       };
 
       this.$store.watch(
-        () => this.$store.state.firebasePath,
-        () => {
-          loadLatest();
-          loadTrending();
-        }
+        () => this.$store.state.eventService,
+        () => loadEventData()
       );
 
-      if (this.$store.state.firebasePath) {
-        loadLatest();
-        loadTrending();
+      if (this.$store.state.eventService) {
+        loadEventData();
       }
 
       const loadStaffPicks = function () {
@@ -213,7 +171,7 @@
         loadStaffPicks();
       }
     },
-    destroyed () {
+    destroyed() {
     }
   };
 </script>

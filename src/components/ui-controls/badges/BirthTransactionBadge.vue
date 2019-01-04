@@ -27,20 +27,9 @@
       };
     },
     created() {
-      this.$store.state.firestore
-        .collection('raw')
-        .doc(this.$store.state.firebasePath)
-        .collection('koda-v2')
-        .where('event', '==', 'EditionCreated')
-        .where("_args._editionNumber", '==', this.edition.edition.toString())
-        .orderBy('blockNumber', 'desc')
-        .limit(1)
-        .get()
-        .then((querySet) => {
-          let data = null;
-          querySet.forEach((doc) => {
-            data = doc.data();
-          });
+      this.$store.state.eventService
+        .findBirthTransaction(this.edition)
+        .then((data) => {
           this.link = `${this.etherscanBase}/tx/${data.transactionHash}`;
         });
     }
