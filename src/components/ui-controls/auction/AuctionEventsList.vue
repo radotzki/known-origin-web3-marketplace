@@ -14,7 +14,8 @@
 
       <div v-if="event._args._bidder" class="mb-2">
         <clickable-address :eth-address="event._args._bidder" class="small"></clickable-address>
-        <view-transaction-details :transaction="event.transactionHash" class="float-right small"></view-transaction-details>
+        <view-transaction-details :transaction="event.transactionHash"
+                                  class="float-right small"></view-transaction-details>
       </div>
     </div>
   </div>
@@ -46,40 +47,24 @@
         auctionEvents: []
       };
     },
-    computed: {
-    },
+    computed: {},
     methods: {},
     created() {
 
       const loadData = () => {
-        const rootReference = this.$store.state.firestore
-          .collection('raw')
-          .doc(this.$store.state.firebasePath);
-
-        const auctionRef = rootReference.collection('auction-v1');
-        const editionString = this.edition.edition.toString();
-
-        Promise.all([
-          auctionRef.where("event", '==', "BidPlaced").where("_args._editionNumber", '==', editionString).orderBy("blockNumber", "desc").limit(5).get(),
-          auctionRef.where("event", '==', "BidAccepted").where("_args._editionNumber", '==', editionString).orderBy("blockNumber", "desc").limit(5).get(),
-          auctionRef.where("event", '==', "BidIncreased").where("_args._editionNumber", '==', editionString).orderBy("blockNumber", "desc").limit(5).get(),
-          auctionRef.where("event", '==', "AuctionCancelled").where("_args._editionNumber", '==', editionString).orderBy("blockNumber", "desc").limit(5).get(),
-        ])
-          .then((querySet) => {
-            _.forEach(querySet, (querySnapshot) => {
-              querySnapshot.forEach((doc) => {
-                this.auctionEvents.push(doc.data());
-              });
-            });
+        this.$store.state.eventService
+          .loadAuctionEvents(this.edition)
+          .then((auctionEvents) => {
+            this.auctionEvents = auctionEvents;
           });
       };
 
       this.$store.watch(
-        () => this.$store.state.firebasePath,
+        () => this.$store.state.eventService,
         () => loadData()
       );
 
-      if (this.$store.state.firebasePath) {
+      if (this.$store.state.eventService) {
         loadData();
       }
     },

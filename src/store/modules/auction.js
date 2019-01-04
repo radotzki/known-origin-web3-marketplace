@@ -494,50 +494,16 @@ const auctionStateModule = {
 
       commit(mutations.SET_AUCTION_ADDRESS, {address: contract.address});
 
-      const rootReference = rootState.firestore
-        .collection('raw')
-        .doc(rootState.firebasePath);
-
-      const auctionRef = rootReference.collection('auction-v1');
-
-      let ethPlaced = 0;
-      let ethAccepted = 0;
-      let bidsAccepted = 0;
-
-      Promise.all([
-        auctionRef.where("event", '==', "BidPlaced").get(),
-        auctionRef.where("event", '==', "BidAccepted").get(),
-        auctionRef.where("event", '==', "BidIncreased").get()
-      ])
-        .then(async (querySet) => {
-          _.forEach(querySet, (querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              const data = doc.data();
-
-              if (data.event === 'BidAccepted') {
-
-                bidsAccepted++;
-
-                ethAccepted = ethAccepted === 0
-                  ? new web3.utils.BN(_.get(data, '_args._amount'))
-                  : ethAccepted.add(new web3.utils.BN(_.get(data, '_args._amount')));
-
-              } else {
-
-                ethPlaced = ethPlaced === 0
-                  ? new web3.utils.BN(_.get(data, '_args._amount'))
-                  : ethPlaced.add(new web3.utils.BN(_.get(data, '_args._amount')));
-              }
-            });
-          });
+      rootState.eventService
+        .loadAuctionStats()
+        .then(async ({ethPlaced, ethAccepted, bidsAccepted}) => {
           commit(mutations.SET_AUCTION_STATS, {
-            ethPlaced: Web3.utils.fromWei(ethPlaced.toString(10), 'ether').valueOf(),
-            ethAccepted: Web3.utils.fromWei(ethAccepted.toString(10), 'ether').valueOf(),
-            bidsAccepted: bidsAccepted,
+            ethPlaced,
+            ethAccepted,
+            bidsAccepted,
             contractBalance: Web3.utils.fromWei(await rootState.web3.eth.getBalance(contract.address), 'ether').valueOf()
           });
         });
-
     },
   }
 };

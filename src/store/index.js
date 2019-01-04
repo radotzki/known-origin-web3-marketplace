@@ -9,9 +9,6 @@ import {getApi, getEtherscanAddress, getNetIdString, safeToCheckSumAddress} from
 import truffleContract from 'truffle-contract';
 import {truffleSchema} from 'koda-contract-tools';
 
-import * as Firebase from 'firebase/app';
-import 'firebase/firestore';
-
 import createLogger from 'vuex/dist/logger';
 import createPersistedState from 'vuex-persistedstate';
 
@@ -23,19 +20,13 @@ import loading from './modules/loading';
 import auction from './modules/auction';
 import artistControls from './modules/artistEditionControls';
 
+import FirestoreEventService from "../services/firestore/FirestoreEventService";
+import FirestoreArtistService from "../services/firestore/FirestoreArtistService";
+
 const KnownOriginDigitalAssetV1 = truffleContract(truffleSchema.KnownOriginDigitalAsset);
 const KnownOriginDigitalAssetV2 = truffleContract(truffleSchema.KnownOriginDigitalAssetV2);
 const ArtistAcceptingBids = truffleContract(truffleSchema.ArtistAcceptingBids);
 const ArtistEditionControls = truffleContract(truffleSchema.ArtistEditionControls);
-
-
-const firebaseApp = Firebase.initializeApp({
-  databaseURL: "https://known-origin-io.firebaseio.com",
-  projectId: "known-origin-io",
-});
-
-const firestore = firebaseApp.firestore();
-firestore.settings({timestampsInSnapshots: true});
 
 Vue.use(Vuex);
 
@@ -46,6 +37,8 @@ const store = new Vuex.Store({
       key: 'koda',
       paths: [
         'artists',
+        'artistLookupCache',
+        'firebasePath'
       ]
     }),
   ],
@@ -66,9 +59,7 @@ const store = new Vuex.Store({
     currentUsdPrice: null,
     etherscanBase: null,
 
-    // non-contract data
     artists: [],
-
     artistLookupCache: {},
 
     KnownOriginDigitalAssetV1: null,
@@ -76,7 +67,8 @@ const store = new Vuex.Store({
     ArtistAcceptingBids: null,
     ArtistEditionControls: null,
 
-    firestore: firestore,
+    eventService: null,
+    artistService: new FirestoreArtistService(),
     firebasePath: null
   },
   getters: {
@@ -130,6 +122,7 @@ const store = new Vuex.Store({
     [mutations.SET_CURRENT_NETWORK](state, {human, firebasePath}) {
       state.currentNetwork = human;
       state.firebasePath = firebasePath;
+      state.eventService = new FirestoreEventService(firebasePath);
     },
     [mutations.SET_USD_PRICE](state, currentUsdPrice) {
       state.currentUsdPrice = currentUsdPrice;
@@ -241,15 +234,9 @@ const store = new Vuex.Store({
     },
     [actions.LOAD_ARTISTS]: async function ({commit, dispatch, state}) {
       // Return from here so we can change them in views
-      return state.firestore
-        .collection('artist-data')
-        .orderBy('name')
-        .get()
-        .then((querySnapshot) => {
-          let artistData = [];
-          querySnapshot.forEach((doc) => {
-            artistData.push(doc.data());
-          });
+      return state.artistService
+        .loadArtistsData()
+        .then((artistData) => {
           commit(mutations.SET_ARTISTS, artistData);
         });
     },
