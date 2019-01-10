@@ -172,7 +172,7 @@
         () => this.$store.dispatch(`kodaV1/${actions.REFRESH_CONTRACT_DETAILS}`)
       );
       this.$store.watch(
-        () => this.$store.state.firebasePath,
+        () => this.$store.state.ArtistAcceptingBids,
         () => this.$store.dispatch(`auction/${actions.REFRESH_CONTRACT_DETAILS}`)
       );
 
@@ -182,7 +182,7 @@
       if (this.$store.state.KnownOriginDigitalAssetV2) {
         this.$store.dispatch(`kodaV2/${actions.REFRESH_CONTRACT_DETAILS}`);
       }
-      if (this.$store.state.firebasePath) {
+      if (this.$store.state.ArtistAcceptingBids) {
         this.$store.dispatch(`auction/${actions.REFRESH_CONTRACT_DETAILS}`);
       }
     }
