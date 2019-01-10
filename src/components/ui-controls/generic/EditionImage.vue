@@ -1,9 +1,9 @@
 <template>
-  <v-lazy-image v-if="src"
-                :src="src"
-                src-placeholder="../../../../static/300px_2.jpg"
-                :id="'edition_image_' + imgId"
-                alt="edition-image"/>
+  <img v-if="src"
+       v-lazy="src"
+       :key="'edition_image_' + imgId"
+       :id="'edition_image_' + imgId"
+       alt="edition-image"/>
 </template>
 
 <script>

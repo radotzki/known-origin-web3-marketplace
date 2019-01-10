@@ -1,7 +1,4 @@
-import FirestoreService from "./FirestoreService";
-import _ from "lodash";
-import Web3 from "web3";
-import * as mutations from "../../store/mutation";
+import FirestoreService from "../FirestoreService";
 
 export default class FirestoreArtistService extends FirestoreService {
 

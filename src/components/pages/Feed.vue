@@ -31,6 +31,28 @@
         </div>
       </div>
 
+      <div class="row editions-wrap" v-if="(favourites || []).length > 0 && assets">
+        <div class="col-12">
+          <h5 class="mb-3">
+            <span title="Those with the highest number of likes">
+            Community Favourites
+            </span>
+            <router-link :to="{ name: 'gallery' }" class="btn-link small float-right">
+              View all
+            </router-link>
+          </h5>
+          <hr/>
+        </div>
+        <div class="card-deck">
+          <div class="col-auto mx-auto mb-5"
+               v-for="editionNumber in limitBy(favourites, 8)" :key="editionNumber"
+               v-if="assets[editionNumber] && assets[editionNumber].active">
+            <gallery-card :edition="assets[editionNumber]" :edition-number="editionNumber">
+            </gallery-card>
+          </div>
+        </div>
+      </div>
+
       <div class="row editions-wrap" v-if="(latest || []).length > 0 && assets">
         <div class="col-12">
           <h5 class="mb-3">
@@ -86,7 +108,7 @@
   import {PAGES} from '../../store/loadingPageState';
   import LoadingSection from '../ui-controls/generic/LoadingSection';
   import Availability from '../ui-controls/v2/Availability';
-  import HighResLabel from '../ui-controls/generic/HighResLabel';
+  import HighResLabel from '../ui-controls/highres/HighResLabel';
   import GalleryCard from '../ui-controls/cards/GalleryCard';
 
   const koPicks = _.shuffle([
@@ -120,6 +142,7 @@
         PAGES,
         latest: [],
         trending: [],
+        favourites: [],
         KO_PICKS: koPicks,
       };
     },
@@ -135,11 +158,18 @@
       const loadEventData = () => {
         Promise.all([
           this.$store.state.eventService.loadLatestCreations(),
-          this.$store.state.eventService.loadTrendingEditions()
-        ]).then(([latest, trending]) => {
+          this.$store.state.eventService.loadTrendingEditions(),
+          this.$store.state.likesService.loadTopLikedEditions()
+        ]).then(([latest, trending, favourites]) => {
+
           this.trending = trending;
           this.latest = latest;
-          this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, _.uniq(this.latest.concat(this.trending)));
+          this.favourites = favourites;
+
+          const allEditions = this.latest.concat(this.trending).concat(this.favourites);
+          const editionsToLoad = _.uniq(allEditions);
+
+          this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, editionsToLoad);
         });
       };
 

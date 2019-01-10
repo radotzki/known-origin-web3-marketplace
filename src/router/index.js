@@ -10,6 +10,7 @@ import ArtistPage from '@/components/pages/ArtistPage';
 import ConfirmPurchase from '@/components/pages/ConfirmPurchase';
 import CompletePurchase from '@/components/pages/CompletePurchase';
 import Activity from '@/components/pages/Activity';
+import Debug from '@/components/pages/Debug';
 import EditionTokenOverview from '@/components/pages/EditionTokenOverview';
 import LegacyDeepLinkToken from '@/components/pages/legacy/LegacyDeepLinkToken';
 
@@ -38,6 +39,11 @@ export default new Router({
       path: '/feed',
       name: 'feed',
       component: Feed
+    },
+    {
+      path: '/debug',
+      name: 'debug',
+      component: Debug
     },
     {
       path: '/gallery',
@@ -82,41 +88,45 @@ export default new Router({
       props: true
     },
     {
-      path: '/artists-v2/:artistAccount',
-      name: 'artist-v2',
+      path: '/artists/:artistAccount',
+      alias: '/artists-v2/:artistAccount', // legacy path
+      name: 'artist',
       component: ArtistPage,
       props: true
     },
     {
-      path: '/artists-v2/:artistAccount/editions/:editionNumber',
+      path: '/artists/:artistAccount/editions/:editionNumber',
+      alias: '/artists-v2/:artistAccount/editions/:editionNumber', // legacy path
       name: 'confirmPurchase',
       component: ConfirmPurchase,
       props: true,
     },
     {
-      path: '/artists-v2/:artistAccount/editions/:editionNumber/buy',
+      path: '/artists/:artistAccount/editions/:editionNumber/buy',
+      alias: '/artists-v2/:artistAccount/editions/:editionNumber/buy', // legacy path
       name: 'completePurchase',
       component: CompletePurchase,
       props: true
     },
-    {
-      path: '/artists/:legacyArtistsCode',
-      name: 'artists-legacy',
-      beforeEnter: (to, from, next) => {
-        const legacyArtistsCode = to.params.legacyArtistsCode;
-        let artist = store.getters.findArtist(legacyArtistsCode);
-        if (artist && artist.ethAddress) {
-          next({
-            name: 'artist-v2',
-            params: {
-              artistAccount: _.isArray(artist.ethAddress) ? artist.ethAddress[0] : artist.ethAddress
-            }
-          });
-        } else {
-          next({name: 'gallery'});
-        }
-      }
-    },
+    // TODO disable legacy route based on artistCode for now
+    // {
+    //   path: '/artists/:legacyArtistsCode',
+    //   name: 'artists-legacy',
+    //   beforeEnter: (to, from, next) => {
+    //     const legacyArtistsCode = to.params.legacyArtistsCode;
+    //     let artist = store.getters.findArtist(legacyArtistsCode);
+    //     if (artist && artist.ethAddress) {
+    //       next({
+    //         name: 'artist-v2',
+    //         params: {
+    //           artistAccount: _.isArray(artist.ethAddress) ? artist.ethAddress[0] : artist.ethAddress
+    //         }
+    //       });
+    //     } else {
+    //       next({name: 'gallery'});
+    //     }
+    //   }
+    // },
     {
       path: '/assets/:legacyTokenId',
       name: 'legacy-asset',

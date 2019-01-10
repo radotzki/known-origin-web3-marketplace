@@ -9,7 +9,7 @@
     <div class="container mt-4">
       <div class="card-columns">
         <div v-for="artist in liveArtists" :key="artist.name">
-          <router-link :to="{ name: 'artist-v2', params: { artistAccount: getArtistAddress(artist) } }">
+          <router-link :to="{ name: 'artist', params: { artistAccount: getArtistAddress(artist) } }">
             <simple-artist-panel :artist="artist"></simple-artist-panel>
           </router-link>
         </div>

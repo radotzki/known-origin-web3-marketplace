@@ -55,8 +55,8 @@
   import ClickableAddress from '../generic/ClickableAddress';
   import TweetAssetButton from './TweetAssetButton';
   import MetadataAttributes from './MetadataAttributes';
-  import HighResLabel from "../generic/HighResLabel";
-  import HighResDownload from "../generic/HighResDownload";
+  import HighResLabel from "../highres/HighResLabel";
+  import HighResDownload from "../highres/HighResDownload";
   import EditionImage from "../generic/EditionImage";
 
   export default {

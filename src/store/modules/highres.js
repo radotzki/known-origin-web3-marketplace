@@ -51,7 +51,6 @@ const highResStateModule = {
 
       commit(mutations.HIGH_RES_DOWNLOAD_TRIGGERED, {tokenId: edition.tokenId});
 
-      // TODO test this again
       const getDownloadApi = () => {
         return contractVersion === 1
           ? `${getApi()}/download/highres/v1`

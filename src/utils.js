@@ -13,15 +13,15 @@ const getNetIdString = () => {
       console.log(`Running on network ID ${id}`);
       switch (id) {
         case 1:
-          return {human: 'Main', firebasePath: 'mainnet'};
+          return {id: 1, human: 'Main', firebasePath: 'mainnet'};
         case 3:
-          return {human: 'Ropsten', firebasePath: 'ropsten'};
+          return {id: 3, human: 'Ropsten', firebasePath: 'ropsten'};
         case 4:
-          return {human: 'Rinkeby', firebasePath: 'rinkeby'};
+          return {id: 4, human: 'Rinkeby', firebasePath: 'rinkeby'};
         case 42:
-          return {human: 'kovan', firebasePath: 'mainnet'};
+          return {id: 42, human: 'kovan', firebasePath: 'mainnet'};
         default:
-          return {human: 'Local', firebasePath: 'local'};
+          return {id: 5777, human: 'Local', firebasePath: 'local'};
       }
     });
 };

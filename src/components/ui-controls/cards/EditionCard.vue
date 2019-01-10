@@ -1,10 +1,10 @@
 <template>
   <div class="shadow-sm bg-white p-4">
     <router-link
-      :to="{ name: 'artist-v2', params: { artistAccount: artistAddress } }"
+      :to="{ name: 'artist', params: { artistAccount: artistAddress } }"
       class="artist-link">
-      <img :src="artist.logo" class="artist-avatar" alt="artist-logo"/>
-      <span class="pl-1 artist-name-lg">{{ artist.name }}</span>
+      <img :src="findArtistsForAddress(edition.artistAccount).logo" class="artist-avatar" alt="artist-logo"/>
+      <span class="pl-1 artist-name-lg">{{ (findArtistsForAddress(edition.artistAccount) ).name }}</span>
     </router-link>
 
     <div class="clearfix"></div>
@@ -76,7 +76,7 @@
   import { mapGetters, mapState } from 'vuex';
   import ClickableAddress from '../generic/ClickableAddress';
   import Availability from '../v2/Availability';
-  import HighResLabel from '../generic/HighResLabel';
+  import HighResLabel from '../highres/HighResLabel';
   import CreativeChallengeLabel from '../../ui-controls/generic/CreativeChallengeLabel';
   import PriceInEth from '../generic/PriceInEth';
   import MetadataAttributes from '../v2/MetadataAttributes';

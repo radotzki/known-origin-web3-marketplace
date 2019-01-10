@@ -5,7 +5,7 @@ import * as mutations from './mutation';
 import _ from 'lodash';
 import Web3 from 'web3';
 import axios from 'axios';
-import {getApi, getEtherscanAddress, getNetIdString, safeToCheckSumAddress} from '../utils';
+import {getApi, getEtherscanAddress, getNetIdString, getNetId, safeToCheckSumAddress} from '../utils';
 import truffleContract from 'truffle-contract';
 import {truffleSchema} from 'koda-contract-tools';
 
@@ -20,8 +20,10 @@ import loading from './modules/loading';
 import auction from './modules/auction';
 import artistControls from './modules/artistEditionControls';
 
-import FirestoreEventService from "../services/firestore/FirestoreEventService";
-import FirestoreArtistService from "../services/firestore/FirestoreArtistService";
+import FirestoreEventService from "../services/events/FirestoreEventService";
+import FirestoreArtistService from "../services/artist/FirestoreArtistService";
+import FirestoreLikesService from "../services/likes/FirestoreLikesService";
+import LikesApiService from "../services/likes/LikesApiService";
 
 const KnownOriginDigitalAssetV1 = truffleContract(truffleSchema.KnownOriginDigitalAsset);
 const KnownOriginDigitalAssetV2 = truffleContract(truffleSchema.KnownOriginDigitalAssetV2);
@@ -55,6 +57,7 @@ const store = new Vuex.Store({
     // connectivity
     account: null,
     currentNetwork: null,
+    currentNetworkId: null,
     web3: null,
     currentUsdPrice: null,
     etherscanBase: null,
@@ -68,6 +71,7 @@ const store = new Vuex.Store({
     ArtistEditionControls: null,
 
     eventService: null,
+    likesService: null,
     artistService: new FirestoreArtistService(),
     firebasePath: null
   },
@@ -119,10 +123,12 @@ const store = new Vuex.Store({
     [mutations.SET_ACCOUNT](state, {account}) {
       state.account = Web3.utils.toChecksumAddress(account);
     },
-    [mutations.SET_CURRENT_NETWORK](state, {human, firebasePath}) {
+    [mutations.SET_CURRENT_NETWORK](state, {id, human, firebasePath}) {
+      state.currentNetworkId = id;
       state.currentNetwork = human;
       state.firebasePath = firebasePath;
       state.eventService = new FirestoreEventService(firebasePath);
+      state.likesService = new LikesApiService(firebasePath, id);
     },
     [mutations.SET_USD_PRICE](state, currentUsdPrice) {
       state.currentUsdPrice = currentUsdPrice;
