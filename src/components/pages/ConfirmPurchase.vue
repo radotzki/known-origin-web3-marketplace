@@ -8,6 +8,10 @@
 
         <edition-card :edition="edition"></edition-card>
 
+        <div class="float-right pr-3 pt-2">
+          <LikeIconButton :edition-number="edition.edition"></LikeIconButton>
+        </div>
+
         <div class="shadow-sm bg-white pt-0 pl-4 pr-4 pb-4">
 
           <a v-on:click="proceedWithPurchase" class="btn btn-primary text-white">Buy Now</a>
@@ -43,11 +47,13 @@
   import EditionCard from '../ui-controls/cards/EditionCard';
   import EditionImage from "../ui-controls/generic/EditionImage";
   import EditionSoldOut from "../ui-controls/purhcase/EditionSoldOut";
+  import LikeIconButton from "../ui-controls/likes/LikeIconButton";
 
   export default {
     name: 'confirmPurchase',
     components: {
       EditionSoldOut,
+      LikeIconButton,
       EditionImage,
       EditionCard,
       AuctionEventsList,
@@ -93,7 +99,7 @@
         });
       },
       goToArtist: function (artistAccount) {
-        this.$router.push({name: 'artist-v2', params: {artistAccount}});
+        this.$router.push({name: 'artist', params: {artistAccount}});
       },
       getArtistAddress: function (artist) {
         if (_.isArray(artist.ethAddress)) {

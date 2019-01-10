@@ -165,27 +165,57 @@
     mounted() {
       console.log("Attempting to bootstrap application");
 
-      const INFURA_MAINNET = 'https://mainnet.infura.io/v3/4396873c00c84479991e58a34a54ebd9';
+      const INFURA_MAINNET_HTTP_PROVIDER = 'https://mainnet.infura.io/v3/4396873c00c84479991e58a34a54ebd9';
+      const INFURA_MAINNET_WEBSOCKET_PROVIDER = 'wss://mainnet.infura.io/ws/v3/4396873c00c84479991e58a34a54ebd9';
 
-      const bootstrapAndCheckWeb3Running = () => {
+      /**
+       * Checks if web3 connected
+       */
+      const checkWeb3Running = () => {
         console.log('Checking is web3 is connected');
-        // Check web3 is connected
         window.web3.eth.net.isListening()
           .then(() => {
             console.log('Web appears to be connected, launching application');
             this.$store.dispatch(actions.INIT_APP, window.web3);
           })
           .catch((e) => {
-            console.log('Looks like Web3 is not connected, throwing error to force fallback', e);
+            console.log('Error Looks like Web3 is not connected - falling back to infura', e);
+            connectToInfura();
             throw e;
           });
       };
 
-      const useFallBack = () => {
-        window.web3 = new Web3(new Web3.providers.HttpProvider(INFURA_MAINNET));
-        bootstrapAndCheckWeb3Running();
+      let attempts = 0;
+
+      /**
+       * Connects to INFURA mainnet
+       */
+      const connectToInfura = () => {
+        attempts++;
+        console.log(`Attempting to connect to INFURA - attempt [${attempts}]`);
+        // window.web3 = new Web3(new Web3.providers.HttpProvider(INFURA_MAINNET_HTTP_PROVIDER));
+        window.web3 = new Web3(new Web3.providers.WebsocketProvider(INFURA_MAINNET_WEBSOCKET_PROVIDER));
+
+        console.log('Checking is web3 is connected');
+        window.web3.eth.net.isListening()
+          .then(() => {
+            console.log('Web appears to be connected, launching application');
+            this.$store.dispatch(actions.INIT_APP, window.web3);
+          })
+          .catch((e) => {
+            console.log(`Error Looks like Web3 is not connected - attempt [${attempts}]`, e);
+            if (attempts <= 3) {
+              connectToInfura();
+            } else {
+              console.log(`Exceeded re-connect attempts - this is bad!`);
+            }
+          });
       };
 
+
+      /**
+       * Modern Web3 Provider - window.ethereum
+       */
       const triggerModernWeb3Access = () => {
         // Boot strap web3 via ethereum provider
         window.web3 = new Web3(window.ethereum);
@@ -195,18 +225,38 @@
           .enable()
           .then((value) => {
             console.log('Bootstrapping web app - provider acknowledged', value);
-            bootstrapAndCheckWeb3Running();
+            checkWeb3Running();
           })
           .catch((error) => {
             console.log('User denied access, bootstrapping application using Infura', error);
-            useFallBack();
+            connectToInfura();
           });
       };
 
+      let legacyAttempts = 0;
+
+      /**
+       * Legacy Web3 Provider - web3.currentProvider
+       */
       const legacyWeb3Access = () => {
-        console.log('Running legacy web3 provider');
+        legacyAttempts++;
+        console.log(`Running legacy web3 provider - attempt [${legacyAttempts}]`);
         window.web3 = new Web3(web3.currentProvider);
-        bootstrapAndCheckWeb3Running();
+
+        console.log('Checking is web3 is connected');
+        window.web3.eth.net.isListening()
+          .then(() => {
+            console.log('Web appears to be connected, launching application');
+            this.$store.dispatch(actions.INIT_APP, window.web3);
+          })
+          .catch((e) => {
+            console.log(`Error Looks like Web3 is not connected - attempt [${legacyAttempts}]`, e);
+            if (attempts <= 3) {
+              legacyWeb3Access();
+            } else {
+              console.log(`Exceeded re-connect attempts - this is bad!`);
+            }
+          });
       };
 
       ///////////////////////////////
@@ -225,12 +275,12 @@
         // Fallback to Infura
         else {
           console.log('Running without a web3 provider - falling back to Infura');
-          useFallBack();
+          connectToInfura();
         }
 
       } catch (e) {
         console.log('Something really bad happened - attempting once again to go via Infura', e);
-        useFallBack();
+        connectToInfura();
       }
 
       ///////////////////////////////

@@ -1,4 +1,4 @@
-import FirestoreService from "./FirestoreService";
+import FirestoreService from "../FirestoreService";
 import _ from "lodash";
 import Web3 from "web3";
 

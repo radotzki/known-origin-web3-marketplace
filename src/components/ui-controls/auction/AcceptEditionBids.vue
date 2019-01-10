@@ -65,7 +65,7 @@
   import RarityIndicator from '../../ui-controls/v2/RarityIndicator';
   import MetadataAttributes from '../../ui-controls/v2/MetadataAttributes';
   import TweetEditionButton from '../../ui-controls/v2/TweetEditionButton';
-  import HighResLabel from '../../ui-controls/generic/HighResLabel';
+  import HighResLabel from '../highres/HighResLabel';
   import {PAGES} from '../../../store/loadingPageState';
   import LoadingSection from '../../ui-controls/generic/LoadingSection';
   import ClickableAddress from '../../ui-controls/generic/ClickableAddress';

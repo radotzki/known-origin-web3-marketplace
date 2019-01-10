@@ -33,8 +33,8 @@
   import TweetEditionButton from '../v2/TweetEditionButton';
   import ClickableAddress from '../generic/ClickableAddress';
   import TokenId from '../generic/TokenId';
-  import HighResLabel from '../generic/HighResLabel';
-  import HighResDownload from '../generic/HighResDownload';
+  import HighResLabel from '../highres/HighResLabel';
+  import HighResDownload from '../highres/HighResDownload';
   import IpfsBadge from '../badges/IpfsBadge';
   import Erc721Badge from '../badges/ERC721Badge';
   import BirthTransactionBadge from '../badges/BirthTransactionBadge';

@@ -1,5 +1,5 @@
 <template>
-  <router-link :to="{ name: 'artist-v2', params: { artistAccount: getArtistAddress() } }">
+  <router-link :to="{ name: 'artist', params: { artistAccount: getArtistAddress() } }">
     <div class="card text-center shadow-sm" v-if="artist">
       <div class="align-middle">
         <artist-image :logo="artist.logo" class="pt-4"></artist-image>

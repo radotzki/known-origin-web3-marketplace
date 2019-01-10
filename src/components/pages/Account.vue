@@ -17,14 +17,43 @@
 
       <loading-section :page="PAGES.ACCOUNT"></loading-section>
 
-      <div class="row editions-wrap" v-if="assetsOwnedByAccount.length > 0 || accountOwnedEditions.length > 0">
-        <div class="card-deck">
+      <!-- V2 -->
+      <div class="row editions-wrap" v-if="accountOwnedEditions.length > 0">
 
-          <!-- V1 -->
-          <div class="col-auto mx-auto mb-5" v-for="asset in assetsOwnedByAccount" :key="asset.tokenId">
+        <div class="col-12">
+          <h5 class="mb-3">KODA V2</h5>
+        </div>
+
+        <div class="card-deck">
+          <div class="col-auto mx-auto mb-5"
+               v-for="edition, editionNumber in limitBy(accountOwnedEditions, currentListV2)"
+               :key="edition.tokenId">
+            <gallery-card :edition="edition" :editionNumber="editionNumber" :token-id="edition.tokenId"></gallery-card>
+          </div>
+        </div>
+
+        <button v-if="canShowMoreV2"
+                @click="showMoreV2"
+                class="btn btn-block btn-outline-primary mt-1 mb-5 ml-3 mr-3">
+          Show more
+        </button>
+
+      </div>
+
+      <!-- V1 -->
+      <div class="row editions-wrap" v-if="assetsOwnedByAccount.length > 0">
+
+        <div class="col-12">
+          <h5 class="mb-3">KODA V1</h5>
+        </div>
+
+        <div class="card-deck">
+          <div class="col-auto mx-auto mb-5"
+               v-for="asset in limitBy(assetsOwnedByAccount, currentListV1)"
+               :key="asset.tokenId">
             <router-link :to="{ name: 'legacy-asset', params: { legacyTokenId: asset.tokenId } }" class="card-target">
               <div class="card shadow-sm">
-                <edition-image class="card-img-top" :src="asset.lowResImg" :id="asset.tokenId" />
+                <edition-image class="card-img-top" :src="asset.lowResImg" :id="asset.tokenId"/>
                 <div class="card-body">
                   <p class="card-title">
                     {{ asset.artworkName }}
@@ -40,13 +69,14 @@
               </div>
             </router-link>
           </div>
-
-          <!-- V2 -->
-          <div class="col-auto mx-auto mb-5" v-for="edition, editionNumber in accountOwnedEditions" :key="edition.tokenId">
-            <gallery-card :edition="edition" :editionNumber="editionNumber" :token-id="edition.tokenId"></gallery-card>
-          </div>
-
         </div>
+
+        <button v-if="canShowMoreV1"
+                @click="showMoreV1"
+                class="btn btn-block btn-outline-primary mt-1 mb-5 ml-3 mr-3">
+          Show more
+        </button>
+
       </div>
 
       <div
@@ -57,21 +87,43 @@
         </div>
       </div>
 
+      <div class="row editions-wrap" v-if="accountFavorites">
+        <div class="col-12">
+          <h5 class="mb-3">My Favorites</h5>
+        </div>
+
+        <div class="card-deck">
+          <div class="col-auto mx-auto mb-5"
+               v-for="editionNumber in limitBy(accountFavorites, currentListLikes)"
+               :key="editionNumber"
+               v-if="assets[editionNumber] && assets[editionNumber].active">
+            <gallery-card :edition="assets[editionNumber]" :edition-number="editionNumber">
+            </gallery-card>
+          </div>
+        </div>
+
+        <button v-if="canShowMoreLikes"
+                @click="showMoreLikes"
+                class="btn btn-block btn-outline-primary mt-1 mb-5 ml-3 mr-3">
+          Show more
+        </button>
+      </div>
+
     </div>
   </div>
 </template>
 
 <script>
 
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import Asset from '../ui-controls/v1/Asset';
   import AddressIcon from '../ui-controls/generic/AddressIcon';
   import EthAddress from '../ui-controls/generic/EthAddress';
   import ClickableAddress from '../ui-controls/generic/ClickableAddress';
   import LoadingSection from '../ui-controls/generic/LoadingSection';
-  import { PAGES } from '../../store/loadingPageState';
+  import {PAGES} from '../../store/loadingPageState';
   import * as actions from '../../store/actions';
-  import HighResLabel from '../ui-controls/generic/HighResLabel';
+  import HighResLabel from '../ui-controls/highres/HighResLabel';
   import GalleryCard from '../ui-controls/cards/GalleryCard';
   import PurchaseTransactionBadge from "../ui-controls/badges/PurchaseTransactionBadge";
   import EditionImage from "../ui-controls/generic/EditionImage";
@@ -91,14 +143,33 @@
       EthAddress,
       ClickableAddress
     },
-    data () {
+    data() {
       return {
-        PAGES: PAGES
+        PAGES: PAGES,
+        accountFavorites: null,
+        currentListV1: 9,
+        currentListV2: 9,
+        currentListLikes: 9
       };
+    },
+    methods: {
+      showMoreV1: function () {
+        this.currentListV1 = this.currentListV1 + 9;
+        console.log(this.currentListV1);
+      },
+      showMoreV2: function () {
+        this.currentListV2 = this.currentListV2 + 9;
+        console.log(this.currentListV2);
+      },
+      showMoreLikes: function () {
+        this.currentListLikes = this.currentListLikes + 9;
+        console.log(this.currentListLikes);
+      }
     },
     computed: {
       ...mapState([
         'account',
+        'currentNetworkId',
       ]),
       ...mapGetters([
         'findArtist',
@@ -106,13 +177,35 @@
         'findArtistsForAddress'
       ]),
       ...mapState('kodaV2', [
+        'assets',
         'accountOwnedEditions'
       ]),
       ...mapState('kodaV1', [
         'assetsOwnedByAccount',
-      ])
+      ]),
+      canShowMoreV1: function () {
+        const totalAvailable = _.size(this.assetsOwnedByAccount);
+        if (totalAvailable === 0) {
+          return false;
+        }
+        return totalAvailable > this.currentListV1;
+      },
+      canShowMoreV2: function () {
+        const totalAvailable = _.size(this.accountOwnedEditions);
+        if (totalAvailable === 0) {
+          return false;
+        }
+        return totalAvailable > this.currentListV2;
+      },
+      canShowMoreLikes: function () {
+        const totalAvailable = _.size(this.accountFavorites);
+        if (totalAvailable === 0) {
+          return false;
+        }
+        return totalAvailable > this.currentListLikes;
+      }
     },
-    created () {
+    created() {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.ACCOUNT);
 
       const loadData = function () {
@@ -120,18 +213,27 @@
           .finally(() => {
             this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.ACCOUNT);
           });
+        loadFavs();
       }.bind(this);
 
-      this.$store.watch(
-        () => this.$store.state.account,
-        () => loadData()
-      );
+      const loadFavs = () => {
+        if (this.$store.state.account && this.$store.state.currentNetworkId) {
+          this.$store.state.likesService.getLikesForAccount(this.account)
+            .then((accountFavorites) => {
+              this.accountFavorites = accountFavorites;
+              this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, this.accountFavorites);
+            });
+        }
+      };
 
-      if (this.$store.state.account) {
+      this.$store.watch(() => this.$store.state.account, () => loadData());
+      this.$store.watch(() => this.$store.state.currentNetworkId, () => loadFavs());
+
+      if (this.$store.state.account && this.$store.state.currentNetworkId) {
         loadData();
       }
     },
-    destroyed () {
+    destroyed() {
     }
   };
 </script>

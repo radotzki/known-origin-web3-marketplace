@@ -5,7 +5,7 @@
     </p>
     <p>
       Check out more work from this
-      <router-link :to="{ name: 'artist-v2', params: { artistAccount: edition.artistAddress } }">
+      <router-link :to="{ name: 'artist', params: { artistAccount: edition.artistAddress } }">
         artist
       </router-link>
     </p>

@@ -45,7 +45,7 @@
   import {PAGES} from '../../store/loadingPageState';
   import LoadingSection from '../ui-controls/generic/LoadingSection';
   import Availability from '../ui-controls/v2/Availability';
-  import HighResLabel from '../ui-controls/generic/HighResLabel';
+  import HighResLabel from '../ui-controls/highres/HighResLabel';
   import GalleryCard from '../ui-controls/cards/GalleryCard';
 
   export default {
@@ -70,7 +70,7 @@
         this.priceFilter = value;
       },
       goToArtist: function (artistAccount) {
-        this.$router.push({name: 'artist-v2', params: {artistAccount}});
+        this.$router.push({name: 'artist', params: {artistAccount}});
       },
       showMore: function () {
         this.currentList = this.currentList + 20;

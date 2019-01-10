@@ -106,7 +106,7 @@
         'paused',
       ]),
       editions() {
-        return this.editionsForArtist(this.artistAddress);
+        return this.editionsForArtist(this.artist.ethAddress);
       },
       artist() {
         return this.findArtistsForAddress(this.$route.params.artistAccount);
@@ -124,7 +124,7 @@
     },
     methods: {
       goToArtist: function (artistAccount) {
-        this.$router.push({name: 'artist-v2', params: {artistAccount}});
+        this.$router.push({name: 'artist', params: {artistAccount}});
       },
       anyOfTheEditionsAreOwnedByTheLoggedInAccount() {
         // If logged in account is the smrat contract owner
@@ -143,7 +143,7 @@
       const loadData = function () {
         this.$store.dispatch(actions.LOAD_ARTISTS)
           .then(() => {
-            return this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS_FOR_ARTIST}`, {artistAccount: this.artistAddress});
+            return this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS_FOR_ARTIST}`, {artistAccount: this.artist.ethAddress});
           })
           .finally(() => {
             this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.ARTISTS);

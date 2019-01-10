@@ -15,16 +15,23 @@ import 'intersection-observer';
 import AsyncComputed from 'vue-async-computed';
 import BootstrapVue from 'bootstrap-vue';
 import Vue2Filters from 'vue2-filters';
-import {VLazyImagePlugin} from "v-lazy-image";
+import VueLazyload from 'vue-lazyload';
 
 // Add brands to fontawesome
 import fontawesome from '@fortawesome/fontawesome';
 import brands from '@fortawesome/fontawesome-free-brands';
 import solid from '@fortawesome/fontawesome-free-solid';
+import regular from '@fortawesome/fontawesome-free-regular';
 
-fontawesome.library.add(brands, solid);
+fontawesome.library.add(brands, solid, regular);
 
-Vue.use(VLazyImagePlugin);
+Vue.use(VueLazyload, {
+  // set observer to true
+  observer: true,
+  loading: '../static/300px_2.jpg',
+  lazyComponent: true
+});
+
 Vue.use(VModal);
 Vue.use(AsyncComputed);
 Vue.use(BootstrapVue);
