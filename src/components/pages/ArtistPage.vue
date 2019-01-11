@@ -21,7 +21,7 @@
           <b-tabs>
             <b-tab title="Artworks" class="mt-2" active>
               <div class="card-deck">
-                <div class="col-auto mx-auto mb-5"
+                <div class="col-auto mb-5"
                      v-for="edition, editionNumber in editions" :key="editionNumber"
                      v-if="edition.active">
                   <gallery-card :edition="edition" :edition-number="editionNumber"></gallery-card>

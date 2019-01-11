@@ -217,7 +217,9 @@
        * Modern Web3 Provider - window.ethereum
        */
       const triggerModernWeb3Access = () => {
-        // Boot strap web3 via ethereum provider
+        console.log('Enabling ethereum (modern)');
+
+        // Bootstrap web3 via ethereum provider
         window.web3 = new Web3(window.ethereum);
 
         // Request account access if needed
@@ -266,10 +268,12 @@
       try {
         // Check for newer style ethereum provider
         if (window.ethereum) {
+          console.log('window.ethereum', window.ethereum);
           triggerModernWeb3Access();
         }
         // Check for legacy web3
         else if (typeof web3 !== 'undefined') {
+          console.log('web3', web3);
           legacyWeb3Access();
         }
         // Fallback to Infura
