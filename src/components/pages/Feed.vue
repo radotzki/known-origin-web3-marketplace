@@ -22,7 +22,7 @@
           <hr/>
         </div>
         <div class="card-deck">
-          <div class="col-auto mb-5"
+          <div class="col-md-auto mb-5"
                v-for="editionNumber in limitBy(latest, 8)" :key="editionNumber"
                v-if="assets[editionNumber] && assets[editionNumber].active">
             <gallery-card :edition="assets[editionNumber]" :edition-number="editionNumber">
@@ -37,14 +37,14 @@
             <span title="Some of our favourites">
               Community picks
             </span>
-            <router-link :to="{ name: 'gallery' }" class="small float-right">
+            <router-link :to="{ name: 'gallery' }" class="btn-link small float-right">
               View all
             </router-link>
           </h5>
           <hr/>
         </div>
         <div class="card-deck">
-          <div class="col-auto mb-5"
+          <div class="col-md-auto mb-5"
                v-for="editionNumber in limitBy(KO_PICKS, 4)" :key="editionNumber"
                v-if="assets[editionNumber] && assets[editionNumber].active">
             <gallery-card :edition="assets[editionNumber]" :edition-number="editionNumber">
@@ -66,7 +66,7 @@
           <hr/>
         </div>
         <div class="card-deck">
-          <div class="col-auto mb-5"
+          <div class="col-md-auto mb-5"
                v-for="editionNumber in limitBy(favourites, 4)" :key="editionNumber"
                v-if="assets[editionNumber] && assets[editionNumber].active">
             <gallery-card :edition="assets[editionNumber]" :edition-number="editionNumber">
@@ -88,7 +88,7 @@
           <hr/>
         </div>
         <div class="card-deck">
-          <div class="col-auto mb-5"
+          <div class="col-md-auto mb-5"
                v-for="editionNumber in limitBy(trending, 4)" :key="editionNumber"
                v-if="assets[editionNumber] && assets[editionNumber].active">
             <gallery-card :edition="assets[editionNumber]" :edition-number="editionNumber">
@@ -102,10 +102,10 @@
 </template>
 <script>
   import _ from 'lodash';
-  import {mapGetters, mapState} from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
   import ClickableAddress from '../ui-controls/generic/ClickableAddress';
   import * as actions from '../../store/actions';
-  import {PAGES} from '../../store/loadingPageState';
+  import { PAGES } from '../../store/loadingPageState';
   import LoadingSection from '../ui-controls/generic/LoadingSection';
   import Availability from '../ui-controls/v2/Availability';
   import HighResLabel from '../ui-controls/highres/HighResLabel';
@@ -135,7 +135,7 @@
       ClickableAddress,
       HighResLabel,
     },
-    data() {
+    data () {
       return {
         PAGES,
         latest: [],
@@ -150,7 +150,7 @@
         'assets',
       ])
     },
-    created() {
+    created () {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.FEED);
 
       const loadEventData = () => {
@@ -196,7 +196,7 @@
         loadStaffPicks();
       }
     },
-    destroyed() {
+    destroyed () {
     }
   };
 </script>
