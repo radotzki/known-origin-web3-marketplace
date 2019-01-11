@@ -25,7 +25,7 @@
         </div>
 
         <div class="card-deck">
-          <div class="col-auto mx-auto mb-5"
+          <div class="col-auto mb-5"
                v-for="edition, editionNumber in limitBy(accountOwnedEditions, currentListV2)"
                :key="edition.tokenId">
             <gallery-card :edition="edition" :editionNumber="editionNumber" :token-id="edition.tokenId"></gallery-card>
@@ -48,7 +48,7 @@
         </div>
 
         <div class="card-deck">
-          <div class="col-auto mx-auto mb-5"
+          <div class="col-auto mb-5"
                v-for="asset in limitBy(assetsOwnedByAccount, currentListV1)"
                :key="asset.tokenId">
             <router-link :to="{ name: 'legacy-asset', params: { legacyTokenId: asset.tokenId } }" class="card-target">
