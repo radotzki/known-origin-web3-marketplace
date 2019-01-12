@@ -19,7 +19,7 @@
 
       <div class="row editions-wrap">
         <div class="card-deck">
-          <div class="col-auto mx-auto mb-5"
+          <div class="col-auto mb-5"
                v-for="edition, editionNumber in limitBy(editions, currentList)" :key="editionNumber"
                v-if="edition.active">
             <gallery-card :edition="edition" :edition-number="editionNumber"></gallery-card>
