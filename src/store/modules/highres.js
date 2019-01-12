@@ -82,6 +82,7 @@ const highResStateModule = {
             'Access-Control-Allow-Origin': '*'
           },
           data: {
+            edition: edition.edition,
             address: rootState.account,
             tokenId: edition.tokenId,
             originalMessage,
