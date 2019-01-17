@@ -23,7 +23,7 @@
         </div>
         <div class="card-deck">
           <div class="col-md-auto mb-5"
-               v-for="editionNumber in limitBy(latest, 8)" :key="editionNumber"
+               v-for="editionNumber in limitBy(latest, 12)" :key="editionNumber"
                v-if="assets[editionNumber] && assets[editionNumber].active">
             <gallery-card :edition="assets[editionNumber]" :edition-number="editionNumber">
             </gallery-card>
@@ -45,29 +45,7 @@
         </div>
         <div class="card-deck">
           <div class="col-md-auto mb-5"
-               v-for="editionNumber in limitBy(KO_PICKS, 4)" :key="editionNumber"
-               v-if="assets[editionNumber] && assets[editionNumber].active">
-            <gallery-card :edition="assets[editionNumber]" :edition-number="editionNumber">
-            </gallery-card>
-          </div>
-        </div>
-      </div>
-
-      <div class="row editions-wrap" v-if="(favourites || []).length > 0 && assets">
-        <div class="col-12">
-          <h5 class="mb-3">
-            <span title="Those with the highest number of likes">
-            Most liked
-            </span>
-            <router-link :to="{ name: 'gallery' }" class="btn-link small float-right">
-              View all
-            </router-link>
-          </h5>
-          <hr/>
-        </div>
-        <div class="card-deck">
-          <div class="col-md-auto mb-5"
-               v-for="editionNumber in limitBy(favourites, 4)" :key="editionNumber"
+               v-for="editionNumber in limitBy(KO_PICKS, 5)" :key="editionNumber"
                v-if="assets[editionNumber] && assets[editionNumber].active">
             <gallery-card :edition="assets[editionNumber]" :edition-number="editionNumber">
             </gallery-card>
@@ -89,7 +67,29 @@
         </div>
         <div class="card-deck">
           <div class="col-md-auto mb-5"
-               v-for="editionNumber in limitBy(trending, 4)" :key="editionNumber"
+               v-for="editionNumber in limitBy(trending, 5)" :key="editionNumber"
+               v-if="assets[editionNumber] && assets[editionNumber].active">
+            <gallery-card :edition="assets[editionNumber]" :edition-number="editionNumber">
+            </gallery-card>
+          </div>
+        </div>
+      </div>
+
+      <div class="row editions-wrap" v-if="(favourites || []).length > 0 && assets">
+        <div class="col-12">
+          <h5 class="mb-3">
+            <span title="Those with the highest number of likes">
+            Most liked
+            </span>
+            <router-link :to="{ name: 'gallery' }" class="btn-link small float-right">
+              View all
+            </router-link>
+          </h5>
+          <hr/>
+        </div>
+        <div class="card-deck">
+          <div class="col-md-auto mb-5"
+               v-for="editionNumber in limitBy(favourites, 5)" :key="editionNumber"
                v-if="assets[editionNumber] && assets[editionNumber].active">
             <gallery-card :edition="assets[editionNumber]" :edition-number="editionNumber">
             </gallery-card>

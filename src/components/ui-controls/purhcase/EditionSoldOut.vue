@@ -5,7 +5,7 @@
     </p>
     <p>
       Check out more work from this
-      <router-link :to="{ name: 'artist', params: { artistAccount: edition.artistAddress } }">
+      <router-link :to="{ name: 'artist', params: { artistAccount: edition.artistAccount } }">
         artist
       </router-link>
     </p>
@@ -22,7 +22,7 @@
       }
     },
     computed: {
-      isSoldOut: function () {
+      isSoldOut() {
         return this.edition.totalAvailable - this.edition.totalSupply <= 0;
       },
     }
