@@ -14,7 +14,7 @@
 
         <div class="shadow-sm bg-white pt-0 pl-4 pr-4 pb-4">
 
-          <a v-on:click="proceedWithPurchase" class="btn btn-primary text-white">Buy Now</a>
+          <a v-on:click="proceedWithPurchase" class="btn btn-primary text-white" v-if="canProceedWithPurchase">Buy Now</a>
 
           <EditionSoldOut :edition="edition"></EditionSoldOut>
         </div>
