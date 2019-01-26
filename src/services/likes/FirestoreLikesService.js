@@ -8,11 +8,12 @@ export default class FirestoreLikesService extends FirestoreService {
   }
 
   loadTopLikedEditions() {
+    console.log(`Get top likes on network [${this.firebasePath}]`);
     return this.likes
       .collection('counters') // total counts
       .where('count', '>=', 1) // more than 1 like
       .orderBy('count', 'desc') // ordered by most liked
-      .limit(12) // get only the top 12
+      .limit(8)
       .get()
       .then((querySet) => {
         const editionNumbers = new Set();

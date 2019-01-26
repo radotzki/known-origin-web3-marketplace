@@ -288,12 +288,12 @@ const auctionStateModule = {
     },
   },
   actions: {
-    [actions.GET_AUCTION_OWNER]: async function ({commit, state, getters, rootState}) {
+    async [actions.GET_AUCTION_OWNER]({commit, state, getters, rootState}) {
       const contract = await rootState.ArtistAcceptingBids.deployed();
       const owner = await contract.owner();
       commit(mutations.SET_AUCTION_OWNER, {owner, address: contract.address});
     },
-    [actions.GET_AUCTION_DETAILS]: async function ({commit, state, getters, rootState}, edition) {
+    async [actions.GET_AUCTION_DETAILS]({commit, state, getters, rootState}, edition) {
       const contract = await rootState.ArtistAcceptingBids.deployed();
 
       const result = transformAuctionDetails(await contract.auctionDetails(edition), edition);
@@ -305,7 +305,7 @@ const auctionStateModule = {
       const minBidAmount = await contract.minBidAmount();
       commit(mutations.SET_MINIMUM_BID, minBidAmount);
     },
-    [actions.GET_AUCTION_DETAILS_FOR_EDITION_NUMBERS]: async function ({commit, state, getters, rootState}, {editions}) {
+    async [actions.GET_AUCTION_DETAILS_FOR_EDITION_NUMBERS]({commit, state, getters, rootState}, {editions}) {
       const contract = await rootState.ArtistAcceptingBids.deployed();
 
       const allData = await Promise.all(_.map(editions, async (edition) => {
@@ -320,7 +320,7 @@ const auctionStateModule = {
 
       commit(mutations.SET_AUCTION_DETAILS, editionData);
     },
-    [actions.PLACE_BID]: async function ({commit, dispatch, state, getters, rootState}, {edition, value}) {
+    async [actions.PLACE_BID]({commit, dispatch, state, getters, rootState}, {edition, value}) {
       commit(mutations.RESET_BID_STATE, {edition});
 
       const account = rootState.account;
@@ -361,9 +361,10 @@ const auctionStateModule = {
         })
         .finally(() => {
           if (timer) clearInterval(timer);
+          dispatch(`kodaV2/${actions.REFRESH_AND_LOAD_INDIVIDUAL_EDITION}`, {editionNumber: edition}, {root: true});
         });
     },
-    [actions.INCREASE_BID]: async function ({commit, dispatch, state, getters, rootState}, {edition, value}) {
+    async [actions.INCREASE_BID]({commit, dispatch, state, getters, rootState}, {edition, value}) {
       commit(mutations.RESET_BID_STATE, {edition});
 
       const account = rootState.account;
@@ -403,9 +404,10 @@ const auctionStateModule = {
         })
         .finally(() => {
           if (timer) clearInterval(timer);
+          dispatch(`kodaV2/${actions.REFRESH_AND_LOAD_INDIVIDUAL_EDITION}`, {editionNumber: edition}, {root: true});
         });
     },
-    [actions.ACCEPT_BID]: async function ({commit, dispatch, state, getters, rootState}, auction) {
+    async [actions.ACCEPT_BID]({commit, dispatch, state, getters, rootState}, auction) {
       commit(mutations.RESET_BID_ACCEPTED_STATE, {auction});
 
       const account = rootState.account;
@@ -442,6 +444,7 @@ const auctionStateModule = {
         })
         .finally(() => {
           if (timer) clearInterval(timer);
+          dispatch(`kodaV2/${actions.REFRESH_AND_LOAD_INDIVIDUAL_EDITION}`, {editionNumber: auction.edition}, {root: true});
         });
     },
     async [actions.WITHDRAW_BID]({commit, dispatch, state, getters, rootState}, auction) {
@@ -482,6 +485,7 @@ const auctionStateModule = {
         })
         .finally(() => {
           if (timer) clearInterval(timer);
+          dispatch(`kodaV2/${actions.REFRESH_AND_LOAD_INDIVIDUAL_EDITION}`, {editionNumber: auction.edition}, {root: true});
         });
     },
     async [actions.CANCEL_AUCTION]({commit, dispatch, state, getters, rootState}, auction) {

@@ -1,6 +1,6 @@
 <template>
 
-  <div class="mt-2 pt-4 text-center" v-if="!account">
+  <div class="pt-4 text-center" v-if="!account">
     <code>
       We can not see your connected ETH Account, is your wallet unlocked?
     </code>

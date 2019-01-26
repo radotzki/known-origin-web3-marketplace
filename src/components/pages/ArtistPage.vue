@@ -21,10 +21,10 @@
           <b-tabs>
             <b-tab title="Artworks" class="mt-2" active>
               <div class="card-deck">
-                <div class="col-auto mb-5"
-                     v-for="edition, editionNumber in editions" :key="editionNumber"
+                <div class="col-sm-4 mb-5"
+                     v-for="edition in editions" :key="edition.edition"
                      v-if="edition.active">
-                  <gallery-card :edition="edition" :edition-number="editionNumber"></gallery-card>
+                  <gallery-card :edition="edition" :edition-number="edition.edition"></gallery-card>
                 </div>
               </div>
             </b-tab>
@@ -37,7 +37,7 @@
             <div v-if="editions && account && !paused && anyOfTheEditionsAreOwnedByTheLoggedInAccount()">
 
               <!-- ARTWORKS CONTROLS -->
-              <b-tab title="Controls" title-item-class="d-none d-md-block" v-if="!paused">
+              <b-tab title="Pricing" title-item-class="d-none d-md-block" v-if="!paused">
                 <artist-edition-controls class="mt-2" :editions="editions"></artist-edition-controls>
               </b-tab>
 
@@ -131,6 +131,12 @@
         if (this.account === this.owner) {
           return true;
         }
+
+        // Loading state
+        if (!this.editions || !this.artistAddress) {
+          return false;
+        }
+
         // Otherwise if any of the artworks are by the currently logged in user
         return _.find(this.editions, (edition) => {
           return edition.artistAccount === this.account;
@@ -140,24 +146,25 @@
     created() {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.ARTISTS);
 
-      const loadData = function () {
+      const loadApiData = () => {
         this.$store.dispatch(actions.LOAD_ARTISTS)
           .then(() => {
-            return this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS_FOR_ARTIST}`, {artistAccount: this.artist.ethAddress});
+            return this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS_FOR_ARTIST}`, {artistAccount: this.artistAddress});
           })
           .finally(() => {
             this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.ARTISTS);
           });
-      }.bind(this);
+      };
 
       this.$store.watch(
-        () => this.$store.state.KnownOriginDigitalAssetV2,
-        () => loadData()
+        () => this.$store.state.editionLookupService.currentNetworkId,
+        () => loadApiData()
       );
 
-      if (this.$store.state.KnownOriginDigitalAssetV2) {
-        loadData();
+      if (this.$store.state.editionLookupService.currentNetworkId) {
+        loadApiData();
       }
+
     },
     destroyed() {
     }

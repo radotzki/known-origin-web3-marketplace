@@ -22,11 +22,10 @@
           <hr/>
         </div>
         <div class="card-deck">
-          <div class="col-md-auto mb-5"
-               v-for="editionNumber in limitBy(latest, 12)" :key="editionNumber"
+          <div class="col-sm-3 mb-5"
+               v-for="editionNumber in latest" :key="editionNumber"
                v-if="assets[editionNumber] && assets[editionNumber].active">
-            <gallery-card :edition="assets[editionNumber]" :edition-number="editionNumber">
-            </gallery-card>
+            <gallery-card :edition="assets[editionNumber]" :edition-number="editionNumber"></gallery-card>
           </div>
         </div>
       </div>
@@ -44,8 +43,9 @@
           <hr/>
         </div>
         <div class="card-deck">
-          <div class="col-md-auto mb-5"
-               v-for="editionNumber in limitBy(KO_PICKS, 5)" :key="editionNumber"
+          <div class="col-sm-3 mb-5"
+
+               v-for="editionNumber in limitBy(KO_PICKS, 4)" :key="editionNumber"
                v-if="assets[editionNumber] && assets[editionNumber].active">
             <gallery-card :edition="assets[editionNumber]" :edition-number="editionNumber">
             </gallery-card>
@@ -66,8 +66,8 @@
           <hr/>
         </div>
         <div class="card-deck">
-          <div class="col-md-auto mb-5"
-               v-for="editionNumber in limitBy(trending, 5)" :key="editionNumber"
+          <div class="col-sm-3 mb-5"
+               v-for="editionNumber in limitBy(trending, 4)" :key="editionNumber"
                v-if="assets[editionNumber] && assets[editionNumber].active">
             <gallery-card :edition="assets[editionNumber]" :edition-number="editionNumber">
             </gallery-card>
@@ -88,8 +88,8 @@
           <hr/>
         </div>
         <div class="card-deck">
-          <div class="col-md-auto mb-5"
-               v-for="editionNumber in limitBy(favourites, 5)" :key="editionNumber"
+          <div class="col-sm-3 mb-5"
+               v-for="editionNumber in limitBy(favourites, 4)" :key="editionNumber"
                v-if="assets[editionNumber] && assets[editionNumber].active">
             <gallery-card :edition="assets[editionNumber]" :edition-number="editionNumber">
             </gallery-card>
@@ -102,28 +102,33 @@
 </template>
 <script>
   import _ from 'lodash';
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import ClickableAddress from '../ui-controls/generic/ClickableAddress';
   import * as actions from '../../store/actions';
-  import { PAGES } from '../../store/loadingPageState';
+  import * as mutation from '../../store/mutation';
+  import {PAGES} from '../../store/loadingPageState';
   import LoadingSection from '../ui-controls/generic/LoadingSection';
   import Availability from '../ui-controls/v2/Availability';
   import HighResLabel from '../ui-controls/highres/HighResLabel';
   import GalleryCard from '../ui-controls/cards/GalleryCard';
 
   const koPicks = _.shuffle([
-    31800,
-    8900,
-    15000,
-    26800,
-    27700,
-    27900,
-    33200,
-    20200,
-    9800,
-    30700,
-    23900,
-    20400
+    10100,
+    10300,
+    7500,
+    22800,
+    25800,
+    7700,
+    6000,
+    19400,
+    28600,
+    20100,
+    26600,
+    18300,
+    24000,
+    19000,
+    32300,
+    30400
   ]);
 
   export default {
@@ -135,7 +140,7 @@
       ClickableAddress,
       HighResLabel,
     },
-    data () {
+    data() {
       return {
         PAGES,
         latest: [],
@@ -150,53 +155,77 @@
         'assets',
       ])
     },
-    created () {
+    created() {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.FEED);
 
+      /////////
+      // API //
+      /////////
+
       const loadEventData = () => {
-        Promise.all([
-          this.$store.state.eventService.loadLatestCreations(),
-          this.$store.state.eventService.loadTrendingEditions(),
-          this.$store.state.likesService.loadTopLikedEditions()
-        ]).then(([latest, trending, favourites]) => {
 
-          this.trending = trending;
-          this.latest = latest;
-          this.favourites = favourites;
+        this.$store.state.editionLookupService.latestCreations()
+          .then((results) => {
+            if (results.success) {
+              const {data} = results;
+              this.latest = _.uniq(_.map(data, 'edition'));
+              this.$store.commit(`kodaV2/${mutation.SET_EDITIONS}`, data);
+            }
+          })
+          .finally(() => {
+            this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.FEED);
+          });
 
-          const allEditions = this.latest.concat(this.trending).concat(this.favourites);
-          const editionsToLoad = _.uniq(allEditions);
+        this.$store.state.editionLookupService.trendingEditions()
+          .then((results) => {
+            console.log(results);
+            if (results.success) {
+              const {data} = results;
+              this.trending = _.uniq(_.map(data, 'edition'));
+              this.$store.commit(`kodaV2/${mutation.SET_EDITIONS}`, data);
+            }
+          })
+          .finally(() => {
+            this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.FEED);
+          });
 
-          this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, editionsToLoad);
-        });
+        this.$store.state.likesService.loadTopLikedEditions()
+          .then((favourites) => {
+            const editionsToLoad = _.uniq(favourites);
+            this.favourites = editionsToLoad;
+            this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, editionsToLoad);
+          })
+          .finally(() => {
+            this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.FEED);
+          });
       };
 
       this.$store.watch(
-        () => this.$store.state.eventService,
+        () => this.$store.state.eventService.firebasePath,
         () => loadEventData()
       );
 
-      if (this.$store.state.eventService) {
+      if (this.$store.state.eventService.firebasePath) {
         loadEventData();
       }
 
-      const loadStaffPicks = function () {
+      const loadStaffPicks = () => {
         this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, koPicks)
           .finally(() => {
             this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.FEED);
           });
-      }.bind(this);
+      };
 
       this.$store.watch(
-        () => this.$store.state.KnownOriginDigitalAssetV2,
+        () => this.$store.state.artists,
         () => loadStaffPicks()
       );
 
-      if (this.$store.state.KnownOriginDigitalAssetV2) {
+      if (this.$store.state.artists) {
         loadStaffPicks();
       }
     },
-    destroyed () {
+    destroyed() {
     }
   };
 </script>

@@ -222,7 +222,8 @@
 
       this.$store.watch(
         () => this.$store.state.ArtistAcceptingBids,
-        () => loadData());
+        () => loadData()
+      );
 
       if (this.$store.state.ArtistAcceptingBids) {
         loadData();

@@ -5,10 +5,10 @@
         <p>
           <span @click="onSubFilter('asc')"
                 class="sub-filter"
-                v-bind:class="{'font-weight-bold': priceFilter === 'asc'}">Low - High</span>
+                v-bind:class="{'font-weight-bold': order === 'asc'}">Low - High</span>
           <span @click="onSubFilter('desc')"
                 class="sub-filter d-md-inline"
-                v-bind:class="{'font-weight-bold': priceFilter === 'desc'}">High - Low</span>
+                v-bind:class="{'font-weight-bold': order === 'desc'}">High - Low</span>
         </p>
       </div>
     </div>
@@ -19,17 +19,20 @@
 
       <div class="row editions-wrap">
         <div class="card-deck">
-          <div class="col-auto mb-5"
-               v-for="edition, editionNumber in limitBy(editions, currentList)" :key="editionNumber"
+          <div class="col-sm-3 mb-5"
+               v-for="edition in galleryEditions" :key="edition.edition"
                v-if="edition.active">
-            <gallery-card :edition="edition" :edition-number="editionNumber"></gallery-card>
+            <gallery-card :edition="edition" :edition-number="edition.edition"></gallery-card>
           </div>
         </div>
       </div>
 
       <div class="row editions-wrap pt-1 pb-4" v-if="canShowMore">
         <div class="col-12 text-center">
-          <button @click="showMore" class="btn btn-block btn-outline-primary">Show more</button>
+          <button @click="showMore" class="btn btn-outline-primary">
+            <font-awesome-icon :icon="['fas', 'spinner']" spin v-if="isLoading"></font-awesome-icon>
+            <span v-if="!isLoading">Show more</span>
+          </button>
         </div>
       </div>
     </div>
@@ -39,75 +42,101 @@
 
   import _ from 'lodash';
   import {mapGetters, mapState} from 'vuex';
-  import ArtistPanel from '../ui-controls/artist/ArtistPanel';
-  import ClickableAddress from '../ui-controls/generic/ClickableAddress';
   import * as actions from '../../store/actions';
   import {PAGES} from '../../store/loadingPageState';
   import LoadingSection from '../ui-controls/generic/LoadingSection';
-  import Availability from '../ui-controls/v2/Availability';
-  import HighResLabel from '../ui-controls/highres/HighResLabel';
   import GalleryCard from '../ui-controls/cards/GalleryCard';
+  import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 
   export default {
     name: 'galleryKODAV2',
     components: {
       GalleryCard,
       LoadingSection,
-      Availability,
-      ClickableAddress,
-      ArtistPanel,
-      HighResLabel
+      FontAwesomeIcon
     },
     data() {
       return {
         PAGES,
-        priceFilter: 'asc',
-        currentList: 20
+        order: 'asc',
+        orderByFilter: 'priceInEther',
+        limit: 20,
+        offset: 0,
+        isLoading: false
       };
     },
     methods: {
       onSubFilter: function (value) {
-        this.priceFilter = value;
+        if (this.order !== value) {
+          // FIXME reset these when switching sort order - is there a better way?
+          this.order = value;
+          this.limit = 20;
+          this.offset = 0;
+          this.showMore();
+        }
       },
       goToArtist: function (artistAccount) {
         this.$router.push({name: 'artist', params: {artistAccount}});
       },
       showMore: function () {
-        this.currentList = this.currentList + 20;
+        this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.GALLERY);
+        this.isLoading = true;
+        this.offset = this.offset + 20;
+        this.$store.dispatch(`kodaV2/${actions.LOAD_GALLERY_EDITIONS}`, {
+          orderBy: this.orderByFilter,
+          order: this.order,
+          offset: this.offset,
+          limit: this.limit,
+        }).finally(() => {
+          this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.GALLERY);
+          this.isLoading = false;
+        });
       },
     },
     computed: {
-      ...mapGetters('kodaV2', [
-        'filterEditions',
+      ...mapState('kodaV2', [
+        'galleryPagination',
+        'galleryEditions',
       ]),
-      editions: function () {
-        return this.filterEditions(this.priceFilter);
-      },
       canShowMore: function () {
-        const totalAvailable = _.size(this.editions);
+        const totalAvailable = _.get(this.galleryPagination, 'totalAvailable', 0);
+        const offset = _.get(this.galleryPagination, 'params.offset', 0);
+        const limit = _.get(this.galleryPagination, 'params.limit', 0);
         if (totalAvailable === 0) {
           return false;
         }
-        return totalAvailable > this.currentList;
+        return totalAvailable > (offset + limit);
       }
     },
     created() {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.GALLERY);
 
-      const loadData = function () {
-        this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS_FOR_TYPE}`, {editionType: 1})
+      const loadApiData = () => {
+        this.isLoading = true;
+        this.$store.dispatch(`kodaV2/${actions.LOAD_GALLERY_EDITIONS}`, {
+          orderBy: this.orderByFilter,
+          order: this.order,
+          offset: this.offset,
+          limit: this.limit,
+        })
           .finally(() => {
             this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.GALLERY);
+            this.isLoading = false;
           });
-      }.bind(this);
+      };
 
       this.$store.watch(
-        () => this.$store.state.KnownOriginDigitalAssetV2,
-        () => loadData()
+        () => this.$store.state.editionLookupService.currentNetworkId,
+        (newVal, oldVal) => {
+          if (_.toString(newVal) !== _.toString(oldVal)) {
+            // change detected, reloading gallery
+            loadApiData();
+          }
+        }
       );
 
-      if (this.$store.state.KnownOriginDigitalAssetV2) {
-        loadData();
+      if (this.$store.state.editionLookupService.currentNetworkId) {
+        loadApiData();
       }
     },
     destroyed() {

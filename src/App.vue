@@ -165,6 +165,12 @@
     mounted() {
       console.log("Attempting to bootstrap application");
 
+      // Load USD value on start
+      this.$store.dispatch(actions.GET_USD_PRICE);
+
+      // Load Artist data at the earliest possibility
+      this.$store.dispatch(actions.LOAD_ARTISTS);
+
       const INFURA_MAINNET_HTTP_PROVIDER = 'https://mainnet.infura.io/v3/4396873c00c84479991e58a34a54ebd9';
       const INFURA_MAINNET_WEBSOCKET_PROVIDER = 'wss://mainnet.infura.io/ws/v3/4396873c00c84479991e58a34a54ebd9';
 

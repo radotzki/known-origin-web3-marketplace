@@ -43,7 +43,7 @@
       // We only trigger the loading when we become visible to save the extra load
       visibilityChanged(component) {
 
-        if (!this.loaded && component) {
+        if (!this.loaded && this.$store.state.likesService && component) {
           this.loaded = true;
 
           // If we have both then look up for address

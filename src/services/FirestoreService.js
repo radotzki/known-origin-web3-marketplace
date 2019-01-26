@@ -16,4 +16,11 @@ export default class FirestoreService {
     this.firestore = firestore;
   }
 
+  /**
+   * Updates the firebase path, needed for when switching network
+   * @param firebasePath
+   */
+  setFirebasePath(firebasePath) {
+    this.firebasePath = firebasePath;
+  }
 }

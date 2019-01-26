@@ -12,12 +12,22 @@ export default class FirestoreEventService extends FirestoreService {
   /**
    * /raw/{network}/{contract}/[events...]
    */
-  constructor(firebasePath) {
+  constructor(firebasePath = 'mainnet') {
     super(firebasePath);
+
+    /** @deprectaed /raw/{network}/{contract}/[events...] */
     this.events = this.firestore.collection('raw').doc(firebasePath);
+
+    // /events/{network}/data/[events...]
+    this.eventsStream = this.firestore.collection('events').doc(firebasePath).collection('data');
   }
 
+  /**
+   * @deprectaed - replaced with new event document store
+   */
   loadActivity() {
+    console.log(`Load activity on network [${this.firebasePath}]`);
+
     const auctionRef = this.events.collection(this.contracts.AUCTION_V1);
     const kodaRef = this.events.collection(this.contracts.KODA_V2);
 
@@ -54,12 +64,16 @@ export default class FirestoreEventService extends FirestoreService {
       });
   }
 
+  /**
+   * @deprectaed - replaced with new event document store
+   */
   loadLatestCreations() {
-    return this.events
-      .collection(this.contracts.KODA_V2)
+    console.log(`Load latest creations on network [${this.firebasePath}]`);
+
+    return this.eventsStream
       .where('event', '==', 'EditionCreated')
       .orderBy('blockNumber', 'desc')
-      .limit(15)
+      .limit(12)
       .get()
       .then((querySet) => {
         const editionNumbers = new Set();
@@ -72,26 +86,19 @@ export default class FirestoreEventService extends FirestoreService {
       });
   }
 
+  /**
+   * @deprectaed - replaced with new event document store
+   */
   loadTrendingEditions() {
-    const auctionRef = this.events.collection(this.contracts.AUCTION_V1);
-    const kodaRef = this.events.collection(this.contracts.KODA_V2);
-
-    return Promise.all([
-      kodaRef
-        .where('event', '==', 'Purchase')
-        .orderBy('blockNumber', 'desc')
-        .limit(30).get(),
-      auctionRef
-        .where('event', '==', 'BidPlaced')
-        .orderBy('blockNumber', 'desc')
-        .limit(10).get(),
-    ])
-      .then((querySet) => {
+    console.log(`Load trending on network [${this.firebasePath}]`);
+    return this.eventsStream
+      .where('queries.trending_events', '==', true)
+      .limit(12)
+      .get()
+      .then((querySnapshot) => {
         const editionNumbers = new Set();
-        _.forEach(querySet, (querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            editionNumbers.add(doc.data()._args._editionNumber);
-          });
+        querySnapshot.forEach((doc) => {
+          editionNumbers.add(doc.data()._args._editionNumber);
         });
         const trending = Array.from(editionNumbers);
         console.log(`Loaded trending of [${trending}]`);
@@ -100,48 +107,29 @@ export default class FirestoreEventService extends FirestoreService {
   }
 
   loadAuctionEvents({edition}) {
-    const auctionRef = this.events.collection(this.contracts.AUCTION_V1);
+    console.log(`Load auction events for edition [${edition}] on network [${this.firebasePath}]`);
+
     const editionString = edition.toString();
 
-    return Promise.all([
-      auctionRef
-        .where("event", '==', "BidPlaced")
-        .where("_args._editionNumber", '==', editionString)
-        .orderBy("blockNumber", "desc")
-        .limit(5).get(),
-      auctionRef
-        .where("event", '==', "BidAccepted")
-        .where("_args._editionNumber", '==', editionString)
-        .orderBy("blockNumber", "desc")
-        .limit(5).get(),
-      auctionRef
-        .where("event", '==', "BidIncreased")
-        .where("_args._editionNumber", '==', editionString)
-        .orderBy("blockNumber", "desc")
-        .limit(5).get(),
-      auctionRef
-        .where("event", '==', "AuctionCancelled")
-        .where("_args._editionNumber", '==', editionString)
-        .orderBy("blockNumber", "desc")
-        .limit(5).get(),
-    ])
-      .then((querySet) => {
+    return this.eventsStream
+      .where("queries.auction_events", '==', true)
+      .where("_args._editionNumber", '==', editionString)
+      .orderBy("blockNumber", "desc")
+      .limit(10)
+      .get()
+      .then((querySnapshot) => {
         const auctionEvents = [];
-        _.forEach(querySet, (querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            auctionEvents.push(doc.data());
-          });
+        querySnapshot.forEach((doc) => {
+          auctionEvents.push(doc.data());
         });
         return auctionEvents;
       });
   }
 
   findBirthTransaction({edition}) {
-    return this.events
-      .collection(this.contracts.KODA_V2)
+    return this.eventsStream
       .where('event', '==', 'EditionCreated')
       .where("_args._editionNumber", '==', edition.toString())
-      .orderBy('blockNumber', 'desc')
       .limit(1)
       .get()
       .then((querySet) => {
@@ -154,8 +142,7 @@ export default class FirestoreEventService extends FirestoreService {
   }
 
   findPurchaseTransaction(tokenId) {
-    return this.events
-      .collection(this.contracts.KODA_V2)
+    return this.eventsStream
       .where('event', '==', 'Transfer')
       .where("_args._tokenId", '==', tokenId.toString())
       .limit(1)
@@ -170,30 +157,26 @@ export default class FirestoreEventService extends FirestoreService {
   }
 
   loadAuctionStats() {
-    const auctionRef = this.events.collection(this.contracts.AUCTION_V1);
-
     let ethPlaced = new Web3.utils.BN(0);
     let ethAccepted = new Web3.utils.BN(0);
     let bidsAccepted = 0;
 
-    return Promise.all([
-      auctionRef.where("event", '==', "BidPlaced").get(),
-      auctionRef.where("event", '==', "BidAccepted").get(),
-      auctionRef.where("event", '==', "BidIncreased").get()
-    ])
-      .then(async (querySet) => {
+    return this.eventsStream
+      .where("queries.auction_events", '==', true)
+      .get()
+      .then(async (querySnapshot) => {
 
-        _.forEach(querySet, (querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            const data = doc.data();
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
 
-            if (data.event === 'BidAccepted') {
-              bidsAccepted++;
-              ethAccepted = ethAccepted.add(new Web3.utils.BN(_.get(data, '_args._amount')));
-            } else {
-              ethPlaced = ethPlaced.add(new Web3.utils.BN(_.get(data, '_args._amount')));
-            }
-          });
+          const amount = _.get(data, '_args._amount');
+
+          if (data.event === 'BidAccepted' && amount) {
+            bidsAccepted++;
+            ethAccepted = ethAccepted.add(new Web3.utils.BN(amount));
+          } else if (amount) {
+            ethPlaced = ethPlaced.add(new Web3.utils.BN(amount));
+          }
         });
 
         return {

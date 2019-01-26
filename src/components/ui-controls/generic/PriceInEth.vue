@@ -5,11 +5,7 @@
 <script>
   export default {
     name: 'priceInEth',
-    props: {
-      value: {
-        type: String
-      }
-    }
+    props: ['value']
   };
 </script>
 

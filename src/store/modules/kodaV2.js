@@ -2,9 +2,6 @@ import Vue from 'vue';
 import * as actions from '../actions';
 import * as mutations from '../mutation';
 import _ from 'lodash';
-import Web3 from 'web3';
-import axios from 'axios';
-import {isHighRes} from '../../utils';
 
 function featureArtworks(network) {
   switch (network) {
@@ -36,12 +33,20 @@ function featureArtworks(network) {
 const contractStateModule = {
   namespaced: true,
   state: {
+
+    // This store only the editions loaded in the gallery
+    galleryEditions: [],
+
+    // This store gallery pagination data such as offset, orders etc
+    galleryPagination: {},
+
+    // Assets are used through the app and stored in a map of {editionNumber -> edition}
     assets: {},
     accountOwnedTokens: [],
     accountOwnedEditions: [],
-    contractAddress: null,
 
     // contract stats
+    contractAddress: null,
     totalSupply: null,
     totalPurchaseValueInWei: null,
     totalPurchaseValueInEther: null,
@@ -52,7 +57,7 @@ const contractStateModule = {
   },
   getters: {
     alreadyPurchasedEdition: (state) => (editionNumber) => {
-      return _.find(state.accountOwnedEditions, {edition: editionNumber});
+      return _.find(state.accountOwnedEditions, {edition: _.toNumber(editionNumber)});
     },
     featuredEditions: (state, getters, rootState) => () => {
       const artworks = featureArtworks(rootState.currentNetwork);
@@ -60,6 +65,7 @@ const contractStateModule = {
         return artworks.indexOf(_.toNumber(key)) > -1;
       });
     },
+    /** @deprecated - is this used anymore? */
     filterEditions: (state, getters, rootState) => (priceFilter = 'asc') => {
 
       const soldOutEditions = (edition) => edition.totalSupply === edition.totalAvailable;
@@ -100,7 +106,7 @@ const contractStateModule = {
       return _.find(state.accountOwnedEditions, {tokenId});
     },
     isStartDateInTheFuture: (state) => (startDate) => {
-      return startDate > (new Date().getTime() / 1000);
+      return _.toNumber(startDate) > (new Date().getTime() / 1000);
     },
   },
   mutations: {
@@ -119,12 +125,30 @@ const contractStateModule = {
       }
     },
     [mutations.SET_EDITION](state, data) {
-      setEditionData(data, state);
+      let {edition} = data;
+      Vue.set(state.assets, edition, data);
+    },
+    [mutations.SET_GALLERY_EDITIONS](state, {editions, params, totalAvailable}) {
+      // Check sorting order the same, if different then assume new collection
+      if (params.order !== _.get(state.galleryPagination, 'params.order')) {
+        state.galleryEditions = editions;
+      } else {
+        _.forEach(editions, (edition) => {
+          state.galleryEditions.push(edition);
+        });
+      }
+
+      // Maintain a list of options used to paginate
+      state.galleryPagination = {
+        params,
+        totalAvailable
+      };
     },
     [mutations.SET_EDITIONS](state, editions) {
       console.time('SET_EDITIONS');
       _.forEach(editions, (data) => {
-        setEditionData(data, state);
+        let {edition} = data;
+        Vue.set(state.assets, edition, data);
       });
       console.timeEnd('SET_EDITIONS');
     },
@@ -143,218 +167,74 @@ const contractStateModule = {
   },
   actions: {
     async [actions.LOAD_EDITIONS]({commit, dispatch, state, rootState}, editionNumbers) {
-      const contract = await rootState.KnownOriginDigitalAssetV2.deployed();
-
-      const editions = await Promise.all(_.map(editionNumbers, async function (edition) {
-        return await loadEditionData(contract, edition);
-      }));
-
-      commit(mutations.SET_EDITIONS, editions);
+      const results = await rootState.editionLookupService.getEditions(editionNumbers);
+      if (results.success) {
+        const {data} = results;
+        commit(mutations.SET_EDITIONS, data);
+      }
     },
     async [actions.LOAD_FEATURED_EDITIONS]({commit, dispatch, state, rootState}) {
-      const contract = await rootState.KnownOriginDigitalAssetV2.deployed();
-
-      const editions = await Promise.all(_.map(featureArtworks(rootState.currentNetwork), async function (edition) {
-        return await loadEditionData(contract, edition);
-      }));
-
-      commit(mutations.SET_EDITIONS, editions);
+      const featuredEditions = featureArtworks(rootState.currentNetwork);
+      const results = await rootState.editionLookupService.getEditions(featuredEditions);
+      if (results.success) {
+        const {data} = results;
+        commit(mutations.SET_EDITIONS, data);
+      }
+    },
+    async [actions.LOAD_GALLERY_EDITIONS]({commit, dispatch, state, rootState}, {orderBy, order, offset, limit}) {
+      const results = await rootState.editionLookupService.getGalleryEditions(orderBy, order, offset, limit);
+      if (results.success) {
+        const {totalAvailable, data, params} = results;
+        commit(mutations.SET_GALLERY_EDITIONS, {editions: data, params, totalAvailable});
+      }
     },
     async [actions.LOAD_EDITIONS_FOR_TYPE]({commit, dispatch, state, rootState}, {editionType}) {
-      const contract = await rootState.KnownOriginDigitalAssetV2.deployed();
-
-      let editions = [];
-      try {
-        editions = await contract.editionsOfType(editionType);
-        console.log(`Loaded a total of [${_.size(editions)}] for type [${editionType}]`);
-      } catch (e) {
-        console.error(`Unable to load edition of type [${editionType}]`);
-        return;
+      const results = await rootState.editionLookupService.getEditionsForType(editionType);
+      if (results.success) {
+        const {data} = results;
+        commit(mutations.SET_EDITIONS, data);
       }
-
-      // Basic sanity check that we are not already loaded
-      if (_.size(state.assets) === _.size(editions)) {
-        console.log(`Loaded all editions so not loading - loaded editions [${_.size(editions)}] | store editions [${_.size(state.assets)}]`);
-        return;
-      }
-
-      const editionsData = await Promise.all(_.map(editions, async function (edition) {
-        return await loadEditionData(contract, edition);
-      }));
-      commit(mutations.SET_EDITIONS, editionsData);
     },
     async [actions.LOAD_EDITIONS_FOR_ARTIST]({commit, dispatch, state, rootState}, {artistAccount}) {
-      const contract = await rootState.KnownOriginDigitalAssetV2.deployed();
-
-      let editions;
-      if (_.isArray(artistAccount)) {
-        let found = await Promise.all(_.map(artistAccount, async (account) => {
-          return await contract.artistsEditions(account);
-        }));
-        editions = _.flatten(found);
-      } else {
-        editions = await contract.artistsEditions(artistAccount);
+      const results = await rootState.editionLookupService.getEditionsForArtist(artistAccount);
+      if (results.success) {
+        const {data} = results;
+        commit(mutations.SET_EDITIONS, data);
+        const editions = _.map(data, 'edition');
+        dispatch(`auction/${actions.GET_AUCTION_DETAILS_FOR_EDITION_NUMBERS}`, {editions}, {root: true});
       }
-
-      dispatch(`auction/${actions.GET_AUCTION_DETAILS_FOR_EDITION_NUMBERS}`, {editions}, {root: true});
-
-      // Basic sanity check that we are not already loaded
-      if (_.size(state.assets) === _.size(editions)) {
-        return;
-      }
-
-      const editionsData = await Promise.all(_.map(editions, async function (edition) {
-        return await loadEditionData(contract, edition);
-      }));
-      commit(mutations.SET_EDITIONS, editionsData);
     },
     async [actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT]({commit, dispatch, state, rootState}, {account}) {
-      let contract = await rootState.KnownOriginDigitalAssetV2.deployed();
-
-      // Find the token IDs the account owns
       if (!account) return;
-
-      const tokenIds = await contract.tokensOf(account);
-      const tokenAndEditions = await Promise.all(
-        _.map(tokenIds, (tokenId) => {
-          return editionOfTokenId(contract, tokenId.toString(10));
-        })
-      );
+      const {editions, tokenAndEditions} = await rootState.kodaV2ContractService.getTokensOfAccount(account);
       commit(mutations.SET_ACCOUNT_TOKENS, tokenAndEditions);
-
-      // Lookup the editions for those tokens
-      const editions = await Promise.all(
-        _.map(tokenAndEditions, ({tokenId}) => loadTokenAndEdition(contract, tokenId))
-      );
       commit(mutations.SET_ACCOUNT_EDITIONS, editions);
     },
     async [actions.LOAD_INDIVIDUAL_TOKEN]({commit, dispatch, state, rootState}, {tokenId}) {
-      const contract = await rootState.KnownOriginDigitalAssetV2.deployed();
-      const data = await loadTokenAndEdition(contract, tokenId);
+      const data = await rootState.kodaV2ContractService.loadToken(tokenId);
       commit(mutations.SET_ACCOUNT_EDITION, data);
     },
     async [actions.LOAD_INDIVIDUAL_EDITION]({commit, dispatch, state, rootState}, {editionNumber}) {
-      const contract = await rootState.KnownOriginDigitalAssetV2.deployed();
-      const data = await loadEditionData(contract, editionNumber);
-      commit(mutations.SET_EDITION, data);
+      const results = await rootState.editionLookupService.getEdition(editionNumber);
+      if (results.success) {
+        const {data} = results;
+        commit(mutations.SET_EDITION, data);
+      }
+    },
+    async [actions.REFRESH_AND_LOAD_INDIVIDUAL_EDITION]({commit, dispatch, state, rootState}, {editionNumber}) {
+      // Response from this refresh contains latest data
+      const results = await rootState.editionLookupService.refreshEditionData(editionNumber);
+      if (results.success) {
+        const {data} = results;
+        commit(mutations.SET_EDITION, data);
+      }
     },
     async [actions.REFRESH_CONTRACT_DETAILS]({commit, dispatch, state, rootState}) {
-      let contract = await rootState.KnownOriginDigitalAssetV2.deployed();
-
-      commit(mutations.SET_CONTRACT_ADDRESS_V2, contract.address);
-
-      const totalSupply = (await contract.totalSupply()).toString(10);
-      const totalPurchaseValueInWei = (await contract.totalPurchaseValueInWei()).toString(10);
-      const totalNumberMinted = (await contract.totalNumberMinted()).toString(10);
-      const totalEditions = (await contract.editionsOfType(1)).length;
-      const totalNumberAvailable = (await contract.totalNumberAvailable()).toString(10);
-      const koCommissionAccount = await contract.koCommissionAccount();
-
-      commit(mutations.SET_CONTRACT_DETAILS, {
-        totalSupply,
-        totalPurchaseValueInWei,
-        totalPurchaseValueInEther: Web3.utils.fromWei(totalPurchaseValueInWei, 'ether'),
-        totalEditions,
-        totalNumberMinted,
-        totalNumberAvailable,
-        koCommissionAccount,
-      });
+      let contractDetails = await rootState.kodaV2ContractService.getContractDetails();
+      commit(mutations.SET_CONTRACT_ADDRESS_V2, contractDetails.address);
+      commit(mutations.SET_CONTRACT_DETAILS, contractDetails);
     },
   }
-};
-
-const setEditionData = function (data, state) {
-  let {edition} = data;
-  Vue.set(state.assets, edition, data);
-};
-
-const loadTokenAndEdition = async function (contract, tokenId) {
-  const tokenData = await mapTokenData(contract, tokenId);
-  const data = await loadEditionData(contract, tokenData.edition);
-  return {
-    ...tokenData,
-    ...data,
-  };
-};
-
-const editionOfTokenId = async (contract, tokenId) => {
-  let edition = await contract.editionOfTokenId(tokenId);
-  return {
-    tokenId,
-    edition: typeof edition === 'number' ? edition : _.toNumber(edition),
-  };
-};
-
-const loadEditionData = async (contract, edition) => {
-  try {
-    const rawData = await contract.detailsOfEdition(edition);
-    const allEditionData = mapData(rawData);
-    const ipfsData = await lookupIPFSData(allEditionData.tokenURI);
-    const editionNumber = typeof edition === 'number' ? edition : _.toNumber(edition);
-    return {
-      edition: editionNumber,
-      ...ipfsData,
-      ...allEditionData,
-      highResAvailable: isHighRes(ipfsData, editionNumber)
-    };
-  } catch (e) {
-    console.log(`Failed to load edition [${edition}]`);
-    // Catch all errors and simply assume an inactive edition which should not be viewable anywhere
-    return {
-      edition,
-      active: false
-    };
-  }
-};
-
-const mapTokenData = async (contract, tokenId) => {
-  const tokenData = await contract.tokenData(tokenId);
-  const editionData = Web3.utils.toAscii(tokenData[2]);
-  return {
-    tokenId,
-    edition: typeof tokenData[0] === 'number' ? tokenData[0] : _.toNumber(tokenData[0]),
-    editionType: tokenData[1].toString(10),
-    editionData: editionData,
-    owner: tokenData[4],
-  };
-};
-
-const mapData = (rawData) => {
-  const editionData = Web3.utils.toAscii(rawData[0]);
-  return {
-    editionData: editionData,
-    editionType: rawData[1].toString(10),
-    startDate: rawData[2].toString(10),
-    endDate: rawData[3].toString(10),
-    artistAccount: rawData[4],
-    artistCommission: rawData[5].toString(10),
-    priceInWei: rawData[6].toString(10),
-    priceInEther: Web3.utils.fromWei(rawData[6].toString(10), 'ether').valueOf(),
-    tokenURI: rawData[7],
-    totalSupply: rawData[8].toString(10),
-    totalAvailable: rawData[9].toString(10),
-    active: rawData[10],
-    // V1 properties back port
-    v1: {
-      // First 3 chars of edition are artist code
-      artistCode: editionData.substring(0, 3)
-    }
-  };
-};
-
-const lookupIPFSData = async (tokenUri) => {
-  let tokenMeta = await axios.get(tokenUri);
-
-  let rootMeta = tokenMeta.data;
-
-  return {
-    tokenUri: tokenUri,
-    name: rootMeta.name,
-    description: rootMeta.description,
-    external_uri: _.get(rootMeta, 'external_uri', 'http://knownorigin.io'),
-    attributes: _.get(rootMeta, 'attributes'),
-    lowResImg: rootMeta.image
-  };
 };
 
 export default contractStateModule;
