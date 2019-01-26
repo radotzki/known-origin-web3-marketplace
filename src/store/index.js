@@ -20,10 +20,11 @@ import loading from './modules/loading';
 import auction from './modules/auction';
 import artistControls from './modules/artistEditionControls';
 
-import FirestoreEventService from "../services/events/FirestoreEventService";
+import EventsApiService from "../services/events/EventsApiService";
 import FirestoreArtistService from "../services/artist/FirestoreArtistService";
-import FirestoreLikesService from "../services/likes/FirestoreLikesService";
 import LikesApiService from "../services/likes/LikesApiService";
+import EditionLookupService from "../services/edition/EditionLookupService";
+import KodaV2ContractService from "../services/web3/KodaV2ContractService";
 
 const KnownOriginDigitalAssetV1 = truffleContract(truffleSchema.KnownOriginDigitalAsset);
 const KnownOriginDigitalAssetV2 = truffleContract(truffleSchema.KnownOriginDigitalAssetV2);
@@ -57,12 +58,12 @@ const store = new Vuex.Store({
     // connectivity
     account: null,
     currentNetwork: null,
-    currentNetworkId: null,
+    currentNetworkId: 1,
     web3: null,
     currentUsdPrice: null,
     etherscanBase: null,
 
-    artists: [],
+    artists: null,
     artistLookupCache: {},
 
     KnownOriginDigitalAssetV1: null,
@@ -70,10 +71,17 @@ const store = new Vuex.Store({
     ArtistAcceptingBids: null,
     ArtistEditionControls: null,
 
-    eventService: null,
-    likesService: null,
+    // Web3 services
+    kodaV2ContractService: null,
+
+    // This is key to data lookups which are split by network
+    firebasePath: null,
+
+    // All services default to mainnet by default, they get overridden on INIT is=f the network is different
+    eventService: new EventsApiService(),
+    likesService: new LikesApiService(),
+    editionLookupService: new EditionLookupService(),
     artistService: new FirestoreArtistService(),
-    firebasePath: null
   },
   getters: {
     findArtist: (state) => (artistCode) => {
@@ -124,11 +132,18 @@ const store = new Vuex.Store({
       state.account = Web3.utils.toChecksumAddress(account);
     },
     [mutations.SET_CURRENT_NETWORK](state, {id, human, firebasePath}) {
+      // Updated services classes if the network is not the default mainnet
+      if (id !== 1) {
+        console.log(`Switching network based services to non mainnet channel - id=[${id}] firebasePath=[${firebasePath}]`);
+        state.artistService.setFirebasePath(firebasePath);
+        state.editionLookupService.setNetworkId(id);
+        state.likesService.setFirebasePathAndNetworkId(firebasePath, id);
+        state.eventService.setFirebasePathAndNetworkId(firebasePath, id);
+      }
+
       state.currentNetworkId = id;
       state.currentNetwork = human;
       state.firebasePath = firebasePath;
-      state.eventService = new FirestoreEventService(firebasePath);
-      state.likesService = new LikesApiService(firebasePath, id);
     },
     [mutations.SET_USD_PRICE](state, currentUsdPrice) {
       state.currentUsdPrice = currentUsdPrice;
@@ -144,6 +159,7 @@ const store = new Vuex.Store({
       state.KnownOriginDigitalAssetV2 = v2;
       state.ArtistAcceptingBids = auction;
       state.ArtistEditionControls = editionControls;
+      state.kodaV2ContractService = new KodaV2ContractService(v2);
     },
   },
   actions: {
@@ -168,8 +184,8 @@ const store = new Vuex.Store({
     },
     [actions.INIT_APP]({commit, dispatch, state}, web3) {
 
-      dispatch(actions.GET_USD_PRICE);
-      dispatch(actions.LOAD_ARTISTS);
+      // Find current network
+      dispatch(actions.GET_CURRENT_NETWORK);
 
       // NON-ASYNC action - set web3 provider on init
       KnownOriginDigitalAssetV1.setProvider(web3.currentProvider);
@@ -186,9 +202,6 @@ const store = new Vuex.Store({
         auction: ArtistAcceptingBids,
         editionControls: ArtistEditionControls,
       });
-
-      // Find current network
-      dispatch(actions.GET_CURRENT_NETWORK);
 
       // Load auction contract owner
       dispatch(`auction/${actions.GET_AUCTION_OWNER}`);
@@ -239,7 +252,7 @@ const store = new Vuex.Store({
         });
     },
     [actions.LOAD_ARTISTS]: async function ({commit, dispatch, state}) {
-      // Return from here so we can change them in views
+      // Return from here so views can reqct
       return state.artistService
         .loadArtistsData()
         .then((artistData) => {

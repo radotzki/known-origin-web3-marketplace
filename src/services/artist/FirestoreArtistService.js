@@ -8,6 +8,8 @@ export default class FirestoreArtistService extends FirestoreService {
   }
 
   loadArtistsData() {
+    console.log(`Loading artist data on network [${this.firebasePath}]`);
+
     // Return from here so we can change them in views
     return this.artistDocRef
       .orderBy('name')

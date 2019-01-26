@@ -18,10 +18,10 @@
 </template>
 
 <script>
-  import { mapGetters, mapState } from 'vuex';
+  import {mapGetters, mapState} from 'vuex';
   import LoadingSection from '../ui-controls/generic/LoadingSection';
   import TokenDetails from '../ui-controls/cards/TokenDetails';
-  import { PAGES } from '../../store/loadingPageState';
+  import {PAGES} from '../../store/loadingPageState';
   import * as actions from '../../store/actions';
 
   export default {
@@ -30,7 +30,7 @@
       TokenDetails,
       LoadingSection,
     },
-    data () {
+    data() {
       return {
         PAGES: PAGES
       };
@@ -47,15 +47,15 @@
         return this.findPurchasedEdition({tokenId: this.$route.params.tokenId});
       }
     },
-    created () {
+    created() {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.EDITION_TOKEN_OVERVIEW);
 
-      const loadData = function () {
+      const loadData = () => {
         this.$store.dispatch(`kodaV2/${actions.LOAD_INDIVIDUAL_TOKEN}`, {tokenId: this.$route.params.tokenId})
           .finally(() => {
             this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.EDITION_TOKEN_OVERVIEW);
           });
-      }.bind(this);
+      };
 
       this.$store.watch(
         () => this.$store.state.KnownOriginDigitalAssetV2,

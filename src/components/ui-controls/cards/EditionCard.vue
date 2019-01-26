@@ -62,10 +62,16 @@
       <purchase-transaction-badge :token-id="edition.tokenId" v-if="edition && edition.tokenId"></purchase-transaction-badge>
     </div>
 
-    <div class="mt-2" v-if="edition && !edition.tokenId">
-      <hr/>
-      <price-in-eth :value="edition.priceInEther"></price-in-eth>
-      <span class="pl-1"><u-s-d-price :price-in-ether="edition.priceInEther"></u-s-d-price></span>
+    <hr/>
+
+    <div class="row mt-4" v-if="edition && !edition.tokenId">
+      <div class="col-sm-8">
+        <price-in-eth :value="edition.priceInEther | to4Dp"></price-in-eth>
+        <span class="pl-1"><u-s-d-price :price-in-ether="edition.priceInEther"></u-s-d-price></span>
+      </div>
+      <div class="col-sm-4 text-right">
+        <LikeIconButton :edition-number="edition.edition"></LikeIconButton>
+      </div>
     </div>
   </div>
 </template>
@@ -88,6 +94,7 @@
   import TokenIdBadge from '../badges/TokenIdBadge';
   import XOfXBadge from '../badges/XOfXBadge';
   import PurchaseTransactionBadge from '../badges/PurchaseTransactionBadge';
+  import LikeIconButton from '../likes/LikeIconButton';
 
   export default {
     name: 'edition-card',
@@ -106,7 +113,8 @@
       PriceInEth,
       MetadataAttributes,
       USDPrice,
-      RarityIndicator
+      RarityIndicator,
+      LikeIconButton
     },
     computed: {
       ...mapGetters([

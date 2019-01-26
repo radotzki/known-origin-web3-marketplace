@@ -1,20 +1,18 @@
 <template>
   <div class="container-fluid mt-4">
-    <div class="row editions-wrap">
+    <loading-section v-if="!edition" :page="PAGES.CONFIRM_PURCHASE"></loading-section>
 
-      <loading-section v-if="!edition" :page="PAGES.CONFIRM_PURCHASE"></loading-section>
+    <div class="row editions-wrap">
 
       <div class="col-sm-3 order-2 order-sm-1 mb-5" v-if="edition">
 
         <edition-card :edition="edition"></edition-card>
 
-        <div class="float-right pr-3 pt-2">
-          <LikeIconButton :edition-number="edition.edition"></LikeIconButton>
-        </div>
-
         <div class="shadow-sm bg-white pt-0 pl-4 pr-4 pb-4">
 
-          <a v-on:click="proceedWithPurchase" class="btn btn-primary text-white" v-if="canProceedWithPurchase">Buy Now</a>
+          <a v-on:click="proceedWithPurchase" class="btn btn-primary text-white" v-if="canProceedWithPurchase">
+            Buy Now
+          </a>
 
           <EditionSoldOut :edition="edition"></EditionSoldOut>
         </div>
@@ -71,21 +69,16 @@
       ]),
       ...mapGetters('kodaV2', [
         'findEdition',
-        'isStartDateInTheFuture',
-        'alreadyPurchasedEdition',
+        'isStartDateInTheFuture'
       ]),
       edition() {
         return this.findEdition(this.$route.params.editionNumber);
       },
       canProceedWithPurchase() {
-        const hasEditionLeftToPurchase = this.edition.totalAvailable - this.edition.totalSupply > 0;
+        const hasEditionLeftToPurchase = _.toNumber(this.edition.totalAvailable) - _.toNumber(this.edition.totalSupply) > 0;
 
         return hasEditionLeftToPurchase &&
-          !this.isStartDateInTheFuture(this.edition.startDate) &&
-          !this.alreadyPurchased;
-      },
-      alreadyPurchased() {
-        return this.alreadyPurchasedEdition(this.edition.edition);
+          !this.isStartDateInTheFuture(this.edition.startDate);
       },
     },
     methods: {
@@ -111,23 +104,41 @@
     created() {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.CONFIRM_PURCHASE);
 
-      const loadData = function () {
+      /////////
+      // API //
+      /////////
+
+      const loadApiData = () => {
         this.$store.dispatch(`kodaV2/${actions.LOAD_INDIVIDUAL_EDITION}`, {editionNumber: this.$route.params.editionNumber})
-          .then(() => {
-            return this.$store.dispatch(`kodaV2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account: this.account});
-          })
           .finally(() => {
             this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.CONFIRM_PURCHASE);
           });
-      }.bind(this);
+      };
+
+      this.$store.watch(
+        () => this.$store.state.editionLookupService.currentNetworkId,
+        () => loadApiData()
+      );
+
+      if (this.$store.state.editionLookupService.currentNetworkId) {
+        loadApiData();
+      }
+
+      //////////
+      // WEB3 //
+      //////////
+
+      const loadContractData = () => {
+        return this.$store.dispatch(`kodaV2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account: this.account});
+      };
 
       this.$store.watch(
         () => this.$store.state.KnownOriginDigitalAssetV2,
-        () => loadData()
+        () => loadContractData()
       );
 
       if (this.$store.state.KnownOriginDigitalAssetV2) {
-        loadData();
+        loadContractData();
       }
     },
     destroyed() {

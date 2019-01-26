@@ -7,9 +7,9 @@
       </div>
     </div>
 
-    <div class="container mt-4">
-      <div class="row mb-4">
-        <div class="col">
+    <div class="mt-4">
+      <div class="row editions-wrap mb-4">
+        <div class="col-12">
           <clickable-address :eth-address="account"></clickable-address>
           <span class="badge badge-primary" v-if="totalPurchases() > 0 ">{{ totalPurchases() }}</span>
         </div>
@@ -25,7 +25,7 @@
         </div>
 
         <div class="card-deck">
-          <div class="col-auto mb-5"
+          <div class="col-sm-3 mb-5"
                v-for="edition, editionNumber in limitBy(accountOwnedEditions, currentListV2)"
                :key="edition.tokenId">
             <gallery-card :edition="edition" :editionNumber="editionNumber" :token-id="edition.tokenId"></gallery-card>
@@ -47,8 +47,8 @@
           <h5 class="mb-3">KODA V1</h5>
         </div>
 
-        <div class="card-deck">
-          <div class="col-auto mb-5"
+        <!--<div class="card-deck">-->
+          <div class="col-sm-3 mb-5"
                v-for="asset in limitBy(assetsOwnedByAccount, currentListV1)"
                :key="asset.tokenId">
             <router-link :to="{ name: 'legacy-asset', params: { legacyTokenId: asset.tokenId } }" class="card-target">
@@ -69,7 +69,7 @@
               </div>
             </router-link>
           </div>
-        </div>
+        <!--</div>-->
 
         <button v-if="canShowMoreV1"
                 @click="showMoreV1"
@@ -87,7 +87,7 @@
         </div>
       </div>
 
-      <div class="row editions-wrap" v-if="accountFavorites">
+      <div class="row editions-wrap" v-if="accountFavorites && accountFavorites.length > 0">
         <div class="col-12">
           <h5 class="mb-3">My Favorites</h5>
         </div>
@@ -208,13 +208,13 @@
     created() {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.ACCOUNT);
 
-      const loadData = function () {
+      const loadData = () => {
         this.$store.dispatch(`kodaV2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account: this.account})
           .finally(() => {
             this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.ACCOUNT);
           });
         loadFavs();
-      }.bind(this);
+      };
 
       const loadFavs = () => {
         if (this.$store.state.account && this.$store.state.currentNetworkId) {

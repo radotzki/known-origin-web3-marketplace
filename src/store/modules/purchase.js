@@ -122,8 +122,9 @@ const purchaseStateModule = {
           console.log('Purchase rejection/error', error);
           commit(mutations.PURCHASE_FAILED, {editionNumber: edition.edition, account});
         })
-        .finally(() => {
+        .finally(async () => {
           if (timer) clearInterval(timer);
+          dispatch(`kodaV2/${actions.REFRESH_AND_LOAD_INDIVIDUAL_EDITION}`, {editionNumber: edition.edition}, {root: true});
         });
     },
     [actions.RESET_PURCHASE_STATE]: function ({commit, dispatch, state}, {edition}) {

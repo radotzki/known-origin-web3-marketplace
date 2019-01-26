@@ -10,19 +10,23 @@
     </div>
 
     <div class="card-body">
-      <router-link :to="routeData()" class="card-target" v-if="edition">
-        <p class="card-title mt-2">
-          <creative-challenge-label :attributes="edition.attributes"></creative-challenge-label>
-          {{ edition.name }}
-        </p>
-      </router-link>
+      <div class="row">
+        <div class="col-12">
+          <router-link :to="routeData()" class="card-target" v-if="edition">
+            <p class="card-title mt-2">
+              <creative-challenge-label :attributes="edition.attributes"></creative-challenge-label>
+              {{ edition.name }}
+            </p>
+          </router-link>
+        </div>
+      </div>
     </div>
     <div class="card-footer bg-white no-top-border">
       <div class="row mb-2" v-if="edition && !edition.tokenId">
         <div class="col">
           <router-link :to="routeData()" class="card-target" v-if="edition">
             <p class="card-text">
-                <price-in-eth :value="edition.priceInEther | to4Dp"></price-in-eth>
+              <price-in-eth :value="edition.priceInEther | to4Dp"></price-in-eth>
             </p>
           </router-link>
         </div>
@@ -32,7 +36,6 @@
               <availability :total-available="edition.totalAvailable" :total-supply="edition.totalSupply"></availability>
             </router-link>
           </p>
-          <LikeIconButton :edition-number="edition.edition"></LikeIconButton>
         </div>
       </div>
       <div class="row mb-2" v-if="edition && edition.tokenId">
@@ -43,11 +46,19 @@
           <x-of-x-badge :edition="edition"></x-of-x-badge>
         </div>
       </div>
-      <router-link :to="{ name: 'artist', params: { artistAccount: edition.artistAccount } }" class="floating-artist-link">
-        <img class="artist-avatar" alt="artist-logo"
-             :src="(findArtistsForAddress(edition.artistAccount) || {}).logo" :id="edition.artistAccount + edition.edition"/>
-        <a class="pl-1 artist-name">{{ (findArtistsForAddress(edition.artistAccount) || {}).name | truncate(18) }}</a>
-      </router-link>
+      <div class="row">
+        <div class="col-8">
+          <router-link :to="{ name: 'artist', params: { artistAccount: edition.artistAccount } }" class="floating-artist-link">
+            <img class="artist-avatar" alt="artist-logo"
+                 :src="(findArtistsForAddress(edition.artistAccount) || {}).logo" :id="edition.artistAccount + edition.edition"/>
+            <a class="pl-1 artist-name">{{ (findArtistsForAddress(edition.artistAccount) || {}).name | truncate(15) }}</a>
+          </router-link>
+        </div>
+        <div class="col-4 text-right">
+          <LikeIconButton :edition-number="edition.edition"></LikeIconButton>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -59,7 +70,7 @@
   import HighResLabel from '../highres/HighResLabel';
   import CreativeChallengeLabel from '../../ui-controls/generic/CreativeChallengeLabel';
   import PriceInEth from '../generic/PriceInEth';
-  import LikeIconButton from "../likes/LikeIconButton";
+  import LikeIconButton from '../likes/LikeIconButton';
   import EditionImage from '../generic/EditionImage';
   import TokenIdBadge from '../badges/TokenIdBadge';
   import XOfXBadge from '../badges/XOfXBadge';
@@ -107,7 +118,7 @@
 
   .high-res {
     position: absolute;
-    top: -4px;
+    top: -5px;
     opacity: 0.9;
   }
 

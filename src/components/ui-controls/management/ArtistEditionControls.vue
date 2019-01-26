@@ -19,7 +19,8 @@
         <tr v-for="edition, editionNumber in editions" :key="editionNumber" v-if="shouldShowControls(edition)">
           <td>
             <router-link :to="{ name: 'confirmPurchaseSimple', params: { editionNumber: editionNumber }}">
-              <edition-image class="img-thumbnail" style="max-width: 100px" :src="edition.lowResImg" :id="editionNumber" />
+              <edition-image class="img-thumbnail" style="max-width: 100px" :src="edition.lowResImg"
+                             :id="editionNumber"/>
             </router-link>
           </td>
           <td class="d-none d-md-table-cell align-middle">
@@ -139,7 +140,7 @@
       giftEdition: function (edition, receiver) {
         if (edition && receiver) {
           this.$store.dispatch(`artistControls/${actions.GIFT_EDITION}`, {edition, receiver})
-            .then((txs) => {
+            .then(async (txs) => {
               Vue.set(this.form.giftTransactions, edition.edition, _.get(txs, 'tx'));
             });
         }
@@ -150,7 +151,7 @@
             edition,
             value: Web3.utils.toWei(priceInEth)
           })
-            .then((txs) => {
+            .then(async (txs) => {
               Vue.set(this.form.priceTransactions, edition.edition, _.get(txs, 'tx'));
             });
         }

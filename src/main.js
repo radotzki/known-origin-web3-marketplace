@@ -46,7 +46,7 @@ Vue.filter('toEth', function (value) {
 });
 
 Vue.filter('to4Dp', function (value) {
-  if (!value) return '';
+  if (!value && value !== 0) return '';
   return parseFloat(value).toFixed(4);
 });
 

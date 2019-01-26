@@ -27,11 +27,13 @@
       };
     },
     created() {
-      this.$store.state.eventService
-        .findBirthTransaction(this.edition)
-        .then((data) => {
-          this.link = `${this.etherscanBase}/tx/${data.transactionHash}`;
-        });
+      if (this.$store.state.eventService) {
+        this.$store.state.eventService
+          .findBirthTransaction(this.edition)
+          .then((data) => {
+            this.link = `${this.etherscanBase}/tx/${data.transactionHash}`;
+          });
+      }
     }
   };
 </script>
