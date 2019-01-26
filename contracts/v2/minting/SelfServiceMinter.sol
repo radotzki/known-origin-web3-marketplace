@@ -94,7 +94,7 @@ contract SelfServiceMinter is Ownable, Pausable {
       ), "Unable to create edition");
 
     // Trigger event
-    emit SelfServiceEditionCreated(editionNumber, msg.send, _priceInWei, _totalAvailable);
+    emit SelfServiceEditionCreated(editionNumber, msg.sender, _priceInWei, _totalAvailable);
 
     return true;
   }
