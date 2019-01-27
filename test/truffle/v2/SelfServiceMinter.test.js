@@ -81,6 +81,18 @@ contract.only('SelfServiceMinter tests', function (accounts) {
           // TODO verify created edition
         });
 
+        it('unknown artists should NOT be able to create edition', async function () {
+          const edition3 = {
+            total: 10,
+            tokenUri: "ipfs://edition3",
+            price: etherToWei(1)
+          };
+          await assertRevert(
+            this.minter.createEdition(edition3.total, edition3.tokenUri, edition3.price, {from: accounts[6]}),
+            "Can only mint your own once we have enabled you on the platform"
+          );
+        });
+
       });
 
       describe('when enabled for selected artists', async function () {
