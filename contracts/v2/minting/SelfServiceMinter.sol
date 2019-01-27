@@ -1,4 +1,4 @@
-pragma solidity 0.5.2;
+pragma solidity 0.4.24;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
@@ -15,13 +15,15 @@ interface IKODAV2SelfServiceMinter {
     address _artistAccount,
     uint256 _artistCommission,
     uint256 _priceInWei,
-    string _tokenURI,
+    string _tokenUri,
     uint256 _totalAvailable
   ) external returns (bool);
 
-  function artistsEditions(address _artistsAccount) public view returns (uint256[] _editionNumbers);
+  function artistsEditions(address _artistsAccount) external returns (uint256[] _editionNumbers);
 
-  function highestEditionNumber() public returns (uint256);
+  function totalAvailableEdition(uint256 _editionNumber) external returns (uint256);
+
+  function highestEditionNumber() external returns (uint256);
 }
 
 
@@ -54,49 +56,65 @@ contract SelfServiceMinter is Ownable, Pausable {
     kodaV2 = _kodaV2;
   }
 
-  function createEdition(uint256 _totalAvailable, string _tokenURI, uint256 _priceInWei)
+  function createEdition(uint256 _totalAvailable, string _tokenUri, uint256 _priceInWei)
   public
   whenNotPaused
-  returns (bool success)
+  returns (uint256 _editionNumber)
   {
     // Enforce max edition size
+    require(_totalAvailable >= 0, "Unable to create editions of this size zero");
     require(_totalAvailable <= maxEditionSize, "Unable to create editions of this size at present");
+
+    // Should fail when token URI is not present
+    require(bytes(_tokenUri).length != 0, "Token URI is missing");
 
     // Enforce who can call this
     if (!openToAllArtist) {
       require(allowedArtists[msg.sender], "Only allowed artists can create editions for now");
     }
 
-    // Double check we can talk to the KODA platform
-    uint256 highestEditionNumber = kodaV2.highestEditionNumber();
-    require(highestEditionNumber > 0, "Unable to determine highest edition number");
-
     // Enforce the artist is the real deal and is on the platform in some form
-    address artist = msg.sender;
-    uint256[] _editionNumbers = kodaV2.artistsEditions(artist);
-    require(_editionNumbers.length > 1, "Can only mint your own once we have enabled you on the platform");
+    uint256[] memory _editionNumbers = kodaV2.artistsEditions(msg.sender);
+    require(_editionNumbers.length > 0, "Can only mint your own once we have enabled you on the platform");
 
-    // TODO token ID start at 1 so add additional 1?
-    uint256 editionNumber = highestEditionNumber.add(_totalAvailable);
+    // Get current highest edition and total in the edition
+    uint256 highestEditionNumber = kodaV2.highestEditionNumber();
+    uint256 totalAvailableEdition = kodaV2.totalAvailableEdition(highestEditionNumber);
+
+    // Add the current highest plus its total, plus 1 as tokens start at 1 not zero
+    uint256 editionNumber = highestEditionNumber.add(totalAvailableEdition).add(1);
+
+    // Ensure its created
+    bool created = createNewEdition(editionNumber, msg.sender, _priceInWei, _totalAvailable, _tokenUri);
 
     // If the creation fails for some reason, revert the block
-    require(kodaV2.createActiveEdition(
-        editionNumber,
-        bytes(0x0), // _editionData
-        1, // _editionType
-        0, // _startDate
-        0, // _endDate
-        artist,
-        artistCommission,
-        _priceInWei,
-        _tokenURI,
-        _totalAvailable
-      ), "Unable to create edition");
+    require(created, "Unable to create edition");
 
     // Trigger event
     emit SelfServiceEditionCreated(editionNumber, msg.sender, _priceInWei, _totalAvailable);
 
-    return true;
+    return editionNumber;
+  }
+
+  function createNewEdition(
+    uint256 editionNumber,
+    address artist,
+    uint256 _priceInWei,
+    uint256 _totalAvailable,
+    string _tokenUri
+  ) internal returns (bool) {
+    return kodaV2.createActiveEdition(
+      editionNumber,
+      0x0, // _editionData
+      1, // _editionType
+      0, // _startDate
+      0, // _endDate
+      artist,
+      artistCommission,
+      _priceInWei,
+      _tokenUri,
+      _totalAvailable
+    );
   }
 
   /**
@@ -105,14 +123,6 @@ contract SelfServiceMinter is Ownable, Pausable {
    */
   function setKodavV2(IKODAV2SelfServiceMinter _kodaV2) onlyOwner public {
     kodaV2 = _kodaV2;
-  }
-
-  /**
-   * @dev Sets the default commission for each edition
-   * @dev Only callable from owner
-   */
-  function setArtistCommission(uint256 _artistCommission) onlyOwner public {
-    artistCommission = _artistCommission;
   }
 
   /**
