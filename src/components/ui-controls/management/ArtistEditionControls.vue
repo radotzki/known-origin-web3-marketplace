@@ -140,8 +140,8 @@
       giftEdition: function (edition, receiver) {
         if (edition && receiver) {
           this.$store.dispatch(`artistControls/${actions.GIFT_EDITION}`, {edition, receiver})
-            .then(async (txs) => {
-              Vue.set(this.form.giftTransactions, edition.edition, _.get(txs, 'tx'));
+            .then((hash) => {
+              Vue.set(this.form.giftTransactions, edition.edition, hash);
             });
         }
       },
@@ -151,8 +151,8 @@
             edition,
             value: Web3.utils.toWei(priceInEth)
           })
-            .then(async (txs) => {
-              Vue.set(this.form.priceTransactions, edition.edition, _.get(txs, 'tx'));
+            .then((hash) => {
+              Vue.set(this.form.priceTransactions, edition.edition, hash);
             });
         }
       },
