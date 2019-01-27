@@ -59,9 +59,9 @@ const store = new Vuex.Store({
     account: null,
     currentNetwork: null,
     currentNetworkId: 1,
+    etherscanBase: 'https://etherscan.io',
     web3: null,
     currentUsdPrice: null,
-    etherscanBase: null,
 
     artists: null,
     artistLookupCache: {},
