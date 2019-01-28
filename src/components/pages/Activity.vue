@@ -14,8 +14,8 @@
         <div class="col">
           <table class="table table-striped">
             <tbody>
-            <tr v-for="event in activity">
-              <td class="w-25 text-center">
+            <tr v-for="(event, $index) in activity">
+              <td class="w-25 text-center" v-if="event._args._editionNumber">
                 <router-link
                   :to="{ name: 'confirmPurchaseSimple', params: { editionNumber: parseInt(event._args._editionNumber) }}">
                   <edition-image class="img-thumbnail"
@@ -45,10 +45,18 @@
                   </u-s-d-price-converter>
                 </div>
 
-                <div v-if="event._args._tokenId">
+                <div v-if="event._args._tokenId && event.event !== 'Purchase'">
                   <router-link :to="{ name: 'edition-token', params: { tokenId: event._args._tokenId.toString() }}"
                                class="badge badge-primary">
                     {{ event._args._tokenId.toString() }}
+                  </router-link>
+                </div>
+
+                <div v-if="event._args._editionNumber && event.event === 'Purchase'">
+                  <router-link
+                    :to="{ name: 'confirmPurchaseSimple', params: { editionNumber: parseInt(event._args._editionNumber) }}"
+                    class="badge badge-primary">
+                    {{event._args._editionNumber}}
                   </router-link>
                 </div>
               </td>
@@ -59,6 +67,10 @@
                 <div v-if="event._args._buyer">
                   <span class="text-muted small">Owner: </span>
                   <clickable-address :eth-address="event._args._buyer" class="small"></clickable-address>
+                </div>
+                <div v-if="event._args._to">
+                  <span class="text-muted small">Owner: </span>
+                  <clickable-address :eth-address="event._args._to" class="small"></clickable-address>
                 </div>
                 <div v-if="event._args._bidder">
                   <span class="text-muted small">Bidder: </span>
@@ -168,6 +180,9 @@
           return 'Purchase';
         }
 
+        if (eventStr === 'Minted') {
+          return 'Token Birth';
+        }
         if (eventStr === 'BidPlaced') {
           return 'Bid Placed';
         }
@@ -197,6 +212,9 @@
           return '💸';
         }
 
+        if (eventStr === 'Minted') {
+          return '👶️';
+        }
         if (eventStr === 'BidPlaced') {
           return '💌';
         }
@@ -280,6 +298,6 @@
   }
 
   .img-thumbnail {
-    max-width: 100px;
+    max-width: 75px;
   }
 </style>
