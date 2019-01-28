@@ -65,9 +65,6 @@ contract SelfServiceMinter is Ownable, Pausable {
     require(_totalAvailable >= 0, "Unable to create editions of this size zero");
     require(_totalAvailable <= maxEditionSize, "Unable to create editions of this size at present");
 
-    // Should fail when token URI is not present
-    require(bytes(_tokenUri).length != 0, "Token URI is missing");
-
     // Enforce who can call this
     if (!openToAllArtist) {
       require(allowedArtists[msg.sender], "Only allowed artists can create editions for now");
@@ -96,20 +93,16 @@ contract SelfServiceMinter is Ownable, Pausable {
     return editionNumber;
   }
 
-  function createNewEdition(
-    uint256 editionNumber,
-    address artist,
-    uint256 _priceInWei,
-    uint256 _totalAvailable,
-    string _tokenUri
-  ) internal returns (bool) {
+  function createNewEdition(uint256 _editionNumber, address _artist, uint256 _priceInWei, uint256 _totalAvailable, string _tokenUri)
+  internal
+  returns (bool) {
     return kodaV2.createActiveEdition(
-      editionNumber,
+      _editionNumber,
       0x0, // _editionData
       1, // _editionType
       0, // _startDate
       0, // _endDate
-      artist,
+      _artist,
       artistCommission,
       _priceInWei,
       _tokenUri,
@@ -155,6 +148,16 @@ contract SelfServiceMinter is Ownable, Pausable {
    */
   function setMaxEditionSize(uint256 _maxEditionSize) onlyOwner public {
     maxEditionSize = _maxEditionSize;
+  }
+
+  /**
+   * @dev Checks to see if the account can create editions
+   */
+  function isEnabledForAccount(address account) public view returns (bool) {
+    if (openToAllArtist) {
+      return true;
+    }
+    return allowedArtists[allowedArtists];
   }
 
 }
