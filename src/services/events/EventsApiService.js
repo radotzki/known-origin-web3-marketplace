@@ -26,5 +26,19 @@ export default class EventsApiService extends FirestoreEventService {
     };
   }
 
+  async loadPurchaseEventsForEditions(editions = []) {
+    console.log(`Load purchase events for editions [${editions}] for network [${this.currentNetworkId}]`);
+
+    const mappedEditions = editions.map((edition) => `&edition=${edition}`).join('');
+
+    const results = await axios.get(`${this.api}/events/edition/purchases?network=${this.currentNetworkId}${mappedEditions}`, AXIOS_CONFIG);
+    if (results.data.success) {
+      return results.data;
+    }
+    return {
+      success: false
+    };
+  }
+
 }
 

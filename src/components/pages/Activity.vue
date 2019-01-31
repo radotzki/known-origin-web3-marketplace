@@ -14,8 +14,8 @@
         <div class="col">
           <table class="table table-striped">
             <tbody>
-            <tr v-for="event in activity">
-              <td class="w-25 text-center">
+            <tr v-for="(event, $index) in activity">
+              <td class="w-25 text-center" v-if="event._args._editionNumber">
                 <router-link
                   :to="{ name: 'confirmPurchaseSimple', params: { editionNumber: parseInt(event._args._editionNumber) }}">
                   <edition-image class="img-thumbnail"
@@ -45,10 +45,18 @@
                   </u-s-d-price-converter>
                 </div>
 
-                <div v-if="event._args._tokenId">
+                <div v-if="event._args._tokenId && event.event !== 'Purchase'">
                   <router-link :to="{ name: 'edition-token', params: { tokenId: event._args._tokenId.toString() }}"
                                class="badge badge-primary">
                     {{ event._args._tokenId.toString() }}
+                  </router-link>
+                </div>
+
+                <div v-if="event._args._editionNumber && event.event === 'Purchase'">
+                  <router-link
+                    :to="{ name: 'confirmPurchaseSimple', params: { editionNumber: parseInt(event._args._editionNumber) }}"
+                    class="badge badge-primary">
+                    {{event._args._editionNumber}}
                   </router-link>
                 </div>
               </td>
@@ -59,6 +67,10 @@
                 <div v-if="event._args._buyer">
                   <span class="text-muted small">Owner: </span>
                   <clickable-address :eth-address="event._args._buyer" class="small"></clickable-address>
+                </div>
+                <div v-if="event._args._to">
+                  <span class="text-muted small">Owner: </span>
+                  <clickable-address :eth-address="event._args._to" class="small"></clickable-address>
                 </div>
                 <div v-if="event._args._bidder">
                   <span class="text-muted small">Bidder: </span>
@@ -103,6 +115,7 @@
   import USDPriceConverter from "../ui-controls/generic/USDPriceConverter";
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
   import PriceInEth from '../ui-controls/generic/PriceInEth';
+  import {mapEvent, mapMobileEvent} from '../../services/eventMapper';
 
   export default {
     name: 'activity',
@@ -127,6 +140,8 @@
       };
     },
     methods: {
+      mapEvent,
+      mapMobileEvent,
       showMore: function () {
         this.isLoading = true;
         this.offset = this.offset + this.limit;
@@ -155,64 +170,6 @@
           return false;
         }
         return totalAvailable > (this.offset + this.limit);
-      },
-      mapEvent: function (event) {
-        const eventStr = event.event;
-        if (eventStr === 'EditionCreated') {
-          return 'Creation';
-        }
-
-        if (eventStr === 'Purchase' && _.get(event, '_args._priceInWei', '0') === '0') {
-          return 'Gifted';
-        } else if (eventStr === 'Purchase' && _.get(event, '_args._priceInWei', '0') !== '0') {
-          return 'Purchase';
-        }
-
-        if (eventStr === 'BidPlaced') {
-          return 'Bid Placed';
-        }
-        if (eventStr === 'BidIncreased') {
-          return 'Bid Increased';
-        }
-        if (eventStr === 'BidAccepted') {
-          return 'Bid Accepted';
-        }
-        if (eventStr === 'BidderRefunded') {
-          return 'Bidder Refunded';
-        }
-        if (eventStr === 'PriceChanged') {
-          return 'Price Changed';
-        }
-        return eventStr;
-      },
-      mapMobileEvent: function (event) {
-        const eventStr = event.event;
-        if (eventStr === 'EditionCreated') {
-          return '⚡';
-        }
-
-        if (eventStr === 'Purchase' && _.get(event, '_args._priceInWei', '0') === '0') {
-          return '🎁';
-        } else if (eventStr === 'Purchase' && _.get(event, '_args._priceInWei', '0') !== '0') {
-          return '💸';
-        }
-
-        if (eventStr === 'BidPlaced') {
-          return '💌';
-        }
-        if (eventStr === 'BidIncreased') {
-          return '📈';
-        }
-        if (eventStr === 'BidAccepted') {
-          return '👍';
-        }
-        if (eventStr === 'BidderRefunded') {
-          return '🤑';
-        }
-        if (eventStr === 'PriceChanged') {
-          return '💰';
-        }
-        return eventStr;
       }
     },
     computed: {
@@ -280,6 +237,6 @@
   }
 
   .img-thumbnail {
-    max-width: 100px;
+    max-width: 75px;
   }
 </style>

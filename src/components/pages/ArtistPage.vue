@@ -34,6 +34,11 @@
               <accept-edition-bids class="mt-2" :editions="editions"></accept-edition-bids>
             </b-tab>
 
+            <!-- SALES -->
+            <b-tab title="Sales">
+              <edition-sales-events class="mt-2" :editions="editions"></edition-sales-events>
+            </b-tab>
+
             <div v-if="editions && account && !paused && anyOfTheEditionsAreOwnedByTheLoggedInAccount()">
 
               <!-- ARTWORKS CONTROLS -->
@@ -71,10 +76,12 @@
   import GalleryCard from '../ui-controls/cards/GalleryCard';
   import ArtistEditionControls from "../ui-controls/management/ArtistEditionControls";
   import ArtistDataControlPanel from "../ui-controls/artist/ArtistDataControlPanel";
+  import EditionSalesEvents from "../ui-controls/artist/EditionSalesEvents";
 
   export default {
     name: 'artistPage',
     components: {
+      EditionSalesEvents,
       ArtistDataControlPanel,
       ArtistEditionControls,
       GalleryCard,
