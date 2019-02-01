@@ -30,6 +30,11 @@
       TokenDetails,
       LoadingSection,
     },
+    metaInfo() {
+      return {
+        title: `${this.edition.name} | KnownOrigin.io`
+      };
+    },
     data() {
       return {
         PAGES: PAGES
