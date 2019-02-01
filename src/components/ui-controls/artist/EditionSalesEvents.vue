@@ -75,6 +75,8 @@
   import USDPriceConverter from "../generic/USDPriceConverter";
   import ViewTransactionDetails from "../generic/ViewTransactionDetails";
 
+  // TODO is this in the right place - move to management
+
   export default {
     name: 'editionSalesEvents',
     components: {

@@ -48,7 +48,12 @@
 
               <!-- ARTISTS CONTROLS -->
               <b-tab title="Profile" title-item-class="d-none d-md-block">
-                <artist-data-control-panel :editions="editions" :artist="artist"></artist-data-control-panel>
+                <artist-data-control-panel class="mt-2" :editions="editions" :artist="artist"></artist-data-control-panel>
+              </b-tab>
+
+              <!-- SELF SERVICE -->
+              <b-tab title="Creator">
+                <self-service class="mt-2" :artist="artist"></self-service>
               </b-tab>
 
             </div>
@@ -77,10 +82,12 @@
   import ArtistEditionControls from "../ui-controls/management/ArtistEditionControls";
   import ArtistDataControlPanel from "../ui-controls/artist/ArtistDataControlPanel";
   import EditionSalesEvents from "../ui-controls/artist/EditionSalesEvents";
+  import SelfService from "../ui-controls/management/SelfService";
 
   export default {
     name: 'artistPage',
     components: {
+      SelfService,
       EditionSalesEvents,
       ArtistDataControlPanel,
       ArtistEditionControls,
