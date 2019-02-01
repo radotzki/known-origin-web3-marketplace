@@ -80,6 +80,11 @@
 
   export default {
     name: 'artistPage',
+    metaInfo() {
+      return {
+        title: `${this.artist.name} - ${this.artist.shortDescription}`
+      };
+    },
     components: {
       EditionSalesEvents,
       ArtistDataControlPanel,

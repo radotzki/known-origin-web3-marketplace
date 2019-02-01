@@ -50,6 +50,21 @@
 
   export default {
     name: 'completePurchase',
+    metaInfo() {
+      const content = this.edition && this.edition.artist ? `${this.edition.name} by ${this.edition.artist.name}` : '';
+      const lowRes = _.get(this, 'edition.lowResImg');
+      return {
+        title: content,
+        meta: [
+          {property: 'og:title', content: content},
+          {property: 'og:url', content: `https://dapp.knownorigin.io/edition/${_.get(this, 'edition.edition')}`},
+          {property: 'og:image', content: `${lowRes}`},
+          {name: 'twitter:image', content: `${lowRes}`},
+          {name: 'twitter:title', content: `${_.get(this, 'edition.name', '')}`},
+          {name: 'twitter:description', content: `${_.get(this, 'edition.description', '')}`}
+        ]
+      };
+    },
     components: {
       AccountNotFound,
       EditionSoldOut,

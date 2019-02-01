@@ -145,6 +145,15 @@
 
   export default {
     name: 'app',
+    metaInfo: {
+      title: 'A digital arts marketplace powered by Ethereum and IPFS',
+      titleTemplate: '%s | KnownOrigin DApp',
+      metaInfo: {
+        meta: [
+          {charset: 'utf-8'}
+        ]
+      }
+    },
     components: {
       NetworkWarningBanner,
       FontAwesomeIcon,

@@ -58,6 +58,21 @@
       PlaceEditionBid,
       LoadingSection,
     },
+    metaInfo() {
+      const content = this.edition && this.edition.artist ? `${this.edition.name} by ${this.edition.artist.name}` : '';
+      const lowRes = _.get(this, 'edition.lowResImg');
+      return {
+        title: content,
+        meta: [
+          {property: 'og:title', content: content},
+          {property: 'og:url', content: `https://dapp.knownorigin.io/edition/${_.get(this, 'edition.edition')}`},
+          {property: 'og:image', content: `${lowRes}`},
+          {name: 'twitter:image', content: `${lowRes}`},
+          {name: 'twitter:title', content: `${_.get(this, 'edition.name', '')}`},
+          {name: 'twitter:description', content: `${_.get(this, 'edition.description', '')}`}
+        ]
+      };
+    },
     data() {
       return {
         PAGES: PAGES
@@ -91,15 +106,6 @@
           }
         });
       },
-      goToArtist: function (artistAccount) {
-        this.$router.push({name: 'artist', params: {artistAccount}});
-      },
-      getArtistAddress: function (artist) {
-        if (_.isArray(artist.ethAddress)) {
-          return artist.ethAddress[0];
-        }
-        return artist.ethAddress;
-      }
     },
     created() {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.CONFIRM_PURCHASE);
