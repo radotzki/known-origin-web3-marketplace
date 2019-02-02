@@ -216,9 +216,9 @@
         window.web3 = new Web3(new Web3.providers.WebsocketProvider(INFURA_MAINNET_WEBSOCKET_PROVIDER));
 
         console.log('Checking is web3 is connected');
-        window.web3.eth.net.isListening()
-          .then(() => {
-            console.log('Web appears to be connected, launching application');
+        window.web3.eth.net.getId()
+          .then((network) => {
+            console.log(`Web appears to be connected, launching application - network [${network}]`);
             this.$store.dispatch(actions.INIT_APP, window.web3);
           })
           .catch((e) => {
