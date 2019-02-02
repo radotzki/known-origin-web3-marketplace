@@ -180,7 +180,7 @@
       // Load Artist data at the earliest possibility
       this.$store.dispatch(actions.LOAD_ARTISTS);
 
-      const INFURA_MAINNET_HTTP_PROVIDER = 'https://mainnet.infura.io/v3/4396873c00c84479991e58a34a54ebd9';
+      // const INFURA_MAINNET_HTTP_PROVIDER = 'https://mainnet.infura.io/v3/4396873c00c84479991e58a34a54ebd9';
       const INFURA_MAINNET_WEBSOCKET_PROVIDER = 'wss://mainnet.infura.io/ws/v3/4396873c00c84479991e58a34a54ebd9';
 
       /**
@@ -195,7 +195,11 @@
           })
           .catch((e) => {
             console.log('Error Looks like Web3 is not connected - falling back to infura', e);
-            connectToInfura();
+            if (attempts <= 5) {
+              connectToInfura();
+            } else {
+              console.log(`Exceeded re-connect attempts - this is bad!`);
+            }
             throw e;
           });
       };
@@ -219,7 +223,7 @@
           })
           .catch((e) => {
             console.log(`Error Looks like Web3 is not connected - attempt [${attempts}]`, e);
-            if (attempts <= 3) {
+            if (attempts <= 5) {
               connectToInfura();
             } else {
               console.log(`Exceeded re-connect attempts - this is bad!`);
@@ -261,9 +265,9 @@
         window.web3 = new Web3(web3.currentProvider);
 
         console.log('Checking is web3 is connected');
-        window.web3.eth.net.isListening()
-          .then(() => {
-            console.log('Web appears to be connected, launching application');
+        window.web3.eth.net.getId()
+          .then((network) => {
+            console.log(`Web appears to be connected, launching application - network [${network}]`);
             this.$store.dispatch(actions.INIT_APP, window.web3);
           })
           .catch((e) => {

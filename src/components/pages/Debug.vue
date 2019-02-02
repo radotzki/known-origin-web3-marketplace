@@ -18,8 +18,10 @@
 
       <h4>Application Logs</h4>
 
-      <pre v-for="log in consoleData">
-        {{log}}
+      <pre>
+        <span v-for="log in consoleData">
+          {{log}}
+        </span>
       </pre>
     </div>
   </div>
@@ -63,3 +65,14 @@
     }
   };
 </script>
+
+<style scoped lang="scss">
+  pre {
+    width: 500px;                          /* specify width  */
+    white-space: pre-wrap;                 /* CSS3 browsers  */
+    white-space: -moz-pre-wrap !important; /* 1999+ Mozilla  */
+    white-space: -pre-wrap;                /* Opera 4 thru 6 */
+    white-space: -o-pre-wrap;              /* Opera 7 and up */
+    word-wrap: break-word;                 /* IE 5.5+ and up */
+  }
+</style>
