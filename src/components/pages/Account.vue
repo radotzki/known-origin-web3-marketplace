@@ -7,7 +7,7 @@
       </div>
     </div>
 
-    <div class="mt-4">
+    <div class="container-fluid mt-4">
       <div class="row editions-wrap mb-4">
         <div class="col-12">
           <clickable-address :eth-address="account"></clickable-address>

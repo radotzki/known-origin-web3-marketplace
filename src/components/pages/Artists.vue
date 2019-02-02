@@ -6,12 +6,14 @@
       </div>
     </div>
 
-    <div class="container mt-4">
-      <div class="card-columns">
-        <div v-for="artist in liveArtists" :key="artist.name">
-          <router-link :to="{ name: 'artist', params: { artistAccount: getArtistAddress(artist) } }">
-            <simple-artist-panel :artist="artist"></simple-artist-panel>
-          </router-link>
+    <div class="container-fluid mt-4">
+      <div class="row editions-wrap mb-4">
+        <div class="card-columns">
+          <div v-for="artist in liveArtists" :key="artist.name">
+            <router-link :to="{ name: 'artist', params: { artistAccount: getArtistAddress(artist) } }">
+              <simple-artist-panel :artist="artist"></simple-artist-panel>
+            </router-link>
+          </div>
         </div>
       </div>
     </div>
