@@ -124,6 +124,12 @@
           </div>
         </div>
         <div class="row mt-2 mb-2">
+          <div class="col text-center text-white small">
+            Built by <a href="http://blockrocket.tech">BlockRocket.tech</a>
+            using <font-awesome-icon :icon="['fab', 'ethereum']"></font-awesome-icon> & IPFS
+          </div>
+        </div>
+        <div class="row mt-2 mb-2">
           <div class="col text-center text-white">
             <current-network class="small"></current-network>
           </div>
