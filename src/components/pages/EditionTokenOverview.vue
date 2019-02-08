@@ -31,9 +31,11 @@
       LoadingSection,
     },
     metaInfo() {
-      return {
-        title: `${this.edition.name} | KnownOrigin.io`
-      };
+      if (this.edition) {
+        return {
+          title: `${this.edition.name} | KnownOrigin.io`
+        };
+      }
     },
     data() {
       return {

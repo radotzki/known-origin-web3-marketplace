@@ -31,13 +31,14 @@
             <gallery-card :edition="edition" :editionNumber="editionNumber" :token-id="edition.tokenId"></gallery-card>
           </div>
         </div>
+      </div>
 
-        <button v-if="canShowMoreV2"
-                @click="showMoreV2"
-                class="btn btn-block btn-outline-primary mt-1 mb-5 ml-3 mr-3">
-          Show more
-        </button>
-
+      <div class="row editions-wrap pt-1 pb-4" v-if="canShowMoreV2">
+        <div class="col-12 text-center">
+          <button @click="showMoreV2" class="btn btn-block btn-outline-primary mt-1 mb-5 ml-3 mr-3">
+            Show more
+          </button>
+        </div>
       </div>
 
       <!-- V1 -->
@@ -47,36 +48,35 @@
           <h5 class="mb-3">KODA V1</h5>
         </div>
 
-        <!--<div class="card-deck">-->
-          <div class="col-sm-3 mb-5"
-               v-for="asset in limitBy(assetsOwnedByAccount, currentListV1)"
-               :key="asset.tokenId">
-            <router-link :to="{ name: 'legacy-asset', params: { legacyTokenId: asset.tokenId } }" class="card-target">
-              <div class="card shadow-sm">
-                <edition-image class="card-img-top" :src="asset.lowResImg" :id="asset.tokenId"/>
-                <div class="card-body">
-                  <p class="card-title">
-                    {{ asset.artworkName }}
-                  </p>
-                </div>
-                <div class="card-footer bg-white no-top-border">
-                  <div class="mb-2">
-                    <token-id-badge :token-id="asset.tokenId" v-if="asset && asset.tokenId"></token-id-badge>
-                  </div>
-                  <img :src="findArtist(asset.artistCode).logo" class="artist-avatar"/>
-                  <span class="pl-1 artist-name">{{ asset.otherMeta.artist }}</span>
-                </div>
+        <div class="col-sm-3 mb-5"
+             v-for="asset in limitBy(assetsOwnedByAccount, currentListV1)"
+             :key="asset.tokenId">
+          <router-link :to="{ name: 'legacy-asset', params: { legacyTokenId: asset.tokenId } }" class="card-target">
+            <div class="card shadow-sm">
+              <edition-image class="card-img-top" :src="asset.lowResImg" :id="asset.tokenId"/>
+              <div class="card-body">
+                <p class="card-title">
+                  {{ asset.artworkName }}
+                </p>
               </div>
-            </router-link>
-          </div>
-        <!--</div>-->
+              <div class="card-footer bg-white no-top-border">
+                <div class="mb-2">
+                  <token-id-badge :token-id="asset.tokenId" v-if="asset && asset.tokenId"></token-id-badge>
+                </div>
+                <img :src="findArtist(asset.artistCode).logo" class="artist-avatar"/>
+                <span class="pl-1 artist-name">{{ asset.otherMeta.artist }}</span>
+              </div>
+            </div>
+          </router-link>
+        </div>
+      </div>
 
-        <button v-if="canShowMoreV1"
-                @click="showMoreV1"
-                class="btn btn-block btn-outline-primary mt-1 mb-5 ml-3 mr-3">
-          Show more
-        </button>
-
+      <div class="row editions-wrap pt-1 pb-4" v-if="canShowMoreV1">
+        <div class="col-12 text-center">
+          <button @click="showMoreV1" class="btn btn-outline-primary mt-1 mb-5 ml-3 mr-3">
+            Show more
+          </button>
+        </div>
       </div>
 
       <div
@@ -92,21 +92,21 @@
           <h5 class="mb-3">My Favorites</h5>
         </div>
 
-        <div class="card-deck">
-          <div class="col-auto mx-auto mb-5"
-               v-for="editionNumber in limitBy(accountFavorites, currentListLikes)"
-               :key="editionNumber"
-               v-if="assets[editionNumber] && assets[editionNumber].active">
-            <gallery-card :edition="assets[editionNumber]" :edition-number="editionNumber">
-            </gallery-card>
-          </div>
+        <div class="col-sm-3 mb-5"
+             v-for="editionNumber in limitBy(accountFavorites, currentListLikes)"
+             :key="editionNumber"
+             v-if="assets[editionNumber] && assets[editionNumber].active">
+          <gallery-card :edition="assets[editionNumber]" :edition-number="editionNumber">
+          </gallery-card>
         </div>
+      </div>
 
-        <button v-if="canShowMoreLikes"
-                @click="showMoreLikes"
-                class="btn btn-block btn-outline-primary mt-1 mb-5 ml-3 mr-3">
-          Show more
-        </button>
+      <div class="row editions-wrap pt-1 pb-4" v-if="canShowMoreLikes">
+        <div class="col-12 text-center">
+          <button @click="showMoreLikes" class="btn btn-outline-primary mt-1 mb-5 ml-3 mr-3">
+            Show more
+          </button>
+        </div>
       </div>
 
     </div>
@@ -115,18 +115,18 @@
 
 <script>
 
-  import {mapGetters, mapState} from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
   import Asset from '../ui-controls/v1/Asset';
   import AddressIcon from '../ui-controls/generic/AddressIcon';
   import EthAddress from '../ui-controls/generic/EthAddress';
   import ClickableAddress from '../ui-controls/generic/ClickableAddress';
   import LoadingSection from '../ui-controls/generic/LoadingSection';
-  import {PAGES} from '../../store/loadingPageState';
+  import { PAGES } from '../../store/loadingPageState';
   import * as actions from '../../store/actions';
   import HighResLabel from '../ui-controls/highres/HighResLabel';
   import GalleryCard from '../ui-controls/cards/GalleryCard';
-  import PurchaseTransactionBadge from "../ui-controls/badges/PurchaseTransactionBadge";
-  import EditionImage from "../ui-controls/generic/EditionImage";
+  import PurchaseTransactionBadge from '../ui-controls/badges/PurchaseTransactionBadge';
+  import EditionImage from '../ui-controls/generic/EditionImage';
   import TokenIdBadge from '../ui-controls/badges/TokenIdBadge';
 
   export default {
@@ -143,26 +143,26 @@
       EthAddress,
       ClickableAddress
     },
-    data() {
+    data () {
       return {
         PAGES: PAGES,
         accountFavorites: null,
-        currentListV1: 9,
-        currentListV2: 9,
-        currentListLikes: 9
+        currentListV1: 12,
+        currentListV2: 20,
+        currentListLikes: 12
       };
     },
     methods: {
       showMoreV1: function () {
-        this.currentListV1 = this.currentListV1 + 9;
+        this.currentListV1 = this.currentListV1 + 12;
         console.log(this.currentListV1);
       },
       showMoreV2: function () {
-        this.currentListV2 = this.currentListV2 + 9;
+        this.currentListV2 = this.currentListV2 + 20;
         console.log(this.currentListV2);
       },
       showMoreLikes: function () {
-        this.currentListLikes = this.currentListLikes + 9;
+        this.currentListLikes = this.currentListLikes + 12;
         console.log(this.currentListLikes);
       }
     },
@@ -205,7 +205,7 @@
         return totalAvailable > this.currentListLikes;
       }
     },
-    created() {
+    created () {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.ACCOUNT);
 
       const loadData = () => {
@@ -233,7 +233,7 @@
         loadData();
       }
     },
-    destroyed() {
+    destroyed () {
     }
   };
 </script>

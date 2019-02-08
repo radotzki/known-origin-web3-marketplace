@@ -85,7 +85,7 @@ const store = new Vuex.Store({
   },
   getters: {
     findArtist: (state) => (artistCode) => {
-      return _.find(state.artists, (artist) => artist.artistCode.toString() === artistCode);
+      return _.find(state.artists, (artist) => (artist && artist.artistCode) ? artist.artistCode.toString() === artistCode : false);
     },
     findArtistsForAddress: (state) => (artistAddress) => {
       if (state.artistLookupCache[artistAddress]) {
