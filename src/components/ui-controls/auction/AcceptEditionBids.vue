@@ -64,7 +64,6 @@
   import LoadingSpinner from '../../ui-controls/generic/LoadingSpinner';
   import RarityIndicator from '../../ui-controls/v2/RarityIndicator';
   import MetadataAttributes from '../../ui-controls/v2/MetadataAttributes';
-  import TweetEditionButton from '../../ui-controls/v2/TweetEditionButton';
   import HighResLabel from '../highres/HighResLabel';
   import {PAGES} from '../../../store/loadingPageState';
   import LoadingSection from '../../ui-controls/generic/LoadingSection';
@@ -98,7 +97,6 @@
       Availability,
       LoadingSection,
       HighResLabel,
-      TweetEditionButton,
       MetadataAttributes,
       RarityIndicator,
       ArtistShortBio,

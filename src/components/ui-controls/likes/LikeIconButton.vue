@@ -131,7 +131,7 @@
   }
 
   .like-card-container {
-    height: 20.047px;
+    height: 21px;
   }
 
 </style>

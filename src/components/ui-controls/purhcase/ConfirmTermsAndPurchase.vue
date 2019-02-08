@@ -7,45 +7,34 @@
 
     <div v-if="showTermsAndConditions">
 
-      <div class="form-check mb-2">
-        <label class="form-check-label" for="confirm_terms_label">
-          <input type="checkbox" id="confirm_terms_label"
-                 v-model="confirm_terms"
-                 v-on:click="$emit('terms-accepted')">
-          <span class="pl-1 small">
-            I agree with the KODA <router-link :to="{ name: 'terms' }" target="_blank">terms of service</router-link>
-          </span>
-        </label>
-      </div>
-
-      <button type="button" class="btn btn-success text-white mt-2"
+      <button type="button" class="btn btn-primary text-white"
               v-on:click="$emit('purchase-triggered')"
-              :disabled="!confirm_terms || isPurchaseTriggered(edition.edition, account)"
+              :disabled="isPurchaseTriggered(edition.edition, account)"
               v-if="isNotSoldOut || !isPurchaseSuccessful(edition.edition, account)">
-        Confirm
+        Buy
       </button>
+
+      <div class="small mt-3">
+          <router-link :to="{ name: 'terms' }" target="_blank">Terms of Service</router-link>
+      </div>
 
     </div>
 
     <!-- Purchased and show ability to re-buy -->
-    <div class="mt-2 pt-4 text-center small"
+    <div class="pt-2 text-center small"
          v-if="!overrideAlreadyPurchased && alreadyPurchasedEdition(edition.edition)">
 
-      <div class="text-success">
-        Looks like you already own this
-      </div>
-
-      <p class="text-muted pt-2">
+      <div class="">
+        Looks like you already own this.<br/>
         To purchase another one <span class="btn-link pointer" v-on:click="overridePurchase">click here</span>
-      </p>
-
+      </div>
     </div>
 
   </div>
 </template>
 
 <script>
-  import {mapGetters, mapState} from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
   import * as actions from '../../../store/actions';
 
   export default {
@@ -56,9 +45,8 @@
         type: Object
       }
     },
-    data() {
+    data () {
       return {
-        confirm_terms: false,
         overrideAlreadyPurchased: false
       };
     },
@@ -81,10 +69,10 @@
         'isPurchaseSuccessful',
         'isPurchaseFailed',
       ]),
-      isNotSoldOut() {
+      isNotSoldOut () {
         return this.edition.totalAvailable - this.edition.totalSupply > 0;
       },
-      showTermsAndConditions() {
+      showTermsAndConditions () {
 
         // If purchase inflight or finished, dont show
         if (this.isPurchaseTriggered(this.edition.edition, this.account) ||
@@ -108,7 +96,7 @@
       }
     },
     methods: {
-      overridePurchase() {
+      overridePurchase () {
         this.overrideAlreadyPurchased = true;
         this.$store.dispatch(`purchase/${actions.RESET_PURCHASE_STATE}`, {
           edition: this.edition

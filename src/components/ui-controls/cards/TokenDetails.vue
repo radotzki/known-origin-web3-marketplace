@@ -30,7 +30,6 @@
   import RarityIndicator from '../v2/RarityIndicator';
   import MetadataAttributes from '../v2/MetadataAttributes';
   import Availability from '../v2/Availability';
-  import TweetEditionButton from '../v2/TweetEditionButton';
   import ClickableAddress from '../generic/ClickableAddress';
   import TokenId from '../generic/TokenId';
   import HighResLabel from '../highres/HighResLabel';
@@ -57,7 +56,6 @@
       MetadataAttributes,
       ClickableAddress,
       TokenId,
-      TweetEditionButton,
       BirthTransactionBadge,
       Erc721Badge,
       IpfsBadge,
