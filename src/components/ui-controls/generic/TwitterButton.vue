@@ -3,7 +3,7 @@
     :page_title="page_title"
     :title="title"
     :page_url="url"
-    title_social="Twitter"
+    title_social="Tweet"
     button_design="outline"
     class="small"
     has_icon
