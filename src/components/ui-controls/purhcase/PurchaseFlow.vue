@@ -18,9 +18,8 @@
         <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
       </code>
       <br/>
-      <span class="text-muted mt-1">
-        <clickable-transaction :transaction="getTransactionForEdition(edition.edition, account)">
-        </clickable-transaction>
+      <span class="text-muted mt-3">
+        <clickable-transaction :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>
       </span>
       <hr/>
     </div>
@@ -29,9 +28,8 @@
     <div class="text-center mb-2" v-if="isPurchaseSuccessful(edition.edition, account)">
       <img src="../../../../static/GreenTick.svg" style="width: 50px" alt="txs-sucess"/>
       <p class="card-text text-success mt-2">Your purchase was successful!</p>
-      <span class="text-muted">
-        <clickable-transaction :transaction="getTransactionForEdition(edition.edition, account)">
-        </clickable-transaction>
+      <span class="text-muted mt-3">
+        <clickable-transaction :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>
       </span>
     </div>
 

@@ -8,7 +8,6 @@ import Feed from '@/components/pages/Feed';
 import Gallery from '@/components/pages/Gallery';
 import ArtistPage from '@/components/pages/ArtistPage';
 import ConfirmPurchase from '@/components/pages/ConfirmPurchase';
-import CompletePurchase from '@/components/pages/CompletePurchase';
 import Activity from '@/components/pages/Activity';
 import Debug from '@/components/pages/Debug';
 import EditionTokenOverview from '@/components/pages/EditionTokenOverview';
@@ -100,13 +99,6 @@ export default new Router({
       name: 'confirmPurchase',
       component: ConfirmPurchase,
       props: true,
-    },
-    {
-      path: '/artists/:artistAccount/editions/:editionNumber/buy',
-      alias: '/artists-v2/:artistAccount/editions/:editionNumber/buy', // legacy path
-      name: 'completePurchase',
-      component: CompletePurchase,
-      props: true
     },
     {
       path: '/assets/:legacyTokenId',

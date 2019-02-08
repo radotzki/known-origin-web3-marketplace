@@ -88,6 +88,26 @@ const purchaseStateModule = {
     },
   },
   actions: {
+    [actions.CHECK_IN_FLIGHT_TRANSACTIONS]: async function ({commit, dispatch, state, rootState}) {
+      _.forEach(state.purchaseState, async (purchaseState) => {
+        // if we have a txs hash and its not completed, try to action it
+        if (purchaseState.transaction && purchaseState.state !== 'PURCHASE_SUCCESSFUL') {
+          const result = await rootState.web3.eth.getTransactionReceipt(purchaseState.transaction);
+          // I have noticed different status from GETH/Parity nodes so check bool and int
+          if (result.status === true || result.status === 1) {
+            commit(mutations.PURCHASE_SUCCESSFUL, {
+              editionNumber: purchaseState.editionNumber,
+              account: purchaseState.account
+            });
+          } else if (result.status === false || result.status === 0) {
+            commit(mutations.PURCHASE_FAILED, {
+              editionNumber: purchaseState.editionNumber,
+              account: purchaseState.account
+            });
+          }
+        }
+      });
+    },
     [actions.PURCHASE_EDITION]: async function ({commit, dispatch, state, rootState}, {edition, account}) {
       Vue.$log.debug(`Attempting purchase of [${edition.edition}] from account [${account}]`);
 

@@ -41,7 +41,8 @@ const store = new Vuex.Store({
       paths: [
         'artists',
         'artistLookupCache',
-        'firebasePath'
+        'firebasePath',
+        'purchase.purchaseState'
       ]
     }),
   ],

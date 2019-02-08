@@ -153,7 +153,6 @@
     name: 'app',
     metaInfo: {
       title: 'A digital arts marketplace powered by Ethereum and IPFS',
-      titleTemplate: '%s | KnownOrigin DApp',
       metaInfo: {
         meta: [
           {charset: 'utf-8'}
@@ -337,9 +336,9 @@
   }
 
   body {
-    margin-bottom: 120px;
+    margin-bottom: 180px;
     padding-top: 50px;
-    padding-bottom: 20px;
+    padding-bottom: 15px;
   }
 
   h1 {
