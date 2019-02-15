@@ -23,7 +23,7 @@
 
       <b-tabs>
 
-        <b-tab title="🎨 Owned" active>
+        <b-tab title="Owned" active>
 
           <!-- V2 -->
           <div class="row editions-wrap mt-3" v-if="accountOwnedEditions.length > 0">
@@ -99,7 +99,7 @@
 
         </b-tab>
 
-        <b-tab title="❤️ Favourites">
+        <b-tab title="Favourites">
 
           <account-favorites class="mt-3" v-if="account"></account-favorites>
 
@@ -110,7 +110,7 @@
         </b-tab>
 
 
-        <b-tab title="🧾 Activity">
+        <b-tab title="Activity">
 
           <account-activity class="mt-3" v-if="account"></account-activity>
 

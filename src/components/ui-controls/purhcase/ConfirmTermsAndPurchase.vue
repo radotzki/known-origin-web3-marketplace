@@ -7,15 +7,23 @@
 
     <div v-if="showTermsAndConditions">
 
-      <button type="button" class="btn btn-primary text-white"
+      <button type="button" class="btn btn-primary text-white btn-block"
               v-on:click="$emit('purchase-triggered')"
               :disabled="isPurchaseTriggered(edition.edition, account)"
               v-if="isNotSoldOut || !isPurchaseSuccessful(edition.edition, account)">
-        Buy
+        <font-awesome-icon :icon="['fab', 'ethereum']"></font-awesome-icon> Buy Now (ETH)
       </button>
 
-      <div class="small mt-3">
-          <router-link :to="{ name: 'terms' }" target="_blank">Terms of Service</router-link>
+      <buy-edition-nifty-gateway class="mt-3" :edition="edition">
+      </buy-edition-nifty-gateway>
+
+      <hr />
+
+      <div class="small mt-1">
+          KnownOrigin <router-link :to="{ name: 'terms' }" target="_blank">Terms of Service</router-link>
+      </div>
+      <div class="small mt-1">
+        Nifty Gateway <a href="https://niftygateway.com/#/terms" target="_blank">Terms of Service</a>
       </div>
 
     </div>
@@ -36,10 +44,15 @@
 <script>
   import { mapGetters, mapState } from 'vuex';
   import * as actions from '../../../store/actions';
+  import BuyEditionNiftyGateway from "./BuyEditionNiftyGateway";
+  import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 
   export default {
     name: 'ConfirmTermsAndPurchase',
-    components: {},
+    components: {
+      BuyEditionNiftyGateway,
+      FontAwesomeIcon
+    },
     props: {
       edition: {
         type: Object
@@ -117,6 +130,10 @@
 
   .pointer {
     cursor: pointer;
+  }
+
+  .btn {
+    font-size: 14px;
   }
 </style>
 
