@@ -9,7 +9,7 @@
 
     <div class="container-fluid mt-4">
 
-      <div class="row pb-2 pt-2">
+      <div class="row pb-2 mt-3">
         <div class="col-12">
           <address-icon :eth-address="account"></address-icon>
           <span class="badge badge-primary" v-if="totalPurchases() > 0 ">{{ totalPurchases() }}</span>
@@ -25,10 +25,8 @@
 
         <b-tab title="🎨 Owned" active>
 
-          <!--<loading-section :page="PAGES.ACCOUNT" v-if="account"></loading-section>-->
-
           <!-- V2 -->
-          <div class="row editions-wrap mt-2" v-if="accountOwnedEditions.length > 0">
+          <div class="row editions-wrap mt-3" v-if="accountOwnedEditions.length > 0">
 
             <div class="col-12">
               <h5 class="mb-3">KODA V2</h5>
@@ -103,9 +101,9 @@
 
         <b-tab title="❤️ Favourites">
 
-          <account-favorites v-if="account"></account-favorites>
+          <account-favorites class="mt-3" v-if="account"></account-favorites>
 
-          <div v-if="!account" class="mt-2">
+          <div v-if="!account" class="mt-3">
             Looks like we cant see your account
           </div>
 
@@ -114,9 +112,9 @@
 
         <b-tab title="🧾 Activity">
 
-          <account-activity class="mt-2" v-if="account"></account-activity>
+          <account-activity class="mt-3" v-if="account"></account-activity>
 
-          <div v-if="!account" class="mt-2">
+          <div v-if="!account" class="mt-3">
             Looks like we cant see your account
           </div>
 

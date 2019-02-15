@@ -97,14 +97,21 @@ const purchaseStateModule = {
           if (result.status === true || result.status === 1) {
             commit(mutations.PURCHASE_SUCCESSFUL, {
               editionNumber: purchaseState.editionNumber,
-              account: purchaseState.account
+              account: purchaseState.account,
+              transaction: _.get(state.purchaseState[editionNumber], 'transaction')
             });
           } else if (result.status === false || result.status === 0) {
             commit(mutations.PURCHASE_FAILED, {
               editionNumber: purchaseState.editionNumber,
-              account: purchaseState.account
+              account: purchaseState.account,
+              transaction: _.get(state.purchaseState[editionNumber], 'transaction')
             });
           }
+        } else if (purchaseState.state === 'PURCHASE_TRIGGERED') {
+          commit(mutations.RESET_PURCHASE_STATE, {
+            editionNumber: purchaseState.editionNumber,
+            account: purchaseState.account
+          });
         }
       });
     },
@@ -114,6 +121,12 @@ const purchaseStateModule = {
       let contract = await rootState.KnownOriginDigitalAssetV2.deployed();
 
       commit(mutations.PURCHASE_TRIGGERED, {editionNumber: edition.edition, account});
+
+      rootState.notificationService.showPurchaseNotification({
+        type: mutations.PURCHASE_TRIGGERED,
+        edition,
+        account,
+      });
 
       // Trigger a timer to check the accounts purchases - can provide update faster waiting for the event
       const timer = setInterval(function () {
@@ -125,21 +138,55 @@ const purchaseStateModule = {
           from: account,
           value: edition.priceInWei
         })
-        .on('transactionHash', hash => {
-          console.log('Purchase transaction submitted', hash);
-          commit(mutations.PURCHASE_STARTED, {editionNumber: edition.edition, account, transaction: hash});
+        .on('transactionHash', transaction => {
+          console.log('Purchase transaction submitted', transaction);
+
+          rootState.notificationService.showPurchaseNotification({
+            type: mutations.PURCHASE_STARTED,
+            transaction: transaction,
+            edition,
+            account,
+          });
+
+          commit(mutations.PURCHASE_STARTED, {editionNumber: edition.edition, account, transaction: transaction});
         })
         .on('receipt', receipt => {
           console.log('Purchase successful', receipt);
           dispatch(`kodaV2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account}, {root: true});
+
+          rootState.notificationService.showPurchaseNotification({
+            type: mutations.PURCHASE_SUCCESSFUL,
+            edition,
+            account,
+            receipt
+          });
+
           commit(mutations.PURCHASE_SUCCESSFUL, {editionNumber: edition.edition, account});
         })
         .on('error', error => {
           console.log('Purchase rejection/error', error);
+
+          rootState.notificationService.showPurchaseNotification({
+            type: mutations.PURCHASE_FAILED,
+            transaction: _.get(state.purchaseState[edition.edition], 'transaction'),
+            edition,
+            account,
+            error
+          });
+
           commit(mutations.PURCHASE_FAILED, {editionNumber: edition.edition, account});
         })
         .catch((error) => {
           console.log('Purchase rejection/error', error);
+
+          rootState.notificationService.showPurchaseNotification({
+            type: mutations.PURCHASE_FAILED,
+            transaction: _.get(state.purchaseState[edition.edition], 'transaction'),
+            edition,
+            account,
+            error
+          });
+
           commit(mutations.PURCHASE_FAILED, {editionNumber: edition.edition, account});
         })
         .finally(async () => {
@@ -147,9 +194,11 @@ const purchaseStateModule = {
           dispatch(`kodaV2/${actions.REFRESH_AND_LOAD_INDIVIDUAL_EDITION}`, {editionNumber: edition.edition}, {root: true});
         });
     },
-    [actions.RESET_PURCHASE_STATE]: function ({commit, dispatch, state}, {edition}) {
-      dispatch(`kodaV2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account: state.account}, {root: true});
+    [actions.RESET_PURCHASE_STATE]: function ({commit, dispatch, state, rootState}, {edition, account}) {
       commit(mutations.RESET_PURCHASE_STATE, {editionNumber: edition.edition});
+
+      // Clear down any open notifications
+      rootState.notificationService.clearAllForEditionAndAccount(edition.edition, account);
     },
   },
 };

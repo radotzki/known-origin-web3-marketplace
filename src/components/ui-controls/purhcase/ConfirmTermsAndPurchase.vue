@@ -99,7 +99,8 @@
       overridePurchase () {
         this.overrideAlreadyPurchased = true;
         this.$store.dispatch(`purchase/${actions.RESET_PURCHASE_STATE}`, {
-          edition: this.edition
+          edition: this.edition,
+          account: this.account
         });
       }
     }

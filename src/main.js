@@ -16,6 +16,7 @@ import AsyncComputed from 'vue-async-computed';
 import BootstrapVue from 'bootstrap-vue';
 import Vue2Filters from 'vue2-filters';
 import VueLazyload from 'vue-lazyload';
+import Snotify, {SnotifyPosition} from 'vue-snotify';
 
 // Add brands to fontawesome
 import fontawesome from '@fortawesome/fontawesome';
@@ -32,13 +33,21 @@ Vue.use(VueLazyload, {
   lazyComponent: true
 });
 
+Vue.use(Snotify, {
+  toast: {
+    position: SnotifyPosition.rightBottom,
+    titleMaxLength: 150,
+    bodyMaxLength: 300,
+  },
+});
 Vue.use(VModal);
 Vue.use(AsyncComputed);
 Vue.use(BootstrapVue);
 Vue.use(require('vue-moment'));
 Vue.use(Vue2Filters);
 
-Vue.config.productionTip = false;
+Vue.config.productionTip = (process.env.NODE_ENV === 'production');
+Vue.config.silent = false;
 
 Vue.filter('toEth', function (value) {
   if (!value) return '';
@@ -84,7 +93,10 @@ Vue.filter('humanize', function (value) {
       router,
       logging,
       components: {App},
-      template: '<App/>'
+      template: '<App/>',
+      beforeCreate() {
+        Vue.$snotify = this.$snotify;
+      },
     });
   }
 })();
