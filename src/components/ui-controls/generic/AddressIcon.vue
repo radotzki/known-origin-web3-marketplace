@@ -1,30 +1,25 @@
 <template>
   <span v-if="ethAddress">
-    <!--<img :class="'icon-' + size" :src="'data:image/png;base64,' + createIcon"/>-->
-    <eth-address :value="ethAddress"></eth-address>
+    <img class="img-fluid icon-normal rounded-circle m-2" :src="createIcon"/>
+    <clickable-address :eth-address="ethAddress"></clickable-address>
   </span>
 </template>
 
 <script>
-  /* global web3:true */
-  import Identicon from '../../../../node_modules/identicon.js/identicon';
-  import EthAddress from './EthAddress';
+  import {toDataUrl} from 'myetherwallet-blockies';
+  import ClickableAddress from "./ClickableAddress";
 
   export default {
     name: 'addressIcon',
-    components: {EthAddress},
+    components: {ClickableAddress},
     props: {
       ethAddress: {
         type: String
-      },
-      size: {
-        type: String,
-        default: 'normal'
       }
     },
     computed: {
       createIcon: function () {
-        return new Identicon(this.ethAddress, 420).toString();
+        return toDataUrl(this.ethAddress);
       }
     }
   };
@@ -32,11 +27,6 @@
 
 <style>
   .icon-normal {
-    height: 64px;
-    width: 64px;
-  }
-
-  .icon-small {
     height: 32px;
     width: 32px;
   }
