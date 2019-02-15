@@ -20,7 +20,7 @@
           <!-- ARTWORKS -->
           <b-tabs>
 
-            <b-tab title="🎨 Artworks" class="mt-2" active>
+            <b-tab title="Artworks" class="mt-2" active>
               <div class="card-deck">
                 <div class="col-sm-4 mb-5"
                      v-for="edition in editions" :key="edition.edition"
@@ -31,24 +31,24 @@
             </b-tab>
 
             <!-- OFFERS/BIDS -->
-            <b-tab title="🤝 Offers">
+            <b-tab title="Offers">
               <accept-edition-bids class="mt-2" :editions="editions"></accept-edition-bids>
             </b-tab>
 
             <!-- SALES -->
-            <b-tab title="💵 Sales">
+            <b-tab title="Sales">
               <edition-sales-events class="mt-2" :editions="editions"></edition-sales-events>
             </b-tab>
 
             <div v-if="editions && account && !paused && anyOfTheEditionsAreOwnedByTheLoggedInAccount()">
 
               <!-- ARTWORKS CONTROLS -->
-              <b-tab title="💰 Pricing" title-item-class="d-none d-md-block" v-if="!paused">
+              <b-tab title="Pricing" title-item-class="d-none d-md-block" v-if="!paused">
                 <artist-edition-controls class="mt-2" :editions="editions"></artist-edition-controls>
               </b-tab>
 
               <!-- ARTISTS CONTROLS -->
-              <b-tab title="🤩 Profile" title-item-class="d-none d-md-block">
+              <b-tab title="Profile" title-item-class="d-none d-md-block">
                 <artist-data-control-panel :editions="editions" :artist="artist"></artist-data-control-panel>
               </b-tab>
 

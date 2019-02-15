@@ -17,6 +17,7 @@ import BootstrapVue from 'bootstrap-vue';
 import Vue2Filters from 'vue2-filters';
 import VueLazyload from 'vue-lazyload';
 import Snotify, {SnotifyPosition} from 'vue-snotify';
+import VueAnalytics from 'vue-analytics';
 
 // Add brands to fontawesome
 import fontawesome from '@fortawesome/fontawesome';
@@ -40,6 +41,15 @@ Vue.use(Snotify, {
     bodyMaxLength: 300,
   },
 });
+
+Vue.use(VueAnalytics, {
+  id: 'UA-117421198-1',
+  router,
+  autoTracking: {
+    exception: true
+  }
+});
+
 Vue.use(VModal);
 Vue.use(AsyncComputed);
 Vue.use(BootstrapVue);

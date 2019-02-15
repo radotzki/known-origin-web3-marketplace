@@ -117,12 +117,18 @@
     },
     methods: {
       completePurchase: function () {
+
+        this.$ga.event('purchase-flow', 'buy-now', 'ethereum');
+
         this.$store.dispatch(`purchase/${actions.PURCHASE_EDITION}`, {
           edition: this.edition,
           account: this.account
         });
       },
       retryPurchase: function () {
+
+        this.$ga.event('purchase-flow', 'reset-purchase');
+
         this.$store.dispatch(`purchase/${actions.RESET_PURCHASE_STATE}`, {
           edition: this.edition,
           account: this.account

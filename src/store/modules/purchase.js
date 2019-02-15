@@ -89,6 +89,9 @@ const purchaseStateModule = {
   },
   actions: {
     [actions.CHECK_IN_FLIGHT_TRANSACTIONS]: async function ({commit, dispatch, state, rootState}) {
+
+      // TODO get txs and if in flights laucnh correct state (handles back journey)
+
       _.forEach(state.purchaseState, async (purchaseState) => {
         // if we have a txs hash and its not completed, try to action it
         if (purchaseState.transaction && purchaseState.state !== 'PURCHASE_SUCCESSFUL') {
