@@ -30,7 +30,6 @@
     <header>
       <b-navbar toggleable="md" variant="light" class="fixed-top floating-nav">
 
-
         <b-navbar-brand href="/home" v-if="['home', 'gallery'].indexOf($route.name) > -1">
           KnownOrigin.io
         </b-navbar-brand>
@@ -68,6 +67,8 @@
     <main role="main" class="container-fluid">
       <router-view></router-view>
     </main>
+
+    <vue-snotify></vue-snotify>
 
     <footer class="footer">
       <div class="container">
@@ -126,7 +127,9 @@
         <div class="row mt-2 mb-2">
           <div class="col text-center text-white small">
             Built by <a href="http://blockrocket.tech" target="_blank">BlockRocket.tech</a>
-            using <font-awesome-icon :icon="['fab', 'ethereum']"></font-awesome-icon> & IPFS
+            using
+            <font-awesome-icon :icon="['fab', 'ethereum']"></font-awesome-icon>
+            & IPFS
           </div>
         </div>
         <div class="row mt-2 mb-2">
@@ -520,6 +523,51 @@
   .full-banner-secondary {
     height: 50px;
     color: $body-bg;
+  }
+
+  /**************************************/
+  /* vue-snotify notification overrides */
+  /**************************************/
+
+  .snotify {
+    max-width: 370px !important;
+  }
+
+  $snotify-success: #F0F0F0;
+  $snotify-success-bg: #2DD573;
+  $snotify-success-color: #F0F0F0;
+
+  $snotify-warning: #F0F0F0;
+  $snotify-warning-bg: #F5A623;
+  $snotify-warning-color: #F0F0F0;
+
+  $snotify-info: #F0F0F0;
+  $snotify-info-bg: #2D2935;
+  $snotify-info-color: #F0F0F0;
+
+  $snotify-simple: #2D2935;
+  $snotify-simple-bg: #F0F0F0;
+  $snotify-simple-color: #2D2935;
+
+  @import "~vue-snotify/styles/material";
+
+  .snotifyToast__body {
+    width: 240px !important;
+  }
+
+  .notification-icon {
+    width: 40px;
+    float: left;
+    font-size: 24px;
+  }
+
+  .notification-msg {
+    padding-left: 30px;
+
+    a {
+      color: #F0F0F0;
+      text-decoration: underline;
+    }
   }
 
 </style>

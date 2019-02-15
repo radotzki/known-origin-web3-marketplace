@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="row editions-wrap mt-2" v-if="accountFavorites && accountFavorites.length > 0">
+    <div class="row editions-wrap" v-if="accountFavorites && accountFavorites.length > 0">
       <div class="col-12">
         <h5 class="mb-3">Your Favorites</h5>
       </div>
