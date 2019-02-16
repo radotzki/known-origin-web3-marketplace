@@ -79,6 +79,9 @@
     },
     methods: {
       verifyPurchase: function () {
+
+        this.$ga.event('high-res-download', 'high-res-download-triggered');
+
         this.$store.dispatch(`highres/${actions.HIGH_RES_DOWNLOAD}`, {
           edition: this.edition,
           contractVersion: this.version

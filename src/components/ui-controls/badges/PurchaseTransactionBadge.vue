@@ -1,6 +1,6 @@
 <template>
      <span class="badge badge-pill badge-extra-data" v-if="tokenId && link">
-        <a :href="link" target="_blank">
+        <a :href="link" target="_blank" @click="onClick">
          <font-awesome-icon :icon="['fas', 'receipt']"></font-awesome-icon> Receipt
         </a>
     </span>
@@ -25,6 +25,11 @@
       return {
         link: null
       };
+    },
+    methods: {
+      onClick() {
+        this.$ga.event('badges', 'purchase-transaction', 'open-purchase-transaction');
+      }
     },
     created() {
       this.$store.state.eventService

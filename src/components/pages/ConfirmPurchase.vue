@@ -118,7 +118,7 @@
     methods: {
       completePurchase: function () {
 
-        this.$ga.event('purchase-flow', 'buy-now', 'ethereum');
+        this.$ga.event('purchase-flow', 'buy-now', 'buy-now-web3-eth');
 
         this.$store.dispatch(`purchase/${actions.PURCHASE_EDITION}`, {
           edition: this.edition,

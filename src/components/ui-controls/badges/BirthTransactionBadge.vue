@@ -1,6 +1,6 @@
 <template>
      <span class="badge badge-pill badge-extra-data" v-if="edition">
-        <a :href="link" target="_blank">
+        <a :href="link" target="_blank" @click="onClick">
          <font-awesome-icon :icon="['fas', 'bolt']"></font-awesome-icon> Creation
         </a>
     </span>
@@ -25,6 +25,11 @@
       return {
         link: null
       };
+    },
+    methods: {
+      onClick() {
+        this.$ga.event('badges', 'birth-transaction', 'open-birth-transaction');
+      }
     },
     created() {
       if (this.$store.state.eventService) {

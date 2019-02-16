@@ -47,6 +47,13 @@ Vue.use(VueAnalytics, {
   router,
   autoTracking: {
     exception: true
+  },
+  batch: {
+    enabled: true // default 2 every 500ms
+  },
+  debug: {
+    // set to false to disable GA - locally NODE_ENV set to `development`
+    sendHitTask: _.get(process.env, 'NODE_ENV', 'production') === 'production'
   }
 });
 
