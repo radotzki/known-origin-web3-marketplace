@@ -35,7 +35,7 @@
       onBuyNiftyGateway() {
         if (this.edition && this.currentNetworkId === 1) {
 
-          this.$ga.event('purchase-flow', 'buy-now', 'nifty-gateway');
+          this.$ga.event('purchase-flow', 'buy-now', 'buy-now-nifty-gateway');
 
           // to emit event
           window.open('https://niftygateway.com/#/buybutton/' +

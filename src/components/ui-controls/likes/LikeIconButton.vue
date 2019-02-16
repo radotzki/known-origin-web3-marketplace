@@ -101,6 +101,8 @@
           // Inverse
           this.like = !this.like;
 
+          this.$ga.event('likes', 'register', 'like-icon');
+
           // Fire off request
           this.$store.state.likesService.registerLike(this.editionNumber, this.account)
             .then(({like, totalEditionLikes}) => {

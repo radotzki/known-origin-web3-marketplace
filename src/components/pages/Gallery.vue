@@ -68,7 +68,6 @@
     methods: {
       onSubFilter: function (value) {
         if (this.order !== value) {
-          // FIXME reset these when switching sort order - is there a better way?
           this.order = value;
           this.limit = 20;
           this.offset = 0;
