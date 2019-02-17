@@ -19,6 +19,7 @@
 
           <!-- ARTWORKS -->
           <b-tabs>
+
             <b-tab title="Artworks" class="mt-2" active>
               <div class="card-deck">
                 <div class="col-sm-4 mb-5"
@@ -86,6 +87,11 @@
 
   export default {
     name: 'artistPage',
+    metaInfo() {
+      return {
+        title: `${this.artist.name} - ${this.artist.shortDescription}`
+      };
+    },
     components: {
       SelfService,
       EditionSalesEvents,

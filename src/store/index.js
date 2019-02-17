@@ -25,6 +25,7 @@ import FirestoreArtistService from "../services/artist/FirestoreArtistService";
 import LikesApiService from "../services/likes/LikesApiService";
 import EditionLookupService from "../services/edition/EditionLookupService";
 import KodaV2ContractService from "../services/web3/KodaV2ContractService";
+import NotificationService from "../services/notifications/notification.service";
 
 const KnownOriginDigitalAssetV1 = truffleContract(truffleSchema.KnownOriginDigitalAsset);
 const KnownOriginDigitalAssetV2 = truffleContract(truffleSchema.KnownOriginDigitalAssetV2);
@@ -41,7 +42,8 @@ const store = new Vuex.Store({
       paths: [
         'artists',
         'artistLookupCache',
-        'firebasePath'
+        'firebasePath',
+        'purchase.purchaseState'
       ]
     }),
   ],
@@ -82,10 +84,11 @@ const store = new Vuex.Store({
     likesService: new LikesApiService(),
     editionLookupService: new EditionLookupService(),
     artistService: new FirestoreArtistService(),
+    notificationService: new NotificationService(),
   },
   getters: {
     findArtist: (state) => (artistCode) => {
-      return _.find(state.artists, (artist) => artist.artistCode.toString() === artistCode);
+      return _.find(state.artists, (artist) => (artist && artist.artistCode) ? artist.artistCode.toString() === artistCode : false);
     },
     findArtistsForAddress: (state) => (artistAddress) => {
       if (state.artistLookupCache[artistAddress]) {
@@ -137,6 +140,7 @@ const store = new Vuex.Store({
         console.log(`Switching network based services to non mainnet channel - id=[${id}] firebasePath=[${firebasePath}]`);
         state.artistService.setFirebasePath(firebasePath);
         state.editionLookupService.setNetworkId(id);
+        state.notificationService.setNetworkId(id);
         state.likesService.setFirebasePathAndNetworkId(firebasePath, id);
         state.eventService.setFirebasePathAndNetworkId(firebasePath, id);
       }

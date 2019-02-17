@@ -132,7 +132,11 @@ const contractStateModule = {
       // Check sorting order the same, if different then assume new collection
       if (params.order !== _.get(state.galleryPagination, 'params.order')) {
         state.galleryEditions = editions;
+      } else if (params.offset === 0) {
+        // If offset from the start, then dont add to collection
+        state.galleryEditions = editions;
       } else {
+        // By default add to paginated list
         _.forEach(editions, (edition) => {
           state.galleryEditions.push(edition);
         });

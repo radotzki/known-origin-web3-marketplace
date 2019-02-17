@@ -8,15 +8,14 @@ import Feed from '@/components/pages/Feed';
 import Gallery from '@/components/pages/Gallery';
 import ArtistPage from '@/components/pages/ArtistPage';
 import ConfirmPurchase from '@/components/pages/ConfirmPurchase';
-import CompletePurchase from '@/components/pages/CompletePurchase';
 import Activity from '@/components/pages/Activity';
 import Debug from '@/components/pages/Debug';
 import EditionTokenOverview from '@/components/pages/EditionTokenOverview';
 import LegacyDeepLinkToken from '@/components/pages/legacy/LegacyDeepLinkToken';
-
-import store from '../store';
+import Meta from 'vue-meta';
 
 Vue.use(Router);
+Vue.use(Meta);
 
 export default new Router({
   mode: 'history',
@@ -101,32 +100,6 @@ export default new Router({
       component: ConfirmPurchase,
       props: true,
     },
-    {
-      path: '/artists/:artistAccount/editions/:editionNumber/buy',
-      alias: '/artists-v2/:artistAccount/editions/:editionNumber/buy', // legacy path
-      name: 'completePurchase',
-      component: CompletePurchase,
-      props: true
-    },
-    // TODO disable legacy route based on artistCode for now
-    // {
-    //   path: '/artists/:legacyArtistsCode',
-    //   name: 'artists-legacy',
-    //   beforeEnter: (to, from, next) => {
-    //     const legacyArtistsCode = to.params.legacyArtistsCode;
-    //     let artist = store.getters.findArtist(legacyArtistsCode);
-    //     if (artist && artist.ethAddress) {
-    //       next({
-    //         name: 'artist-v2',
-    //         params: {
-    //           artistAccount: _.isArray(artist.ethAddress) ? artist.ethAddress[0] : artist.ethAddress
-    //         }
-    //       });
-    //     } else {
-    //       next({name: 'gallery'});
-    //     }
-    //   }
-    // },
     {
       path: '/assets/:legacyTokenId',
       name: 'legacy-asset',

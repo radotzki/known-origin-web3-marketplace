@@ -1,6 +1,6 @@
 <template>
      <span class="badge badge-pill badge-extra-data" v-if="edition.tokenUri">
-       <a :href="edition.tokenUri" target="_blank">
+       <a :href="edition.tokenUri" @click="onClick" target="_blank">
          <font-awesome-icon :icon="['fas', 'cube']"></font-awesome-icon> IPFS
        </a>
     </span>
@@ -14,6 +14,11 @@
     props: ['edition'],
     components: {
       FontAwesomeIcon
+    },
+    methods: {
+      onClick() {
+        this.$ga.event('badges', 'ipfs-link', 'open-ipfs-data');
+      }
     }
   };
 </script>
