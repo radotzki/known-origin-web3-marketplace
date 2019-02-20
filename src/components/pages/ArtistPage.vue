@@ -53,7 +53,7 @@
               </b-tab>
 
               <!-- SELF SERVICE -->
-              <b-tab title="Creator">
+              <b-tab title="Curation">
                 <self-service class="mt-2" :artist="artist"></self-service>
               </b-tab>
 
