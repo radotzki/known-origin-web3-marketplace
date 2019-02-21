@@ -7,14 +7,14 @@ const getBalance = require('../../helpers/getBalance');
 const toBN = require('../../helpers/toBN');
 
 const KnownOriginDigitalAssetV2 = artifacts.require('KnownOriginDigitalAssetV2');
-const SelfServiceMinter = artifacts.require('SelfServiceMinter');
+const SelfServiceEditionCuration = artifacts.require('SelfServiceEditionCuration');
 
 require('chai')
   .use(require('chai-as-promised'))
   .use(bnChai(web3.utils.BN))
   .should();
 
-contract.only('SelfServiceMinter tests', function (accounts) {
+contract.only('SelfServiceEditionCuration tests', function (accounts) {
 
   const ROLE_KNOWN_ORIGIN = 1;
 
@@ -44,7 +44,7 @@ contract.only('SelfServiceMinter tests', function (accounts) {
   beforeEach(async function () {
     // Create contracts
     this.koda = await KnownOriginDigitalAssetV2.new({from: _owner});
-    this.minter = await SelfServiceMinter.new(this.koda.address, {from: _owner});
+    this.minter = await SelfServiceEditionCuration.new(this.koda.address, {from: _owner});
 
     // Whitelist the minting contract
     await this.koda.addAddressToAccessControl(this.minter.address, ROLE_KNOWN_ORIGIN, {from: _owner});
@@ -101,13 +101,33 @@ contract.only('SelfServiceMinter tests', function (accounts) {
           await this.minter.setAllowedArtist(edition1.artist, true, {from: _owner});
         });
 
-        it('artist 1 should be able to create edition', async function () {
+        it('artist 1 should be able to create multiple editions', async function () {
           const edition3 = {
             total: 10,
             tokenUri: "ipfs://edition3",
             price: etherToWei(1)
           };
-          await this.minter.createEdition(edition3.total, edition3.tokenUri, edition3.price, {from: edition1.artist});
+
+          const {logs: edition1Logs} = await this.minter.createEdition(edition3.total, edition3.tokenUri, edition3.price, {from: edition1.artist});
+          edition1Logs[0].event.should.be.equal('SelfServiceEditionCreated');
+          edition1Logs[0].args._editionNumber.should.be.eq.BN(20200); // last edition no. is 20000 and has total of 100 in it
+          edition1Logs[0].args._creator.should.be.equal(edition1.artist); // artist from edition 1 created it
+          edition1Logs[0].args._priceInWei.should.be.eq.BN(edition3.price);
+          edition1Logs[0].args._totalAvailable.should.be.eq.BN(edition3.total);
+
+          const edition4 = {
+            total: 50,
+            tokenUri: "ipfs://edition4",
+            price: etherToWei(2)
+          };
+          const {logs: edition2Logs} = await this.minter.createEdition(edition4.total, edition4.tokenUri, edition4.price, {from: edition1.artist});
+          console.log(edition2Logs);
+
+          edition2Logs[0].event.should.be.equal('SelfServiceEditionCreated');
+          edition2Logs[0].args._editionNumber.should.be.eq.BN(20300); // last edition no. is 20200 and has total of 10 in it = 20210 - rounded up to nearest 100 = 20300
+          edition2Logs[0].args._creator.should.be.equal(edition1.artist); // artist from edition 1 created it
+          edition2Logs[0].args._priceInWei.should.be.eq.BN(edition4.price);
+          edition2Logs[0].args._totalAvailable.should.be.eq.BN(edition4.total);
         });
 
         it('artist 2 should NOT be able to create edition', async function () {
