@@ -34,6 +34,7 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
   IKODAV2SelfServiceEditionCuration public kodaV2;
 
   // Default artist commission
+  // TODO reduce this to encourage minting
   uint256 public artistCommission = 80;
 
   // When true any existing KO artist can mint their own editions
