@@ -16,6 +16,8 @@ import AsyncComputed from 'vue-async-computed';
 import BootstrapVue from 'bootstrap-vue';
 import Vue2Filters from 'vue2-filters';
 import VueLazyload from 'vue-lazyload';
+import Snotify, {SnotifyPosition} from 'vue-snotify';
+import VueAnalytics from 'vue-analytics';
 
 // Add brands to fontawesome
 import fontawesome from '@fortawesome/fontawesome';
@@ -32,13 +34,37 @@ Vue.use(VueLazyload, {
   lazyComponent: true
 });
 
+Vue.use(Snotify, {
+  toast: {
+    position: SnotifyPosition.rightBottom,
+    titleMaxLength: 150,
+    bodyMaxLength: 300,
+  },
+});
+
+Vue.use(VueAnalytics, {
+  id: 'UA-117421198-1',
+  router,
+  autoTracking: {
+    exception: true
+  },
+  batch: {
+    enabled: true // default 2 every 500ms
+  },
+  debug: {
+    // set to false to disable GA - locally NODE_ENV set to `development`
+    sendHitTask: _.get(process.env, 'NODE_ENV', 'production') === 'production'
+  }
+});
+
 Vue.use(VModal);
 Vue.use(AsyncComputed);
 Vue.use(BootstrapVue);
 Vue.use(require('vue-moment'));
 Vue.use(Vue2Filters);
 
-Vue.config.productionTip = false;
+Vue.config.productionTip = (process.env.NODE_ENV === 'production');
+Vue.config.silent = false;
 
 Vue.filter('toEth', function (value) {
   if (!value) return '';
@@ -84,7 +110,10 @@ Vue.filter('humanize', function (value) {
       router,
       logging,
       components: {App},
-      template: '<App/>'
+      template: '<App/>',
+      beforeCreate() {
+        Vue.$snotify = this.$snotify;
+      },
     });
   }
 })();

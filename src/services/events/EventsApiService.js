@@ -26,6 +26,17 @@ export default class EventsApiService extends FirestoreEventService {
     };
   }
 
+  async loadAddressActivity(address) {
+    console.log(`Load address activity for network [${this.currentNetworkId}]`);
+    const results = await axios.get(`${this.api}/events/activity/address/${address}?network=${this.currentNetworkId}`, AXIOS_CONFIG);
+    if (results.data.success) {
+      return results.data;
+    }
+    return {
+      success: false
+    };
+  }
+
   async loadPurchaseEventsForEditions(editions = []) {
     console.log(`Load purchase events for editions [${editions}] for network [${this.currentNetworkId}]`);
 

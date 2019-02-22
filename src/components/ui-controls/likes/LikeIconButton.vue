@@ -101,6 +101,8 @@
           // Inverse
           this.like = !this.like;
 
+          this.$ga.event('likes', 'register', 'like-icon');
+
           // Fire off request
           this.$store.state.likesService.registerLike(this.editionNumber, this.account)
             .then(({like, totalEditionLikes}) => {
@@ -131,7 +133,7 @@
   }
 
   .like-card-container {
-    height: 20.047px;
+    height: 21px;
   }
 
 </style>

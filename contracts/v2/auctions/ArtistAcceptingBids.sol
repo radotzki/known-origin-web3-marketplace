@@ -4,6 +4,13 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
+//////////////////////////////////////
+// FIXME
+// V2 of this contract must include
+// * New event or property to show that you been out bid and by who
+// * Public/on contract list of open auctions
+// * Make internal mappings accessible
+//////////////////////////////////////
 /**
 * Auction interface definition - event and method definitions
 *
