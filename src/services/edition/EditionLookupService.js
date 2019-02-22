@@ -124,7 +124,7 @@ export default class EditionLookupService {
   }
 
 
-  async latestCreations(limit = 12) {
+  async latestCreations(limit = 8) {
     console.log(`Load latest creations on network [${this.currentNetworkId}]`);
 
     const results = await axios.get(`${this.api}/editions/feed/latest?network=${this.currentNetworkId}&limit=${limit}`, AXIOS_CONFIG);
