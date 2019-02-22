@@ -47,11 +47,13 @@
       <creative-challenge-label :attributes="edition.attributes"></creative-challenge-label>
     </div>
 
-    <div class="small mt-2" v-if="edition && !edition.tokenId">
+    <div class="small mt-2 mb-2" v-if="edition && !edition.tokenId">
       Edition 1 of {{ edition.totalAvailable }}
       <availability class="float-right" :totalAvailable="edition.totalAvailable"
                     :totalSupply="edition.totalSupply"></availability>
     </div>
+
+    <twitter-button :edition="edition"></twitter-button>
 
     <hr/>
 
@@ -95,11 +97,13 @@
   import XOfXBadge from '../badges/XOfXBadge';
   import PurchaseTransactionBadge from '../badges/PurchaseTransactionBadge';
   import LikeIconButton from '../likes/LikeIconButton';
+  import TwitterButton from "../generic/TwitterButton";
 
   export default {
     name: 'edition-card',
     props: ['edition'],
     components: {
+      TwitterButton,
       PurchaseTransactionBadge,
       XOfXBadge,
       TokenIdBadge,

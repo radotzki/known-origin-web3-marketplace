@@ -53,7 +53,6 @@
   import TokenId from '../generic/TokenId';
   import EditionNameByArtist from './EditionNameByArtist';
   import ClickableAddress from '../generic/ClickableAddress';
-  import TweetAssetButton from './TweetAssetButton';
   import MetadataAttributes from './MetadataAttributes';
   import HighResLabel from "../highres/HighResLabel";
   import HighResDownload from "../highres/HighResDownload";
@@ -69,7 +68,6 @@
       EditionNameByArtist,
       TokenId,
       ClickableAddress,
-      TweetAssetButton
     },
     name: 'asset',
     props: {

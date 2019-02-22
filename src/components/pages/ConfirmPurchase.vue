@@ -8,14 +8,21 @@
 
         <edition-card :edition="edition"></edition-card>
 
-        <div class="shadow-sm bg-white pt-0 pl-4 pr-4 pb-4">
+        <div class="shadow-sm bg-white pt-0 pl-4 pr-4 pb-4" style="min-height: 50px">
 
-          <a v-on:click="proceedWithPurchase" class="btn btn-primary text-white" v-if="canProceedWithPurchase">
-            Buy Now
-          </a>
+          <PurchaseFlow :edition="edition" v-on:retry-purchase="retryPurchase">
+          </PurchaseFlow>
 
-          <EditionSoldOut :edition="edition"></EditionSoldOut>
+          <ConfirmTermsAndPurchase :edition="edition" v-on:purchase-triggered="completePurchase">
+          </ConfirmTermsAndPurchase>
+
+          <AccountNotFound></AccountNotFound>
+
         </div>
+
+        <EditionSoldOut class="shadow-sm bg-white pt-0 pl-4 pr-4 pb-4"
+                        :edition="edition">
+        </EditionSoldOut>
 
         <div v-if="canProceedWithPurchase">
           <place-edition-bid :edition="edition"></place-edition-bid>
@@ -38,14 +45,17 @@
   import {mapGetters, mapState} from 'vuex';
   import _ from 'lodash';
   import * as actions from '../../store/actions';
-  import LoadingSection from '../ui-controls/generic/LoadingSection';
   import {PAGES} from '../../store/loadingPageState';
   import PlaceEditionBid from "../ui-controls/auction/PlaceEditionBid";
   import AuctionEventsList from "../ui-controls/auction/AuctionEventsList";
-  import EditionCard from '../ui-controls/cards/EditionCard';
+  import LikeIconButton from "../ui-controls/likes/LikeIconButton";
+  import PurchaseFlow from "../ui-controls/purhcase/PurchaseFlow";
+  import LoadingSection from "../ui-controls/generic/LoadingSection";
+  import EditionCard from "../ui-controls/cards/EditionCard";
   import EditionImage from "../ui-controls/generic/EditionImage";
   import EditionSoldOut from "../ui-controls/purhcase/EditionSoldOut";
-  import LikeIconButton from "../ui-controls/likes/LikeIconButton";
+  import AccountNotFound from "../ui-controls/purhcase/AccountNotFound";
+  import ConfirmTermsAndPurchase from "../ui-controls/purhcase/ConfirmTermsAndPurchase";
 
   export default {
     name: 'confirmPurchase',
@@ -57,21 +67,31 @@
       AuctionEventsList,
       PlaceEditionBid,
       LoadingSection,
+      PurchaseFlow,
+      AccountNotFound,
+      ConfirmTermsAndPurchase
     },
     metaInfo() {
-      const content = this.edition && this.edition.artist ? `${this.edition.name} by ${this.edition.artist.name}` : '';
-      const lowRes = _.get(this, 'edition.lowResImg');
-      return {
-        title: content,
-        meta: [
-          {property: 'og:title', content: content},
-          {property: 'og:url', content: `https://dapp.knownorigin.io/edition/${_.get(this, 'edition.edition')}`},
-          {property: 'og:image', content: `${lowRes}`},
-          {name: 'twitter:image', content: `${lowRes}`},
-          {name: 'twitter:title', content: `${_.get(this, 'edition.name', '')}`},
-          {name: 'twitter:description', content: `${_.get(this, 'edition.description', '')}`}
-        ]
-      };
+      if (this.edition) {
+        const content = this.edition.artist ? `${this.edition.name} by ${this.edition.artist.name}` : '';
+        return {
+          title: content,
+          meta: [
+            {property: 'title', content: content},
+            {property: 'url', content: `https://dapp.knownorigin.io/edition/${this.edition.edition}`},
+            {property: 'og:type', content: 'website'},
+            {property: 'og:title', content: content},
+            {property: 'og:url', content: `https://dapp.knownorigin.io/edition/${this.edition.edition}`},
+            {property: 'og:image', content: this.edition.lowResImg},
+            {property: 'og:description', content: this.edition.description},
+            {name: 'twitter:card', content: 'summary_large_image'},
+            {name: 'twitter:image', content: this.edition.lowResImg},
+            {name: 'twitter:title', content: this.edition.name},
+            {name: 'twitter:description', content: this.edition.description},
+            {name: 'twitter:site', content: '@KnownOrigin_io'}
+          ]
+        };
+      }
     },
     data() {
       return {
@@ -92,23 +112,42 @@
       canProceedWithPurchase() {
         const hasEditionLeftToPurchase = _.toNumber(this.edition.totalAvailable) - _.toNumber(this.edition.totalSupply) > 0;
 
-        return hasEditionLeftToPurchase &&
-          !this.isStartDateInTheFuture(this.edition.startDate);
+        return hasEditionLeftToPurchase && !this.isStartDateInTheFuture(this.edition.startDate);
       },
     },
     methods: {
-      proceedWithPurchase: function () {
-        this.$router.push({
-          name: 'completePurchase',
-          params: {
-            artistAccount: this.edition.artistAccount,
-            editionNumber: this.edition.edition
-          }
+      completePurchase: function () {
+
+        this.$ga.event('purchase-flow', 'buy-now', 'buy-now-web3-eth');
+
+        this.$store.dispatch(`purchase/${actions.PURCHASE_EDITION}`, {
+          edition: this.edition,
+          account: this.account
         });
       },
+      retryPurchase: function () {
+
+        this.$ga.event('purchase-flow', 'reset-purchase');
+
+        this.$store.dispatch(`purchase/${actions.RESET_PURCHASE_STATE}`, {
+          edition: this.edition,
+          account: this.account
+        });
+      }
     },
     created() {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.CONFIRM_PURCHASE);
+
+      // Checks to see if refreshed and txs stuck in the flow
+      this.$store.watch(
+        () => this.$store.state.web3,
+        () => {
+          this.$store.dispatch(`purchase/${actions.CHECK_IN_FLIGHT_TRANSACTIONS}`, {
+            edition: this.edition,
+            account: this.account
+          });
+        }
+      );
 
       /////////
       // API //

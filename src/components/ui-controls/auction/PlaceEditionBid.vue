@@ -199,6 +199,7 @@
       placeBid: function (e) {
         e.preventDefault();
         if (this.form.bid) {
+          this.$ga.event('purchase-flow', 'auction', 'place-bid');
           this.$store.dispatch(`auction/${actions.PLACE_BID}`, {
             edition: this.edition.edition,
             value: this.form.bid,
@@ -208,6 +209,7 @@
       increaseBid: function (e) {
         e.preventDefault();
         if (this.form.bid) {
+          this.$ga.event('purchase-flow', 'auction', 'increase-bid');
           this.$store.dispatch(`auction/${actions.INCREASE_BID}`, {
             edition: this.edition.edition,
             value: this.form.bid,
