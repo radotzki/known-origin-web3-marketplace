@@ -19,7 +19,7 @@ interface IKODAV2SelfServiceEditionCuration {
     uint256 _totalAvailable
   ) external returns (bool);
 
-  function artistsEditions(address _artistsAccount) external returns (uint256[] _editionNumbers);
+  function artistsEditions(address _artistsAccount) external returns (uint256[1] _editionNumbers);
 
   function totalAvailableEdition(uint256 _editionNumber) external returns (uint256);
 
@@ -27,15 +27,19 @@ interface IKODAV2SelfServiceEditionCuration {
 }
 
 
+interface IKODAAuction {
+  function setArtistsControlAddressAndEnabledEdition(uint256 _editionNumber, address _address);
+}
+
 contract SelfServiceEditionCuration is Ownable, Pausable {
   using SafeMath for uint256;
 
   // Calling address
   IKODAV2SelfServiceEditionCuration public kodaV2;
+  IKODAAuction public auction;
 
   // Default artist commission
-  // TODO reduce this to encourage minting
-  uint256 public artistCommission = 80;
+  uint256 public artistCommission = 85;
 
   // When true any existing KO artist can mint their own editions
   bool public openToAllArtist = false;
@@ -53,11 +57,15 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
     uint256 _totalAvailable
   );
 
-  constructor(IKODAV2SelfServiceEditionCuration _kodaV2) public {
+  constructor(
+    IKODAV2SelfServiceEditionCuration _kodaV2,
+    IKODAAuction _auction
+  ) public {
     kodaV2 = _kodaV2;
+    auction = _auction;
   }
 
-  function createEdition(uint256 _totalAvailable, string _tokenUri, uint256 _priceInWei)
+  function createEdition(uint256 _totalAvailable, string _tokenUri, uint256 _priceInWei, bool enableAuction)
   public
   whenNotPaused
   returns (uint256 _editionNumber)
@@ -72,8 +80,8 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
 
     // TODO drop this call and force all artists to be listed manually
     // Enforce the artist is the real deal and is on the platform in some form
-    uint256[] memory _editionNumbers = kodaV2.artistsEditions(msg.sender);
-    require(_editionNumbers.length > 0, "Can only mint your own once we have enabled you on the platform");
+    uint256[1] memory _editionNumbers = kodaV2.artistsEditions(msg.sender);
+    require(_editionNumbers[0] > 0, "Can only mint your own once we have enabled you on the platform");
 
     // Find the next edition number we can use
     uint256 editionNumber = getNextAvailableEditionNumber();
@@ -81,9 +89,14 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
     // Attempt to create a new edition
     bool created = createNewEdition(editionNumber, _priceInWei, _totalAvailable, _tokenUri);
 
-    // FIXME - is this possible?
     // If the creation fails for some reason, revert the block
     require(created, "Unable to create edition");
+
+    // Enable the auction if desired
+    if (enableAuction) {
+      // FIXME add tests
+      auction.setArtistsControlAddressAndEnabledEdition(editionNumber, msg.sender);
+    }
 
     // Trigger event
     emit SelfServiceEditionCreated(editionNumber, msg.sender, _priceInWei, _totalAvailable);
@@ -129,6 +142,14 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
    */
   function setKodavV2(IKODAV2SelfServiceEditionCuration _kodaV2) onlyOwner public {
     kodaV2 = _kodaV2;
+  }
+
+  /**
+   * @dev Sets the KODA auction
+   * @dev Only callable from owner
+   */
+  function setAuction(IKODAAuction _auction) onlyOwner public {
+    auction = _auction;
   }
 
   /**

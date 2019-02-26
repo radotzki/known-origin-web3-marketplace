@@ -9,6 +9,9 @@ const toBN = require('../../helpers/toBN');
 const KnownOriginDigitalAssetV2 = artifacts.require('KnownOriginDigitalAssetV2');
 const SelfServiceEditionCuration = artifacts.require('SelfServiceEditionCuration');
 
+// FIXME upgrade to V2
+const ArtistAcceptingBids = artifacts.require('ArtistAcceptingBids');
+
 require('chai')
   .use(require('chai-as-promised'))
   .use(bnChai(web3.utils.BN))
@@ -42,9 +45,14 @@ contract.only('SelfServiceEditionCuration tests', function (accounts) {
   };
 
   beforeEach(async function () {
-    // Create contracts
+    // Create KODA
     this.koda = await KnownOriginDigitalAssetV2.new({from: _owner});
-    this.minter = await SelfServiceEditionCuration.new(this.koda.address, {from: _owner});
+
+    // Create Auction
+    this.auction = await ArtistAcceptingBids.new(this.koda.address, {from: _owner});
+
+    // Create Minter
+    this.minter = await SelfServiceEditionCuration.new(this.koda.address, this.auction.address, {from: _owner});
 
     // Whitelist the minting contract
     await this.koda.addAddressToAccessControl(this.minter.address, ROLE_KNOWN_ORIGIN, {from: _owner});
@@ -74,7 +82,7 @@ contract.only('SelfServiceEditionCuration tests', function (accounts) {
             tokenUri: "ipfs://edition3",
             price: etherToWei(1)
           };
-          const newEditionNumber = await this.minter.createEdition.call(edition3.total, edition3.tokenUri, edition3.price, {from: edition1.artist});
+          const newEditionNumber = await this.minter.createEdition.call(edition3.total, edition3.tokenUri, edition3.price, false, {from: edition1.artist});
 
           console.log(newEditionNumber);
 
@@ -88,7 +96,7 @@ contract.only('SelfServiceEditionCuration tests', function (accounts) {
             price: etherToWei(1)
           };
           await assertRevert(
-            this.minter.createEdition(edition3.total, edition3.tokenUri, edition3.price, {from: accounts[6]}),
+            this.minter.createEdition(edition3.total, edition3.tokenUri, edition3.price, false, {from: accounts[6]}),
             "Can only mint your own once we have enabled you on the platform"
           );
         });
@@ -108,7 +116,7 @@ contract.only('SelfServiceEditionCuration tests', function (accounts) {
             price: etherToWei(1)
           };
 
-          const {logs: edition1Logs} = await this.minter.createEdition(edition3.total, edition3.tokenUri, edition3.price, {from: edition1.artist});
+          const {logs: edition1Logs} = await this.minter.createEdition(edition3.total, edition3.tokenUri, edition3.price, false, {from: edition1.artist});
           edition1Logs[0].event.should.be.equal('SelfServiceEditionCreated');
           edition1Logs[0].args._editionNumber.should.be.eq.BN(20200); // last edition no. is 20000 and has total of 100 in it
           edition1Logs[0].args._creator.should.be.equal(edition1.artist); // artist from edition 1 created it
@@ -120,7 +128,7 @@ contract.only('SelfServiceEditionCuration tests', function (accounts) {
             tokenUri: "ipfs://edition4",
             price: etherToWei(2)
           };
-          const {logs: edition2Logs} = await this.minter.createEdition(edition4.total, edition4.tokenUri, edition4.price, {from: edition1.artist});
+          const {logs: edition2Logs} = await this.minter.createEdition(edition4.total, edition4.tokenUri, edition4.price, false, {from: edition1.artist});
           console.log(edition2Logs);
 
           edition2Logs[0].event.should.be.equal('SelfServiceEditionCreated');
@@ -137,7 +145,7 @@ contract.only('SelfServiceEditionCuration tests', function (accounts) {
             price: etherToWei(1)
           };
           await assertRevert(
-            this.minter.createEdition(edition3.total, edition3.tokenUri, edition3.price, {from: edition2.artist}),
+            this.minter.createEdition(edition3.total, edition3.tokenUri, edition3.price, false, {from: edition2.artist}),
             "Only allowed artists can create editions for now"
           );
         });
