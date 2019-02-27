@@ -67,10 +67,9 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
   }
 
   // TODO - restrict the volume per day - make configurable
-  // TODO - do we need to always enable artists?
 
   /**
-   * @dev Called by artists
+   * @dev Called by artists, create new edition on the KODA platform
    */
   function createEdition(
     uint256 _totalAvailable,
@@ -87,8 +86,8 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
   }
 
   /**
-   * @dev Caller by owner, can create editons for other artists
-   * @dev Only callable from owner
+   * @dev Caller by owner, can create editions for other artists
+   * @dev Only callable from owner regardless of pause state
    */
   function createEditionFor(
     address _artist,
@@ -106,7 +105,7 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
   }
 
   /**
-   * @dev Creates the edition
+   * @dev Internal function for edition creation
    */
   function _createEdition(
     address _artist,
@@ -128,17 +127,12 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
       require(allowedArtists[_artist], "Only allowed artists can create editions for now");
     }
 
-    // FIXME test this code here
-    // Enforce the artist is the real deal and is on the platform in some form
-    uint256[1] memory _editionNumbers = kodaV2.artistsEditions(_artist);
-    require(_editionNumbers[0] > 0, "Can only mint your own once we have enabled you on the platform");
-
     // Find the next edition number we can use
     uint256 editionNumber = getNextAvailableEditionNumber();
 
     // Attempt to create a new edition
-    createNewEdition(editionNumber, _artist, _totalAvailable, _priceInWei, _startDate, _tokenUri);
-    // TODO do we need to do something with the return value of this call?
+    bool success = createNewEdition(editionNumber, _artist, _totalAvailable, _priceInWei, _startDate, _tokenUri);
+    require(success, "Failed to create new edition");
 
     // Enable the auction if desired
     if (_enableAuction) {
@@ -151,6 +145,9 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
     return editionNumber;
   }
 
+  /**
+   * @dev Internal function for calling external create methods with some none configurable defaults
+   */
   function createNewEdition(
     uint256 _editionNumber,
     address _artist,
@@ -163,10 +160,10 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
   returns (bool) {
     return kodaV2.createActiveEdition(
       _editionNumber,
-      0x0, // _editionData
-      1, // _editionType
+      0x0, // _editionData - no edition data
+      1, // _editionType - KODA always type 1
       _startDate,
-      0, // _endDate
+      0, // _endDate - 0 = MAX unit256
       _artist,
       artistCommission,
       _priceInWei,
@@ -175,8 +172,11 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
     );
   }
 
+  /**
+   * @dev Internal function for dynamically generating the next KODA edition number
+   */
   function getNextAvailableEditionNumber()
-  public
+  internal
   returns (uint256 editionNumber) {
 
     // Get current highest edition and total in the edition
@@ -186,7 +186,7 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
     // Add the current highest plus its total, plus 1 as tokens start at 1 not zero
     uint256 nextAvailableEditionNumber = highestEditionNumber.add(totalAvailableEdition).add(1);
 
-    // Round up to next 100/1000 etc based on max allowed size
+    // Round up to next 100, 1000 etc based on max allowed size
     return ((nextAvailableEditionNumber + maxEditionSize - 1) / maxEditionSize) * maxEditionSize;
   }
 

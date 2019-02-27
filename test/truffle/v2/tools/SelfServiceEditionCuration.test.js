@@ -64,12 +64,47 @@ contract.only('SelfServiceEditionCuration tests', function (accounts) {
   });
 
   beforeEach(async function () {
-    // Create 2 editions
+    // Create 2 editions in KODA already
     await this.koda.createActiveEdition(edition1.number, editionData, editionType, 0, 0, edition1.artist, artistCommission, edition1Price, edition1.tokenUri, edition1.total, {from: _owner});
     await this.koda.createActiveEdition(edition2.number, editionData, editionType, 0, 0, edition2.artist, artistCommission, edition1Price, edition2.tokenUri, edition2.total, {from: _owner});
   });
 
   describe('creating new editions', async function () {
+
+    describe('failing validation', async function () {
+
+      beforeEach(async function () {
+        await this.minter.setOpenToAllArtist(true, {from: _owner});
+      });
+
+      it('should fail when creating editions larger than 100', async function () {
+        await assertRevert(
+          this.minter.createEdition(101, etherToWei(1), 0, "123", false, {from: edition2.artist}),
+          "Unable to create editions of this size at present"
+        );
+      });
+
+      it('should fail when creating editions of size of zero', async function () {
+        await assertRevert(
+          this.minter.createEdition(0, etherToWei(1), 0, "123", false, {from: edition2.artist}),
+          "Unable to create editions of this size 0"
+        );
+      });
+
+      it('should fail when token URI not defined', async function () {
+        await assertRevert(
+          this.minter.createEdition(100, etherToWei(1), 0, "", false, {from: edition2.artist}),
+          "Token URI is missing"
+        );
+      });
+
+      it('should fail if artist not on the KO platform and minter IS open to all', async function () {
+        await assertRevert(
+          this.minter.createEdition(100, etherToWei(1), 0, "232323", false, {from: koCommission}),
+          "Can only mint your own once we have enabled you on the platform"
+        );
+      });
+    });
 
     describe('success without enabling auctions', async function () {
 
@@ -192,48 +227,80 @@ contract.only('SelfServiceEditionCuration tests', function (accounts) {
 
     });
 
-    describe('failing validation', async function () {
+    describe('creating several editions in a row', async function () {
 
       beforeEach(async function () {
         await this.minter.setOpenToAllArtist(true, {from: _owner});
       });
 
-      it('should fail when creating editions larger than 100', async function () {
-        await assertRevert(
-          this.minter.createEdition(101, etherToWei(1), 0, "123", false, {from: edition2.artist}),
-          "Unable to create editions of this size at present"
-        );
+      it('successful creates all the right editions', async function () {
+        const {logs: edition1} = await this.minter.createEditionFor(accounts[2], 17, etherToWei(1), 0, "111-111-111", true, {from: _owner});
+        validateEditionCreatedLog(edition1, {
+          _editionNumber: 20200,
+          _creator: accounts[2],
+          _priceInWei: etherToWei(1),
+          _totalAvailable: 17
+        });
+
+        const {logs: edition2} = await this.minter.createEditionFor(accounts[3], 99, etherToWei(2), 0, "222-222-222", true, {from: _owner});
+        validateEditionCreatedLog(edition2, {
+          _editionNumber: 20300,
+          _creator: accounts[3],
+          _priceInWei: etherToWei(2),
+          _totalAvailable: 99
+        });
+
+        const {logs: edition3} = await this.minter.createEditionFor(accounts[4], 1, etherToWei(3), 0, "333-333-333", true, {from: _owner});
+        validateEditionCreatedLog(edition3, {
+          _editionNumber: 20400,
+          _creator: accounts[4],
+          _priceInWei: etherToWei(3),
+          _totalAvailable: 1
+        });
+
+        const {logs: edition4} = await this.minter.createEditionFor(accounts[5], 34, etherToWei(4), 0, "444-444-444", true, {from: _owner});
+        validateEditionCreatedLog(edition4, {
+          _editionNumber: 20500,
+          _creator: accounts[5],
+          _priceInWei: etherToWei(4),
+          _totalAvailable: 34
+        });
+
+        const {logs: edition5} = await this.minter.createEditionFor(accounts[5], 100, etherToWei(5), 0, "555-555-555", true, {from: _owner});
+        validateEditionCreatedLog(edition5, {
+          _editionNumber: 20600,
+          _creator: accounts[5],
+          _priceInWei: etherToWei(5),
+          _totalAvailable: 100
+        });
+
+        const {logs: edition6} = await this.minter.createEditionFor(accounts[6], 100, etherToWei(5), 0, "666-666-666", true, {from: _owner});
+        validateEditionCreatedLog(edition6, {
+          _editionNumber: 20800,
+          _creator: accounts[6],
+          _priceInWei: etherToWei(5),
+          _totalAvailable: 100
+        });
+
+        // spills over to the next 1000
+        const {logs: edition7} = await this.minter.createEditionFor(accounts[7], 100, etherToWei(6), 0, "777-777-777", true, {from: _owner});
+        validateEditionCreatedLog(edition7, {
+          _editionNumber: 21000,
+          _creator: accounts[7],
+          _priceInWei: etherToWei(6),
+          _totalAvailable: 100
+        });
       });
 
-      it('should fail when creating editions of size of zero', async function () {
-        await assertRevert(
-          this.minter.createEdition(0, etherToWei(1), 0, "123", false, {from: edition2.artist}),
-          "Unable to create editions of this size 0"
-        );
-      });
+      function validateEditionCreatedLog(logs, {_editionNumber, _creator, _priceInWei, _totalAvailable}) {
+        logs[0].event.should.be.equal('SelfServiceEditionCreated');
+        logs[0].args._editionNumber.should.be.eq.BN(_editionNumber);
+        logs[0].args._creator.should.be.equal(_creator);
+        logs[0].args._priceInWei.should.be.eq.BN(_priceInWei);
+        logs[0].args._totalAvailable.should.be.eq.BN(_totalAvailable);
+      }
 
-      it('should fail if artist not on the KO platform and minter NOT open to all', async function () {
-        await assertRevert(
-          this.minter.createEdition(10, etherToWei(1), 0, "123", false, {from: _owner}),
-          "Can only mint your own once we have enabled you on the platform"
-        );
-      });
-
-      it('should fail when token URI not defined', async function () {
-        await assertRevert(
-          this.minter.createEdition(100, etherToWei(1), 0, "", false, {from: edition2.artist}),
-          "Token URI is missing"
-        );
-      });
-
-      it('should fail if artist not on the KO platform and minter IS open to all', async function () {
-        await assertRevert(
-          this.minter.createEdition(100, etherToWei(1), 0, "232323", false, {from: koCommission}),
-          "Can only mint your own once we have enabled you on the platform"
-        );
-      });
     });
-
   });
 
 });
