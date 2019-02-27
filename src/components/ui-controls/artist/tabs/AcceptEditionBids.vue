@@ -59,27 +59,27 @@
 <script>
 
   import {mapGetters, mapState} from 'vuex';
-  import ArtistShortBio from '../../ui-controls/artist/ArtistShortBio';
-  import ArtistPanel from '../../ui-controls/artist/ArtistPanel';
-  import LoadingSpinner from '../../ui-controls/generic/LoadingSpinner';
-  import RarityIndicator from '../../ui-controls/v2/RarityIndicator';
-  import MetadataAttributes from '../../ui-controls/v2/MetadataAttributes';
-  import HighResLabel from '../highres/HighResLabel';
-  import {PAGES} from '../../../store/loadingPageState';
-  import LoadingSection from '../../ui-controls/generic/LoadingSection';
-  import ClickableAddress from '../../ui-controls/generic/ClickableAddress';
-  import Availability from '../../ui-controls/v2/Availability';
+  import ArtistShortBio from '../ArtistShortBio';
+  import ArtistPanel from '../ArtistPanel';
+  import LoadingSpinner from '../../generic/LoadingSpinner';
+  import RarityIndicator from '../../v2/RarityIndicator';
+  import MetadataAttributes from '../../v2/MetadataAttributes';
+  import HighResLabel from '../../highres/HighResLabel';
+  import {PAGES} from '../../../../store/loadingPageState';
+  import LoadingSection from '../../generic/LoadingSection';
+  import ClickableAddress from '../../generic/ClickableAddress';
+  import Availability from '../../v2/Availability';
   import _ from 'lodash';
-  import EthAddress from '../../ui-controls/generic/EthAddress';
-  import PriceInEth from '../../ui-controls/generic/PriceInEth';
-  import UsdPrice from '../../ui-controls/generic/USDPrice';
-  import ClickableTransaction from '../../ui-controls/generic/ClickableTransaction';
+  import EthAddress from '../../generic/EthAddress';
+  import PriceInEth from '../../generic/PriceInEth';
+  import UsdPrice from '../../generic/USDPrice';
+  import ClickableTransaction from '../../generic/ClickableTransaction';
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
-  import AcceptingBidFlow from "./control-flows/AcceptingBidFlow";
-  import WithdrawingBidFlow from "./control-flows/WithdrawingBidFlow";
-  import RemainingCount from "../v2/RemainingCount";
-  import CancellingAuctionFlow from "./control-flows/CancelAuctionFlow";
-  import EditionImage from "../generic/EditionImage";
+  import AcceptingBidFlow from "../../auction/control-flows/AcceptingBidFlow";
+  import WithdrawingBidFlow from "../../auction/control-flows/WithdrawingBidFlow";
+  import RemainingCount from "../../v2/RemainingCount";
+  import CancellingAuctionFlow from "../../auction/control-flows/CancelAuctionFlow";
+  import EditionImage from "../../generic/EditionImage";
 
   export default {
     name: 'acceptEditionBids',
@@ -158,7 +158,7 @@
 </script>
 
 <style scoped lang="scss">
-  @import '../../../ko-colours.scss';
-  @import '../../../ko-card.scss';
+  @import '../../../../ko-colours';
+  @import '../../../../ko-card';
 
 </style>

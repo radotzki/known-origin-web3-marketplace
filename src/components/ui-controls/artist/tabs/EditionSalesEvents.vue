@@ -66,14 +66,14 @@
 <script>
 
   import {mapGetters, mapState} from 'vuex';
-  import EditionImage from "../generic/EditionImage";
+  import EditionImage from "../../generic/EditionImage";
 
-  import {PAGES} from '../../../store/loadingPageState';
+  import {PAGES} from '../../../../store/loadingPageState';
   import _ from 'lodash';
-  import {mapEvent, mapMobileEvent} from '../../../services/eventMapper';
-  import PriceInEth from "../generic/PriceInEth";
-  import USDPriceConverter from "../generic/USDPriceConverter";
-  import ViewTransactionDetails from "../generic/ViewTransactionDetails";
+  import {mapEvent, mapMobileEvent} from '../../../../services/eventMapper';
+  import PriceInEth from "../../generic/PriceInEth";
+  import USDPriceConverter from "../../generic/USDPriceConverter";
+  import ViewTransactionDetails from "../../generic/ViewTransactionDetails";
 
   // TODO is this in the right place - move to management
 
@@ -145,8 +145,8 @@
 </script>
 
 <style scoped lang="scss">
-  @import '../../../ko-colours.scss';
-  @import '../../../ko-card.scss';
+  @import '../../../../ko-colours';
+  @import '../../../../ko-card';
 
   .img-thumbnail {
     max-width: 50px;

@@ -57,43 +57,43 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
   // Config which enforces editions to not be over this size
   uint256 public maxEditionSize = 100;
 
-  // The time unit for 1 day
-  uint256 public ONE_DAY = 1 days;
+//  // The time unit for 1 day
+//  uint256 public ONE_DAY = 1 days;
+//
+//  // Max number per address of creations per day
+//  uint256 public maxMintsPerDay = 3;
+//
+//  struct Mints{
+//    uint256 mintCountIn24hrs;
+//  }
+//
+//  mapping(address => mapping(uint256 => uint256)) public mints;
 
-  // Max number per address of creations per day
-  uint256 public maxMintsPerDay = 3;
-
-  struct Mints{
-    uint256 mintCountIn24hrs;
-  }
-
-  mapping(address => mapping(uint256 => uint256)) public mints;
-
-  modifier whenNotExceededDailyLimit(){
-    // Find the last mints for the caller
-    uint256[] lastMints = mints[msg.sender];
-
-    // Work out the time 24hrs ago
-    uint256 oneDayAgo = now - ONE_DAY;
-
-
-
-    // Find the
-    uint256 previous3rdMint = lastMints[lastMints.length - 3];
-    if (previous3rdMint < oneDayAgo) {
-      uint256 previous2ndMint = lastMints[lastMints.length - 2];
-      if (previous2ndMint < oneDayAgo) {
-
-        uint256 previousLastMint = lastMints[lastMints.length - 1];
-        if (previousLastMint < oneDayAgo) {
-
-        } else {
-          require(false, "Reach max mints for the 24 hrs");
-        }
-      }
-    }
-    _;
-  }
+//  modifier whenNotExceededDailyLimit(){
+//    // Find the last mints for the caller
+//    uint256[] lastMints = mints[msg.sender];
+//
+//    // Work out the time 24hrs ago
+//    uint256 oneDayAgo = now - ONE_DAY;
+//
+//
+//
+//    // Find the
+//    uint256 previous3rdMint = lastMints[lastMints.length - 3];
+//    if (previous3rdMint < oneDayAgo) {
+//      uint256 previous2ndMint = lastMints[lastMints.length - 2];
+//      if (previous2ndMint < oneDayAgo) {
+//
+//        uint256 previousLastMint = lastMints[lastMints.length - 1];
+//        if (previousLastMint < oneDayAgo) {
+//
+//        } else {
+//          require(false, "Reach max mints for the 24 hrs");
+//        }
+//      }
+//    }
+//    _;
+//  }
 
   constructor(
     IKODAV2SelfServiceEditionCuration _kodaV2,
@@ -106,7 +106,7 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
   function createEdition(uint256 _totalAvailable, string _tokenUri, uint256 _priceInWei, bool enableAuction)
   public
   whenNotPaused
-  whenNotExceededDailyLimit
+//  whenNotExceededDailyLimit
   returns (uint256 _editionNumber)
   {
     // Enforce max edition size
@@ -139,13 +139,11 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
     // Trigger event
     emit SelfServiceEditionCreated(editionNumber, msg.sender, _priceInWei, _totalAvailable);
 
-    mints[msg.sender][block.number] = block.number;
-
     return editionNumber;
   }
 
   function getNextAvailableEditionNumber()
-  internal
+  public
   returns (uint256 editionNumber) {
 
     // Get current highest edition and total in the edition

@@ -89,16 +89,16 @@
 
 <script>
   import {mapGetters, mapState} from 'vuex';
-  import ClickableAddress from '../generic/ClickableAddress';
-  import PriceInEth from '../generic/PriceInEth';
-  import ClickableTransaction from '../generic/ClickableTransaction';
-  import ViewTransactionDetails from '../generic/ViewTransactionDetails';
-  import * as actions from '../../../store/actions';
+  import ClickableAddress from '../../generic/ClickableAddress';
+  import PriceInEth from '../../generic/PriceInEth';
+  import ClickableTransaction from '../../generic/ClickableTransaction';
+  import ViewTransactionDetails from '../../generic/ViewTransactionDetails';
+  import * as actions from '../../../../store/actions';
   import Web3 from 'web3';
   import _ from 'lodash';
   import Vue from 'vue';
-  import RemainingCount from "../v2/RemainingCount";
-  import EditionImage from "../generic/EditionImage";
+  import RemainingCount from "../../v2/RemainingCount";
+  import EditionImage from "../../generic/EditionImage";
 
   export default {
     name: 'artistEditionControls',

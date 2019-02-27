@@ -157,8 +157,8 @@
   import {mapState} from 'vuex';
   import _ from 'lodash';
   import urlRegex from 'url-regex';
-  import * as actions from '../../../store/actions';
-  import ArtistPanel from './ArtistPanel';
+  import * as actions from '../../../../store/actions';
+  import ArtistPanel from '../ArtistPanel';
   import IPFS from 'ipfs-api';
 
   const ipfs = IPFS('ipfs.infura.io', '5001', {protocol: 'https'});

@@ -73,13 +73,13 @@
   import LoadingSection from '../ui-controls/generic/LoadingSection';
   import Availability from '../ui-controls/v2/Availability';
   import _ from 'lodash';
-  import AcceptEditionBids from '../ui-controls/auction/AcceptEditionBids';
+  import AcceptEditionBids from '../ui-controls/artist/tabs/AcceptEditionBids';
   import AuctionEventsList from '../ui-controls/auction/AuctionEventsList';
   import GalleryCard from '../ui-controls/cards/GalleryCard';
-  import ArtistEditionControls from "../ui-controls/management/ArtistEditionControls";
-  import ArtistDataControlPanel from "../ui-controls/artist/ArtistDataControlPanel";
-  import EditionSalesEvents from "../ui-controls/artist/EditionSalesEvents";
-  import SelfService from "../ui-controls/management/SelfService";
+  import ArtistEditionControls from "../ui-controls/artist/tabs/ArtistEditionControls";
+  import ArtistDataControlPanel from "../ui-controls/artist/tabs/ArtistDataControlPanel";
+  import EditionSalesEvents from "../ui-controls/artist/tabs/EditionSalesEvents";
+  import SelfService from "../ui-controls/artist/tabs/SelfService";
 
   export default {
     name: 'artistPage',

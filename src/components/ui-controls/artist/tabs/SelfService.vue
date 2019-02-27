@@ -34,7 +34,7 @@
                      id="artworkName"
                      v-model="edition.name"
                      maxlength="100"/>
-              <small class="float-right form-text text-muted">{{(edition.name || '').length}}/100</small>
+              <small class="form-text text-muted">{{(edition.name || '').length}}/100</small>
             </div>
           </div>
 
@@ -50,7 +50,7 @@
                         v-model="edition.description"
                         maxlength="1000">
               </textarea>
-              <small class="float-right form-text text-muted">{{(edition.description || '').length}}/1000</small>
+              <small class="form-text text-muted">{{(edition.description || '').length}}/1000</small>
             </div>
           </div>
 
@@ -77,11 +77,10 @@
             </div>
           </div>
 
-
           <div class="form-group row">
 
             <div class="col-2">
-              <label for="editionSize">Edition Size</label>
+              <label for="editionSize">Size & Price</label>
             </div>
             <div class="col-5">
               <input type="number" class="form-control" id="editionSize" min="1" max="100"
@@ -89,6 +88,9 @@
                      @keyup.up="setScarcity"
                      @keyup.down="setScarcity"
                      @blur="setScarcity"/>
+              <small class="form-text text-muted">
+                Current max edition size is 100
+              </small>
             </div>
 
             <div class="col-5">
@@ -112,6 +114,30 @@
             </div>
 
           </div>
+
+
+          <div class="form-group row">
+            <div class="col-2">
+              <label>Enable Offers</label>
+            </div>
+            <div class="col-10">
+
+              <toggle-button
+                class="hand-pointer"
+                :value="edition.enableAuctions"
+                :v-model="edition.enableAuctions"
+                :labels="{checked: 'Offers Accepted', unchecked: 'Buy Only'}"
+                :width="140"
+                :height="25"
+                :font-size="12">
+              </toggle-button>
+              <small class="form-text text-muted">
+                All editions have a <strong>Buy Now</strong> price but you can allow users to make offers to be made on
+                your work.
+              </small>
+            </div>
+          </div>
+
 
         </form>
       </div>
@@ -146,63 +172,74 @@
         <!--</div>-->
         <!--</form>-->
 
-        <div class="form-group">
-          <label for="nftImageInput">Artwork Image</label>
-          <div class="custom-file">
-            <input id="nftImageInput"
-                   type="file"
-                   class="custom-file-input"
-                   :disabled="isImgSaving"
-                   @change="captureFile"
-                   accept="image/*">
-            <label class="custom-file-label" for="nftImageInput">
-              Select NFT image...
-            </label>
+        <div class="form-group row">
+
+          <div class="col-2">
+            <label for="nftImageInput">Artwork Image</label>
           </div>
-          <small id="nftImageInputHint" class="form-text text-muted">
-            Current max size is 10mb - support for jpeg, png, gif and svg's at present
-          </small>
+          <div class="col-10">
 
-          <p v-if="imageUpload.fileFormatError" class="text-danger small">
-            Invalid file format, supported extensions are <code>jpeg</code>, <code>png</code>, <code>gif</code>
-            and <code>svg</code>
-          </p>
+            <div class="custom-file">
+              <input id="nftImageInput"
+                     type="file"
+                     class="custom-file-input"
+                     :disabled="isImgSaving"
+                     @change="captureFile"
+                     accept="image/*">
+              <label class="custom-file-label" for="nftImageInput">
+                Select NFT image...
+              </label>
+            </div>
+            <small id="nftImageInputHint" class="form-text text-muted">
+              Current max size is 10mb - support for jpeg, png, gif and svg's at present
+            </small>
 
-          <p v-if="isImgInitial || isImgSaving" class="text-info small">
-            Uploading file to
-            <font-awesome-icon :icon="['fas', 'cube']"></font-awesome-icon>
-            IPFS
-          </p>
+            <p v-if="imageUpload.fileFormatError" class="text-danger small">
+              Invalid file format, supported extensions are <code>jpeg</code>, <code>png</code>, <code>gif</code>
+              and <code>svg</code>
+            </p>
 
-          <p v-if="isImgSuccess" class="text-success small">
-            Successfully uploaded file to
-            <font-awesome-icon :icon="['fas', 'cube']"></font-awesome-icon>
-            IPFS
-          </p>
+            <p v-if="imageUpload.isValidFileSize" class="text-danger small">
+              Max current file size supported it 10mb
+            </p>
 
-          <p v-if="isImgSuccess">
-            <a target="_blank" :href="imageUpload.ipfsImage">
-              <img :src="imageUpload.ipfsImage" class="img-thumbnail" style="max-height: 200px"/>
-            </a>
-          </p>
-          <p v-if="isImgFailed" class="text-warning small">
-            Something went went, try again or contract the team on telegram:
-            {{ imageUpload.uploadError }}
-          </p>
+            <p v-if="isImgInitial || isImgSaving" class="text-info small">
+              Uploading file to
+              <font-awesome-icon :icon="['fas', 'cube']"></font-awesome-icon>
+              IPFS
+              <font-awesome-icon :icon="['fas', 'spinner']" spin></font-awesome-icon>
+            </p>
+
+            <p v-if="isImgSuccess" class="text-success small">
+              Successfully uploaded file to
+              <font-awesome-icon :icon="['fas', 'cube']"></font-awesome-icon>
+              IPFS
+            </p>
+
+            <p v-if="isImgSuccess">
+              <a target="_blank" :href="imageUpload.ipfsImage">
+                <img :src="imageUpload.ipfsImage" class="img-thumbnail" style="max-height: 200px"/>
+              </a>
+            </p>
+            <p v-if="isImgFailed" class="text-warning small">
+              Something went went, try again or contract the team on telegram:
+              {{ imageUpload.uploadError }}
+            </p>
+          </div>
         </div>
-
-        <p>
-          If you want to enable <span class="badge badge-success">high res</span> and <span class="badge badge-info">bidding</span>
-          then fill in this
-          <strong>form [TODO]</strong> and we'll and we'll enable this for you
-        </p>
-
       </div>
+    </div>
+
+    <div class="form-group row col pt-3">
+      <p>
+        If you want to enable <span class="badge badge-success">high res</span> then fill in this <strong>form
+        [TODO]</strong> and we'll and we'll enable this for you
+      </p>
     </div>
 
     <div class="row">
       <div class="col">
-        <button class="btn btn-block btn-primary">
+        <button class="btn btn-block btn-primary" :disabled="!isEditionValid()" @click="createEdition">
           Create Edition
         </button>
       </div>
@@ -210,7 +247,7 @@
 
     <div class="row pt-3">
       <div class="col">
-        <a class="hand-pointer small" @click="expandIpfsData = !expandIpfsData">IPFS Data</a>
+        <a class="hand-pointer small" @click="expandIpfsData = !expandIpfsData">(debug view)</a>
         <pre v-show="expandIpfsData">{{generateIPFSData()}}</pre>
       </div>
     </div>
@@ -222,12 +259,14 @@
 
   import Web3 from 'web3';
   import {mapGetters, mapState} from 'vuex';
-  import * as actions from '../../../store/actions';
+  import * as actions from '../../../../store/actions';
   import _ from 'lodash';
   import Multiselect from 'vue-multiselect';
-  import tags from '../../../services/selfService/tags';
+  import tags from '../../../../services/selfService/tags';
   import IPFS from 'ipfs-api';
-  import UsdPricePerEther from "../generic/USDPricePerEther";
+  import UsdPricePerEther from "../../generic/USDPricePerEther";
+  import {ToggleButton} from 'vue-js-toggle-button';
+  import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 
   const ipfs = IPFS('ipfs.infura.io', '5001', {protocol: 'https'});
 
@@ -240,7 +279,9 @@
     name: 'selfService',
     components: {
       UsdPricePerEther,
-      Multiselect
+      Multiselect,
+      ToggleButton,
+      FontAwesomeIcon
     },
     data() {
       return {
@@ -249,12 +290,15 @@
         edition: {
           tags: [],
           external_uri: 'https://knownorigin.io',
-          highResAvailable: false // FIXME hard code this to false until we know how to solve it
+          highResAvailable: false, // FIXME hard code this to false until we know how to solve it
+          enableAuctions: true
         },
         imageUpload: {
           ipfsImage: null,
+          ipfsHash: null,
           uploadError: null,
           fileFormatError: false,
+          isValidFileSize: false,
           currentStatus: null,
         },
         expandIpfsData: false
@@ -317,26 +361,34 @@
         return 0;
       },
       captureFile(event) {
-        // TODO Validate Size
         event.stopPropagation();
         event.preventDefault();
 
         this.imageUpload.fileFormatError = false;
+        this.imageUpload.fileSizeError = false;
         this.imageUpload.currentStatus = STATUS_INITIAL;
 
         const file = event.target.files[0];
         // console.log(file);
 
-        if (file.type === 'image/jpeg' || file.type === 'image/svg+xml' || file.type === 'image/gif' || file.type === 'image/png') {
+        const isValidFileType = file.type === 'image/jpeg' || file.type === 'image/svg+xml' || file.type === 'image/gif' || file.type === 'image/png';
+        const fileSizeInMb = file.size / 1024 / 1024;
+        const isValidFileSize = fileSizeInMb <= 10;
+
+        if (isValidFileType && isValidFileSize) {
           const reader = new FileReader();
           reader.onloadend = () => this.saveFileToIpfs(reader);
           reader.readAsArrayBuffer(file);
         } else {
-          this.imageUpload.fileFormatError = true;
+          this.imageUpload.fileFormatError = isValidFileType;
+          this.imageUpload.fileSizeError = isValidFileSize;
         }
       },
       saveFileToIpfs(reader) {
         this.imageUpload.currentStatus = STATUS_SAVING;
+        this.imageUpload.ipfsHash = null;
+        this.imageUpload.ipfsImage = null;
+
         const buffer = Buffer.from(reader.result);
         ipfs.add(buffer)
           .then((response) => {
@@ -344,6 +396,7 @@
             return ipfs.pin.add(response[0].hash)
               .then((pinningResult) => {
                 console.log(`Saved to IPFS - [${response[0].hash}]`, pinningResult);
+                this.imageUpload.ipfsHash = response[0].hash;
                 this.imageUpload.ipfsImage = `https://ipfs.infura.io/ipfs/${response[0].hash}`;
                 this.imageUpload.currentStatus = STATUS_SUCCESS;
               });
@@ -359,8 +412,8 @@
           tags.push('high res');
         }
         return {
-          "name": this.edition.name,
-          "description": this.edition.description,
+          "name": _.trim(this.edition.name),
+          "description": _.trim(this.edition.description),
           "attributes": {
             "artist": this.artist.name,
             "scarcity": this.edition.scarcity,
@@ -370,12 +423,48 @@
           "image": this.imageUpload.ipfsImage ? this.imageUpload.ipfsImage : ''
         };
       },
+      isEditionValid() {
+        if (_.size(_.trim(this.edition.name)) < 1 || _.size(_.trim(this.edition.name)) > 100) {
+          console.log('Failed on [name] validation');
+          return false;
+        }
+        if (_.size(_.trim(this.edition.description)) < 1 || _.size(_.trim(this.edition.description)) > 1000) {
+          console.log('Failed on [description] validation');
+        }
+        if (_.size(this.edition.totalAvailable) < 1 || _.size(this.edition.totalAvailable) > 100) {
+          console.log('Failed on [totalAvailable] validation');
+        }
+        if (!this.artist) {
+          console.log('Failed on [artist] validation');
+          return false;
+        }
+        if (['ultrarare', 'rare', 'common'].indexOf(this.edition.scarcity) < 0) {
+          console.log('Failed on [scarcity] validation');
+          return false;
+        }
+        if (this.imageUpload.fileSizeError || this.imageUpload.fileFormatError) {
+          console.log('Failed on [fileSizeError/fileFormatError] validation');
+          return false;
+        }
+        if (_.size(this.imageUpload.ipfsHash) !== 46) {
+          console.log('Failed on [ipfsHash] validation');
+          return false;
+        }
+        if (this.edition.tags < 1) {
+          console.log('Failed on [tags] validation');
+          return false;
+        }
+        return true;
+      },
       createEdition() {
-        // FIXME
-        // validate size
-        // sign txs
-        // submit txs
-        // show response
+        if (this.isEditionValid()) {
+          this.$store.dispatch(`selfService/${actions.CREATE_SELF_SERVICE_EDITION}`, {
+            totalAvailable: this.edition.totalAvailable,
+            tokenUri: this.imageUpload.ipfsHash,
+            priceInWei: Web3.utils.toWei(this.edition.priceInEther, 'ether'),
+            enableAuctions: this.edition.enableAuctions
+          });
+        }
       }
     },
     created() {
@@ -387,8 +476,8 @@
 </script>
 
 <style scoped lang="scss">
-  @import '../../../ko-colours.scss';
-  @import '../../../ko-card.scss';
+  @import '../../../../ko-colours';
+  @import '../../../../ko-card';
 
   .hand-pointer {
     cursor: pointer;
