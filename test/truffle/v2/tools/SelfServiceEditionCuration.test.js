@@ -1,11 +1,11 @@
-const assertRevert = require('../../helpers/assertRevert');
-const etherToWei = require('../../helpers/etherToWei');
+const assertRevert = require('../../../helpers/assertRevert');
+const etherToWei = require('../../../helpers/etherToWei');
 const _ = require('lodash');
 const bnChai = require('bn-chai');
-const bytesToString = require('../../helpers/bytesToString');
+const bytesToString = require('../../../helpers/bytesToString');
 
-const getBalance = require('../../helpers/getBalance');
-const toBN = require('../../helpers/toBN');
+const getBalance = require('../../../helpers/getBalance');
+const toBN = require('../../../helpers/toBN');
 
 const KnownOriginDigitalAssetV2 = artifacts.require('KnownOriginDigitalAssetV2');
 const SelfServiceEditionCuration = artifacts.require('SelfServiceEditionCuration');
@@ -17,7 +17,7 @@ require('chai')
   .use(bnChai(web3.utils.BN))
   .should();
 
-contract.only('SelfServiceEditionCuration tests', function (accounts) {
+contract('SelfServiceEditionCuration tests', function (accounts) {
 
   const ROLE_KNOWN_ORIGIN = 1;
   const MAX_UINT32 = 4294967295;
@@ -80,19 +80,6 @@ contract.only('SelfServiceEditionCuration tests', function (accounts) {
           await this.minter.setOpenToAllArtist(true, {from: _owner});
         });
 
-        it('should be able to create edition', async function () {
-          const edition3 = {
-            total: 10,
-            tokenUri: "ipfs://edition3",
-            price: etherToWei(1)
-          };
-          const newEditionNumber = await this.minter.createEdition.call(edition3.total, edition3.tokenUri, edition3.price, false, {from: edition1.artist});
-
-          console.log(newEditionNumber);
-
-          // TODO verify created edition
-        });
-
         it('unknown artists should NOT be able to create edition', async function () {
           const edition3 = {
             total: 10,
@@ -109,6 +96,7 @@ contract.only('SelfServiceEditionCuration tests', function (accounts) {
 
       describe('when enabled for selected artists', async function () {
         beforeEach(async function () {
+          await this.minter.setOpenToAllArtist(false, {from: _owner});
           // enable only for edition1.artist
           await this.minter.setAllowedArtist(edition1.artist, true, {from: _owner});
         });
@@ -206,28 +194,45 @@ contract.only('SelfServiceEditionCuration tests', function (accounts) {
 
     describe('failing validation', async function () {
 
+      beforeEach(async function () {
+        await this.minter.setOpenToAllArtist(true, {from: _owner});
+      });
+
       it('should fail when creating editions larger than 100', async function () {
-
-      });
-
-      it('should fail if artist not on the KO platform and minter NOT open to all', async function () {
-
-      });
-
-      it('should fail if artist not on the KO platform and minter IS open to all', async function () {
-
+        await assertRevert(
+          this.minter.createEdition(101, "123", etherToWei(1), false, {from: edition2.artist}),
+          "Unable to create editions of this size at present"
+        );
       });
 
       it('should fail when creating editions of size of zero', async function () {
-
+        await assertRevert(
+          this.minter.createEdition(0, "123", etherToWei(1), false, {from: edition2.artist}),
+          "Unable to create editions of this size 0"
+        );
       });
 
-      it('should fail when token URI not found', async function () {
-
+      it('should fail if artist not on the KO platform and minter NOT open to all', async function () {
+        await assertRevert(
+          this.minter.createEdition(10, "123", etherToWei(1), false, {from: _owner}),
+          "Can only mint your own once we have enabled you on the platform"
+        );
       });
 
+      it('should fail when token URI not defined', async function () {
+        await assertRevert(
+          this.minter.createEdition(100, "", etherToWei(1), false, {from: edition2.artist}),
+          "Token URI is missing"
+        );
+      });
+
+      it('should fail if artist not on the KO platform and minter IS open to all', async function () {
+        await assertRevert(
+          this.minter.createEdition(100, "232323", etherToWei(1), false, {from: koCommission}),
+          "Can only mint your own once we have enabled you on the platform"
+        );
+      });
     });
-
 
   });
 

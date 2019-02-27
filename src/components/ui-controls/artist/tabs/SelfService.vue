@@ -1,22 +1,7 @@
 <template>
   <div class="container-fluid">
 
-    <h3>Edition Curation Tool</h3>
-
-    <ul>
-      <li>1. Fill in the all the details for your NFT</li>
-      <li>2. Select the size of your edition
-        <small>(historic sales point to a reduced scarcity selling for higher prices)</small>
-      </li>
-      <li>3. Upload a standard or lower resolution image, current max is 10mb
-        <small>(a high-res version will be offered to owners of your NFT if you fill in the form below)</small>
-      </li>
-      <li>4. Submit the transaction and wait for it be mined to the blockchain
-        <small>(after about 5 minutes your works will appear on the site)</small>
-      </li>
-    </ul>
-
-    <hr/>
+    <h3>Curation Tool</h3>
 
     <div class="row">
       <div class="col-12">
@@ -91,6 +76,9 @@
               <small class="form-text text-muted">
                 Current max edition size is 100
               </small>
+              <small class="form-text text-info">
+                Historic sales point to increasing scarcity going for higher prices
+              </small>
             </div>
 
             <div class="col-5">
@@ -121,11 +109,10 @@
               <label>Enable Offers</label>
             </div>
             <div class="col-10">
-
               <toggle-button
                 class="hand-pointer"
-                :value="edition.enableAuctions"
-                :v-model="edition.enableAuctions"
+                :value="true"
+                @change="edition.enableAuctions = $event.value"
                 :labels="{checked: 'Offers Accepted', unchecked: 'Buy Only'}"
                 :width="140"
                 :height="25"
@@ -237,20 +224,23 @@
       </p>
     </div>
 
+    <hr/>
+
     <div class="row">
       <div class="col">
         <button class="btn btn-block btn-primary" :disabled="!isEditionValid()" @click="createEdition">
           Create Edition
         </button>
+        <small class="float-left form-text text-info">
+          After about 5 minutes your works will appear on the site
+        </small>
+        <span class="float-right">
+          <a class="hand-pointer small" @click="expandIpfsData = !expandIpfsData">(debug view)</a>
+          <pre v-show="expandIpfsData">{{generateIPFSData()}}</pre>
+        </span>
       </div>
     </div>
 
-    <div class="row pt-3">
-      <div class="col">
-        <a class="hand-pointer small" @click="expandIpfsData = !expandIpfsData">(debug view)</a>
-        <pre v-show="expandIpfsData">{{generateIPFSData()}}</pre>
-      </div>
-    </div>
 
   </div>
 </template>
@@ -358,7 +348,7 @@
           let value = this.currentUsdPrice * this.edition.priceInEther;
           return value.toFixed(2);
         }
-        return 0;
+        return 0.00;
       },
       captureFile(event) {
         event.stopPropagation();

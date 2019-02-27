@@ -32,7 +32,8 @@ const KnownOriginDigitalAssetV1 = truffleContract(truffleSchema.KnownOriginDigit
 const KnownOriginDigitalAssetV2 = truffleContract(truffleSchema.KnownOriginDigitalAssetV2);
 const ArtistAcceptingBidsV2 = truffleContract(truffleSchema.ArtistAcceptingBidsV2);
 const ArtistEditionControlsV2 = truffleContract(truffleSchema.ArtistEditionControlsV2);
-const SelfServiceEditionCuration = truffleContract(truffleSchema.SelfServiceEditionCuration);
+// const SelfServiceEditionCuration = truffleContract(truffleSchema.SelfServiceEditionCuration);
+const SelfServiceEditionCuration = truffleContract(require('../../build/contracts/SelfServiceEditionCuration'));
 
 Vue.use(Vuex);
 
