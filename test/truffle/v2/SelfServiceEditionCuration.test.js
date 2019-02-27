@@ -2,6 +2,7 @@ const assertRevert = require('../../helpers/assertRevert');
 const etherToWei = require('../../helpers/etherToWei');
 const _ = require('lodash');
 const bnChai = require('bn-chai');
+const bytesToString = require('../../helpers/bytesToString');
 
 const getBalance = require('../../helpers/getBalance');
 const toBN = require('../../helpers/toBN');
@@ -9,8 +10,7 @@ const toBN = require('../../helpers/toBN');
 const KnownOriginDigitalAssetV2 = artifacts.require('KnownOriginDigitalAssetV2');
 const SelfServiceEditionCuration = artifacts.require('SelfServiceEditionCuration');
 
-// FIXME upgrade to V2
-const ArtistAcceptingBids = artifacts.require('ArtistAcceptingBids');
+const ArtistAcceptingBidsV2 = artifacts.require('ArtistAcceptingBidsV2');
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -20,6 +20,8 @@ require('chai')
 contract.only('SelfServiceEditionCuration tests', function (accounts) {
 
   const ROLE_KNOWN_ORIGIN = 1;
+  const MAX_UINT32 = 4294967295;
+  const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
   const _owner = accounts[0];
   const koCommission = accounts[1];
@@ -49,13 +51,16 @@ contract.only('SelfServiceEditionCuration tests', function (accounts) {
     this.koda = await KnownOriginDigitalAssetV2.new({from: _owner});
 
     // Create Auction
-    this.auction = await ArtistAcceptingBids.new(this.koda.address, {from: _owner});
+    this.auction = await ArtistAcceptingBidsV2.new(this.koda.address, {from: _owner});
 
     // Create Minter
     this.minter = await SelfServiceEditionCuration.new(this.koda.address, this.auction.address, {from: _owner});
 
     // Whitelist the minting contract
     await this.koda.addAddressToAccessControl(this.minter.address, ROLE_KNOWN_ORIGIN, {from: _owner});
+
+    // Whitelist the self service contract
+    await this.auction.addAddressToWhitelist(this.minter.address, {from: _owner});
   });
 
   beforeEach(async function () {
@@ -66,8 +71,7 @@ contract.only('SelfServiceEditionCuration tests', function (accounts) {
 
   describe('creating new editions', async function () {
 
-
-    describe.only('successfully', async function () {
+    describe('success without enabling auctions', async function () {
 
       describe('when enabled for all artists', async function () {
 
@@ -149,6 +153,53 @@ contract.only('SelfServiceEditionCuration tests', function (accounts) {
             "Only allowed artists can create editions for now"
           );
         });
+      });
+
+    });
+
+    describe('success an enabling auctions', async function () {
+
+      beforeEach(async function () {
+        await this.minter.setOpenToAllArtist(true, {from: _owner});
+      });
+
+      it('can mint new edition and enables auction', async function () {
+        const edition3 = {
+          total: 10,
+          tokenUri: "ipfs://edition3",
+          price: etherToWei(1)
+        };
+
+        const creator = edition1.artist;
+        const expectedEditionNumber = 20200;
+
+        // Check logs from creation call
+        const {logs} = await this.minter.createEdition(edition3.total, edition3.tokenUri, edition3.price, true, {from: creator});
+        logs[0].event.should.be.equal('SelfServiceEditionCreated');
+        logs[0].args._editionNumber.should.be.eq.BN(expectedEditionNumber); // last edition no. is 20000 and has total of 100 in it
+        logs[0].args._creator.should.be.equal(creator); // artist from edition 1 created it
+        logs[0].args._priceInWei.should.be.eq.BN(edition3.price);
+        logs[0].args._totalAvailable.should.be.eq.BN(edition3.total);
+
+        // Check edition created in KODA
+        const edition = await this.koda.detailsOfEdition(expectedEditionNumber);
+        edition[1].should.be.eq.BN(1);
+        edition[2].should.be.eq.BN(0);
+        edition[3].should.be.eq.BN(MAX_UINT32);
+        edition[4].should.be.equal(creator);
+        edition[5].should.be.eq.BN(85); // reduced commission for KO with self service?
+        edition[6].should.be.eq.BN(edition3.price);
+        edition[7].should.be.equal(`https://ipfs.infura.io/ipfs/${edition3.tokenUri}`);
+        edition[8].should.be.eq.BN(0);
+        edition[9].should.be.eq.BN(edition3.total);
+        edition[10].should.be.equal(true);
+
+        // check auction details
+        const {_enabled, _bidder, _value, _controller} = await this.auction.auctionDetails(expectedEditionNumber);
+        _enabled.should.be.equal(true);
+        _bidder.should.be.equal(ZERO_ADDRESS);
+        _value.should.be.eq.BN(0);
+        _controller.should.be.equal(creator);
       });
 
     });
