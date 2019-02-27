@@ -81,9 +81,9 @@
 
       <div class="row mt-5 justify-content-sm-center">
         <div class="col-sm-4">
-          <clickable-address-button :eth-address="auctionV1.contractAddress"
+          <clickable-address-button :eth-address="auction.contractAddress"
                                     :label="'View Smart Contract'"
-                                    v-if="auctionV1.contractAddress" class="float-right">
+                                    v-if="auction.contractAddress" class="float-right">
           </clickable-address-button>
           <h3>Auction</h3>
           <table class="table table-striped bg-white text-center">
@@ -91,24 +91,25 @@
             <tr>
               <td>Smart Contract</td>
               <td>
-                <clickable-address :eth-address="auctionV1.contractAddress"></clickable-address>
+                <clickable-address :eth-address="auction.contractAddress"></clickable-address> (v2) <br />
+                <small><clickable-address :eth-address="'0x921ade9018eec4a01e41e80a7eeba982b61724ec'"></clickable-address> (v1)</small>
               </td>
             </tr>
             <tr>
               <td>Bids Accepted</td>
-              <td>{{ auctionV1.bidsAccepted }}</td>
+              <td>{{ auction.bidsAccepted }}</td>
             </tr>
             <tr>
               <td>ETH Accepted</td>
-              <td>{{ auctionV1.ethAccepted }}</td>
+              <td>{{ auction.ethAccepted }}</td>
             </tr>
             <tr>
               <td>ETH Placed</td>
-              <td>{{ auctionV1.ethPlaced }}</td>
+              <td>{{ auction.ethPlaced }}</td>
             </tr>
             <tr>
               <td>Current Balance</td>
-              <td>{{ auctionV1.contractBalance }}</td>
+              <td>{{ auction.contractBalance }}</td>
             </tr>
             </tbody>
           </table>
@@ -152,7 +153,7 @@
           koCommissionAccount: this.$store.state.kodaV2.koCommissionAccount,
         };
       },
-      auctionV1: function () {
+      auction: function () {
         return {
           contractAddress: this.$store.state.auction.contractAddress,
           ethPlaced: this.$store.state.auction.ethPlaced,

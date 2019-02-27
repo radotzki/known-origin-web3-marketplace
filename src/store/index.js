@@ -29,8 +29,8 @@ import NotificationService from "../services/notifications/notification.service"
 
 const KnownOriginDigitalAssetV1 = truffleContract(truffleSchema.KnownOriginDigitalAsset);
 const KnownOriginDigitalAssetV2 = truffleContract(truffleSchema.KnownOriginDigitalAssetV2);
-const ArtistAcceptingBids = truffleContract(truffleSchema.ArtistAcceptingBids);
-const ArtistEditionControls = truffleContract(truffleSchema.ArtistEditionControls);
+const ArtistAcceptingBidsV2 = truffleContract(truffleSchema.ArtistAcceptingBidsV2);
+const ArtistEditionControlsV2 = truffleContract(truffleSchema.ArtistEditionControlsV2);
 
 Vue.use(Vuex);
 
@@ -194,8 +194,8 @@ const store = new Vuex.Store({
       // NON-ASYNC action - set web3 provider on init
       KnownOriginDigitalAssetV1.setProvider(web3.currentProvider);
       KnownOriginDigitalAssetV2.setProvider(web3.currentProvider);
-      ArtistAcceptingBids.setProvider(web3.currentProvider);
-      ArtistEditionControls.setProvider(web3.currentProvider);
+      ArtistAcceptingBidsV2.setProvider(web3.currentProvider);
+      ArtistEditionControlsV2.setProvider(web3.currentProvider);
 
       // Set the web3 instance
       commit(mutations.SET_WEB3, web3);
@@ -203,8 +203,8 @@ const store = new Vuex.Store({
       commit(mutations.SET_KODA_CONTRACT, {
         v1: KnownOriginDigitalAssetV1,
         v2: KnownOriginDigitalAssetV2,
-        auction: ArtistAcceptingBids,
-        editionControls: ArtistEditionControls,
+        auction: ArtistAcceptingBidsV2,
+        editionControls: ArtistEditionControlsV2,
       });
 
       // Load auction contract owner

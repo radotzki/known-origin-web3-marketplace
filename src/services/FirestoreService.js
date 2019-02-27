@@ -7,7 +7,6 @@ const firebaseApp = Firebase.initializeApp({
 });
 
 const firestore = firebaseApp.firestore();
-firestore.settings({timestampsInSnapshots: true});
 
 export default class FirestoreService {
 

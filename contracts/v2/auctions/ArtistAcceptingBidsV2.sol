@@ -1,27 +1,27 @@
 pragma solidity 0.4.24;
 
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/access/Whitelist.sol";
 import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./IKODAV2.sol";
 
 /**
-* Auction interface definition - event and method definitions
+* Auction V2 interface definition - event and method definitions
 *
 * https://www.knownorigin.io/
 */
-interface IAuction {
+interface IAuctionV2 {
 
   event BidPlaced(
     address indexed _bidder,
     uint256 indexed _editionNumber,
-    uint256 indexed _amount
+    uint256 _amount
   );
 
   event BidIncreased(
     address indexed _bidder,
     uint256 indexed _editionNumber,
-    uint256 indexed _amount
+    uint256 _amount
   );
 
   event BidWithdrawn(
@@ -36,27 +36,45 @@ interface IAuction {
     uint256 _amount
   );
 
+  event BidRejected(
+    address indexed _caller,
+    address indexed _bidder,
+    uint256 indexed _editionNumber,
+    uint256 _amount
+  );
+
   event BidderRefunded(
     uint256 indexed _editionNumber,
     address indexed _bidder,
-    uint256 indexed _amount
+    uint256 _amount
   );
 
   event AuctionCancelled(
     uint256 indexed _editionNumber
   );
 
-  function placeBid(uint256 _editionNumber) public payable returns (bool success);
+  event AuctionEnabled(
+    uint256 indexed _editionNumber,
+    address indexed _auctioneer
+  );
 
-  function increaseBid(uint256 _editionNumber) public payable returns (bool success);
+  event AuctionDisabled(
+    uint256 indexed _editionNumber,
+    address indexed _auctioneer
+  );
 
-  function withdrawBid(uint256 _editionNumber) public returns (bool success);
+  function placeBid(uint256 _editionNumber) payable external returns (bool success);
 
-  function acceptBid(uint256 _editionNumber) public returns (uint256 tokenId);
+  function increaseBid(uint256 _editionNumber) payable external returns (bool success);
 
-  function cancelAuction(uint256 _editionNumber) public returns (bool success);
+  function withdrawBid(uint256 _editionNumber) external returns (bool success);
+
+  function acceptBid(uint256 _editionNumber) external returns (uint256 tokenId);
+
+  function rejectBid(uint256 _editionNumber) external returns (bool success);
+
+  function cancelAuction(uint256 _editionNumber) external returns (bool success);
 }
-
 
 /**
 * @title Artists accepting bidding contract for KnownOrigin (KODA)
@@ -72,7 +90,7 @@ interface IAuction {
 * If the contract is Paused, no public actions can happen e.g. bids, increases, withdrawals
 * Managers of contract have full control over it act as a fallback in-case funds go missing or errors are found
 * On accepting of any bid, funds are split to KO and Artists - optional 3rd party split not currently supported
-* If an edition is sold out, the auction is stopped, manual refund required by bidder or owner
+* If an edition is sold out, the auction is stopped, manual refund required by bidder or whitelisted
 * Upon cancelling a bid which is in flight, funds are returned and contract stops further bids on the edition
 * Artists commissions and address are pulled from the KODA contract and are not based on the controller address
 *
@@ -87,20 +105,23 @@ interface IAuction {
 *
 * BE ORIGINAL. BUY ORIGINAL.
 */
-contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
+contract ArtistAcceptingBidsV2 is Whitelist, Pausable, IAuctionV2 {
   using SafeMath for uint256;
 
   // A mapping of the controller address to the edition number
-  mapping(uint256 => address) internal editionNumberToArtistControlAddress;
+  mapping(uint256 => address) public editionNumberToArtistControlAddress;
 
   // Enabled/disable the auction for the edition number
-  mapping(uint256 => bool) internal enabledEditions;
+  mapping(uint256 => bool) public enabledEditions;
 
   // Edition to current highest bidders address
-  mapping(uint256 => address) internal editionHighestBid;
+  mapping(uint256 => address) public editionHighestBid;
 
   // Mapping for edition -> bidder -> bid amount
   mapping(uint256 => mapping(address => uint256)) internal editionBids;
+
+  // A simple list of editions which have been once added to this contract
+  uint256[] public editionsOnceEnabledForAuctions;
 
   // Min increase in bid amount
   uint256 public minBidAmount = 0.01 ether;
@@ -121,9 +142,9 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
     _;
   }
 
-  // Checks the msg.sender is the artists control address or the auction owner
+  // Checks the msg.sender is the artists control address or the auction whitelisted
   modifier whenCallerIsController(uint256 _editionNumber) {
-    require(editionNumberToArtistControlAddress[_editionNumber] == msg.sender || msg.sender == owner, "Edition not managed by calling address");
+    require(editionNumberToArtistControlAddress[_editionNumber] == msg.sender || whitelist(msg.sender), "Edition not managed by calling address");
     _;
   }
 
@@ -176,6 +197,7 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   constructor(IKODAV2 _kodaAddress) public {
     kodaAddress = _kodaAddress;
     koCommissionAccount = msg.sender;
+    super.addAddressToWhitelist(msg.sender);
   }
 
   //////////////////////////
@@ -272,14 +294,14 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   }
 
   /**
-   * @dev Method for cancelling an auction, only called from contract owner
+   * @dev Method for cancelling an auction, only called from contract whitelist
    * @dev refunds previous highest bidders bid
    * @dev removes current highest bid so there is no current highest bidder
    * @return true on success
    */
   function cancelAuction(uint256 _editionNumber)
   public
-  onlyOwner
+  onlyIfWhitelisted(msg.sender)
   whenEditionExists(_editionNumber)
   returns (bool success)
   {
@@ -291,6 +313,34 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
 
     // Fire event
     emit AuctionCancelled(_editionNumber);
+
+    return true;
+  }
+
+  /**
+   * @dev Public method for increasing your bid, reverts if:
+   * - Contract is Paused
+   * - Edition provided is not valid
+   * - Edition provided is not configured for auctions
+   * - Edition provided is sold out
+   * - msg.sender is not the current highest bidder
+   * @return true on success
+   */
+  function rejectBid(uint256 _editionNumber)
+  public
+  whenNotPaused
+  whenEditionExists(_editionNumber)
+  whenCallerIsController(_editionNumber) // Checks only the controller can call this
+  whenAuctionEnabled(_editionNumber) // Checks auction is still enabled
+  returns (bool success)
+  {
+    address rejectedBidder = editionHighestBid[_editionNumber];
+    uint256 rejectedBidAmount = editionBids[_editionNumber][rejectedBidder];
+
+    // get current highest bid and refund it
+    _refundHighestBidder(_editionNumber);
+
+    emit BidRejected(msg.sender, rejectedBidder, _editionNumber, rejectedBidAmount);
 
     return true;
   }
@@ -328,22 +378,8 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
     uint256 _tokenId = kodaAddress.mint(winningAccount, _editionNumber);
     require(_tokenId != 0, "Failed to mint new token");
 
-    // Get the commission and split bid amount accordingly
-    address artistAccount;
-    uint256 artistCommission;
-    (artistAccount, artistCommission) = kodaAddress.artistCommission(_editionNumber);
-
-    // Extract the artists commission and send it
-    uint256 artistPayment = winningBidAmount.div(100).mul(artistCommission);
-    if (artistPayment > 0) {
-      artistAccount.transfer(artistPayment);
-    }
-
-    // Send KO remaining amount
-    uint256 remainingCommission = winningBidAmount.sub(artistPayment);
-    if (remainingCommission > 0) {
-      koCommissionAccount.transfer(remainingCommission);
-    }
+    // Split the monies
+    _handleFunds(_editionNumber, winningBidAmount);
 
     // Clear out highest bidder for this auction
     delete editionHighestBid[_editionNumber];
@@ -357,6 +393,32 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
     emit BidAccepted(winningAccount, _editionNumber, _tokenId, winningBidAmount);
 
     return _tokenId;
+  }
+
+  /**
+   * Handle all splitting of funds to the artist, any optional split and KO
+   */
+  function _handleFunds(uint256 _editionNumber, uint256 _winningBidAmount) internal {
+
+    // Get the commission and split bid amount accordingly
+    (address artistAccount, uint256 artistCommission) = kodaAddress.artistCommission(_editionNumber);
+
+    // Extract the artists commission and send it
+    uint256 artistPayment = _winningBidAmount.div(100).mul(artistCommission);
+    artistAccount.transfer(artistPayment);
+
+    // Optional Commission Splits
+    (uint256 optionalCommissionRate, address optionalCommissionRecipient) = kodaAddress.editionOptionalCommission(_editionNumber);
+
+    // Apply optional commission structure if we have one
+    if (optionalCommissionRate > 0) {
+      uint256 rateSplit = _winningBidAmount.div(100).mul(optionalCommissionRate);
+      optionalCommissionRecipient.transfer(rateSplit);
+    }
+
+    // Send KO remaining amount
+    uint256 remainingCommission = _winningBidAmount.sub(artistPayment).sub(rateSplit);
+    koCommissionAccount.transfer(remainingCommission);
   }
 
   /**
@@ -387,63 +449,115 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
   ///////////////////////////////
 
   /**
-   * @dev Enables the edition for auctions
-   * @dev Only callable from owner
+   * @dev Enables the edition for auctions in a single call
+   * @dev Only callable from whitelisted account or KODA edition artists
    */
-  function enableEdition(uint256 _editionNumber) onlyOwner public returns (bool) {
+  function enableEditionForArtist(uint256 _editionNumber)
+  public
+  whenNotPaused
+  whenEditionExists(_editionNumber)
+  returns (bool)
+  {
+    // Ensure caller is whitelisted or artists
+    (address artistAccount, uint256 artistCommission) = kodaAddress.artistCommission(_editionNumber);
+    require(whitelist(msg.sender) || msg.sender == artistAccount, "Cannot enable when not the edition artist");
+
+    // Ensure not already setup
+    require(!enabledEditions[_editionNumber], "Edition already enabled");
+
+    // Enable the auction
     enabledEditions[_editionNumber] = true;
+
+    // keep track of the edition
+    editionsOnceEnabledForAuctions.push(_editionNumber);
+
+    // Setup the controller address to be the artist
+    editionNumberToArtistControlAddress[_editionNumber] = artistAccount;
+
+    emit AuctionEnabled(_editionNumber, msg.sender);
+
+    return true;
+  }
+
+  /**
+   * @dev Enables the edition for auctions
+   * @dev Only callable from whitelist
+   */
+  function enableEdition(uint256 _editionNumber)
+  onlyIfWhitelisted(msg.sender)
+  public returns (bool) {
+    enabledEditions[_editionNumber] = true;
+    emit AuctionEnabled(_editionNumber, msg.sender);
     return true;
   }
 
   /**
    * @dev Disables the edition for auctions
-   * @dev Only callable from owner
+   * @dev Only callable from whitelist
    */
-  function disableEdition(uint256 _editionNumber) onlyOwner public returns (bool) {
+  function disableEdition(uint256 _editionNumber)
+  onlyIfWhitelisted(msg.sender)
+  public returns (bool) {
     enabledEditions[_editionNumber] = false;
+    emit AuctionDisabled(_editionNumber, msg.sender);
     return true;
   }
 
   /**
    * @dev Sets the edition artist control address
-   * @dev Only callable from owner
+   * @dev Only callable from whitelist
    */
-  function setArtistsControlAddress(uint256 _editionNumber, address _address) onlyOwner public returns (bool) {
+  function setArtistsControlAddress(uint256 _editionNumber, address _address)
+  onlyIfWhitelisted(msg.sender)
+  public returns (bool) {
     editionNumberToArtistControlAddress[_editionNumber] = _address;
     return true;
   }
 
   /**
    * @dev Sets the edition artist control address and enables the edition for auction
-   * @dev Only callable from owner
+   * @dev Only callable from whitelist
    */
-  function setArtistsControlAddressAndEnabledEdition(uint256 _editionNumber, address _address) onlyOwner public returns (bool) {
+  function setArtistsControlAddressAndEnabledEdition(uint256 _editionNumber, address _address)
+  onlyIfWhitelisted(msg.sender)
+  public returns (bool) {
+    require(!enabledEditions[_editionNumber], "Edition already enabled");
+
+    // Enable the edition
     enabledEditions[_editionNumber] = true;
+
+    // Setup the artist address for this edition
     editionNumberToArtistControlAddress[_editionNumber] = _address;
+
+    // keep track of the edition
+    editionsOnceEnabledForAuctions.push(_editionNumber);
+
+    emit AuctionEnabled(_editionNumber, _address);
+
     return true;
   }
 
   /**
    * @dev Sets the minimum bid amount
-   * @dev Only callable from owner
+   * @dev Only callable from whitelist
    */
-  function setMinBidAmount(uint256 _minBidAmount) onlyOwner public {
+  function setMinBidAmount(uint256 _minBidAmount) onlyIfWhitelisted(msg.sender) public {
     minBidAmount = _minBidAmount;
   }
 
   /**
    * @dev Sets the KODA address
-   * @dev Only callable from owner
+   * @dev Only callable from whitelist
    */
-  function setKodavV2(IKODAV2 _kodaAddress) onlyOwner public {
+  function setKodavV2(IKODAV2 _kodaAddress) onlyIfWhitelisted(msg.sender) public {
     kodaAddress = _kodaAddress;
   }
 
   /**
    * @dev Sets the KODA address
-   * @dev Only callable from owner
+   * @dev Only callable from whitelist
    */
-  function setKoCommissionAccount(address _koCommissionAccount) public onlyOwner {
+  function setKoCommissionAccount(address _koCommissionAccount) public onlyIfWhitelisted(msg.sender) {
     require(_koCommissionAccount != address(0), "Invalid address");
     koCommissionAccount = _koCommissionAccount;
   }
@@ -454,9 +568,11 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
 
   /**
    * @dev Allows for the ability to extract ether so we can distribute to the correct bidders accordingly
-   * @dev Only callable from owner
+   * @dev Only callable from whitelist
    */
-  function withdrawStuckEther(address _withdrawalAccount) onlyOwner public {
+  function withdrawStuckEther(address _withdrawalAccount)
+  onlyIfWhitelisted(msg.sender)
+  public {
     require(_withdrawalAccount != address(0), "Invalid address provided");
     require(address(this).balance != 0, "No more ether to withdraw");
     _withdrawalAccount.transfer(address(this).balance);
@@ -464,9 +580,11 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
 
   /**
    * @dev Allows for the ability to extract specific ether amounts so we can distribute to the correct bidders accordingly
-   * @dev Only callable from owner
+   * @dev Only callable from whitelist
    */
-  function withdrawStuckEtherOfAmount(address _withdrawalAccount, uint256 _amount) onlyOwner public {
+  function withdrawStuckEtherOfAmount(address _withdrawalAccount, uint256 _amount)
+  onlyIfWhitelisted(msg.sender)
+  public {
     require(_withdrawalAccount != address(0), "Invalid address provided");
     require(_amount != 0, "Invalid amount to withdraw");
     require(address(this).balance >= _amount, "No more ether to withdraw");
@@ -475,9 +593,11 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
 
   /**
    * @dev Manual override method for setting edition highest bid & the highest bidder to the provided address
-   * @dev Only callable from owner
+   * @dev Only callable from whitelist
    */
-  function manualOverrideEditionHighestBidAndBidder(uint256 _editionNumber, address _bidder, uint256 _amount) onlyOwner public returns (bool) {
+  function manualOverrideEditionHighestBidAndBidder(uint256 _editionNumber, address _bidder, uint256 _amount)
+  onlyIfWhitelisted(msg.sender)
+  public returns (bool) {
     editionBids[_editionNumber][_bidder] = _amount;
     editionHighestBid[_editionNumber] = _bidder;
     return true;
@@ -485,9 +605,11 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
 
   /**
    * @dev Manual override method removing bidding values
-   * @dev Only callable from owner
+   * @dev Only callable from whitelist
    */
-  function manualDeleteEditionBids(uint256 _editionNumber, address _bidder) onlyOwner public returns (bool) {
+  function manualDeleteEditionBids(uint256 _editionNumber, address _bidder)
+  onlyIfWhitelisted(msg.sender)
+  public returns (bool) {
     delete editionHighestBid[_editionNumber];
     delete editionBids[_editionNumber][_bidder];
     return true;
@@ -535,6 +657,13 @@ contract ArtistAcceptingBids is Ownable, Pausable, IAuction {
    */
   function editionController(uint256 _editionNumber) public view returns (address) {
     return editionNumberToArtistControlAddress[_editionNumber];
+  }
+
+  /**
+   * @dev Returns the array of edition numbers
+   */
+  function addedEditions() public view returns (uint256[]) {
+    return editionsOnceEnabledForAuctions;
   }
 
 }

@@ -1,6 +1,7 @@
-pragma solidity ^0.4.4;
 
 // File: contracts/Migrations.sol
+
+pragma solidity ^0.4.4;
 
 contract Migrations {
   address public owner;
