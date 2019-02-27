@@ -96,7 +96,9 @@
         </div>
       </div>
 
-      <div class="text-muted small mb-5 mt-3 text-right">Updated every 5 minutes</div>
+      <div class="text-muted small mb-5 mt-3 text-right">
+        Updated every 5 minutes <small>(USD prices powered by <a href="https://www.coingecko.com" target="_blank">coingecko</a>)</small>
+      </div>
     </div>
   </div>
 </template>

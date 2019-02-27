@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid d-none d-md-block">
+  <div class="container-fluid">
 
     <div class="editions-wrap">
       <h3>Artist Controls

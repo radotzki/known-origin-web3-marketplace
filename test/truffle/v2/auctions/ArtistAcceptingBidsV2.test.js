@@ -1,22 +1,22 @@
-const getGasCosts = require('../../helpers/getGasCosts');
-const getBalance = require('../../helpers/getBalance');
-const toBN = require('../../helpers/toBN');
-const assertRevert = require('../../helpers/assertRevert');
-const etherToWei = require('../../helpers/etherToWei');
+const getGasCosts = require('../../../helpers/getGasCosts');
+const getBalance = require('../../../helpers/getBalance');
+const toBN = require('../../../helpers/toBN');
+const assertRevert = require('../../../helpers/assertRevert');
+const etherToWei = require('../../../helpers/etherToWei');
 const bnChai = require('bn-chai');
 
 const _ = require('lodash');
 
 const ForceEther = artifacts.require('ForceEther');
 const KnownOriginDigitalAssetV2 = artifacts.require('KnownOriginDigitalAssetV2');
-const ArtistAcceptingBids = artifacts.require('ArtistAcceptingBids');
+const ArtistAcceptingBidsV2 = artifacts.require('ArtistAcceptingBidsV2');
 
 require('chai')
   .use(require('chai-as-promised'))
   .use(bnChai(web3.utils.BN))
   .should();
 
-contract('ArtistAcceptingBids', function (accounts) {
+contract('ArtistAcceptingBidsV2', function (accounts) {
 
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -45,7 +45,7 @@ contract('ArtistAcceptingBids', function (accounts) {
   beforeEach(async function () {
     // Create contracts
     this.koda = await KnownOriginDigitalAssetV2.new({from: _owner});
-    this.auction = await ArtistAcceptingBids.new(this.koda.address, {from: _owner});
+    this.auction = await ArtistAcceptingBidsV2.new(this.koda.address, {from: _owner});
 
     // Update the commission account to be something different than owner
     await this.auction.setKoCommissionAccount(koCommission, {from: _owner});
@@ -467,6 +467,115 @@ contract('ArtistAcceptingBids', function (accounts) {
             it('funds get sent to the ko commission account', async function () {
               const remainingCommission = toBN(100).sub(artistCommission);
               remainingCommission.should.be.eq.BN(24); // remaining commission of 24%
+
+              const expectedKoCommission = contractBalanceBefore.div(toBN(100)).mul(remainingCommission);
+
+              koAccount2BalanceAfter.should.be.eq.BN(
+                koAccount2BalanceBefore.add(expectedKoCommission)
+              );
+            });
+
+            it('calling controller address pays the gas', async function () {
+              ownerBalanceAfter.should.be.eq.BN(
+                ownerBalanceBefore.sub(txGasCosts)
+              );
+            });
+
+            it('no more funds held in contract', async function () {
+              // Confirm funds originally held
+              contractBalanceBefore.should.be.eq.BN(this.minBidAmount);
+
+              // Confirm funds now gone
+              contractBalanceAfter.should.be.eq.BN(0);
+            });
+
+            it('bidder balance does not change', async function () {
+              bidderBalanceBefore.should.be.eq.BN(bidderBalanceAfter);
+            });
+
+            it('auction details are populated', async function () {
+              let details = await this.auction.auctionDetails(editionNumber1);
+              details[0].should.be.equal(true); // bool _enabled
+              details[1].should.be.equal(ZERO_ADDRESS); // address _bidder
+              details[2].should.be.eq.BN(0); // uint256 _value
+            });
+          });
+
+          describe('when there is an optional split in KODA setup', async function () {
+            let ownerBalanceBefore;
+            let ownerBalanceAfter;
+
+            let artistAccount1BalanceBefore;
+            let artistAccount1BalanceAfter;
+
+            let artistAccount2BalanceBefore;
+            let artistAccount2BalanceAfter;
+
+            let koAccount2BalanceBefore;
+            let koAccount2BalanceAfter;
+
+            let contractBalanceBefore;
+            let contractBalanceAfter;
+
+            let bidderBalanceBefore;
+            let bidderBalanceAfter;
+
+            let txGasCosts;
+
+            const optionalRate = toBN(10);
+
+            beforeEach(async function () {
+
+              // Setup the optional split of 10% to artistAccount2
+              await this.koda.updateOptionalCommission(editionNumber1, optionalRate, artistAccount2, {from: _owner});
+
+              artistAccount1BalanceBefore = await getBalance(artistAccount1);
+              artistAccount2BalanceBefore = await getBalance(artistAccount2);
+              ownerBalanceBefore = await getBalance(_owner);
+              bidderBalanceBefore = await getBalance(bidder1);
+              koAccount2BalanceBefore = await getBalance(koCommission);
+              contractBalanceBefore = await getBalance(this.auction.address);
+
+              let tx = await this.auction.acceptBid(editionNumber1, {from: _owner});
+              txGasCosts = await getGasCosts(tx);
+
+              artistAccount1BalanceAfter = await getBalance(artistAccount1);
+              artistAccount2BalanceAfter = await getBalance(artistAccount2);
+              ownerBalanceAfter = await getBalance(_owner);
+              bidderBalanceAfter = await getBalance(bidder1);
+              koAccount2BalanceAfter = await getBalance(koCommission);
+              contractBalanceAfter = await getBalance(this.auction.address);
+            });
+
+            it('tokenId is generated correctly', async function () {
+              let tokens = await this.koda.tokensOf(bidder1);
+              tokens
+                .map(e => e.toNumber())
+                .should.be.deep.equal([editionNumber1 + 1]);
+            });
+
+            it('total minted is correctly updated', async function () {
+              let total = await this.koda.totalSupplyEdition(editionNumber1);
+              total.should.be.eq.BN(1);
+            });
+
+            it('funds get sent to the artists based on commission percentage', async function () {
+              const expectedArtistCommission = contractBalanceBefore.div(toBN(100)).mul(artistCommission);
+
+              artistAccount1BalanceAfter.should.be.eq.BN(
+                artistAccount1BalanceBefore.add(expectedArtistCommission)
+              );
+
+              const expectedArtist2Commission = contractBalanceBefore.div(toBN(100)).mul(optionalRate);
+
+              artistAccount2BalanceAfter.should.be.eq.BN(
+                artistAccount2BalanceBefore.add(expectedArtist2Commission)
+              );
+            });
+
+            it('funds get sent to the ko commission account', async function () {
+              const remainingCommission = toBN(100).sub(artistCommission).sub(optionalRate);
+              remainingCommission.should.be.eq.BN(14); // remaining commission of 14%
 
               const expectedKoCommission = contractBalanceBefore.div(toBN(100)).mul(remainingCommission);
 
@@ -1457,8 +1566,17 @@ contract('ArtistAcceptingBids', function (accounts) {
 
   describe('Event are emit correctly at the right time', async function () {
 
+    let setupEvent;
     beforeEach(async function () {
-      await this.auction.setArtistsControlAddressAndEnabledEdition(editionNumber1, artistAccount1, {from: _owner});
+      const {logs} = await this.auction.setArtistsControlAddressAndEnabledEdition(editionNumber1, artistAccount1, {from: _owner});
+      setupEvent = logs;
+    });
+
+    it('AuctionEnabled', async function () {
+      setupEvent[0].event.should.be.equal('AuctionEnabled');
+      let {_editionNumber, _auctioneer} = setupEvent[0].args;
+      _auctioneer.should.be.equal(artistAccount1);
+      _editionNumber.should.be.eq.BN(editionNumber1);
     });
 
     describe('BidPlaced', async function () {
@@ -1585,7 +1703,7 @@ contract('ArtistAcceptingBids', function (accounts) {
         _amount.should.be.eq.BN(this.minBidAmount);
       });
 
-      it('BidPlacedevent populated', async function () {
+      it('BidPlaced event populated', async function () {
         events[1].event.should.be.equal('BidPlaced');
         let {_bidder, _editionNumber, _amount} = events[1].args;
         _bidder.should.be.equal(bidder2);
@@ -1594,6 +1712,104 @@ contract('ArtistAcceptingBids', function (accounts) {
       });
     });
 
+    describe('BidRejected', async function () {
+
+      let events;
+      beforeEach(async function () {
+        await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
+        const {logs} = await this.auction.rejectBid(editionNumber1, {from: artistAccount1});
+        events = logs;
+      });
+
+      it('BidderRefunded event populated', async function () {
+        events[0].event.should.be.equal('BidderRefunded');
+        let {_bidder, _editionNumber, _amount} = events[0].args;
+        _bidder.should.be.equal(bidder1);
+        _editionNumber.should.be.eq.BN(editionNumber1);
+        _amount.should.be.eq.BN(this.minBidAmount);
+      });
+
+      it('BidPlaced event populated', async function () {
+        events[1].event.should.be.equal('BidRejected');
+        let {_caller, _bidder, _editionNumber, _amount} = events[1].args;
+        _caller.should.be.equal(artistAccount1);
+        _bidder.should.be.equal(bidder1);
+        _editionNumber.should.be.eq.BN(editionNumber1);
+        _amount.should.be.eq.BN(this.minBidAmount);
+      });
+    });
+
+  });
+
+  describe('rejecting bibs', async function () {
+    beforeEach(async function () {
+      // Setup controller account for edition in auction
+      await this.auction.setArtistsControlAddressAndEnabledEdition(editionNumber1, artistAccount1, {from: _owner});
+    });
+
+    it('when auction is open', async function () {
+      await this.auction.placeBid(editionNumber1, {from: bidder1, value: this.minBidAmount});
+      let details = await this.auction.highestBidForEdition(editionNumber1);
+      details[0].should.be.equal(bidder1);
+      details[1].should.be.eq.BN(this.minBidAmount);
+
+      await this.auction.rejectBid(editionNumber1, {from: artistAccount1});
+      details = await this.auction.highestBidForEdition(editionNumber1);
+      details[0].should.be.equal(ZERO_ADDRESS);
+      details[1].should.be.eq.BN(0);
+    });
+
+  });
+
+  describe('artists can enable editions themselves', async function () {
+
+    let setupEvent;
+    beforeEach(async function () {
+      const {logs} = await this.auction.enableEditionForArtist(editionNumber1, {from: artistAccount1});
+      setupEvent = logs;
+    });
+
+    it('should fail is trying to setup again', async function () {
+      await assertRevert(this.auction.enableEditionForArtist(editionNumber1, {from: artistAccount1}));
+    });
+
+    it('AuctionEnabled', async function () {
+      setupEvent[0].event.should.be.equal('AuctionEnabled');
+      let {_editionNumber, _auctioneer} = setupEvent[0].args;
+      _auctioneer.should.be.equal(artistAccount1);
+      _editionNumber.should.be.eq.BN(editionNumber1);
+    });
+
+    it('should be enabled', async function () {
+      let isEditionEnabled = await this.auction.isEditionEnabled(editionNumber1);
+      isEditionEnabled.should.be.equal(true);
+    });
+
+    it('should have an edition controller', async function () {
+      let editionController = await this.auction.editionController(editionNumber1);
+      editionController.should.be.equal(artistAccount1);
+    });
+
+    it('should not have a highest bid yet', async function () {
+      let details = await this.auction.highestBidForEdition(editionNumber1);
+      details[0].should.be.equal(ZERO_ADDRESS);
+      details[1].should.be.eq.BN(0);
+    });
+
+  });
+
+  describe('can query for a list of editions added to auctions', async function () {
+
+    beforeEach(async function () {
+      await this.auction.setArtistsControlAddressAndEnabledEdition(editionNumber1, artistAccount1, {from: _owner});
+      await this.auction.setArtistsControlAddressAndEnabledEdition(100200, artistAccount1, {from: _owner});
+      await this.auction.setArtistsControlAddressAndEnabledEdition(100300, artistAccount1, {from: _owner});
+    });
+
+    it('the list is populated', async function () {
+      const results = await this.auction.addedEditions();
+      results.map(r => r.toString()).should.be.deep.equal(["100000", "100200", "100300"]);
+    });
   });
 });
 

@@ -508,6 +508,7 @@ const auctionStateModule = {
             contractBalance: Web3.utils.fromWei(await rootState.web3.eth.getBalance(contract.address), 'ether').valueOf()
           });
         });
+
     },
   }
 };

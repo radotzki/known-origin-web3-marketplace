@@ -1,6 +1,8 @@
-pragma solidity ^0.4.24;
 
 // File: openzeppelin-solidity/contracts/access/rbac/Roles.sol
+
+pragma solidity ^0.4.24;
+
 
 /**
  * @title Roles
@@ -56,6 +58,9 @@ library Roles {
 }
 
 // File: contracts/v2/AccessControl.sol
+
+pragma solidity ^0.4.24;
+
 
 /**
  * @title Based on OpenZeppelin Whitelist & RBCA contracts
@@ -134,6 +139,9 @@ contract AccessControl {
 
 // File: openzeppelin-solidity/contracts/ownership/Ownable.sol
 
+pragma solidity ^0.4.24;
+
+
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
@@ -198,6 +206,10 @@ contract Ownable {
 
 // File: openzeppelin-solidity/contracts/ownership/HasNoEther.sol
 
+pragma solidity ^0.4.24;
+
+
+
 /**
  * @title Contracts that should not own Ether
  * @author Remco Bloemen <remco@2π.com>
@@ -236,6 +248,9 @@ contract HasNoEther is Ownable {
 }
 
 // File: openzeppelin-solidity/contracts/math/SafeMath.sol
+
+pragma solidity ^0.4.24;
+
 
 /**
  * @title SafeMath
@@ -289,6 +304,10 @@ library SafeMath {
 
 // File: openzeppelin-solidity/contracts/lifecycle/Pausable.sol
 
+pragma solidity ^0.4.24;
+
+
+
 /**
  * @title Pausable
  * @dev Base contract which allows children to implement an emergency stop mechanism.
@@ -335,6 +354,9 @@ contract Pausable is Ownable {
 
 // File: openzeppelin-solidity/contracts/introspection/ERC165.sol
 
+pragma solidity ^0.4.24;
+
+
 /**
  * @title ERC165
  * @dev https://github.com/ethereum/EIPs/blob/master/EIPS/eip-165.md
@@ -354,6 +376,10 @@ interface ERC165 {
 }
 
 // File: openzeppelin-solidity/contracts/token/ERC721/ERC721Basic.sol
+
+pragma solidity ^0.4.24;
+
+
 
 /**
  * @title ERC721 Non-Fungible Token Standard basic interface
@@ -440,6 +466,10 @@ contract ERC721Basic is ERC165 {
 
 // File: openzeppelin-solidity/contracts/token/ERC721/ERC721.sol
 
+pragma solidity ^0.4.24;
+
+
+
 /**
  * @title ERC-721 Non-Fungible Token Standard, optional enumeration extension
  * @dev See https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
@@ -477,6 +507,9 @@ contract ERC721 is ERC721Basic, ERC721Enumerable, ERC721Metadata {
 }
 
 // File: openzeppelin-solidity/contracts/token/ERC721/ERC721Receiver.sol
+
+pragma solidity ^0.4.24;
+
 
 /**
  * @title ERC721 token receiver interface
@@ -516,6 +549,9 @@ contract ERC721Receiver {
 
 // File: openzeppelin-solidity/contracts/AddressUtils.sol
 
+pragma solidity ^0.4.24;
+
+
 /**
  * Utility library of inline functions on addresses
  */
@@ -544,6 +580,10 @@ library AddressUtils {
 }
 
 // File: openzeppelin-solidity/contracts/introspection/SupportsInterfaceWithLookup.sol
+
+pragma solidity ^0.4.24;
+
+
 
 /**
  * @title SupportsInterfaceWithLookup
@@ -596,6 +636,14 @@ contract SupportsInterfaceWithLookup is ERC165 {
 }
 
 // File: openzeppelin-solidity/contracts/token/ERC721/ERC721BasicToken.sol
+
+pragma solidity ^0.4.24;
+
+
+
+
+
+
 
 /**
  * @title ERC721 Non-Fungible Token Standard basic implementation
@@ -903,6 +951,12 @@ contract ERC721BasicToken is SupportsInterfaceWithLookup, ERC721Basic {
 
 // File: openzeppelin-solidity/contracts/token/ERC721/ERC721Token.sol
 
+pragma solidity ^0.4.24;
+
+
+
+
+
 /**
  * @title Full ERC721 Token
  * This implementation includes all the required and some optional functionality of the ERC721 standard
@@ -1100,6 +1154,8 @@ contract ERC721Token is SupportsInterfaceWithLookup, ERC721BasicToken, ERC721 {
 
 // File: contracts/v2/Strings.sol
 
+pragma solidity ^0.4.19;
+
 library Strings {
   // via https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI_0.5.sol
   function strConcat(string _a, string _b, string _c, string _d, string _e) internal pure returns (string) {
@@ -1125,6 +1181,8 @@ library Strings {
 }
 
 // File: contracts/v2/KnownOriginDigitalAssetV2.sol
+
+pragma solidity ^0.4.24;
 
 // allows for multi-address access controls to different functions
 

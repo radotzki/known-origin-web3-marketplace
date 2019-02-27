@@ -40,24 +40,20 @@
               <edition-sales-events class="mt-2" :editions="editions"></edition-sales-events>
             </b-tab>
 
-            <div v-if="editions && account && !paused && anyOfTheEditionsAreOwnedByTheLoggedInAccount()">
+            <!-- ARTWORKS CONTROLS -->
+            <b-tab title="Pricing" v-if="shouldShowArtistTabs">
+              <artist-edition-controls class="mt-2" :editions="editions"></artist-edition-controls>
+            </b-tab>
 
-              <!-- ARTWORKS CONTROLS -->
-              <b-tab title="Pricing" title-item-class="d-none d-md-block" v-if="!paused">
-                <artist-edition-controls class="mt-2" :editions="editions"></artist-edition-controls>
-              </b-tab>
+            <!-- ARTISTS CONTROLS -->
+            <b-tab title="Profile" title-item-class="d-none d-md-block" v-if="shouldShowArtistTabs">
+              <artist-data-control-panel :editions="editions" :artist="artist"></artist-data-control-panel>
+            </b-tab>
 
-              <!-- ARTISTS CONTROLS -->
-              <b-tab title="Profile" title-item-class="d-none d-md-block">
-                <artist-data-control-panel class="mt-2" :editions="editions" :artist="artist"></artist-data-control-panel>
-              </b-tab>
-
-              <!-- SELF SERVICE -->
-              <b-tab title="Curation">
-                <self-service class="mt-2" :artist="artist"></self-service>
-              </b-tab>
-
-            </div>
+            <!-- SELF SERVICE -->
+            <b-tab title="Curation" v-if="shouldShowArtistTabs">
+              <self-service class="mt-2" :artist="artist"></self-service>
+            </b-tab>
 
           </b-tabs>
         </div>
@@ -141,13 +137,11 @@
         }
         return artist.ethAddress;
       },
-    },
-    methods: {
-      goToArtist: function (artistAccount) {
-        this.$router.push({name: 'artist', params: {artistAccount}});
+      shouldShowArtistTabs() {
+        return this.account && !this.paused && this.anyOfTheEditionsAreOwnedByTheLoggedInAccount;
       },
       anyOfTheEditionsAreOwnedByTheLoggedInAccount() {
-        // If logged in account is the smrat contract owner
+        // If logged in account is the smart contract owner
         if (this.account === this.owner) {
           return true;
         }

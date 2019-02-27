@@ -3,13 +3,12 @@ const mapEvent = (event) => {
   if (eventStr === 'EditionCreated') {
     return 'Creation';
   }
-
-  if (eventStr === 'Purchase' && _.get(event, '_args._priceInWei', '0') === '0') {
-    return 'Gifted';
-  } else if (eventStr === 'Purchase' && _.get(event, '_args._priceInWei', '0') !== '0') {
+  if (eventStr === 'Purchase') {
     return 'Purchase';
   }
-
+  if (eventStr === 'EditionGifted') {
+    return 'Gifted️';
+  }
   if (eventStr === 'Minted') {
     return 'Token Birth';
   }
@@ -36,15 +35,14 @@ const mapMobileEvent = (event) => {
   if (eventStr === 'EditionCreated') {
     return '⚡';
   }
-
-  if (eventStr === 'Purchase' && _.get(event, '_args._priceInWei', '0') === '0') {
-    return '🎁';
-  } else if (eventStr === 'Purchase' && _.get(event, '_args._priceInWei', '0') !== '0') {
+  if (eventStr === 'Purchase') {
     return '💸';
   }
-
   if (eventStr === 'Minted') {
     return '👶️';
+  }
+  if (eventStr === 'EditionGifted') {
+    return '🎁️️';
   }
   if (eventStr === 'BidPlaced') {
     return '💌';

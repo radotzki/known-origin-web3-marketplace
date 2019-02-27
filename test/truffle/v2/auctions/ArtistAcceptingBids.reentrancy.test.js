@@ -1,10 +1,10 @@
-const assertRevert = require('../../helpers/assertRevert');
-const etherToWei = require('../../helpers/etherToWei');
+const assertRevert = require('../../../helpers/assertRevert');
+const etherToWei = require('../../../helpers/etherToWei');
 const _ = require('lodash');
 const bnChai = require('bn-chai');
 
-const getBalance = require('../../helpers/getBalance');
-const toBN = require('../../helpers/toBN');
+const getBalance = require('../../../helpers/getBalance');
+const toBN = require('../../../helpers/toBN');
 
 const KnownOriginDigitalAssetV2 = artifacts.require('KnownOriginDigitalAssetV2');
 const ArtistAcceptingBids = artifacts.require('ArtistAcceptingBids');
