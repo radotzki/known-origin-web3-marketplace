@@ -1,6 +1,7 @@
-pragma solidity ^0.4.24;
 
 // File: contracts/v1/ERC721Basic.sol
+
+pragma solidity ^0.4.21;
 
 /**
  * @title ERC721 Non-Fungible Token Standard basic interface
@@ -27,6 +28,9 @@ contract ERC721Basic {
 }
 
 // File: contracts/v1/ERC721.sol
+
+pragma solidity ^0.4.21;
+
 
 /**
  * @title ERC-721 Non-Fungible Token Standard, optional enumeration extension
@@ -57,6 +61,8 @@ contract ERC721 is ERC721Basic, ERC721Enumerable, ERC721Metadata {
 
 // File: contracts/v1/ERC721Receiver.sol
 
+pragma solidity ^0.4.21;
+
 /**
  * @title ERC721 token receiver interface
  * @dev Interface for any contract that wants to support safeTransfers
@@ -86,6 +92,9 @@ contract ERC721Receiver {
 }
 
 // File: openzeppelin-solidity/contracts/math/SafeMath.sol
+
+pragma solidity ^0.4.24;
+
 
 /**
  * @title SafeMath
@@ -139,6 +148,9 @@ library SafeMath {
 
 // File: openzeppelin-solidity/contracts/AddressUtils.sol
 
+pragma solidity ^0.4.24;
+
+
 /**
  * Utility library of inline functions on addresses
  */
@@ -167,6 +179,12 @@ library AddressUtils {
 }
 
 // File: contracts/v1/ERC721BasicToken.sol
+
+pragma solidity ^0.4.21;
+
+
+
+
 
 /**
  * @title ERC721 Non-Fungible Token Standard basic implementation
@@ -434,6 +452,11 @@ contract ERC721BasicToken is ERC721Basic {
 
 // File: contracts/v1/ERC721Token.sol
 
+pragma solidity ^0.4.21;
+
+
+
+
 /**
  * @title Full ERC721 Token
  * This implementation includes all the required and some optional functionality of the ERC721 standard
@@ -616,6 +639,8 @@ contract ERC721Token is ERC721, ERC721BasicToken {
 
 // File: contracts/v1/Strings.sol
 
+pragma solidity ^0.4.19;
+
 library Strings {
   // via https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI_0.5.sol
   function strConcat(string _a, string _b, string _c, string _d, string _e) internal pure returns (string) {
@@ -660,6 +685,8 @@ library Strings {
 
 // File: contracts/v1/ERC165.sol
 
+pragma solidity ^0.4.21;
+
 interface ERC165 {
   /// @notice Query if a contract implements an interface
   /// @param interfaceID The interface identifier, as specified in ERC-165
@@ -671,6 +698,11 @@ interface ERC165 {
 }
 
 // File: contracts/v1/KnownOriginDigitalAsset.sol
+
+pragma solidity ^0.4.21;
+
+
+
 
 /**
 * @title KnownOriginDigitalAssetV1

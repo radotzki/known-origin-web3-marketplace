@@ -192,9 +192,10 @@ interface IKODAV2Controls {
   function updateActive(uint256 _editionNumber, bool _active) external;
 }
 
-// File: contracts/v2/tools/ArtistEditionControls.sol
+// File: contracts/v2/tools/ArtistEditionControlsV2.sol
 
 pragma solidity 0.4.24;
+
 
 
 
@@ -209,7 +210,7 @@ pragma solidity 0.4.24;
 *
 * BE ORIGINAL. BUY ORIGINAL.
 */
-contract ArtistEditionControls is Ownable, Pausable {
+contract ArtistEditionControlsV2 is Ownable, Pausable {
   using SafeMath for uint256;
 
   // Interface into the KODA world
@@ -220,6 +221,23 @@ contract ArtistEditionControls is Ownable, Pausable {
     address indexed _artist,
     uint256 _priceInWei
   );
+
+  event EditionGifted(
+    uint256 indexed _editionNumber,
+    address indexed _artist,
+    uint256 indexed _tokenId
+  );
+
+  event EditionDeactivated(
+    uint256 indexed _editionNumber
+  );
+
+  bool public deactivationPaused = false;
+
+  modifier whenDeactivationNotPaused() {
+    require(!deactivationPaused);
+    _;
+  }
 
   constructor(IKODAV2Controls _kodaAddress) public {
     kodaAddress = _kodaAddress;
@@ -239,15 +257,17 @@ contract ArtistEditionControls is Ownable, Pausable {
   {
     require(_receivingAddress != address(0), "Unable to send to zero address");
 
-    address artistAccount;
-    uint256 artistCommission;
-    (artistAccount, artistCommission) = kodaAddress.artistCommission(_editionNumber);
+    (address artistAccount, uint256 _) = kodaAddress.artistCommission(_editionNumber);
     require(msg.sender == artistAccount || msg.sender == owner, "Only from the edition artist account");
 
     bool isActive = kodaAddress.editionActive(_editionNumber);
     require(isActive, "Only when edition is active");
 
-    return kodaAddress.mint(_receivingAddress, _editionNumber);
+    uint256 tokenId = kodaAddress.mint(_receivingAddress, _editionNumber);
+
+    emit EditionGifted(_editionNumber, msg.sender, tokenId);
+
+    return tokenId;
   }
 
   /**
@@ -255,24 +275,45 @@ contract ArtistEditionControls is Ownable, Pausable {
    * @dev Only callable from edition artists defined in KODA NFT contract
    * @dev Only callable when contract is not paused
    * @dev Reverts if edition is invalid
-   * @dev Reverts if edition is not active in KDOA NFT contract
    */
   function updateEditionPrice(uint256 _editionNumber, uint256 _priceInWei)
   external
   whenNotPaused
   returns (bool)
   {
-    address artistAccount;
-    uint256 artistCommission;
-    (artistAccount, artistCommission) = kodaAddress.artistCommission(_editionNumber);
+    (address artistAccount, uint256 _) = kodaAddress.artistCommission(_editionNumber);
     require(msg.sender == artistAccount || msg.sender == owner, "Only from the edition artist account");
-
-    bool isActive = kodaAddress.editionActive(_editionNumber);
-    require(isActive, "Only when edition is active");
 
     kodaAddress.updatePriceInWei(_editionNumber, _priceInWei);
 
     emit PriceChanged(_editionNumber, msg.sender, _priceInWei);
+
+    return true;
+  }
+
+  /**
+   * @dev Sets provided edition to deactivated so it does not appear on the platform
+   * @dev Only callable from edition artists defined in KODA NFT contract
+   * @dev Only callable when contract is not paused
+   * @dev Reverts if edition is invalid
+   * @dev Reverts if edition is not active in KDOA NFT contract
+   */
+  function deactivateEdition(uint256 _editionNumber)
+  external
+  whenNotPaused
+  whenDeactivationNotPaused
+  returns (bool)
+  {
+    (address artistAccount, uint256 _) = kodaAddress.artistCommission(_editionNumber);
+    require(msg.sender == artistAccount || msg.sender == owner, "Only from the edition artist account");
+
+    // Only allow them to be disabled if we have not already done it already
+    bool isActive = kodaAddress.editionActive(_editionNumber);
+    require(isActive, "Only when edition is active");
+
+    kodaAddress.updateActive(_editionNumber, false);
+
+    emit EditionDeactivated(_editionNumber);
 
     return true;
   }
@@ -284,4 +325,21 @@ contract ArtistEditionControls is Ownable, Pausable {
   function setKodavV2(IKODAV2Controls _kodaAddress) onlyOwner public {
     kodaAddress = _kodaAddress;
   }
+
+  /**
+   * @dev Disables the ability to deactivate editions from the this contract
+   * @dev Only callable from owner
+   */
+  function pauseDeactivation() onlyOwner public {
+    deactivationPaused = true;
+  }
+
+  /**
+   * @dev Enables the ability to deactivate editions from the this contract
+   * @dev Only callable from owner
+   */
+  function enablesDeactivation() onlyOwner public {
+    deactivationPaused = false;
+  }
+
 }
