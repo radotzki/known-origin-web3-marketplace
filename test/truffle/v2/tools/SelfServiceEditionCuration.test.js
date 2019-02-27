@@ -17,7 +17,7 @@ require('chai')
   .use(bnChai(web3.utils.BN))
   .should();
 
-contract('SelfServiceEditionCuration tests', function (accounts) {
+contract.only('SelfServiceEditionCuration tests', function (accounts) {
 
   const ROLE_KNOWN_ORIGIN = 1;
   const MAX_UINT32 = 4294967295;
@@ -87,7 +87,7 @@ contract('SelfServiceEditionCuration tests', function (accounts) {
             price: etherToWei(1)
           };
           await assertRevert(
-            this.minter.createEdition(edition3.total, edition3.tokenUri, edition3.price, false, {from: accounts[6]}),
+            this.minter.createEdition(edition3.total, edition3.price, 0, edition3.tokenUri, false, {from: accounts[6]}),
             "Can only mint your own once we have enabled you on the platform"
           );
         });
@@ -108,7 +108,7 @@ contract('SelfServiceEditionCuration tests', function (accounts) {
             price: etherToWei(1)
           };
 
-          const {logs: edition1Logs} = await this.minter.createEdition(edition3.total, edition3.tokenUri, edition3.price, false, {from: edition1.artist});
+          const {logs: edition1Logs} = await this.minter.createEdition(edition3.total, edition3.price, 0, edition3.tokenUri, false, {from: edition1.artist});
           edition1Logs[0].event.should.be.equal('SelfServiceEditionCreated');
           edition1Logs[0].args._editionNumber.should.be.eq.BN(20200); // last edition no. is 20000 and has total of 100 in it
           edition1Logs[0].args._creator.should.be.equal(edition1.artist); // artist from edition 1 created it
@@ -120,7 +120,7 @@ contract('SelfServiceEditionCuration tests', function (accounts) {
             tokenUri: "ipfs://edition4",
             price: etherToWei(2)
           };
-          const {logs: edition2Logs} = await this.minter.createEdition(edition4.total, edition4.tokenUri, edition4.price, false, {from: edition1.artist});
+          const {logs: edition2Logs} = await this.minter.createEdition(edition4.total, edition4.price, 0, edition4.tokenUri, false, {from: edition1.artist});
           console.log(edition2Logs);
 
           edition2Logs[0].event.should.be.equal('SelfServiceEditionCreated');
@@ -137,7 +137,7 @@ contract('SelfServiceEditionCuration tests', function (accounts) {
             price: etherToWei(1)
           };
           await assertRevert(
-            this.minter.createEdition(edition3.total, edition3.tokenUri, edition3.price, false, {from: edition2.artist}),
+            this.minter.createEdition(edition3.total, edition3.price, 0, edition3.tokenUri, false, {from: edition2.artist}),
             "Only allowed artists can create editions for now"
           );
         });
@@ -162,7 +162,7 @@ contract('SelfServiceEditionCuration tests', function (accounts) {
         const expectedEditionNumber = 20200;
 
         // Check logs from creation call
-        const {logs} = await this.minter.createEdition(edition3.total, edition3.tokenUri, edition3.price, true, {from: creator});
+        const {logs} = await this.minter.createEdition(edition3.total, edition3.price, 0, edition3.tokenUri, true, {from: creator});
         logs[0].event.should.be.equal('SelfServiceEditionCreated');
         logs[0].args._editionNumber.should.be.eq.BN(expectedEditionNumber); // last edition no. is 20000 and has total of 100 in it
         logs[0].args._creator.should.be.equal(creator); // artist from edition 1 created it
@@ -200,35 +200,35 @@ contract('SelfServiceEditionCuration tests', function (accounts) {
 
       it('should fail when creating editions larger than 100', async function () {
         await assertRevert(
-          this.minter.createEdition(101, "123", etherToWei(1), false, {from: edition2.artist}),
+          this.minter.createEdition(101, etherToWei(1), 0, "123", false, {from: edition2.artist}),
           "Unable to create editions of this size at present"
         );
       });
 
       it('should fail when creating editions of size of zero', async function () {
         await assertRevert(
-          this.minter.createEdition(0, "123", etherToWei(1), false, {from: edition2.artist}),
+          this.minter.createEdition(0, etherToWei(1), 0, "123", false, {from: edition2.artist}),
           "Unable to create editions of this size 0"
         );
       });
 
       it('should fail if artist not on the KO platform and minter NOT open to all', async function () {
         await assertRevert(
-          this.minter.createEdition(10, "123", etherToWei(1), false, {from: _owner}),
+          this.minter.createEdition(10, etherToWei(1), 0, "123", false, {from: _owner}),
           "Can only mint your own once we have enabled you on the platform"
         );
       });
 
       it('should fail when token URI not defined', async function () {
         await assertRevert(
-          this.minter.createEdition(100, "", etherToWei(1), false, {from: edition2.artist}),
+          this.minter.createEdition(100, etherToWei(1), 0, "", false, {from: edition2.artist}),
           "Token URI is missing"
         );
       });
 
       it('should fail if artist not on the KO platform and minter IS open to all', async function () {
         await assertRevert(
-          this.minter.createEdition(100, "232323", etherToWei(1), false, {from: koCommission}),
+          this.minter.createEdition(100, etherToWei(1), 0, "232323", false, {from: koCommission}),
           "Can only mint your own once we have enabled you on the platform"
         );
       });
