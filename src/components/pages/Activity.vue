@@ -6,13 +6,11 @@
       </div>
     </div>
 
-    <!--<loading-section :page="PAGES.ACTIVITY" class="mt-5"></loading-section>-->
-
     <div class="container-fluid mt-2">
 
       <div class="row">
         <div class="col">
-          <table class="table table-striped">
+          <table class="table">
             <tbody>
             <tr v-for="(event, $index) in activity">
               <td class="w-25 text-center" v-if="event._args._editionNumber">
@@ -87,17 +85,16 @@
         </div>
       </div>
 
-      <div class="row" v-if="canShowMore">
-        <div class="col-12 text-center">
-          <button @click="showMore" class="btn btn-outline-primary">
-            <font-awesome-icon :icon="['fas', 'spinner']" spin v-if="isLoading"></font-awesome-icon>
-            <span v-if="!isLoading">Show more</span>
-          </button>
+      <infinite-loading @infinite="showMore" v-if="canShowMore">
+        <div slot="spinner">
+          <font-awesome-icon :icon="['fas', 'spinner']" spin v-if="isLoading"></font-awesome-icon>
         </div>
-      </div>
+      </infinite-loading>
 
       <div class="text-muted small mb-5 mt-3 text-right">
-        Updated every 5 minutes <small>(USD prices powered by <a href="https://www.coingecko.com" target="_blank">coingecko</a>)</small>
+        Updated every 5 minutes
+        <br/>
+        <small>(USD prices powered by <a href="https://www.coingecko.com" target="_blank">coingecko</a>)</small>
       </div>
     </div>
   </div>
@@ -118,6 +115,7 @@
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
   import PriceInEth from '../ui-controls/generic/PriceInEth';
   import {mapEvent, mapMobileEvent} from '../../services/eventMapper';
+  import InfiniteLoading from 'vue-infinite-loading';
 
   export default {
     name: 'activity',
@@ -130,13 +128,15 @@
       ClickableAddress,
       ClickableTransaction,
       ViewTransactionDetails,
-      FontAwesomeIcon
+      FontAwesomeIcon,
+      InfiniteLoading
     },
     data() {
       return {
         PAGES,
         activity: [],
-        limit: 50,
+        limit: 20,
+        offset: 0,
         isLoading: false,
         resultsAvailable: 0
       };
@@ -144,29 +144,34 @@
     methods: {
       mapEvent,
       mapMobileEvent,
-      showMore: function () {
+      showMore($state) {
         this.isLoading = true;
-        this.offset = this.offset + this.limit;
-        this.$store.state.eventService
-          .loadEventsActivity(this.limit, this.offset)
+
+        this.$store.state.eventService.loadEventsActivity(this.limit, this.offset)
           .then((results) => {
             if (results.success) {
               const {data, limit, offset, resultsAvailable} = results;
               this.limit = limit;
-              this.offset = offset;
+              this.offset = offset + limit;
               this.resultsAvailable = resultsAvailable;
               _.forEach(data, (result) => {
                 this.activity.push(result);
               });
-              this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.ACTIVITY);
-              this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, _.uniq(_.map(data, '_args._editionNumber')));
+              return this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, _.uniq(_.map(data, '_args._editionNumber')));
+            }
+          })
+          .then(() => {
+            if (this.canShowMore()) {
+              $state.complete();
+            } else {
+              $state.loaded();
             }
           })
           .finally(() => {
             this.isLoading = false;
           });
       },
-      canShowMore: function () {
+      canShowMore() {
         const totalAvailable = this.resultsAvailable;
         if (totalAvailable === 0) {
           return false;
@@ -179,44 +184,6 @@
         'findEdition'
       ]),
     },
-    async created() {
-      // this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.ACTIVITY);
-      this.isLoading = true;
-
-      const loadApiData = () => {
-        this.$store.state.eventService.loadEventsActivity(this.limit, this.offset)
-          .then((results) => {
-            if (results.success) {
-              const {data, limit, offset, resultsAvailable} = results;
-              this.limit = limit;
-              this.offset = offset;
-              this.resultsAvailable = resultsAvailable;
-              _.forEach(data, (result) => {
-                this.activity.push(result);
-              });
-              // this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.ACTIVITY);
-              this.$store.dispatch(`kodaV2/${actions.LOAD_EDITIONS}`, _.uniq(_.map(data, '_args._editionNumber')));
-            }
-          })
-          .finally(() => {
-            this.isLoading = false;
-          });
-      };
-
-      this.$store.watch(
-        () => this.$store.state.eventService.currentNetworkId,
-        (newVal, oldVal) => {
-          if (_.toString(newVal) !== _.toString(oldVal)) {
-            // change detected, reloading gallery
-            loadApiData();
-          }
-        }
-      );
-
-      if (this.$store.state.eventService.currentNetworkId) {
-        loadApiData();
-      }
-    }
   };
 </script>
 

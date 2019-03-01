@@ -38,7 +38,11 @@ const contractStateModule = {
     galleryEditions: [],
 
     // This store gallery pagination data such as offset, orders etc
-    galleryPagination: {},
+    galleryPagination: {
+      totalAvailable: 0,
+      limit: 16,
+      offset: 0
+    },
 
     // Assets are used through the app and stored in a map of {editionNumber -> edition}
     assets: {},
@@ -64,25 +68,6 @@ const contractStateModule = {
       return _.pickBy(state.assets, function (value, key) {
         return artworks.indexOf(_.toNumber(key)) > -1;
       });
-    },
-    /** @deprecated - is this used anymore? */
-    filterEditions: (state, getters, rootState) => (priceFilter = 'asc') => {
-
-      const soldOutEditions = (edition) => edition.totalSupply === edition.totalAvailable;
-      const availableEditions = (edition) => edition.totalSupply !== edition.totalAvailable;
-
-      const results = _.pickBy(state.assets, function (value, key) {
-        if (priceFilter === 'sold') {
-          return soldOutEditions(value);
-        }
-        return availableEditions(value);
-      });
-
-      if (_.includes(['sold'], priceFilter)) {
-        return results;
-      }
-
-      return _.orderBy(results, 'priceInEther', priceFilter);
     },
     editionsForArtist: (state) => (artistAccount) => {
       if (_.isArray(artistAccount)) {
@@ -176,6 +161,7 @@ const contractStateModule = {
         const {data} = results;
         commit(mutations.SET_EDITIONS, data);
       }
+      return results;
     },
     async [actions.LOAD_FEATURED_EDITIONS]({commit, dispatch, state, rootState}) {
       const featuredEditions = featureArtworks(rootState.currentNetwork);
@@ -184,6 +170,7 @@ const contractStateModule = {
         const {data} = results;
         commit(mutations.SET_EDITIONS, data);
       }
+      return results;
     },
     async [actions.LOAD_GALLERY_EDITIONS]({commit, dispatch, state, rootState}, {orderBy, order, offset, limit}) {
       const results = await rootState.editionLookupService.getGalleryEditions(orderBy, order, offset, limit);
@@ -191,6 +178,7 @@ const contractStateModule = {
         const {totalAvailable, data, params} = results;
         commit(mutations.SET_GALLERY_EDITIONS, {editions: data, params, totalAvailable});
       }
+      return results;
     },
     async [actions.LOAD_EDITIONS_FOR_TYPE]({commit, dispatch, state, rootState}, {editionType}) {
       const results = await rootState.editionLookupService.getEditionsForType(editionType);
@@ -198,6 +186,7 @@ const contractStateModule = {
         const {data} = results;
         commit(mutations.SET_EDITIONS, data);
       }
+      return results;
     },
     async [actions.LOAD_EDITIONS_FOR_ARTIST]({commit, dispatch, state, rootState}, {artistAccount}) {
       const results = await rootState.editionLookupService.getEditionsForArtist(artistAccount);
