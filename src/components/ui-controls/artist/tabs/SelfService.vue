@@ -19,7 +19,7 @@
                      id="artworkName"
                      v-model="edition.name"
                      maxlength="100"/>
-              <small class="form-text text-muted">{{(edition.name || '').length}}/100</small>
+              <small class="form-text text-muted float-right">{{(edition.name || '').length}}/100</small>
             </div>
           </div>
 
@@ -35,7 +35,7 @@
                         v-model="edition.description"
                         maxlength="1000">
               </textarea>
-              <small class="form-text text-muted">{{(edition.description || '').length}}/1000</small>
+              <small class="form-text text-muted float-right">{{(edition.description || '').length}}/1000</small>
             </div>
           </div>
 
@@ -56,7 +56,7 @@
                 :placeholder="'Add the tags which represent your NFT'"
                 :options="tags">
               </multiselect>
-              <small class="form-text text-muted">
+              <small class="form-text text-muted float-right">
                 We've loaded in some commonly used tags but you can add your own
               </small>
             </div>
@@ -65,15 +65,15 @@
           <div class="form-group row">
 
             <div class="col-2">
-              <label for="editionSize">Size & Price</label>
+              <label for="editionSize">Edition Size</label>
             </div>
-            <div class="col-5">
+            <div class="col-10">
               <input type="number" class="form-control" id="editionSize" min="1" max="100"
                      v-model="edition.totalAvailable"
                      @keyup.up="setScarcity"
                      @keyup.down="setScarcity"
                      @blur="setScarcity"/>
-              <small class="form-text text-muted">
+              <small class="form-text text-muted float-right">
                 Current max edition size is 100
               </small>
               <small class="form-text text-info">
@@ -81,7 +81,15 @@
               </small>
             </div>
 
-            <div class="col-5">
+          </div>
+
+          <div class="form-group row">
+
+            <div class="col-2">
+              <label for="editionSize">Price</label>
+            </div>
+
+            <div class="col-10">
 
               <div class="input-group mb-1">
                 <div class="input-group-prepend">
@@ -113,14 +121,13 @@
                 class="hand-pointer"
                 :value="true"
                 @change="edition.enableAuctions = $event.value"
-                :labels="{checked: 'Offers Accepted', unchecked: 'Buy Only'}"
+                :labels="{checked: 'Offers Accepted', unchecked: 'Buy Now Only'}"
                 :width="140"
                 :height="25"
                 :font-size="12">
               </toggle-button>
-              <small class="form-text text-muted">
-                All editions have a <strong>Buy Now</strong> price but you can allow users to make offers to be made on
-                your work.
+              <small class="form-text text-muted float-right">
+                All editions have a <strong>Buy Now</strong> price but you can also <strong>Accept Offers</strong> on your work.
               </small>
             </div>
           </div>
@@ -132,32 +139,6 @@
 
     <div class="row">
       <div class="col-12">
-        <!-- FIXME once we have worked out how to handle high-res -->
-        <!--<form>-->
-        <!--<div class="form-group row">-->
-        <!--<div class="col-2">-->
-        <!--<label>High Res Download?</label>-->
-        <!--</div>-->
-        <!--<div class="col-10">-->
-        <!--<div class="form-check">-->
-        <!--<input class="form-check-input" type="radio" :value="true"-->
-        <!--name="highResAvailable" id="noNighResAvailable"-->
-        <!--v-model="edition.highResAvailable">-->
-        <!--<label class="form-check-label" for="noNighResAvailable">-->
-        <!--<strong>Yes</strong> - make the high resolution available to download once purchased-->
-        <!--</label>-->
-        <!--</div>-->
-        <!--<div class="form-check">-->
-        <!--<input class="form-check-input" type="radio" :value="false"-->
-        <!--name="highResAvailable" id="yesHighResAvailable"-->
-        <!--v-model="edition.highResAvailable">-->
-        <!--<label class="form-check-label" for="yesHighResAvailable">-->
-        <!--<strong>No</strong> - I dont want the high resolution version to be downloaded after purchase-->
-        <!--</label>-->
-        <!--</div>-->
-        <!--</div>-->
-        <!--</div>-->
-        <!--</form>-->
 
         <div class="form-group row">
 
@@ -177,27 +158,28 @@
                 Select NFT image...
               </label>
             </div>
-            <small id="nftImageInputHint" class="form-text text-muted">
-              Current max size is 10mb - support for jpeg, png, gif and svg's at present
-            </small>
 
-            <p v-if="imageUpload.fileFormatError" class="text-danger small">
+            <div id="nftImageInputHint" class="form-text text-muted float-right small">
+              Current max size is 10mb - jpeg, png, gif & svg
+            </div>
+
+            <span v-if="imageUpload.fileFormatError" class="form-text text-danger small">
               Invalid file format, supported extensions are <code>jpeg</code>, <code>png</code>, <code>gif</code>
               and <code>svg</code>
-            </p>
+            </span>
 
-            <p v-if="imageUpload.isValidFileSize" class="text-danger small">
+            <p v-if="imageUpload.isValidFileSize" class="form-text text-danger small">
               Max current file size supported it 10mb
             </p>
 
-            <p v-if="isImgInitial || isImgSaving" class="text-info small">
+            <p v-if="isImgInitial || isImgSaving" class="form-text text-info small">
               Uploading file to
               <font-awesome-icon :icon="['fas', 'cube']"></font-awesome-icon>
               IPFS
               <font-awesome-icon :icon="['fas', 'spinner']" spin></font-awesome-icon>
             </p>
 
-            <p v-if="isImgSuccess" class="text-success small">
+            <p v-if="isImgSuccess" class="form-text text-success small">
               Successfully uploaded file to
               <font-awesome-icon :icon="['fas', 'cube']"></font-awesome-icon>
               IPFS
@@ -208,7 +190,7 @@
                 <img :src="imageUpload.ipfsImage" class="img-thumbnail" style="max-height: 200px"/>
               </a>
             </p>
-            <p v-if="isImgFailed" class="text-warning small">
+            <p v-if="isImgFailed" class="form-text text-warning small">
               Something went went, try again or contract the team on telegram:
               {{ imageUpload.uploadError }}
             </p>
@@ -216,15 +198,6 @@
         </div>
       </div>
     </div>
-
-    <div class="form-group row col pt-3">
-      <p>
-        If you want to enable <span class="badge badge-success">high res</span> then fill in this <strong>form
-        [TODO]</strong> and we'll and we'll enable this for you
-      </p>
-    </div>
-
-    <hr/>
 
     <div class="row">
       <div class="col">
@@ -234,7 +207,33 @@
         <small class="float-left form-text text-info">
           After about 5 minutes your works will appear on the site
         </small>
-        <span class="float-right">
+      </div>
+    </div>
+
+    <hr/>
+
+    <div class="row">
+      <div class="col">
+        <p>
+          If you want to enable <span class="badge badge-success">high res</span> then fill in this <strong>form
+          [TODO]</strong> and we'll and we'll enable this for you
+        </p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div v-if="isMetadataInitial || isMetadataSaving" class="text-info small">
+          Building edition data
+          <font-awesome-icon :icon="['fas', 'cube']" spin></font-awesome-icon>
+        </div>
+        <div v-if="isMetadataSuccess" class="text-success small">
+          Edition data built <a :href="'https://ipfs.infura.io/ipfs/' + metadataIpfsUpload.ipfsHash" target="_blank">[data]</a>
+        </div>
+        <div v-if="isMetadataFailed" class="text-warning small">
+          Something went went, try again or contract the team on telegram: {{ metadataIpfsUpload.uploadError }}
+        </div>
+        <span>
           <a class="hand-pointer small" @click="expandIpfsData = !expandIpfsData">(debug view)</a>
           <pre v-show="expandIpfsData">{{generateIPFSData()}}</pre>
         </span>
@@ -291,6 +290,11 @@
           isValidFileSize: false,
           currentStatus: null,
         },
+        metadataIpfsUpload: {
+          ipfsHash: null,
+          uploadError: null,
+          currentStatus: null,
+        },
         expandIpfsData: false
       };
     },
@@ -322,6 +326,18 @@
       },
       isImgFailed() {
         return this.imageUpload.currentStatus === STATUS_FAILED;
+      },
+      isMetadataInitial() {
+        return this.metadataIpfsUpload.currentStatus === STATUS_INITIAL;
+      },
+      isMetadataSaving() {
+        return this.metadataIpfsUpload.currentStatus === STATUS_SAVING;
+      },
+      isMetadataSuccess() {
+        return this.metadataIpfsUpload.currentStatus === STATUS_SUCCESS;
+      },
+      isMetadataFailed() {
+        return this.metadataIpfsUpload.currentStatus === STATUS_FAILED;
       }
     },
     methods: {
@@ -396,6 +412,24 @@
             this.imageUpload.uploadError = error;
           });
       },
+      uploadMetaData: function () {
+        this.metadataIpfsUpload.currentStatus = STATUS_SAVING;
+        this.metadataIpfsUpload.ipfsHash = null;
+
+        return ipfs.add(Buffer.from(JSON.stringify(this.generateIPFSData())))
+          .then((response) => {
+            return ipfs.pin.add(response[0].hash)
+              .then(() => {
+                this.metadataIpfsUpload.ipfsHash = response[0].hash;
+                this.metadataIpfsUpload.currentStatus = STATUS_SUCCESS;
+              });
+          })
+          .catch((error) => {
+            console.log(error);
+            this.metadataIpfsUpload.currentStatus = STATUS_FAILED;
+            this.metadataIpfsUpload.uploadError = error;
+          });
+      },
       generateIPFSData() {
         const tags = _.clone(this.edition.tags);
         if (this.edition.highResAvailable) {
@@ -458,13 +492,16 @@
       },
       createEdition() {
         if (this.isEditionValid()) {
-          this.$store.dispatch(`selfService/${actions.CREATE_SELF_SERVICE_EDITION}`, {
-            artist: this.artistAddress(),
-            totalAvailable: this.edition.totalAvailable,
-            tokenUri: this.imageUpload.ipfsHash,
-            priceInWei: Web3.utils.toWei(this.edition.priceInEther, 'ether'),
-            enableAuctions: this.edition.enableAuctions
-          });
+          this.uploadMetaData()
+            .then(() => {
+              this.$store.dispatch(`selfService/${actions.CREATE_SELF_SERVICE_EDITION}`, {
+                artist: this.artistAddress(),
+                totalAvailable: this.edition.totalAvailable,
+                tokenUri: this.metadataIpfsUpload.ipfsHash,
+                priceInWei: Web3.utils.toWei(this.edition.priceInEther, 'ether'),
+                enableAuctions: this.edition.enableAuctions
+              });
+            });
         }
       }
     },
