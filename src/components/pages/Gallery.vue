@@ -15,26 +15,25 @@
 
     <div class="container-fluid mt-4">
 
-      <loading-section :page="PAGES.GALLERY"></loading-section>
+      <!--<loading-section :page="PAGES.GALLERY"></loading-section>-->
 
       <div class="row editions-wrap">
         <div class="card-deck">
           <div class="col-sm-3 mb-5"
-               v-for="edition in galleryEditions" :key="edition.edition"
+               v-for="edition in editions" :key="edition.edition"
                v-if="edition.active">
             <gallery-card :edition="edition" :edition-number="edition.edition"></gallery-card>
           </div>
         </div>
       </div>
 
-      <div class="row editions-wrap pt-1 pb-4" v-if="canShowMore">
-        <div class="col-12 text-center">
-          <button @click="showMore" class="btn btn-outline-primary">
-            <font-awesome-icon :icon="['fas', 'spinner']" spin v-if="isLoading"></font-awesome-icon>
-            <span v-if="!isLoading">Show more</span>
-          </button>
+      <infinite-loading @infinite="showMore" v-if="canShowMore">
+        <div slot="spinner">
+          <font-awesome-icon :icon="['fas', 'spinner']" spin v-if="isLoading"></font-awesome-icon>
         </div>
-      </div>
+        <div slot="no-more">Loaded all available editions</div>
+      </infinite-loading>
+
     </div>
   </div>
 </template>
@@ -47,97 +46,79 @@
   import LoadingSection from '../ui-controls/generic/LoadingSection';
   import GalleryCard from '../ui-controls/cards/GalleryCard';
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
+  import InfiniteLoading from 'vue-infinite-loading';
 
   export default {
     name: 'galleryKODAV2',
     components: {
       GalleryCard,
       LoadingSection,
-      FontAwesomeIcon
+      FontAwesomeIcon,
+      InfiniteLoading
     },
     data() {
       return {
         PAGES,
         order: 'asc',
         orderByFilter: 'priceInEther',
-        limit: 20,
+        limit: 16,
         offset: 0,
-        isLoading: false
+        totalAvailable: 0,
+        isLoading: false,
+        editions: []
       };
     },
     methods: {
-      onSubFilter: function (value) {
+      onSubFilter(value) {
         if (this.order !== value) {
           this.order = value;
-          this.limit = 20;
+          this.limit = 16;
           this.offset = 0;
           this.showMore();
         }
       },
-      goToArtist: function (artistAccount) {
+      goToArtist(artistAccount) {
         this.$router.push({name: 'artist', params: {artistAccount}});
       },
-      showMore: function () {
-        this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.GALLERY);
+      showMore($state) {
         this.isLoading = true;
-        this.offset = this.offset + 20;
-        this.$store.dispatch(`kodaV2/${actions.LOAD_GALLERY_EDITIONS}`, {
-          orderBy: this.orderByFilter,
-          order: this.order,
-          offset: this.offset,
-          limit: this.limit,
-        }).finally(() => {
-          this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.GALLERY);
-          this.isLoading = false;
-        });
+
+        if (this.totalAvailable === 0 && this.offset === 0 || (this.totalAvailable > this.offset)) {
+          this.$store.state.editionLookupService.getGalleryEditions(this.orderByFilter, this.order, this.offset, this.limit)
+            .then((results) => {
+              if (results.success) {
+                const {data, totalAvailable, params} = results;
+                const {limit, offset, orderBy, order} = params;
+
+                this.order = order;
+                this.limit = limit;
+                this.offset = offset + limit;
+                this.orderByFilter = orderBy;
+                this.totalAvailable = totalAvailable;
+                _.forEach(data, (result) => {
+                  this.editions.push(result);
+                });
+              }
+            })
+            .then(() => {
+              $state.loaded();
+            })
+            .finally(() => {
+              this.isLoading = false;
+            });
+        } else {
+          $state.complete();
+        }
       },
-    },
-    computed: {
-      ...mapState('kodaV2', [
-        'galleryPagination',
-        'galleryEditions',
-      ]),
-      canShowMore: function () {
-        const totalAvailable = _.get(this.galleryPagination, 'totalAvailable', 0);
-        const offset = _.get(this.galleryPagination, 'params.offset', 0);
-        const limit = _.get(this.galleryPagination, 'params.limit', 0);
+      canShowMore() {
+        const totalAvailable = this.totalAvailable;
         if (totalAvailable === 0) {
           return false;
         }
-        return totalAvailable > (offset + limit);
+        return totalAvailable > (this.offset + this.limit);
       }
     },
-    created() {
-      this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.GALLERY);
-
-      const loadApiData = () => {
-        this.isLoading = true;
-        this.$store.dispatch(`kodaV2/${actions.LOAD_GALLERY_EDITIONS}`, {
-          orderBy: this.orderByFilter,
-          order: this.order,
-          offset: this.offset,
-          limit: this.limit,
-        })
-          .finally(() => {
-            this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.GALLERY);
-            this.isLoading = false;
-          });
-      };
-
-      this.$store.watch(
-        () => this.$store.state.editionLookupService.currentNetworkId,
-        (newVal, oldVal) => {
-          if (_.toString(newVal) !== _.toString(oldVal)) {
-            // change detected, reloading gallery
-            loadApiData();
-          }
-        }
-      );
-
-      if (this.$store.state.editionLookupService.currentNetworkId) {
-        loadApiData();
-      }
-    },
+    computed: {},
     destroyed() {
     }
   };

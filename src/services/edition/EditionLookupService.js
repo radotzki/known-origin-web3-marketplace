@@ -62,7 +62,7 @@ export default class EditionLookupService {
    * @return {Promise<*>}
    */
   async getGalleryEditions(orderBy = 'priceInEther', order = 'asc', offset = 0, limit = 20) {
-    console.log(`Load gallery editions on network [${this.currentNetworkId}]`);
+    console.log(`Load gallery editions on network [${this.currentNetworkId}] orderBy=[${orderBy}] order=[${order}] offset=[${offset}] limit=[${limit}]`);
 
     const results = await axios.get(`${this.api}/editions/gallery?orderBy=${orderBy}&order=${order}&limit=${limit}&offset=${offset}&network=${this.currentNetworkId}`, AXIOS_CONFIG);
     if (results.data.success) {
