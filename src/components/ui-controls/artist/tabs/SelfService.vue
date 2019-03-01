@@ -446,9 +446,20 @@
         }
         return true;
       },
+      artistAddress() {
+        const artist = this.artist;
+        if (!artist) {
+          return {};
+        }
+        if (_.isArray(artist.ethAddress)) {
+          return artist.ethAddress[0];
+        }
+        return artist.ethAddress;
+      },
       createEdition() {
         if (this.isEditionValid()) {
           this.$store.dispatch(`selfService/${actions.CREATE_SELF_SERVICE_EDITION}`, {
+            artist: this.artistAddress(),
             totalAvailable: this.edition.totalAvailable,
             tokenUri: this.imageUpload.ipfsHash,
             priceInWei: Web3.utils.toWei(this.edition.priceInEther, 'ether'),

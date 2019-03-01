@@ -41,25 +41,38 @@ const selfServiceStateModule = {
 
     async [actions.CREATE_SELF_SERVICE_EDITION]({commit, dispatch, state, getters, rootState}, data) {
       const account = rootState.account;
-      const {totalAvailable, tokenUri, priceInWei, enableAuctions} = data;
+
       console.log(data);
 
+      const {totalAvailable, tokenUri, priceInWei, enableAuctions, artist} = data;
+
       const contract = await rootState.SelfServiceEditionCuration.deployed();
-      contract
-        .createEdition(totalAvailable, tokenUri, priceInWei, enableAuctions, {
-          from: account
-        })
+
+      const createEdition = () => {
+        const isCallingArtists = account === artist;
+        console.log(`Is calling artist [${isCallingArtists}]`);
+        // If the caller isnt the artist assume its KO making it for them
+        return isCallingArtists
+          ? contract.createEdition(totalAvailable, priceInWei, 0, tokenUri, enableAuctions, {from: account})
+          : contract.createEditionFor(artist, totalAvailable, priceInWei, 0, tokenUri, enableAuctions, {from: account});
+      };
+
+      createEdition()
         .on('transactionHash', hash => {
+          console.log('transactionHash', hash);
           commit(mutations.SELF_SERVICE_STARTED, {transaction: hash});
         })
         .on('receipt', receipt => {
+          console.log('receipt', receipt);
           commit(mutations.SELF_SERVICE_SUCCESSFUL, {receipt});
           // TODO trigger refresh
         })
         .on('error', error => {
+          console.log('error', error);
           commit(mutations.SELF_SERVICE_FAILED, {error});
         })
         .catch((error) => {
+          console.log('catch', error);
           commit(mutations.SELF_SERVICE_FAILED, {error});
         })
         .finally(() => {

@@ -122,9 +122,14 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
     require(_totalAvailable > 0, "Unable to create editions of this size 0");
     require(_totalAvailable <= maxEditionSize, "Unable to create editions of this size at present");
 
-    // Enforce who can call this
-    if (!openToAllArtist) {
-      require(allowedArtists[_artist], "Only allowed artists can create editions for now");
+
+    // If we are the owner, skip this artists check
+    if (msg.sender != owner) {
+
+      // Enforce who can call this
+      if (!openToAllArtist) {
+        require(allowedArtists[_artist], "Only allowed artists can create editions for now");
+      }
     }
 
     // Find the next edition number we can use

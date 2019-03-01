@@ -30,8 +30,8 @@ module.exports = async function (deployer, network, accounts) {
   console.log("Self service address", selfService.address);
 
   // whitelist self service so it can mint new editions
-  const ROLE_MINTER = 2;
-  await koda.addAddressToAccessControl(selfService.address, ROLE_MINTER, {from: _koAccount});
+  const ROLE_KNOWN_ORIGIN = 1;
+  await koda.addAddressToAccessControl(selfService.address, ROLE_KNOWN_ORIGIN, {from: _koAccount});
 
   // whitelist self service address so it can enable auctions
   await auction.addAddressToWhitelist(selfService.address, {from: _koAccount});
