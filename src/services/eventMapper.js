@@ -27,6 +27,9 @@ const mapEvent = (event) => {
   if (eventStr === 'PriceChanged') {
     return 'Price Changed';
   }
+  if (eventStr === 'BidWithdrawn') {
+    return 'Bid Withdrawn';
+  }
   return eventStr;
 };
 
@@ -58,6 +61,9 @@ const mapMobileEvent = (event) => {
   }
   if (eventStr === 'PriceChanged') {
     return '💰';
+  }
+  if (eventStr === 'BidWithdrawn') {
+    return '🚢';
   }
   return eventStr;
 };

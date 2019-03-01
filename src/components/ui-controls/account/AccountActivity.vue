@@ -66,6 +66,15 @@
       </tr>
       </tbody>
     </table>
+
+    <div class="col-12">
+      <div class="text-muted small mb-5 mt-3 text-right">
+        Updated every 5 minutes
+        <br/>
+        <small>(USD prices powered by <a href="https://www.coingecko.com" target="_blank">coingecko</a>)</small>
+      </div>
+    </div>
+
   </div>
 </template>
 
