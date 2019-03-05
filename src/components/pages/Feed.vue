@@ -37,7 +37,7 @@
         <div class="col-12">
           <h5 class="mb-3">
             <span title="Some of our favourites">
-              Community picks
+              Curated Collection
             </span>
             <router-link :to="{ name: 'gallery' }" class="btn-link small float-right">
               View all
@@ -114,11 +114,11 @@
 </template>
 <script>
   import _ from 'lodash';
-  import {mapGetters, mapState} from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
   import ClickableAddress from '../ui-controls/generic/ClickableAddress';
   import * as actions from '../../store/actions';
   import * as mutation from '../../store/mutation';
-  import {PAGES} from '../../store/loadingPageState';
+  import { PAGES } from '../../store/loadingPageState';
   import LoadingSection from '../ui-controls/generic/LoadingSection';
   import Availability from '../ui-controls/v2/Availability';
   import HighResLabel from '../ui-controls/highres/HighResLabel';
@@ -126,22 +126,7 @@
   import LoadingSpinner from '../ui-controls/generic/LoadingSpinner';
 
   const koPicks = _.shuffle([
-    10100,
-    10300,
-    7500,
-    22800,
-    25800,
-    7700,
-    6000,
-    19400,
-    28600,
-    20100,
-    26600,
-    18300,
-    24000,
-    19000,
-    32300,
-    30400
+    35000, 19500, 19100, 38000, 37000, 30400, 35200, 20900
   ]);
 
   export default {
@@ -154,7 +139,7 @@
       ClickableAddress,
       HighResLabel,
     },
-    data() {
+    data () {
       return {
         PAGES,
         latest: [],
@@ -169,7 +154,7 @@
         'assets',
       ])
     },
-    created() {
+    created () {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.FEED);
 
       /////////
@@ -239,7 +224,7 @@
         loadStaffPicks();
       }
     },
-    destroyed() {
+    destroyed () {
     }
   };
 </script>
