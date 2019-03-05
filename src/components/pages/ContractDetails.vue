@@ -6,7 +6,7 @@
       </div>
     </div>
 
-    <div class="mt-3 text-center">
+    <div class="mt-3 text-center" v-if="loading">
       <font-awesome-icon :icon="['fas', 'spinner']" spin></font-awesome-icon>
     </div>
 
