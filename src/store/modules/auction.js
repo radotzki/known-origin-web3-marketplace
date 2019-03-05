@@ -30,17 +30,17 @@ const auctionStateModule = {
 
       // Check not set
       if (currentEditionHighestBid.toString() === "0") {
-        return "0.01";
+        return 0.01;
       }
 
       // Handle BN
       if (Web3.utils.isBN(currentEditionHighestBid) && minBid) {
-        return Web3.utils.fromWei(currentEditionHighestBid.add(minBid).toString(10), 'ether');
+        return _.toNumber(Web3.utils.fromWei(currentEditionHighestBid.add(minBid).toString(10), 'ether'));
       }
 
       if (minBid) {
         // Fall back to min bid
-        return Web3.utils.fromWei(minBid.toString(10), 'ether');
+        return _.toNumber(Web3.utils.fromWei(minBid.toString(10), 'ether'));
       }
 
       return 0;

@@ -36,7 +36,12 @@
         }
       },
       page_title() {
-        const hashTags = (this.edition.attributes.tags || []).map(e => `#${e}`).join(' ');
+        const hashTags = (this.edition.attributes.tags || []).map((e) => {
+          if (e === 'high res') {
+            return `#highres`;
+          }
+          return `#${e}`;
+        }).join(' ');
         const artist = this.findArtistsForAddress(this.edition.artist.ethAddress);
         const price = `ETH ${this.edition.priceInEther} ($${this.usdPrice(this.edition.priceInEther)})`;
         if (artist) {

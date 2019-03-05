@@ -23,6 +23,7 @@ import artistControls from './modules/artistEditionControls';
 import EventsApiService from "../services/events/EventsApiService";
 import FirestoreArtistService from "../services/artist/FirestoreArtistService";
 import LikesApiService from "../services/likes/LikesApiService";
+import StatsApiService from "../services/stats/StatsApiService";
 import EditionLookupService from "../services/edition/EditionLookupService";
 import KodaV2ContractService from "../services/web3/KodaV2ContractService";
 import NotificationService from "../services/notifications/notification.service";
@@ -82,6 +83,7 @@ const store = new Vuex.Store({
     // All services default to mainnet by default, they get overridden on INIT is=f the network is different
     eventService: new EventsApiService(),
     likesService: new LikesApiService(),
+    statsService: new StatsApiService(),
     editionLookupService: new EditionLookupService(),
     artistService: new FirestoreArtistService(),
     notificationService: new NotificationService(),
@@ -91,6 +93,25 @@ const store = new Vuex.Store({
       return _.find(state.artists, (artist) => (artist && artist.artistCode) ? artist.artistCode.toString() === artistCode : false);
     },
     findArtistsForAddress: (state) => (artistAddress) => {
+
+      if (_.isArray(artistAddress)) {
+        const artist = _.find(state.artists, (artist) => {
+          if (_.isArray(artist.ethAddress)) {
+            return _.find(artist.ethAddress, (address) => {
+              return _.find(artistAddress, addressToMatch => safeToCheckSumAddress(address) === addressToMatch);
+            });
+          }
+          return safeToCheckSumAddress(artist.ethAddress) === artistsAddress;
+        });
+
+        if (!artist) {
+          console.warn(`Unable to find artists [${artistAddress}]`);
+        }
+        state.artistLookupCache[artistAddress] = artist;
+
+        return artist;
+      }
+
       if (state.artistLookupCache[artistAddress]) {
         return state.artistLookupCache[artistAddress];
       }
@@ -105,7 +126,7 @@ const store = new Vuex.Store({
       });
 
       if (!artist) {
-        console.error(`Unable to find artists [${artistAddress}]`);
+        console.warn(`Unable to find artists [${artistAddress}]`);
       }
       state.artistLookupCache[artistAddress] = artist;
       return artist;
@@ -141,6 +162,7 @@ const store = new Vuex.Store({
         state.artistService.setFirebasePath(firebasePath);
         state.editionLookupService.setNetworkId(id);
         state.notificationService.setNetworkId(id);
+        state.statsService.setNetworkId(id);
         state.likesService.setFirebasePathAndNetworkId(firebasePath, id);
         state.eventService.setFirebasePathAndNetworkId(firebasePath, id);
       }
