@@ -22,7 +22,7 @@
       <hr/>
 
       <fieldset>
-        <form class="form-inline was-validated">
+        <form class="form-inline">
 
           <!-- When you are NOT the top bidder -->
           <div class="input-group" v-if="!accountIsHighestBidder(edition.edition)">
@@ -32,16 +32,11 @@
             </div>
 
             <input type="number"
-                   v-bind:class="{'is-invalid': nextMinimumNewBid(edition.edition) > form.bid, 'is-valid': nextMinimumNewBid(edition.edition) < form.bid}"
                    class="form-control mr-sm-2" id="makeBidValue"
-                   :step="minBidAmount" :min="nextMinimumNewBid(edition.edition)"
+                   :step="minBidAmount"
+                   :min="nextMinimumNewBid(edition.edition)"
                    v-model="form.bid"
                    :placeholder="nextMinimumNewBid(edition.edition)"/>
-
-            <!--<div class="invalid-feedback" v-if="nextMinimumNewBid(edition.edition) > form.bid">Minimum bid:-->
-            <!--{{nextMinimumNewBid(edition.edition)}} ETH-->
-            <!--</div>-->
-
           </div>
 
           <button class="btn btn-secondary mt-2"
@@ -58,15 +53,11 @@
             </div>
 
             <input type="number"
-                   v-bind:class="{'is-invalid': nextMinimumNewBid(edition.edition) > form.bid, 'is-valid': nextMinimumNewBid(edition.edition) < form.bid}"
-                   class="form-control is-invalid mr-sm-2" id="increaseBidValue"
-                   :step="minBidAmount" :min="minBidAmount"
+                   class="form-control" id="increaseBidValue"
+                   :step="minBidAmount"
+                   :min="nextMinimumNewBid(edition.edition)"
                    v-model="form.bid"
                    :placeholder="nextMinimumNewBid(edition.edition)"/>
-
-            <!--<div class="invalid-feedback" v-if="nextMinimumNewBid(edition.edition) > form.bid">-->
-            <!--Minimum increase: {{minBidAmount}} ETH-->
-            <!--</div>-->
           </div>
 
           <button class="btn btn-secondary mt-2"
@@ -196,7 +187,7 @@
       ]),
     },
     methods: {
-      placeBid: function (e) {
+      placeBid(e) {
         e.preventDefault();
         if (this.form.bid) {
           this.$ga.event('purchase-flow', 'auction', 'place-bid');
@@ -206,7 +197,7 @@
           });
         }
       },
-      increaseBid: function (e) {
+      increaseBid(e) {
         e.preventDefault();
         if (this.form.bid) {
           this.$ga.event('purchase-flow', 'auction', 'increase-bid');

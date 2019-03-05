@@ -1,10 +1,11 @@
 <template>
-  <div class="shadow-sm bg-white mb-4 card simple-artist-panel" v-if="artist">
-    <artist-short-bio :artist="artist" :nolinks="true"></artist-short-bio>
-
-    <p class="bio mt-4 ml-3 mr-3 text-center">
-      {{ artist.shortDescription }}
-    </p>
+  <div class="shadow-sm bg-white card" v-if="artist">
+    <div class="card-body">
+      <artist-short-bio :artist="artist" :nolinks="true"></artist-short-bio>
+      <p class="bio mt-4 ml-3 mr-3 text-center">
+        {{ artist.shortDescription }}
+      </p>
+    </div>
   </div>
 </template>
 
@@ -22,7 +23,7 @@
   @import '../../../ko-colours.scss';
 
   .simple-artist-panel {
-    min-height: 275px;
+    min-height: 285px;
   }
 
   .bio {

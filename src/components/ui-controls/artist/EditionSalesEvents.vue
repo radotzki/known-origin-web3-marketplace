@@ -3,7 +3,8 @@
 
     <h3>Sales</h3>
     <p>
-      History of sales and bid activity <small class="text-muted">showing transactions where ETH was exchanged only</small>
+      History of sales and accepted bids<br />
+      <small class="text-muted">Showing transactions where ETH was exchanged</small>
     </p>
 
     <lazy-component @show="visibilityChanged">
@@ -59,6 +60,12 @@
       </div>
 
     </lazy-component>
+
+    <div class="text-muted small mb-5 mt-3 text-right">
+      Updated every 5 minutes
+      <br/>
+      <small>(USD prices powered by <a href="https://www.coingecko.com" target="_blank">coingecko</a>)</small>
+    </div>
 
   </div>
 </template>

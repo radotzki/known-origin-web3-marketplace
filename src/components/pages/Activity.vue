@@ -43,20 +43,20 @@
                   </u-s-d-price-converter>
                 </div>
 
-                <div v-if="event._args._tokenId && event.event !== 'Purchase'">
+                <div v-if="event._args._tokenId">
                   <router-link :to="{ name: 'edition-token', params: { tokenId: event._args._tokenId.toString() }}"
                                class="badge badge-primary">
                     {{ event._args._tokenId.toString() }}
                   </router-link>
                 </div>
 
-                <div v-if="event._args._editionNumber && event.event === 'Purchase'">
-                  <router-link
-                    :to="{ name: 'confirmPurchaseSimple', params: { editionNumber: parseInt(event._args._editionNumber) }}"
-                    class="badge badge-primary">
-                    {{event._args._editionNumber}}
-                  </router-link>
-                </div>
+                <!--<div v-if="event._args._editionNumber">-->
+                <!--<router-link-->
+                <!--:to="{ name: 'confirmPurchaseSimple', params: { editionNumber: parseInt(event._args._editionNumber) }}"-->
+                <!--class="badge badge-primary">-->
+                <!--{{event._args._editionNumber}}-->
+                <!--</router-link>-->
+                <!--</div>-->
               </td>
               <td class="d-none d-md-table-cell">
                 <small>{{ event.blockTimestamp | moment('ddd Do MMM YYYY h:mma')}}</small>

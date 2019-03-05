@@ -14,7 +14,11 @@ export default class KodaV2ContractService {
     return await loadTokenAndEdition(contract, tokenId);
   }
 
+  /**
+   * @deprecated = API hit for this info now
+   */
   async getContractDetails() {
+    console.log(`Loading contract details`);
     const contract = await this.knownOriginDigitalAssetV2.deployed();
 
     const totalSupply = (await contract.totalSupply()).toString(10);
