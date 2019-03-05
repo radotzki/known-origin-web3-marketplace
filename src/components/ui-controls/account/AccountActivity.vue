@@ -9,7 +9,7 @@
       <code>No activity found</code>
     </div>
 
-    <table class="table table-striped">
+    <table class="table">
       <tbody>
       <tr v-for="event in activity">
         <td class="w-25 text-center" v-if="event._args._editionNumber">
@@ -157,5 +157,9 @@
 
   .img-thumbnail {
     max-width: 125px;
+  }
+
+  .table {
+    vertical-align: middle;
   }
 </style>
