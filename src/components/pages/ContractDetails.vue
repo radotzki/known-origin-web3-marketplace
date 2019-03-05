@@ -15,7 +15,7 @@
       <div class="row mt-5 justify-content-sm-center" v-if="!loading">
         <div class="col-sm-4">
           <h3>Platform Overview</h3>
-          <table class="table table-striped bg-white text-center">
+          <table class="table text-center">
             <tbody>
             <tr v-if="totals.purchase">
               <td>Purchases</td>
@@ -36,7 +36,7 @@
                                     v-if="kodaV2.address" class="float-right"></clickable-address-button>
           <h3>KODA v2</h3>
           <small>04-09-2018 - Present</small>
-          <table class="table table-striped bg-white text-center">
+          <table class="table text-center">
             <tbody>
             <tr>
               <td>Smart Contract</td>
@@ -82,7 +82,7 @@
                                     v-if="auctionV2.address" class="float-right">
           </clickable-address-button>
           <h3>Auction</h3>
-          <table class="table table-striped bg-white text-center">
+          <table class="table text-center">
             <tbody>
             <tr>
               <td>Smart Contract</td>
@@ -117,7 +117,7 @@
                                     v-if="kodaV1.address" class="float-right"></clickable-address-button>
           <h3>KODA v1</h3>
           <small>02-04-2018 - 04-09-2018</small>
-          <table class="table table-striped bg-white text-center">
+          <table class="table text-center">
             <tbody>
             <tr>
               <td>Smart Contract</td>

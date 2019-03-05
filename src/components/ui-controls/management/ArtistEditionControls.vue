@@ -14,7 +14,7 @@
     </div>
 
     <div class="pb-4">
-      <table class="table table-striped">
+      <table class="table">
         <tbody>
         <tr v-for="edition, editionNumber in editions" :key="editionNumber" v-if="shouldShowControls(edition)">
           <td>

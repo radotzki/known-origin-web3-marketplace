@@ -13,7 +13,7 @@
           <table class="table">
             <tbody>
             <tr v-for="(event, $index) in activity">
-              <td class="w-25 text-center" v-if="event._args._editionNumber">
+              <td class="w-10 text-right" v-if="event._args._editionNumber">
                 <router-link
                   :to="{ name: 'confirmPurchaseSimple', params: { editionNumber: parseInt(event._args._editionNumber) }}">
                   <edition-image class="img-thumbnail"
@@ -207,5 +207,9 @@
 
   .img-thumbnail {
     max-width: 75px;
+  }
+
+  .table {
+    vertical-align: middle;
   }
 </style>
