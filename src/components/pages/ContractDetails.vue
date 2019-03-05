@@ -2,15 +2,15 @@
   <div>
     <div class="row bg-primary full-banner-secondary pt-3 mt-1">
       <div class="col text-center">
-        Platform Stats
+        Platform
       </div>
     </div>
 
-    <div class="container-fluid mt-4">
+    <div class="mt-3 text-center">
+      <font-awesome-icon :icon="['fas', 'spinner']" spin></font-awesome-icon>
+    </div>
 
-      <div class="row justify-content-sm-center" v-if="loading">
-        <font-awesome-icon :icon="['fas', 'spinner']" spin></font-awesome-icon>
-      </div>
+    <div class="container-fluid mt-4">
 
       <div class="row mt-5 justify-content-sm-center" v-if="!loading">
         <div class="col-sm-4">
@@ -23,7 +23,7 @@
             </tr>
             <tr v-if="totals.eth">
               <td>ETH Raised</td>
-              <td>{{ totals.eth }}</td>
+              <td>{{ totals.eth | to4Dp }}</td>
             </tr>
             </tbody>
           </table>
@@ -62,7 +62,7 @@
             </tr>
             <tr v-if="kodaV2.totalPurchaseValueInEther">
               <td>Total</td>
-              <td>{{ kodaV2.totalPurchaseValueInEther }} ETH</td>
+              <td>{{ kodaV2.totalPurchaseValueInEther | to4Dp }} ETH</td>
             </tr>
             <tr v-if="kodaV2.koCommissionAccount">
               <td>Commission Account</td>
@@ -96,15 +96,15 @@
             </tr>
             <tr>
               <td>ETH Accepted</td>
-              <td>{{ auctionV2.ethAccepted }}</td>
+              <td>{{ auctionV2.ethAccepted | to4Dp }}</td>
             </tr>
             <tr>
               <td>ETH Placed</td>
-              <td>{{ auctionV2.ethPlaced }}</td>
+              <td>{{ auctionV2.ethPlaced | to4Dp }}</td>
             </tr>
             <tr>
               <td>Current Balance</td>
-              <td>{{ auctionV2.balance }}</td>
+              <td>{{ auctionV2.balance | to4Dp }}</td>
             </tr>
             </tbody>
           </table>
@@ -131,7 +131,7 @@
             </tr>
             <tr v-if="kodaV1.totalPurchaseValueInEther">
               <td>Total</td>
-              <td>{{ kodaV1.totalPurchaseValueInEther }} ETH</td>
+              <td>{{ kodaV1.totalPurchaseValueInEther | to4Dp }} ETH</td>
             </tr>
             </tbody>
           </table>
@@ -145,7 +145,7 @@
 
   import ClickableAddress from '../ui-controls/generic/ClickableAddress';
   import ClickableAddressButton from '../ui-controls/generic/ClickableAddressButton';
-  import {mapGetters, mapState} from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 
   export default {
@@ -155,7 +155,7 @@
       ClickableAddressButton,
       ClickableAddress
     },
-    data() {
+    data () {
       return {
         loading: false,
         kodaV1: {},
@@ -169,7 +169,7 @@
         'liveArtists',
       ]),
     },
-    created() {
+    created () {
       this.loading = true;
       const loadApiData = () => {
         this.$store.state.statsService.getContractStates()

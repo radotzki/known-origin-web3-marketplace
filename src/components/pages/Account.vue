@@ -44,7 +44,7 @@
 
           <div class="row editions-wrap pt-1 pb-4" v-if="canShowMoreV2">
             <div class="col-12 text-center">
-              <button @click="showMoreV2" class="btn btn-block btn-outline-primary mt-1 mb-5 ml-3 mr-3">
+              <button @click="showMoreV2" class="btn btn-outline-primary mt-1 mb-5 ml-3 mr-3">
                 Show more
               </button>
             </div>

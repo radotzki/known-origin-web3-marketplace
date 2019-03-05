@@ -81,7 +81,7 @@
               <router-link :to="{ name: 'feed' }">Feed</router-link> &bull;
               <router-link :to="{ name: 'gallery' }">Gallery</router-link> &bull;
               <router-link :to="{ name: 'artists' }">Artists</router-link> &bull;
-              <router-link :to="{ name: 'contracts' }">Contracts</router-link> &bull;
+              <router-link :to="{ name: 'contracts' }">Platform</router-link> &bull;
               <router-link :to="{ name: 'activity' }">Activity</router-link>
             </small>
           </div>
