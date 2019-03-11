@@ -59,7 +59,7 @@
     data() {
       return {
         PAGES,
-        order: 'asc',
+        order: 'desc', // high-low by default
         orderByFilter: 'priceInEther',
         limit: 16,
         offset: 0,
@@ -74,7 +74,9 @@
           this.order = value;
           this.limit = 16;
           this.offset = 0;
+          this.editions = [];
           this.showMore();
+          this.$ga.event('gallery', 'sort-order', value);
         }
       },
       goToArtist(artistAccount) {
@@ -101,13 +103,13 @@
               }
             })
             .then(() => {
-              $state.loaded();
+              if ($state) $state.loaded();
             })
             .finally(() => {
               this.isLoading = false;
             });
         } else {
-          $state.complete();
+          if ($state) $state.complete();
         }
       },
       canShowMore() {

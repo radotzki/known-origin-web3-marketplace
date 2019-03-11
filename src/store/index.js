@@ -24,6 +24,8 @@ import selfService from './modules/selfService';
 import EventsApiService from "../services/events/EventsApiService";
 import FirestoreArtistService from "../services/artist/FirestoreArtistService";
 import LikesApiService from "../services/likes/LikesApiService";
+import StatsApiService from "../services/stats/StatsApiService";
+import AuctionsApiService from "../services/auctions/AuctionsApiService";
 import EditionLookupService from "../services/edition/EditionLookupService";
 import KodaV2ContractService from "../services/web3/KodaV2ContractService";
 import NotificationService from "../services/notifications/notification.service";
@@ -85,15 +87,36 @@ const store = new Vuex.Store({
     // All services default to mainnet by default, they get overridden on INIT is=f the network is different
     eventService: new EventsApiService(),
     likesService: new LikesApiService(),
+    statsService: new StatsApiService(),
     editionLookupService: new EditionLookupService(),
     artistService: new FirestoreArtistService(),
     notificationService: new NotificationService(),
+    auctionsService: new AuctionsApiService(),
   },
   getters: {
     findArtist: (state) => (artistCode) => {
       return _.find(state.artists, (artist) => (artist && artist.artistCode) ? artist.artistCode.toString() === artistCode : false);
     },
     findArtistsForAddress: (state) => (artistAddress) => {
+
+      if (_.isArray(artistAddress)) {
+        const artist = _.find(state.artists, (artist) => {
+          if (_.isArray(artist.ethAddress)) {
+            return _.find(artist.ethAddress, (address) => {
+              return _.find(artistAddress, addressToMatch => safeToCheckSumAddress(address) === addressToMatch);
+            });
+          }
+          return safeToCheckSumAddress(artist.ethAddress) === artistsAddress;
+        });
+
+        if (!artist) {
+          console.warn(`Unable to find artists [${artistAddress}]`);
+        }
+        state.artistLookupCache[artistAddress] = artist;
+
+        return artist;
+      }
+
       if (state.artistLookupCache[artistAddress]) {
         return state.artistLookupCache[artistAddress];
       }
@@ -108,7 +131,7 @@ const store = new Vuex.Store({
       });
 
       if (!artist) {
-        console.error(`Unable to find artists [${artistAddress}]`);
+        console.warn(`Unable to find artists [${artistAddress}]`);
       }
       state.artistLookupCache[artistAddress] = artist;
       return artist;
@@ -144,6 +167,8 @@ const store = new Vuex.Store({
         state.artistService.setFirebasePath(firebasePath);
         state.editionLookupService.setNetworkId(id);
         state.notificationService.setNetworkId(id);
+        state.auctionsService.setNetworkId(id);
+        state.statsService.setNetworkId(id);
         state.likesService.setFirebasePathAndNetworkId(firebasePath, id);
         state.eventService.setFirebasePathAndNetworkId(firebasePath, id);
       }
@@ -191,79 +216,86 @@ const store = new Vuex.Store({
         });
     },
     [actions.INIT_APP]({commit, dispatch, state}, web3) {
+      try {
 
-      // Find current network
-      dispatch(actions.GET_CURRENT_NETWORK);
+        // Find current network
+        dispatch(actions.GET_CURRENT_NETWORK);
 
-      // NON-ASYNC action - set web3 provider on init
-      KnownOriginDigitalAssetV1.setProvider(web3.currentProvider);
-      KnownOriginDigitalAssetV2.setProvider(web3.currentProvider);
-      ArtistAcceptingBidsV2.setProvider(web3.currentProvider);
-      ArtistEditionControlsV2.setProvider(web3.currentProvider);
-      SelfServiceEditionCuration.setProvider(web3.currentProvider);
+        // NON-ASYNC action - set web3 provider on init
+        KnownOriginDigitalAssetV1.setProvider(web3.currentProvider);
+        KnownOriginDigitalAssetV2.setProvider(web3.currentProvider);
+        ArtistAcceptingBidsV2.setProvider(web3.currentProvider);
+        ArtistEditionControlsV2.setProvider(web3.currentProvider);
+        SelfServiceEditionCuration.setProvider(web3.currentProvider);
 
-      // Set the web3 instance
-      commit(mutations.SET_WEB3, web3);
+        // Set the web3 instance
+        commit(mutations.SET_WEB3, web3);
 
-      commit(mutations.SET_KODA_CONTRACT, {
-        v1: KnownOriginDigitalAssetV1,
-        v2: KnownOriginDigitalAssetV2,
-        auction: ArtistAcceptingBidsV2,
-        editionControls: ArtistEditionControlsV2,
-        selfServiceCuration: SelfServiceEditionCuration,
-      });
+        commit(mutations.SET_KODA_CONTRACT, {
+          v1: KnownOriginDigitalAssetV1,
+          v2: KnownOriginDigitalAssetV2,
+          auction: ArtistAcceptingBidsV2,
+          editionControls: ArtistEditionControlsV2,
+          selfServiceCuration: SelfServiceEditionCuration,
+        });
 
-      // Load auction contract owner
-      dispatch(`auction/${actions.GET_AUCTION_OWNER}`);
+        // Load auction contract owner
+        dispatch(`auction/${actions.GET_AUCTION_OWNER}`);
 
-      // Load control contract owner
-      dispatch(`artistControls/${actions.GET_ARTIST_EDITION_CONTROLS_DETAILS}`);
+        // Load control contract owner
+        dispatch(`artistControls/${actions.GET_ARTIST_EDITION_CONTROLS_DETAILS}`);
 
-      // TODO can we lazy load this?
-      // Load self service details
-      dispatch(`selfService/${actions.GET_SELF_SERVICE_CONTRACT_DETAILS}`);
+        // TODO can we lazy load this?
+        // Load self service details
+        dispatch(`selfService/${actions.GET_SELF_SERVICE_CONTRACT_DETAILS}`);
 
-      web3.eth.getAccounts()
-        .then((accounts) => {
+        web3.eth.getAccounts((error, accounts) => {
+          if (!error) {
+            let account = accounts[0];
 
-          let account = accounts[0];
+            const loadAccountData = (account) => {
+              console.log(`Loading data for account [${account}]`);
+              try {
+                // Load account owner assets for V1 & V2
+                dispatch(`kodaV2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account});
+                dispatch(`kodaV1/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account});
+              } catch (e) {
+                console.log("Unable to load account assets", e);
+              }
+            };
 
-          const loadAccountData = (account) => {
-            console.log(`Loading data for account [${account}]`);
-            try {
-              // Load account owner assets for V1 & V2
-              dispatch(`kodaV2/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account});
-              dispatch(`kodaV1/${actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT}`, {account});
-            } catch (e) {
-              console.log("Unable to load account assets", e);
-            }
-          };
+            const setAccountAndBalance = (account) => {
+              commit(mutations.SET_ACCOUNT, {account});
+              loadAccountData(account);
+            };
 
-          const setAccountAndBalance = (account) => {
-            commit(mutations.SET_ACCOUNT, {account});
-            loadAccountData(account);
-          };
-
-          const refreshHandler = () => {
-            web3.eth.getAccounts()
-              .then((updatedAccounts) => {
-                if (updatedAccounts[0] !== account) {
-                  account = updatedAccounts[0];
-                  return setAccountAndBalance(account);
+            const refreshHandler = () => {
+              web3.eth.getAccounts((error, updatedAccounts) => {
+                if (!error) {
+                  if (updatedAccounts[0] !== account) {
+                    account = updatedAccounts[0];
+                    return setAccountAndBalance(account);
+                  }
+                } else {
+                  console.log(`Error getting accounts`, error);
                 }
               });
-          };
+            };
 
-          // Every few seconds, check if the main account has changed
-          setInterval(refreshHandler, 2500);
+            // Every few seconds, check if the main account has changed
+            setInterval(refreshHandler, 2500);
 
-          if (account) {
-            return setAccountAndBalance(account);
+            if (account) {
+              return setAccountAndBalance(account);
+            }
+          } else {
+            console.log(`Error getting accounts`, error);
           }
-        })
-        .catch(function (error) {
-          console.log('ERROR - account locked', error);
         });
+
+      } catch (e) {
+        console.log('ERROR', e);
+      }
     },
     [actions.LOAD_ARTISTS]: async function ({commit, dispatch, state}) {
       // Return from here so views can reqct

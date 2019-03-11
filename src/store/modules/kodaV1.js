@@ -102,6 +102,9 @@ const contractStateModule = {
           });
         });
 
+      /**
+       * @deprecated = API hit for this info now
+       */
       Promise.all([contract.totalPurchaseValueInWei(), contract.totalNumberOfPurchases()])
         .then((results) => {
           commit(mutations.SET_TOTAL_PURCHASED, {

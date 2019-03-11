@@ -13,7 +13,7 @@
     <div v-if="listOpenAuctions.length > 0"
          class="pb-4">
 
-      <table class="table table-striped">
+      <table class="table">
         <tbody>
         <tr v-for="auction in listOpenAuctions" :key="auction.edition">
           <td>

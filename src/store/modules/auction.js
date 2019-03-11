@@ -17,6 +17,7 @@ const auctionStateModule = {
     bidState: {},
     acceptingBidState: {},
     withdrawingBidState: {},
+    rejectingBidState: {},
     minBidAmount: 0,
     minBidAmountWei: 0,
   },
@@ -30,17 +31,17 @@ const auctionStateModule = {
 
       // Check not set
       if (currentEditionHighestBid.toString() === "0") {
-        return "0.01";
+        return 0.01;
       }
 
       // Handle BN
       if (Web3.utils.isBN(currentEditionHighestBid) && minBid) {
-        return Web3.utils.fromWei(currentEditionHighestBid.add(minBid).toString(10), 'ether');
+        return _.toNumber(Web3.utils.fromWei(currentEditionHighestBid.add(minBid).toString(10), 'ether'));
       }
 
       if (minBid) {
         // Fall back to min bid
-        return Web3.utils.fromWei(minBid.toString(10), 'ether');
+        return _.toNumber(Web3.utils.fromWei(minBid.toString(10), 'ether'));
       }
 
       return 0;
@@ -55,9 +56,9 @@ const auctionStateModule = {
       }
       return currentHighestBidder === rootState.account;
     },
-    /////////////////////////
-    // Accepting Bid State //
-    /////////////////////////
+    //////////////////////////
+    // Make Offer Bid State //
+    //////////////////////////
     editionAuctionState: (state) => (editionNumber) => {
       return _.get(state.bidState, editionNumber);
     },
@@ -118,6 +119,27 @@ const auctionStateModule = {
     getWithdrawnBidTransactionForEdition: (state, getters) => (editionNumber) => {
       return getters.editionWithdrawnBidState(editionNumber).transaction;
     },
+    ////////////////////////
+    // Rejected Bid State //
+    ////////////////////////
+    editionRejectedBidState: (state) => (editionNumber) => {
+      return _.get(state.rejectingBidState, editionNumber);
+    },
+    isRejectedBidTriggered: (state, getters) => (editionNumber) => {
+      return _.get(getters.editionRejectedBidState(editionNumber), 'state') === mutations.BID_REJECTED_TRIGGERED;
+    },
+    isRejectedBidStarted: (state, getters) => (editionNumber) => {
+      return _.get(getters.editionRejectedBidState(editionNumber), 'state') === mutations.BID_REJECTED_STARTED;
+    },
+    isRejectedBidSuccessful: (state, getters) => (editionNumber) => {
+      return _.get(getters.editionRejectedBidState(editionNumber), 'state') === mutations.BID_REJECTED_SUCCESSFUL;
+    },
+    isRejectedBidFailed: (state, getters) => (editionNumber) => {
+      return _.get(getters.editionRejectedBidState(editionNumber), 'state') === mutations.BID_REJECTED_FAILED;
+    },
+    getRejectedBidTransactionForEdition: (state, getters) => (editionNumber) => {
+      return getters.editionRejectedBidState(editionNumber).transaction;
+    },
   },
   mutations: {
     [mutations.SET_AUCTION_ADDRESS](state, {address}) {
@@ -142,6 +164,9 @@ const auctionStateModule = {
       state.minBidAmount = Web3.utils.fromWei(minBidAmount.toString(10), 'ether');
       state.minBidAmountWei = minBidAmount;
     },
+    //////////////////////////
+    // Make Offer Bid State //
+    //////////////////////////
     [mutations.RESET_BID_STATE](state, {edition}) {
       delete state.bidState[edition];
       state.bidState = {...state.bidState};
@@ -192,6 +217,9 @@ const auctionStateModule = {
         }
       };
     },
+    /////////////////////////
+    // Accepting Bid State //
+    /////////////////////////
     [mutations.RESET_BID_ACCEPTED_STATE](state, {auction}) {
       delete state.acceptingBidState[auction.edition];
       state.acceptingBidState = {...state.acceptingBidState};
@@ -239,6 +267,9 @@ const auctionStateModule = {
         }
       };
     },
+    ///////////////////////////
+    // Withdrawing Bid State //
+    ///////////////////////////
     [mutations.RESET_BID_WITHDRAWN_STATE](state, {auction}) {
       delete state.withdrawingBidState[auction.edition];
       state.withdrawingBidState = {...state.acceptingBidState};
@@ -286,8 +317,61 @@ const auctionStateModule = {
         }
       };
     },
+    ////////////////////////
+    // Rejected Bid State //
+    ////////////////////////
+    [mutations.RESET_BID_REJECTED_STATE](state, {auction}) {
+      delete state.rejectingBidState[auction.edition];
+      state.rejectingBidState = {...state.acceptingBidState};
+    },
+    [mutations.BID_REJECTED_FAILED](state, {auction, account}) {
+      state.rejectingBidState = {
+        ...state.rejectingBidState,
+        [auction.edition]: {
+          ...auction,
+          account,
+          transaction: state.rejectingBidState[auction.edition].transaction,
+          state: 'BID_REJECTED_FAILED'
+        }
+      };
+    },
+    [mutations.BID_REJECTED_STARTED](state, {auction, account, transaction}) {
+      state.rejectingBidState = {
+        ...state.rejectingBidState,
+        [auction.edition]: {
+          ...auction,
+          account,
+          transaction,
+          state: 'BID_REJECTED_STARTED'
+        }
+      };
+    },
+    [mutations.BID_REJECTED_SUCCESSFUL](state, {auction, account}) {
+      state.rejectingBidState = {
+        ...state.rejectingBidState,
+        [auction.edition]: {
+          ...auction,
+          account,
+          transaction: state.rejectingBidState[auction.edition].transaction,
+          state: 'BID_REJECTED_SUCCESSFUL'
+        }
+      };
+    },
+    [mutations.BID_REJECTED_TRIGGERED](state, {auction, account}) {
+      state.rejectingBidState = {
+        ...state.rejectingBidState,
+        [auction.edition]: {
+          ...auction,
+          account,
+          state: 'BID_REJECTED_TRIGGERED'
+        }
+      };
+    },
   },
   actions: {
+    async [actions.REFRESH_OPEN_OFFERS]() {
+      // Dumb action which doesnt do anything, used to listen for change in open offers page
+    },
     async [actions.GET_AUCTION_OWNER]({commit, state, getters, rootState}) {
       const contract = await rootState.ArtistAcceptingBids.deployed();
       const owner = await contract.owner();
@@ -361,6 +445,7 @@ const auctionStateModule = {
         })
         .finally(() => {
           if (timer) clearInterval(timer);
+          dispatch(actions.REFRESH_OPEN_OFFERS);
           dispatch(`kodaV2/${actions.REFRESH_AND_LOAD_INDIVIDUAL_EDITION}`, {editionNumber: edition}, {root: true});
         });
     },
@@ -388,7 +473,7 @@ const auctionStateModule = {
           commit(mutations.AUCTION_STARTED, {edition, account, transaction: hash});
         })
         .on('receipt', receipt => {
-          console.log('Auction - increase bid - successful', receipt);
+          console.log('Auction - increase bid - receipt', receipt);
           dispatch(actions.GET_AUCTION_DETAILS, edition);
           commit(mutations.AUCTION_PLACED_SUCCESSFUL, {edition, account});
         })
@@ -404,6 +489,7 @@ const auctionStateModule = {
         })
         .finally(() => {
           if (timer) clearInterval(timer);
+          dispatch(actions.REFRESH_OPEN_OFFERS);
           dispatch(`kodaV2/${actions.REFRESH_AND_LOAD_INDIVIDUAL_EDITION}`, {editionNumber: edition}, {root: true});
         });
     },
@@ -428,7 +514,7 @@ const auctionStateModule = {
           commit(mutations.BID_ACCEPTED_STARTED, {auction, account, transaction: hash});
         })
         .on('receipt', receipt => {
-          console.log('Auction - accepted bid - successful', receipt);
+          console.log('Auction - accepted bid - receipt', receipt);
           dispatch(actions.GET_AUCTION_DETAILS, auction.edition);
           commit(mutations.BID_ACCEPTED_SUCCESSFUL, {auction, account});
         })
@@ -444,6 +530,7 @@ const auctionStateModule = {
         })
         .finally(() => {
           if (timer) clearInterval(timer);
+          dispatch(actions.REFRESH_OPEN_OFFERS);
           dispatch(`kodaV2/${actions.REFRESH_AND_LOAD_INDIVIDUAL_EDITION}`, {editionNumber: auction.edition}, {root: true});
         });
     },
@@ -469,7 +556,7 @@ const auctionStateModule = {
           commit(mutations.BID_WITHDRAWN_STARTED, {auction, account, transaction: hash});
         })
         .on('receipt', receipt => {
-          console.log('Auction - withdraw bid - successful', receipt);
+          console.log('Auction - withdraw bid - receipt', receipt);
           dispatch(actions.GET_AUCTION_DETAILS, auction.edition);
           commit(mutations.BID_WITHDRAWN_SUCCESSFUL, {auction, account});
         })
@@ -485,6 +572,49 @@ const auctionStateModule = {
         })
         .finally(() => {
           if (timer) clearInterval(timer);
+          dispatch(actions.REFRESH_OPEN_OFFERS);
+          dispatch(`kodaV2/${actions.REFRESH_AND_LOAD_INDIVIDUAL_EDITION}`, {editionNumber: auction.edition}, {root: true});
+        });
+    },
+    async [actions.REJECT_BID]({commit, dispatch, state, getters, rootState}, auction) {
+      commit(mutations.RESET_BID_REJECTED_STATE, {auction});
+
+      const account = rootState.account;
+
+      const contract = await rootState.ArtistAcceptingBids.deployed();
+
+      commit(mutations.BID_REJECTED_TRIGGERED, {auction, account});
+
+      const timer = setInterval(function () {
+        dispatch(actions.GET_AUCTION_DETAILS, auction.edition);
+      }, 2000);
+
+      contract
+        .rejectBid(auction.edition, {
+          from: account
+        })
+        .on('transactionHash', hash => {
+          console.log('Auction - reject bid - transaction submitted', hash);
+          commit(mutations.BID_REJECTED_STARTED, {auction, account, transaction: hash});
+        })
+        .on('receipt', receipt => {
+          console.log('Auction - reject bid - receipt', receipt);
+          dispatch(actions.GET_AUCTION_DETAILS, auction.edition);
+          commit(mutations.BID_REJECTED_SUCCESSFUL, {auction, account});
+        })
+        .on('error', error => {
+          console.log('Auction - reject bid - rejection/error', error);
+          dispatch(actions.GET_AUCTION_DETAILS, auction.edition);
+          commit(mutations.BID_REJECTED_FAILED, {auction, account});
+        })
+        .catch((error) => {
+          console.log('Auction - reject bid - rejection/error', error);
+          dispatch(actions.GET_AUCTION_DETAILS, auction.edition);
+          commit(mutations.BID_REJECTED_FAILED, {auction, account});
+        })
+        .finally(() => {
+          if (timer) clearInterval(timer);
+          dispatch(actions.REFRESH_OPEN_OFFERS);
           dispatch(`kodaV2/${actions.REFRESH_AND_LOAD_INDIVIDUAL_EDITION}`, {editionNumber: auction.edition}, {root: true});
         });
     },

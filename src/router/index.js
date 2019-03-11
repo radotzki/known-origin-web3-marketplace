@@ -9,6 +9,7 @@ import Gallery from '@/components/pages/Gallery';
 import ArtistPage from '@/components/pages/ArtistPage';
 import ConfirmPurchase from '@/components/pages/ConfirmPurchase';
 import Activity from '@/components/pages/Activity';
+import OpenOffers from '@/components/pages/OpenOffers';
 import Debug from '@/components/pages/Debug';
 import EditionTokenOverview from '@/components/pages/EditionTokenOverview';
 import LegacyDeepLinkToken from '@/components/pages/legacy/LegacyDeepLinkToken';
@@ -73,6 +74,11 @@ export default new Router({
       path: '/activity',
       name: 'activity',
       component: Activity
+    },
+    {
+      path: '/offers',
+      name: 'openOffers',
+      component: OpenOffers
     },
     {
       path: '/token/:tokenId',

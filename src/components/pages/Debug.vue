@@ -20,7 +20,7 @@
 
       <pre>
         <span v-for="log in consoleData">
-          {{log}}
+          {{log.msg}}
         </span>
       </pre>
     </div>
@@ -49,14 +49,15 @@
       ]),
     },
     created() {
-      this.originalConsole = console.log;
+      const self = this;
+      const log = console.log;
+      console.log = function () {
+        // log.call(this, 'My Console!!!');
+        log.apply(this, Array.prototype.slice.call(arguments));
 
-      console.log = (message) => {
-        if (typeof message === 'object') {
-          this.consoleData.push(JSON.stringify(message));
-        } else {
-          this.consoleData.push(message);
-        }
+        self.consoleData.push({
+          msg: Array.prototype.slice.call(arguments).join(' ')
+        });
       };
 
     },
@@ -68,11 +69,11 @@
 
 <style scoped lang="scss">
   pre {
-    width: 500px;                          /* specify width  */
-    white-space: pre-wrap;                 /* CSS3 browsers  */
+    width: 500px; /* specify width  */
+    white-space: pre-wrap; /* CSS3 browsers  */
     white-space: -moz-pre-wrap !important; /* 1999+ Mozilla  */
-    white-space: -pre-wrap;                /* Opera 4 thru 6 */
-    white-space: -o-pre-wrap;              /* Opera 7 and up */
-    word-wrap: break-word;                 /* IE 5.5+ and up */
+    white-space: -pre-wrap; /* Opera 4 thru 6 */
+    white-space: -o-pre-wrap; /* Opera 7 and up */
+    word-wrap: break-word; /* IE 5.5+ and up */
   }
 </style>

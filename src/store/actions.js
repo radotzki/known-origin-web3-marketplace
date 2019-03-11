@@ -25,6 +25,7 @@ export const LOAD_EDITIONS_FOR_ARTIST = 'LOAD_EDITIONS_FOR_ARTIST';
 export const LOAD_INDIVIDUAL_EDITION = 'LOAD_INDIVIDUAL_EDITION';
 export const REFRESH_AND_LOAD_INDIVIDUAL_EDITION = 'REFRESH_AND_LOAD_INDIVIDUAL_EDITION';
 export const LOAD_INDIVIDUAL_TOKEN = 'LOAD_INDIVIDUAL_TOKEN';
+export const REFRESH_OPEN_OFFERS = 'REFRESH_OPEN_OFFERS';
 
 /////////////
 // V1 Page //
@@ -65,6 +66,7 @@ export const INCREASE_BID = 'INCREASE_BID';
 export const ACCEPT_BID = 'ACCEPT_BID';
 export const WITHDRAW_BID = 'WITHDRAW_BID';
 export const CANCEL_AUCTION = 'CANCEL_AUCTION';
+export const REJECT_BID = 'REJECT_BID';
 
 /////////////////////
 // Artist Controls //

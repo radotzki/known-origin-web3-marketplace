@@ -156,6 +156,9 @@ export default class FirestoreEventService extends FirestoreService {
       });
   }
 
+  /**
+   * @deprecated = API hit for this info now
+   */
   loadAuctionStats() {
     let ethPlaced = new Web3.utils.BN(0);
     let ethAccepted = new Web3.utils.BN(0);

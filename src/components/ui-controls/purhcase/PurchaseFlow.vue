@@ -92,7 +92,6 @@
       ]),
       ...mapGetters('kodaV2', [
         'alreadyPurchasedEdition',
-        'isStartDateInTheFuture',
       ]),
       ...mapGetters('purchase', [
         'editionPurchaseState',
