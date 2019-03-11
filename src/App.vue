@@ -51,12 +51,15 @@
 
             <router-link :to="{ name: 'artists' }" class="nav-link">Artists</router-link>
 
-            <router-link :to="{ name: 'activity' }" class="nav-link mr-3">Activity</router-link>
+            <router-link :to="{ name: 'activity' }" class="nav-link">Activity</router-link>
 
-            <router-link :to="{ name: 'account' }" class="nav-link">
+            <router-link :to="{ name: 'openOffers' }" class="nav-link">Offers</router-link>
+
+            <router-link :to="{ name: 'account' }" class="nav-link mr-3">
               Account
               <span class="badge badge-primary" v-if="totalPurchases() > 0">{{ totalPurchases() }}</span>
             </router-link>
+
 
           </b-navbar-nav>
         </b-collapse>
@@ -81,6 +84,7 @@
               <router-link :to="{ name: 'feed' }">Feed</router-link> &bull;
               <router-link :to="{ name: 'gallery' }">Gallery</router-link> &bull;
               <router-link :to="{ name: 'artists' }">Artists</router-link> &bull;
+              <router-link :to="{ name: 'openOffers' }">Offers</router-link> &bull;
               <router-link :to="{ name: 'contracts' }">Platform</router-link> &bull;
               <router-link :to="{ name: 'activity' }">Activity</router-link>
             </small>

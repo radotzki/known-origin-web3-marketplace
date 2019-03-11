@@ -4,11 +4,11 @@
     <div>
       <button class="btn btn-outline-danger btn-sm"
               v-on:click="cancelAuction()">
-        Cancel Auction
+        Disable
       </button>
     </div>
 
-    <div class="mt-2">
+    <div class="mt-1 small">
       <view-transaction-details :transaction="txs">
       </view-transaction-details>
     </div>

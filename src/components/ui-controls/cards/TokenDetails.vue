@@ -22,57 +22,25 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex';
-  import _ from 'lodash';
-  import * as actions from '../../../store/actions';
-  import PriceInEth from '../generic/PriceInEth';
-  import UsdPrice from '../generic/USDPrice';
-  import RarityIndicator from '../v2/RarityIndicator';
-  import MetadataAttributes from '../v2/MetadataAttributes';
-  import Availability from '../v2/Availability';
-  import ClickableAddress from '../generic/ClickableAddress';
-  import TokenId from '../generic/TokenId';
-  import HighResLabel from '../highres/HighResLabel';
-  import HighResDownload from '../highres/HighResDownload';
-  import IpfsBadge from '../badges/IpfsBadge';
-  import Erc721Badge from '../badges/ERC721Badge';
-  import BirthTransactionBadge from '../badges/BirthTransactionBadge';
-  import PurchaseTransactionBadge from '../badges/PurchaseTransactionBadge';
-  import EditionImage from '../generic/EditionImage';
-  import EditionCard from './EditionCard';
+  import EditionCard from "./EditionCard";
+  import ClickableAddress from "../generic/ClickableAddress";
+  import HighResDownload from "../highres/HighResDownload";
+  import EditionImage from "../generic/EditionImage";
 
   export default {
     name: 'tokenDetails',
     components: {
-      EditionCard,
       EditionImage,
-      PurchaseTransactionBadge,
       HighResDownload,
-      HighResLabel,
-      Availability,
-      UsdPrice,
-      RarityIndicator,
-      PriceInEth,
-      MetadataAttributes,
       ClickableAddress,
-      TokenId,
-      BirthTransactionBadge,
-      Erc721Badge,
-      IpfsBadge,
+      EditionCard
     },
     props: {
       edition: {
         type: Object
       }
     },
-    computed: {
-      ...mapGetters('kodaV2', [
-        'isStartDateInTheFuture'
-      ]),
-      ...mapGetters([
-        'findArtistsForAddress'
-      ]),
-    },
+    computed: {},
     methods: {},
   };
 </script>
