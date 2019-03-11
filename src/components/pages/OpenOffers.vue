@@ -37,7 +37,7 @@
                 <clickable-address :eth-address="offer.highestBidder" class="small"></clickable-address>
                 <span class="small">offers</span>
                 <price-in-eth :value="offer.highestBid"></price-in-eth>
-                <span class="small">(<usd-price :price-in-ether="offer.highestBid"></usd-price>)</span>
+                <span class="small" v-if="currentUsdPrice">(<usd-price :price-in-ether="offer.highestBid"></usd-price>)</span>
               </td>
               <td class="align-middle text-center">
                 <div v-if="isKo || isArtist(offer)" title="Accept the offer">
@@ -100,6 +100,9 @@
       };
     },
     computed: {
+      ...mapState([
+        'currentUsdPrice',
+      ]),
       ...mapGetters('kodaV2', [
         'findEdition'
       ]),
