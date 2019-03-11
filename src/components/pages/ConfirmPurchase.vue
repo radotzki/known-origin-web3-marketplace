@@ -8,7 +8,7 @@
 
         <edition-card :edition="edition"></edition-card>
 
-        <div class="shadow-sm bg-white pt-0 pl-4 pr-4 pb-4" style="min-height: 50px">
+        <div class="shadow-sm bg-white pt-0 pl-4 pr-4 pb-2">
 
           <PurchaseFlow :edition="edition" v-on:retry-purchase="retryPurchase">
           </PurchaseFlow>
@@ -23,6 +23,10 @@
         <EditionSoldOut class="shadow-sm bg-white pt-0 pl-4 pr-4 pb-4"
                         :edition="edition">
         </EditionSoldOut>
+
+        <EditionNotOnSaleYet class="shadow-sm bg-white pt-0 pl-4 pr-4 pb-4 text-info"
+                             :edition="edition">
+        </EditionNotOnSaleYet>
 
         <div v-if="canProceedWithPurchase">
           <place-edition-bid :edition="edition"></place-edition-bid>
@@ -54,6 +58,7 @@
   import EditionCard from "../ui-controls/cards/EditionCard";
   import EditionImage from "../ui-controls/generic/EditionImage";
   import EditionSoldOut from "../ui-controls/purhcase/EditionSoldOut";
+  import EditionNotOnSaleYet from "../ui-controls/purhcase/EditionNotOnSaleYet";
   import AccountNotFound from "../ui-controls/purhcase/AccountNotFound";
   import ConfirmTermsAndPurchase from "../ui-controls/purhcase/ConfirmTermsAndPurchase";
 
@@ -69,6 +74,7 @@
       LoadingSection,
       PurchaseFlow,
       AccountNotFound,
+      EditionNotOnSaleYet,
       ConfirmTermsAndPurchase
     },
     metaInfo() {

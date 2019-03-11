@@ -91,6 +91,10 @@ const contractStateModule = {
       return _.find(state.accountOwnedEditions, {tokenId});
     },
     isStartDateInTheFuture: (state) => (startDate) => {
+      // Zero means the its already available from the point of being minted
+      if (startDate === 0) {
+        return false;
+      }
       return _.toNumber(startDate) > (new Date().getTime() / 1000);
     },
   },
@@ -110,8 +114,10 @@ const contractStateModule = {
       }
     },
     [mutations.SET_EDITION](state, data) {
-      let {edition} = data;
-      Vue.set(state.assets, edition, data);
+      if (data && data.edition) {
+        let {edition} = data;
+        Vue.set(state.assets, edition, data);
+      }
     },
     [mutations.SET_GALLERY_EDITIONS](state, {editions, params, totalAvailable}) {
       // Check sorting order the same, if different then assume new collection

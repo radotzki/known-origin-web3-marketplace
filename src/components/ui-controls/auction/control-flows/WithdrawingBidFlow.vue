@@ -4,11 +4,11 @@
     <div>
       <button class="btn btn-outline-primary btn-sm"
               v-on:click="withdrawBid()">
-        Withdraw Bid
+        Withdraw
       </button>
     </div>
 
-    <div class="mt-2">
+    <div class="mt-1 small">
       <span v-if="isWithdrawnBidTriggered(auction.edition)">
         Transaction triggered
         <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
@@ -18,7 +18,7 @@
       </span>
 
       <span v-else-if="isWithdrawnBidStarted(auction.edition)">
-        Your transaction is being confirmed...
+        Your transaction is being confirmed...<br />
         <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
         <clickable-transaction :transaction="getWithdrawnBidTransactionForEdition(auction.edition)"
                                :show-label="false">
@@ -34,10 +34,10 @@
 
       <span v-else-if="isWithdrawnBidFailed(auction.edition)">
           <span class="card-text text-danger mt-4">Your transaction failed!</span>
-          <img src="../../../../../static/Failure.svg" style="width: 25px"/>
+          <img src="../../../../../static/Failure.svg" style="width: 15px"/>
       </span>
-
     </div>
+
   </div>
 </template>
 

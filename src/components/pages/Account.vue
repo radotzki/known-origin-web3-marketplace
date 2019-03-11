@@ -11,13 +11,7 @@
 
       <div class="row pb-2 mt-3">
         <div class="col-12">
-          <address-icon :eth-address="account"></address-icon>
-          <span class="badge badge-primary" v-if="totalPurchases() > 0 ">{{ totalPurchases() }}</span>
-
-          <code v-if="!account" class="mt-2">
-            Looks like we cant see your account, have you logged into your wallet yet? 🔐
-          </code>
-
+          <account-profile></account-profile>
         </div>
       </div>
 
@@ -103,9 +97,9 @@
 
           <account-favorites class="mt-3" v-if="account"></account-favorites>
 
-          <div v-if="!account" class="mt-3">
+          <code v-if="!account" class="mt-3">
             Looks like we cant see your account
-          </div>
+          </code>
 
         </b-tab>
 
@@ -114,9 +108,9 @@
 
           <account-activity class="mt-3" v-if="account"></account-activity>
 
-          <div v-if="!account" class="mt-3">
+          <code v-if="!account" class="mt-3">
             Looks like we cant see your account
-          </div>
+          </code>
 
         </b-tab>
 
@@ -143,10 +137,12 @@
   import TokenIdBadge from '../ui-controls/badges/TokenIdBadge';
   import AccountActivity from "../ui-controls/account/AccountActivity";
   import AccountFavorites from "../ui-controls/account/AccountFavorites";
+  import AccountProfile from "../ui-controls/account/AccountProfile";
 
   export default {
     name: 'account',
     components: {
+      AccountProfile,
       AccountFavorites,
       AccountActivity,
       TokenIdBadge,
