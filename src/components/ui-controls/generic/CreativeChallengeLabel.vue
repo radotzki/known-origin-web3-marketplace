@@ -1,6 +1,9 @@
 <template>
-  <span v-if="devcon4">
-    <img src="../../../../static/devcon_iv_logo.svg" class="img-fluid creative-challenge mr-2"/>
+  <span>
+    <img v-if="devcon4"
+         src="../../../../static/devcon_iv_logo.svg" class="img-fluid creative-challenge mr-2" alt="devcon4"/>
+    <img v-else-if="auctionity"
+         src="../../../../static/auctionity-small.png" class="img-fluid creative-challenge mr-2" alt="auctionity"/>
   </span>
 </template>
 
@@ -22,6 +25,13 @@
         if (this.attributes) {
           const tags = _.get(this.attributes, 'tags', []);
           return _.includes(tags, 'creative challenge') && _.includes(tags, '0xcert');
+        }
+        return null;
+      },
+      auctionity: function () {
+        if (this.attributes) {
+          const tags = _.get(this.attributes, 'tags', []);
+          return _.includes(tags, 'creative challenge') && _.includes(tags, 'auctionity');
         }
         return null;
       }
