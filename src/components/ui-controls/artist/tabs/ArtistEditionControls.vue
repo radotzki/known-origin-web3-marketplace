@@ -5,11 +5,10 @@
       <h3>Artist Controls
       </h3>
       <p>
-        Control prices for your artworks and gift NFTs.
-      </p>
-      <p>
-        Please check <a :href="etherscanBase" target="_blank">Etherscan</a> to confirm your transactions complete
-        successfully.
+        Control prices for your artworks and gift NFTs. <br/>
+        <span class="text-muted small">
+        Please check <a :href="etherscanBase" target="_blank">Etherscan</a> to confirm your transactions complete successfully.
+      </span>
       </p>
     </div>
 

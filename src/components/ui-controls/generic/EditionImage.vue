@@ -1,16 +1,25 @@
 <template>
   <img v-if="src"
-       v-lazy="src"
+       v-lazy="image"
        :key="'edition_image_' + imgId"
        :id="'edition_image_' + imgId"
        alt="edition-image"/>
 </template>
 
 <script>
+
+  import imgixClient from '../../../services/imgixClient';
+
   export default {
     name: 'editionImage',
     props: ['src', 'id'],
     computed: {
+      image() {
+        // FIXME - is this worth keeping?
+        return imgixClient.buildURL(this.src, {
+          autoformat: true
+        });
+      },
       imgId() {
         if (this.id) {
           return this.id;

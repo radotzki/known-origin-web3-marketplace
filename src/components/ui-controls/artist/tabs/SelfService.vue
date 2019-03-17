@@ -1,9 +1,20 @@
 <template>
   <div class="container-fluid">
 
+    <div class="editions-wrap pt-2">
+      <h3>
+        Edition Creation
+      </h3>
+      <p>
+        Create and publish new artworks on the KO platform <br/>
+        <span class="text-muted small">
+        Once your transaction is confirmed the artwork should appear on the site in approximately 5 minutes.
+        </span>
+      </p>
+    </div>
+
     <div class="row">
-      <div class="col-12">
-        <h6>Edition Details</h6>
+      <div class="col">
 
         <form>
           <div class="form-group row">
@@ -131,14 +142,13 @@
             </div>
           </div>
 
-
         </form>
       </div>
     </div>
 
     <div class="row">
-      <div class="col-12">
 
+      <div class="col-12">
         <div class="form-group row">
 
           <div class="col-2">
@@ -163,33 +173,35 @@
               <code>gif</code> & <code>svg</code>
             </div>
 
-            <span v-if="imageUpload.fileFormatError" class="form-text text-danger small">
+            <div v-if="imageUpload.fileFormatError" class="form-text text-danger small">
               Invalid file format, supported extensions are <code>jpeg</code>, <code>png</code>, <code>gif</code>
               & <code>svg</code>
-            </span>
+            </div>
 
-            <p v-if="imageUpload.isValidFileSize" class="form-text text-danger small">
+            <div v-if="imageUpload.isValidFileSize" class="form-text text-danger small">
               Max current file size supported it <strong>{{maxFileSizeMb}}mb</strong>
-            </p>
+            </div>
 
-            <p v-if="isImgInitial || isImgSaving" class="form-text text-info small">
+            <div v-if="(isImgInitial || isImgSaving) && !(imageUpload.fileFormatError || imageUpload.isValidFileSize)"
+                 class="form-text text-info small">
               Uploading file to
               <font-awesome-icon :icon="['fas', 'cube']"></font-awesome-icon>
               IPFS
               <font-awesome-icon :icon="['fas', 'spinner']" spin></font-awesome-icon>
-            </p>
+            </div>
 
-            <p v-if="isImgSuccess" class="form-text text-success small">
+            <div v-if="isImgSuccess" class="form-text text-success small">
               Successfully uploaded file to
               <font-awesome-icon :icon="['fas', 'cube']"></font-awesome-icon>
               IPFS
-            </p>
+            </div>
 
-            <p v-if="isImgSuccess">
+            <div v-if="isImgSuccess">
               <a target="_blank" :href="imageUpload.ipfsImage">
                 <img :src="imageUpload.ipfsImage" class="img-thumbnail" style="max-height: 200px"/>
               </a>
-            </p>
+            </div>
+
             <p v-if="isImgFailed" class="form-text text-warning small">
               Something went went, try again or contract the team on telegram:
               {{ imageUpload.uploadError }}
@@ -197,6 +209,22 @@
           </div>
         </div>
       </div>
+
+      <div class="col">
+        <div class="alert alert-info small">
+          <strong>File sizes</strong>
+          <p>
+            Setting the image size to be a maximum of <strong>{{maxFileSizeMb}}mb</strong> ensures
+            that as many people and wallets can enjoy each creation as possible.
+          </p>
+          <p>
+            Once your edition has been created you will be able to upload a <span class="badge badge-success">high definition</span>
+            version up to <strong>100mb</strong> which can be <strong>only</strong> by accssed from the buyers of your
+            tokens.
+          </p>
+        </div>
+      </div>
+
     </div>
 
     <div class="row">
@@ -204,8 +232,8 @@
         <button class="btn btn-block btn-primary" :disabled="!isEditionValid()" @click="createEdition">
           Create Edition
         </button>
-        <small class="float-left form-text text-info">
-          After about 5 minutes your works will appear on the site
+        <small class="float-left form-text text-dark">
+          Once your transaction is confirmed the artwork should appear on the site in approximately 5 minutes.
         </small>
       </div>
     </div>
@@ -214,26 +242,25 @@
 
     <div class="row">
       <div class="col">
-        <p>
-          Once your edition has been created you will be able to upload a <span class="badge badge-success">high definition</span>
-          version up to 75mb which can be downloaded <strong>only</strong> by the buyers of your tokens.
-        </p>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <div v-if="isMetadataInitial || isMetadataSaving" class="text-info small">
-          Building edition data
+        <div v-if="isMetadataInitial || isMetadataSaving" class="alert alert-info" role="alert">
+          Building edition
           <font-awesome-icon :icon="['fas', 'cube']" spin></font-awesome-icon>
         </div>
-        <div v-if="isMetadataSuccess" class="text-success small">
-          Edition data built <a :href="'https://ipfs.infura.io/ipfs/' + metadataIpfsUpload.ipfsHash" target="_blank">[data]</a>
+
+        <div v-if="isMetadataSuccess" class="alert alert-success" role="alert">
+          Complete - submitting transaction to network, check your wallet
+          <a v-if="false"
+             :href="'https://ipfs.infura.io/ipfs/' + metadataIpfsUpload.ipfsHash"
+             target="_blank">
+            [data]
+          </a>
         </div>
-        <div v-if="isMetadataFailed" class="text-warning small">
-          Something went went, try again or contract the team on telegram: {{ metadataIpfsUpload.uploadError }}
+
+        <div v-if="isMetadataFailed" class="alert alert-warning" role="alert">
+          Something went wrong, try again or contract the team on telegram: {{ metadataIpfsUpload.uploadError }}
         </div>
-        <span>
+
+        <span v-if="false">
           <a class="hand-pointer small" @click="expandIpfsData = !expandIpfsData">(debug view)</a>
           <pre v-show="expandIpfsData">{{generateIPFSData()}}</pre>
         </span>
@@ -275,7 +302,7 @@
     data() {
       return {
         tags: _.orderBy(_.map(tags, _.toLowerCase)),
-        maxFileSizeMb: 25,
+        maxFileSizeMb: 15,
         // The form
         edition: {
           tags: [],

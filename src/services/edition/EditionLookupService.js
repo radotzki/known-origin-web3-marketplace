@@ -91,6 +91,24 @@ export default class EditionLookupService {
   }
 
   /**
+   * Loads all editions for the given address which dont have a registered high-res download
+   *
+   * @param artistAccount
+   * @return {Promise<*>}
+   */
+  async getEditionsWithoutHighResForArtist(artistAccount) {
+    console.log(`Load editions for artist [${artistAccount}] missing high-res on network [${this.currentNetworkId}]`);
+
+    const results = await axios.get(`${this.api}/editions/artist/${artistAccount}/highres/missing?network=${this.currentNetworkId}`, AXIOS_CONFIG);
+    if (results.data.success) {
+      return results.data;
+    }
+    return {
+      success: false
+    };
+  }
+
+  /**
    * Loads all editions for the given edition type
    * @param editionType
    * @return {Promise<*>}

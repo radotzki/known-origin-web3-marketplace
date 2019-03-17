@@ -52,12 +52,12 @@
 
             <!-- SELF SERVICE -->
             <b-tab title="Curation" v-if="shouldShowArtistTabs">
-              <self-service class="mt-2" :artist="artist"></self-service>
+              <self-service :artist="artist"></self-service>
             </b-tab>
 
             <!-- SELF SERVICE -->
             <b-tab title="High-res" v-if="shouldShowArtistTabs">
-              <add-high-res class="mt-2" :artist="artist"></add-high-res>
+              <add-high-res :artist="artist"></add-high-res>
             </b-tab>
 
           </b-tabs>
