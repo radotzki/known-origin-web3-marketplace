@@ -55,6 +55,11 @@
               <self-service class="mt-2" :artist="artist"></self-service>
             </b-tab>
 
+            <!-- SELF SERVICE -->
+            <b-tab title="High-res" v-if="shouldShowArtistTabs">
+              <add-high-res class="mt-2" :artist="artist"></add-high-res>
+            </b-tab>
+
           </b-tabs>
         </div>
 
@@ -80,6 +85,7 @@
   import ArtistDataControlPanel from "../ui-controls/artist/tabs/ArtistDataControlPanel";
   import EditionSalesEvents from "../ui-controls/artist/tabs/EditionSalesEvents";
   import SelfService from "../ui-controls/artist/tabs/SelfService";
+  import AddHighRes from "../ui-controls/artist/tabs/AddHighRes";
 
   export default {
     name: 'artistPage',
@@ -89,6 +95,7 @@
       };
     },
     components: {
+      AddHighRes,
       SelfService,
       EditionSalesEvents,
       ArtistDataControlPanel,

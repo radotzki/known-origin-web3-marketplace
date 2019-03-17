@@ -312,10 +312,6 @@
         'editionsForArtist',
         'isStartDateInTheFuture'
       ]),
-      ...mapState('artistControls', [
-        'owner',
-        'paused',
-      ]),
       isImgInitial() {
         return this.imageUpload.currentStatus === STATUS_INITIAL;
       },
