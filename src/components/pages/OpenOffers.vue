@@ -74,7 +74,6 @@
   import UsdPrice from "../ui-controls/generic/USDPrice";
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
   import WithdrawingBidFlow from "../ui-controls/auction/control-flows/WithdrawingBidFlow";
-  import AcceptEditionBids from "../ui-controls/auction/AcceptEditionBids";
   import AcceptingBidFlow from "../ui-controls/auction/control-flows/AcceptingBidFlow";
   import CancellingAuctionFlow from "../ui-controls/auction/control-flows/CancelAuctionFlow";
   import RejectBidFlow from "../ui-controls/auction/control-flows/RejectBidFlow";
@@ -85,7 +84,6 @@
       RejectBidFlow,
       CancellingAuctionFlow,
       AcceptingBidFlow,
-      AcceptEditionBids,
       WithdrawingBidFlow,
       UsdPrice,
       ClickableAddress,

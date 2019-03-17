@@ -1,11 +1,9 @@
 <template>
   <div class="container-fluid">
 
-    <h3>Curation Tool</h3>
-
     <div class="row">
       <div class="col-12">
-        <h6>NFT Details</h6>
+        <h6>Edition Details</h6>
 
         <form>
           <div class="form-group row">
@@ -74,7 +72,7 @@
                      @keyup.down="setScarcity"
                      @blur="setScarcity"/>
               <small class="form-text text-muted float-right">
-                Current max edition size is 100
+                Current max edition size is <strong>100</strong>
               </small>
               <small class="form-text text-info">
                 Historic sales point to increasing scarcity going for higher prices
@@ -127,7 +125,8 @@
                 :font-size="12">
               </toggle-button>
               <small class="form-text text-muted float-right">
-                All editions have a <strong>Buy Now</strong> price but you can also <strong>Accept Offers</strong> on your work.
+                All editions have a <strong>Buy Now</strong> price but
+                you can also <strong>Accept Offers</strong> on your work.
               </small>
             </div>
           </div>
@@ -160,16 +159,17 @@
             </div>
 
             <div id="nftImageInputHint" class="form-text text-muted float-right small">
-              Current max size is 10mb - jpeg, png, gif & svg
+              Current max size is <strong>{{maxFileSizeMb}}mb</strong> - <code>jpeg</code>, <code>png</code>,
+              <code>gif</code> & <code>svg</code>
             </div>
 
             <span v-if="imageUpload.fileFormatError" class="form-text text-danger small">
               Invalid file format, supported extensions are <code>jpeg</code>, <code>png</code>, <code>gif</code>
-              and <code>svg</code>
+              & <code>svg</code>
             </span>
 
             <p v-if="imageUpload.isValidFileSize" class="form-text text-danger small">
-              Max current file size supported it 10mb
+              Max current file size supported it <strong>{{maxFileSizeMb}}mb</strong>
             </p>
 
             <p v-if="isImgInitial || isImgSaving" class="form-text text-info small">
@@ -215,8 +215,8 @@
     <div class="row">
       <div class="col">
         <p>
-          If you want to enable <span class="badge badge-success">high res</span> then fill in this <strong>form
-          [TODO]</strong> and we'll and we'll enable this for you
+          Once your edition has been created you will be able to upload a <span class="badge badge-success">high definition</span>
+          version up to 75mb which can be downloaded <strong>only</strong> by the buyers of your tokens.
         </p>
       </div>
     </div>
@@ -275,6 +275,7 @@
     data() {
       return {
         tags: _.orderBy(_.map(tags, _.toLowerCase)),
+        maxFileSizeMb: 25,
         // The form
         edition: {
           tags: [],
@@ -375,54 +376,58 @@
         this.imageUpload.currentStatus = STATUS_INITIAL;
 
         const file = event.target.files[0];
-        // console.log(file);
-
         const isValidFileType = file.type === 'image/jpeg' || file.type === 'image/svg+xml' || file.type === 'image/gif' || file.type === 'image/png';
         const fileSizeInMb = file.size / 1024 / 1024;
-        const isValidFileSize = fileSizeInMb <= 10;
+        const isValidFileSize = fileSizeInMb <= this.maxFileSizeMb;
 
         if (isValidFileType && isValidFileSize) {
+
+          this.imageUpload.max = file.size;
+
           const reader = new FileReader();
-          reader.onloadend = () => this.saveFileToIpfs(reader);
+
+          // Onload hook - upload & pin to IPFS
+          reader.onloadend = () => {
+            this.imageUpload.currentStatus = STATUS_SAVING;
+            this.imageUpload.ipfsHash = null;
+            this.imageUpload.ipfsImage = null;
+
+            const buffer = Buffer.from(reader.result);
+
+            const options = {
+              pin: true
+            };
+
+            ipfs.add(buffer, options)
+              .then((response) => {
+                console.log(`Saved to IPFS`, response);
+                this.imageUpload.ipfsHash = response[0].hash;
+                this.imageUpload.ipfsImage = `https://ipfs.infura.io/ipfs/${response[0].hash}`;
+                this.imageUpload.currentStatus = STATUS_SUCCESS;
+              })
+              .catch((error) => {
+                this.imageUpload.currentStatus = STATUS_FAILED;
+                this.imageUpload.uploadError = error;
+              });
+          };
+
           reader.readAsArrayBuffer(file);
+
         } else {
           this.imageUpload.fileFormatError = isValidFileType;
           this.imageUpload.fileSizeError = isValidFileSize;
         }
       },
-      saveFileToIpfs(reader) {
-        this.imageUpload.currentStatus = STATUS_SAVING;
-        this.imageUpload.ipfsHash = null;
-        this.imageUpload.ipfsImage = null;
-
-        const buffer = Buffer.from(reader.result);
-        ipfs.add(buffer)
-          .then((response) => {
-            console.log(`Saved to IPFS - now pinning...`, response);
-            return ipfs.pin.add(response[0].hash)
-              .then((pinningResult) => {
-                console.log(`Saved to IPFS - [${response[0].hash}]`, pinningResult);
-                this.imageUpload.ipfsHash = response[0].hash;
-                this.imageUpload.ipfsImage = `https://ipfs.infura.io/ipfs/${response[0].hash}`;
-                this.imageUpload.currentStatus = STATUS_SUCCESS;
-              });
-          })
-          .catch((error) => {
-            this.imageUpload.currentStatus = STATUS_FAILED;
-            this.imageUpload.uploadError = error;
-          });
-      },
       uploadMetaData: function () {
         this.metadataIpfsUpload.currentStatus = STATUS_SAVING;
         this.metadataIpfsUpload.ipfsHash = null;
 
-        return ipfs.add(Buffer.from(JSON.stringify(this.generateIPFSData())))
+        const metadata = Buffer.from(JSON.stringify(this.generateIPFSData()));
+        return ipfs.add(metadata, {pin: true})
           .then((response) => {
-            return ipfs.pin.add(response[0].hash)
-              .then(() => {
-                this.metadataIpfsUpload.ipfsHash = response[0].hash;
-                this.metadataIpfsUpload.currentStatus = STATUS_SUCCESS;
-              });
+            console.log(response);
+            this.metadataIpfsUpload.ipfsHash = response[0].hash;
+            this.metadataIpfsUpload.currentStatus = STATUS_SUCCESS;
           })
           .catch((error) => {
             console.log(error);
