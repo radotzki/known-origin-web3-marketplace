@@ -17,7 +17,10 @@
       image() {
         // FIXME - is this worth keeping?
         return imgixClient.buildURL(this.src, {
-          autoformat: true
+          //format - For browsers that support it, converts the image to the WebP format for better compression.
+          //enhance - Applies a set of image adjustments to improve brightness, contrast, and other settings.
+          auto: "format,enhance",
+          q: 60 //Reduces the image quality slightly to improve compression (default is 75).
         });
       },
       imgId() {
