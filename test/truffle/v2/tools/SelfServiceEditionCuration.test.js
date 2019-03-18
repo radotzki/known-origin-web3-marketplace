@@ -6,6 +6,7 @@ const bytesToString = require('../../../helpers/bytesToString');
 
 const getBalance = require('../../../helpers/getBalance');
 const toBN = require('../../../helpers/toBN');
+const {duration, increaseTo, advanceBlock, latest} = require('../../../helpers/time');
 
 const KnownOriginDigitalAssetV2 = artifacts.require('KnownOriginDigitalAssetV2');
 const SelfServiceEditionCuration = artifacts.require('SelfServiceEditionCuration');
@@ -301,6 +302,78 @@ contract.only('SelfServiceEditionCuration tests', function (accounts) {
       }
 
     });
+  });
+
+  describe.only('invocation restrictions', async function () {
+
+    beforeEach(async function () {
+      await this.minter.setOpenToAllArtist(true, {from: _owner});
+
+      // lower max for testing
+      await this.minter.maxInvocations(2, {from: _owner});
+    });
+
+    describe('when enforcing invocation checks', async function () {
+
+      it('will fail when exceeds invocations in time period', async function () {
+        await this.minter.createEdition(10, edition1Price, 0, "tokenUri", false, {from: edition1.artist});
+        await this.minter.createEdition(10, edition1Price, 0, "tokenUri", false, {from: edition1.artist});
+
+        await assertRevert(
+          this.minter.createEdition(10, edition1Price, 0, "tokenUri", false, {from: edition1.artist}),
+          "Exceeded max invocations for time period"
+        );
+      });
+
+      it('can mint more once the invocation time period pass', async function () {
+        await this.minter.createEdition(10, edition1Price, 0, "tokenUri", false, {from: edition1.artist});
+        await this.minter.createEdition(10, edition1Price, 0, "tokenUri", false, {from: edition1.artist});
+
+        await assertRevert(
+          this.minter.createEdition(10, edition1Price, 0, "tokenUri", false, {from: edition1.artist}),
+          "Exceeded max invocations for time period"
+        );
+
+        const oneDay = (await latest()) + duration.days(1);
+        await increaseTo(oneDay);
+
+        await this.minter.createEdition(10, edition1Price, 0, "tokenUri", false, {from: edition1.artist});
+        await this.minter.createEdition(10, edition1Price, 0, "tokenUri", false, {from: edition1.artist});
+
+        await assertRevert(
+          this.minter.createEdition(10, edition1Price, 0, "tokenUri", false, {from: edition1.artist}),
+          "Exceeded max invocations for time period"
+        );
+
+        // Check still failing after an hour
+        const oneHour = (await latest()) + duration.hour(1);
+        await increaseTo(oneHour);
+        await assertRevert(
+          this.minter.createEdition(10, edition1Price, 0, "tokenUri", false, {from: edition1.artist}),
+          "Exceeded max invocations for time period"
+        );
+
+        // Move on 23 hrs to complete the day and check working again
+        await increaseTo(((await latest()) + duration.hours(23)));
+
+        await this.minter.createEdition(10, edition1Price, 0, "tokenUri", false, {from: edition1.artist});
+        await this.minter.createEdition(10, edition1Price, 0, "tokenUri", false, {from: edition1.artist});
+      });
+
+      it('when check disabled, you can mint as mint as you like', async function () {
+        await this.minter.setDisableInvocationCheck(true, {from: _owner});
+
+        // Mint lots
+        await this.minter.createEdition(10, edition1Price, 0, "tokenUri", false, {from: edition1.artist});
+        await this.minter.createEdition(10, edition1Price, 0, "tokenUri", false, {from: edition1.artist});
+        await this.minter.createEdition(10, edition1Price, 0, "tokenUri", false, {from: edition1.artist});
+        await this.minter.createEdition(10, edition1Price, 0, "tokenUri", false, {from: edition1.artist});
+        await this.minter.createEdition(10, edition1Price, 0, "tokenUri", false, {from: edition1.artist});
+        await this.minter.createEdition(10, edition1Price, 0, "tokenUri", false, {from: edition1.artist});
+      });
+
+    });
+
   });
 
 });
