@@ -26,7 +26,7 @@
 
     <!-- Success -->
     <div class="text-center mb-2" v-if="isPurchaseSuccessful(edition.edition, account)">
-      <img src="../../../../static/GreenTick.svg" style="width: 50px" alt="txs-sucess"/>
+      <img src="../../../../static/GreenTick.svg" style="width: 50px" alt="txs-success"/>
       <p class="card-text text-success mt-2">Your purchase was successful!</p>
       <span class="text-muted mt-3">
         <clickable-transaction :transaction="getTransactionForEdition(edition.edition, account)"></clickable-transaction>

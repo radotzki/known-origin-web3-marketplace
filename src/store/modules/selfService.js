@@ -1,7 +1,6 @@
 import * as actions from '../actions';
 import * as mutations from '../mutation';
 import _ from 'lodash';
-import Web3 from "web3";
 
 const selfServiceStateModule = {
   namespaced: true,
@@ -12,7 +11,26 @@ const selfServiceStateModule = {
     artistCommission: null,
     mintingState: {}
   },
-  getters: {},
+  getters: {
+    selfServiceState: (state) => (account) => {
+      return _.get(state.mintingState, account);
+    },
+    getSelfServiceTransactionForAccount: (state, getters) => (account) => {
+      return (getters.selfServiceState(account) || {}).transactionHash;
+    },
+    isSelfServiceTriggered: (state, getters) => (account) => {
+      return _.get(getters.selfServiceState(account), 'state') === mutations.SELF_SERVICE_TRIGGERED;
+    },
+    isSelfServiceStarted: (state, getters) => (account) => {
+      return _.get(getters.selfServiceState(account), 'state') === mutations.SELF_SERVICE_STARTED;
+    },
+    isSelfServiceSuccessful: (state, getters) => (account) => {
+      return _.get(getters.selfServiceState(account), 'state') === mutations.SELF_SERVICE_SUCCESSFUL;
+    },
+    isSelfServiceFailed: (state, getters) => (account) => {
+      return _.get(getters.selfServiceState(account), 'state') === mutations.SELF_SERVICE_FAILED;
+    },
+  },
   mutations: {
     [mutations.SET_SELF_SERVICE_CONTROLS](state, {paused, owner, address, artistCommission, maxEditionSize}) {
       state.paused = paused;
@@ -20,7 +38,53 @@ const selfServiceStateModule = {
       state.address = address;
       state.artistCommission = artistCommission;
       state.maxEditionSize = maxEditionSize;
-    }
+    },
+    [mutations.SELF_SERVICE_TRIGGERED](state, {account}) {
+      state.mintingState = {
+        ...state.mintingState,
+        [account]: {
+          ...state.mintingState[account],
+          state: 'SELF_SERVICE_TRIGGERED'
+        }
+      };
+    },
+    [mutations.SELF_SERVICE_STARTED](state, {account, transactionHash}) {
+      state.mintingState = {
+        ...state.mintingState,
+        [account]: {
+          ...state.mintingState[account],
+          account,
+          transactionHash,
+          state: 'SELF_SERVICE_STARTED'
+        }
+      };
+    },
+    [mutations.SELF_SERVICE_SUCCESSFUL](state, {account, transactionHash, receipt}) {
+      state.mintingState = {
+        ...state.mintingState,
+        [account]: {
+          ...state.mintingState[account],
+          transactionHash,
+          receipt,
+          state: 'SELF_SERVICE_SUCCESSFUL'
+        }
+      };
+    },
+    [mutations.SELF_SERVICE_FAILED](state, {account, transactionHash, error}) {
+      state.mintingState = {
+        ...state.mintingState,
+        [account]: {
+          ...state.mintingState[account],
+          error,
+          transactionHash,
+          state: 'SELF_SERVICE_FAILED'
+        }
+      };
+    },
+    [mutations.SELF_SERVICE_RESET](state, account) {
+      delete state.mintingState[account];
+      state.mintingState = {...state.mintingState};
+    },
   },
   actions: {
     async [actions.GET_SELF_SERVICE_CONTRACT_DETAILS]({commit, state, getters, rootState}) {
@@ -57,23 +121,65 @@ const selfServiceStateModule = {
           : contract.createEditionFor(artist, totalAvailable, priceInWei, 0, tokenUri, enableAuctions, {from: account});
       };
 
+      let txsHash = null;
+
       createEdition()
         .on('transactionHash', hash => {
           console.log('transactionHash', hash);
-          commit(mutations.SELF_SERVICE_STARTED, {transaction: hash});
+          txsHash = hash;
+          const details = {
+            transactionHash: hash,
+            account,
+          };
+          commit(mutations.SELF_SERVICE_STARTED, details);
+          rootState.notificationService.showSelfServiceEditionCreated({
+            type: mutations.SELF_SERVICE_STARTED,
+            ...details
+          });
         })
         .on('receipt', receipt => {
           console.log('receipt', receipt);
-          commit(mutations.SELF_SERVICE_SUCCESSFUL, {receipt});
-          // TODO trigger refresh
+          txsHash = receipt.transactionHash;
+          const details = {
+            transactionHash: receipt.transactionHash,
+            account,
+            receipt
+          };
+          commit(mutations.SELF_SERVICE_SUCCESSFUL, details);
+          rootState.notificationService.showSelfServiceEditionCreated({
+            type: mutations.SELF_SERVICE_SUCCESSFUL,
+            ...details
+          });
         })
         .on('error', error => {
           console.log('error', error);
-          commit(mutations.SELF_SERVICE_FAILED, {error});
+          if (txsHash) {
+            const details = {
+              transactionHash: txsHash,
+              account,
+              error
+            };
+            commit(mutations.SELF_SERVICE_FAILED, details);
+            rootState.notificationService.showSelfServiceEditionCreated({
+              type: mutations.SELF_SERVICE_FAILED,
+              ...details
+            });
+          }
         })
         .catch((error) => {
           console.log('catch', error);
-          commit(mutations.SELF_SERVICE_FAILED, {error});
+          if (txsHash) {
+            const details = {
+              transactionHash: txsHash,
+              account,
+              error
+            };
+            commit(mutations.SELF_SERVICE_FAILED, details);
+            rootState.notificationService.showSelfServiceEditionCreated({
+              type: mutations.SELF_SERVICE_FAILED,
+              ...details
+            });
+          }
         })
         .finally(() => {
           // Do something else

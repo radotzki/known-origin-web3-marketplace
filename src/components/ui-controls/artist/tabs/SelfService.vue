@@ -1,16 +1,18 @@
 <template>
   <div class="container-fluid">
 
-    <div class="editions-wrap pt-2">
-      <h3>
-        Edition Creation
-      </h3>
-      <p>
-        Create and publish new artworks on the KO platform <br/>
-        <span class="text-muted small">
-        Once your transaction is confirmed the artwork should appear on the site in approximately 5 minutes.
-        </span>
-      </p>
+    <div class="row pt-2">
+      <div class="col">
+        <h3>
+          Edition Creation
+        </h3>
+        <p>
+          Create and publish new artworks on the KO platform <br/>
+          <span class="text-muted small">
+          Once your transaction is confirmed the artwork should appear on the site in approximately 5 minutes.
+          </span>
+        </p>
+      </div>
     </div>
 
     <div class="row">
@@ -229,26 +231,13 @@
 
     <div class="row">
       <div class="col">
-        <button class="btn btn-block btn-primary" :disabled="!isEditionValid()" @click="createEdition">
-          Create Edition
-        </button>
-        <small class="float-left form-text text-dark">
-          Once your transaction is confirmed the artwork should appear on the site in approximately 5 minutes.
-        </small>
-      </div>
-    </div>
-
-    <hr/>
-
-    <div class="row">
-      <div class="col">
         <div v-if="isMetadataInitial || isMetadataSaving" class="alert alert-info" role="alert">
           Building edition
           <font-awesome-icon :icon="['fas', 'cube']" spin></font-awesome-icon>
         </div>
 
-        <div v-if="isMetadataSuccess" class="alert alert-success" role="alert">
-          Complete - submitting transaction to network, check your wallet
+        <div v-if="isMetadataSuccess && !somethingInFlight" class="alert alert-info" role="alert">
+          Built - submitting transaction to network, check your wallet
           <a v-if="false"
              :href="'https://ipfs.infura.io/ipfs/' + metadataIpfsUpload.ipfsHash"
              target="_blank">
@@ -260,13 +249,52 @@
           Something went wrong, try again or contract the team on telegram: {{ metadataIpfsUpload.uploadError }}
         </div>
 
-        <span v-if="false">
-          <a class="hand-pointer small" @click="expandIpfsData = !expandIpfsData">(debug view)</a>
-          <pre v-show="expandIpfsData">{{generateIPFSData()}}</pre>
-        </span>
+        <div v-if="isSelfServiceTriggered(account)" class="alert alert-primary" role="alert">
+          Transaction initiated, please check your wallet.
+          <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
+        </div>
+
+        <div v-if="isSelfServiceStarted(account)" class="alert alert-info" role="alert">
+          Your transaction is being confirmed...
+          <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
+          <clickable-transaction :transaction="getSelfServiceTransactionForAccount(account)"></clickable-transaction>
+        </div>
+
+        <div v-if="isSelfServiceSuccessful(account)" class="alert alert-success" role="alert">
+          <strong>Edition created</strong> please wait a few minutes before it appears on the site.
+          <clickable-transaction :transaction="getSelfServiceTransactionForAccount(account)"></clickable-transaction>
+        </div>
+
+        <div v-if="isSelfServiceFailed(account)" class="alert alert-warning" role="alert">
+          Please check your <a :href="etherscanAccountPage" target="_blank">account</a>
+          <span v-if="getSelfServiceTransactionForAccount(account)">
+              and view the transaction  <clickable-transaction
+            :transaction="getSelfServiceTransactionForAccount(account)"></clickable-transaction>
+            </span>
+          before trying again.
+        </div>
+
       </div>
     </div>
 
+    <div class="row">
+      <div class="col">
+        <button class="btn btn-block btn-primary" :disabled="!isEditionValid() || somethingInFlight"
+                @click="createEdition">
+          Create Edition
+        </button>
+        <small class="float-left form-text text-dark">
+          Once your transaction is confirmed the artwork should appear on the site in approximately 5 minutes.
+        </small>
+      </div>
+    </div>
+
+    <div class="row" v-if="false">
+      <div class="col">
+        <a class="hand-pointer small" @click="expandIpfsData = !expandIpfsData">(debug view)</a>
+        <pre v-show="expandIpfsData">{{generateIPFSData()}}</pre>
+      </div>
+    </div>
 
   </div>
 </template>
@@ -283,6 +311,7 @@
   import UsdPricePerEther from "../../generic/USDPricePerEther";
   import {ToggleButton} from 'vue-js-toggle-button';
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
+  import ClickableTransaction from "../../generic/ClickableTransaction";
 
   const ipfs = IPFS('ipfs.infura.io', '5001', {protocol: 'https'});
 
@@ -294,6 +323,7 @@
   export default {
     name: 'selfService',
     components: {
+      ClickableTransaction,
       UsdPricePerEther,
       Multiselect,
       ToggleButton,
@@ -330,6 +360,7 @@
     computed: {
       ...mapState([
         'account',
+        'etherscanBase',
         'currentUsdPrice',
       ]),
       ...mapGetters([
@@ -338,6 +369,13 @@
       ...mapGetters('kodaV2', [
         'editionsForArtist',
         'isStartDateInTheFuture'
+      ]),
+      ...mapGetters('selfService', [
+        'isSelfServiceTriggered',
+        'isSelfServiceStarted',
+        'isSelfServiceSuccessful',
+        'isSelfServiceFailed',
+        'getSelfServiceTransactionForAccount',
       ]),
       isImgInitial() {
         return this.imageUpload.currentStatus === STATUS_INITIAL;
@@ -362,7 +400,13 @@
       },
       isMetadataFailed() {
         return this.metadataIpfsUpload.currentStatus === STATUS_FAILED;
-      }
+      },
+      somethingInFlight() {
+        if (!this.account) {
+          return true;
+        }
+        return this.isSelfServiceTriggered(this.account) || this.isSelfServiceStarted(this.account) || this.isSelfServiceSuccessful(this.account);
+      },
     },
     methods: {
       setScarcity() {
@@ -531,6 +575,9 @@
               });
             });
         }
+      },
+      etherscanAccountPage() {
+        return `${this.etherscanBase}/address/${this.account}`;
       }
     },
     created() {
