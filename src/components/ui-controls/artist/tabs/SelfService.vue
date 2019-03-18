@@ -214,16 +214,18 @@
 
       <div class="col">
         <div class="alert alert-info small">
-          <strong>File sizes</strong>
-          <p>
-            Setting the image size to be a maximum of <strong>{{maxFileSizeMb}}mb</strong> ensures
-            that as many people and wallets can enjoy each creation as possible.
-          </p>
-          <p>
+          <div class="pb-2">
+            The tokens you create will use this decentralised and distributed file store IPFS.
+          </div>
+          <div class="pb-2">
+            Setting the image size to be a maximum of <strong>{{maxFileSizeMb}}mb</strong> ensures that as many
+            people and wallets can enjoy each creation as possible without hugely impacting the experience.
+          </div>
+          <div>
             Once your edition has been created you will be able to upload a <span class="badge badge-success">high definition</span>
-            version up to <strong>100mb</strong> which can be <strong>only</strong> by accssed from the buyers of your
+            version up to <strong>100mb</strong> which can be <strong>only</strong> by accessed from the buyers of your
             tokens.
-          </p>
+          </div>
         </div>
       </div>
 
@@ -332,7 +334,7 @@
     data() {
       return {
         tags: _.orderBy(_.map(tags, _.toLowerCase)),
-        maxFileSizeMb: 15,
+        maxFileSizeMb: 25,
         // The form
         edition: {
           tags: [],
