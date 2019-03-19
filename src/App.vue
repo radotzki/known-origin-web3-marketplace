@@ -251,13 +251,14 @@
         console.log('Enabling ethereum (modern)');
 
         // Bootstrap web3 via ethereum provider
-        window.web3 = new Web3(window.ethereum);
+        const web3js = new Web3(window.ethereum);
 
         // Request account access if needed
         ethereum
           .enable()
           .then((value) => {
             console.log('Bootstrapping web app - provider acknowledged', value);
+            window.web3 = web3js;
             checkWeb3Running();
           })
           .catch((error) => {
