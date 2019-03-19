@@ -339,7 +339,6 @@
         edition: {
           tags: [],
           external_uri: 'https://knownorigin.io',
-          highResAvailable: false, // FIXME hard code this to false until we know how to solve it
           enableAuctions: true
         },
         imageUpload: {
@@ -506,9 +505,6 @@
       },
       generateIPFSData() {
         const tags = _.clone(this.edition.tags);
-        if (this.edition.highResAvailable) {
-          tags.push('high res');
-        }
         return {
           "name": _.trim(this.edition.name),
           "description": _.trim(this.edition.description),
@@ -548,7 +544,7 @@
           console.log('Failed on [ipfsHash] validation');
           return false;
         }
-        if (this.edition.tags < 1) {
+        if (this.edition.tags < 1 || this.edition.tags > 100) {
           console.log('Failed on [tags] validation');
           return false;
         }
@@ -583,7 +579,6 @@
       }
     },
     created() {
-
     },
     destroyed() {
     }

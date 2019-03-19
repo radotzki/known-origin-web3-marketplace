@@ -167,6 +167,8 @@
         }
         return (priceInEther * this.currentUsdPrice).toFixed(2);
       }
+    },
+    created() {
     }
   };
 </script>

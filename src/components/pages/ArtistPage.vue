@@ -128,6 +128,10 @@
         'owner',
         'paused',
       ]),
+      ...mapState('selfService', [
+        'owner',
+        'paused',
+      ]),
       editions() {
         return this.editionsForArtist(this.artist.ethAddress);
       },

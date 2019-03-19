@@ -242,12 +242,11 @@ const store = new Vuex.Store({
         // Load auction contract owner
         dispatch(`auction/${actions.GET_AUCTION_OWNER}`);
 
-        // Load control contract owner
-        dispatch(`artistControls/${actions.GET_ARTIST_EDITION_CONTROLS_DETAILS}`);
-
-        // TODO can we lazy load this?
         // Load self service details
         dispatch(`selfService/${actions.GET_SELF_SERVICE_CONTRACT_DETAILS}`);
+
+        // Load control contract owner
+        dispatch(`artistControls/${actions.GET_ARTIST_EDITION_CONTROLS_DETAILS}`);
 
         web3.eth.getAccounts((error, accounts) => {
           if (!error) {
