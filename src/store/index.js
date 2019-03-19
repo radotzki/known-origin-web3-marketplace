@@ -217,6 +217,7 @@ const store = new Vuex.Store({
     },
     [actions.INIT_APP]({commit, dispatch, state}, web3) {
       try {
+        console.log(`INIT_APP called web3 version ${_.get(web3, 'version')}`);
 
         // Find current network
         dispatch(actions.GET_CURRENT_NETWORK);
