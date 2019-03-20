@@ -40,13 +40,13 @@
                 <span class="small" v-if="currentUsdPrice">(<usd-price :price-in-ether="offer.highestBid"></usd-price>)</span>
               </td>
               <td class="align-middle text-center">
-                <div v-if="isKo || isArtist(offer)" title="Accept the offer">
+                <div v-if="isArtist(offer)" title="Accept the offer">
                   <accepting-bid-flow :auction="offer"></accepting-bid-flow>
                 </div>
                 <div v-if="isBidder(offer)" title="Withdraw the offer">
                   <withdrawing-bid-flow :auction="offer"></withdrawing-bid-flow>
                 </div>
-                <div v-if="isKo || isArtist(offer)" title="Rejct the offer">
+                <div v-if="isArtist(offer)" title="Rejct the offer">
                   <reject-bid-flow :auction="offer"></reject-bid-flow>
                 </div>
                 <div v-if="isKo" title="Close the auction">
@@ -119,13 +119,16 @@
         return offer.highestBidder === this.account;
       },
       isKo() {
-        if (!this.account) {
+        if (!this.account || !this.owner) {
           return false;
         }
         return this.owner === this.account;
       },
       isArtist(offer) {
-        if (!this.account) {
+        if (this.isKo()) {
+          return true;
+        }
+        if (!this.account || !offer.controller) {
           return false;
         }
         return offer.controller === this.account;
