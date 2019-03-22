@@ -46,7 +46,7 @@
                 <div v-if="isBidder(offer)" title="Withdraw the offer">
                   <withdrawing-bid-flow :auction="offer"></withdrawing-bid-flow>
                 </div>
-                <div v-if="isArtist(offer)" title="Rejct the offer">
+                <div v-if="isArtist(offer)" title="Reject the offer">
                   <reject-bid-flow :auction="offer"></reject-bid-flow>
                 </div>
                 <div v-if="isKo" title="Close the auction">
@@ -112,6 +112,12 @@
       ...mapState('auction', [
         'owner',
       ]),
+      isKo() {
+        if (!this.account || !this.owner) {
+          return false;
+        }
+        return this.owner === this.account;
+      },
     },
     methods: {
       isBidder(offer) {
@@ -120,14 +126,8 @@
         }
         return offer.highestBidder === this.account;
       },
-      isKo() {
-        if (!this.account || !this.owner) {
-          return false;
-        }
-        return this.owner === this.account;
-      },
       isArtist(offer) {
-        if (this.isKo()) {
+        if (this.isKo) {
           return true;
         }
         if (!this.account || !offer.controller) {

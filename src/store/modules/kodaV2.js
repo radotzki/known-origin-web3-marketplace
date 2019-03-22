@@ -199,8 +199,7 @@ const contractStateModule = {
       if (results.success) {
         const {data} = results;
         commit(mutations.SET_EDITIONS, data);
-        const editions = _.map(data, 'edition');
-        dispatch(`auction/${actions.GET_AUCTION_DETAILS_FOR_EDITION_NUMBERS}`, {editions}, {root: true});
+        dispatch(`auction/${actions.GET_AUCTION_DETAILS_FOR_ARTIST}`, {artistAccount}, {root: true});
       }
     },
     async [actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT]({commit, dispatch, state, rootState}, {account}) {
@@ -227,12 +226,7 @@ const contractStateModule = {
         const {data} = results;
         commit(mutations.SET_EDITION, data);
       }
-    },
-    async [actions.REFRESH_CONTRACT_DETAILS]({commit, dispatch, state, rootState}) {
-      let contractDetails = await rootState.kodaV2ContractService.getContractDetails();
-      commit(mutations.SET_CONTRACT_ADDRESS_V2, contractDetails.address);
-      commit(mutations.SET_CONTRACT_DETAILS, contractDetails);
-    },
+    }
   }
 };
 

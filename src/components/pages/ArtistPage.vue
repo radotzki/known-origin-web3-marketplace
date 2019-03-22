@@ -131,23 +131,14 @@
         return artist.ethAddress;
       },
       shouldShowArtistTabs() {
-        return this.account && !this.paused && this.anyOfTheEditionsAreOwnedByTheLoggedInAccount;
+        return this.account && !this.paused && this.isArtistViewingPage;
       },
-      anyOfTheEditionsAreOwnedByTheLoggedInAccount() {
+      isArtistViewingPage() {
         // If logged in account is the smart contract owner
         if (this.account === this.owner) {
           return true;
         }
-
-        // Loading state
-        if (!this.editions || !this.artistAddress) {
-          return false;
-        }
-
-        // Otherwise if any of the artworks are by the currently logged in user
-        return _.find(this.editions, (edition) => {
-          return edition.artistAccount === this.account;
-        });
+        return this.artistAddress === this.account;
       }
     },
     methods: {

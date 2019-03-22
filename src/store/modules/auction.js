@@ -157,6 +157,7 @@ const auctionStateModule = {
     },
     [mutations.SET_AUCTION_DETAILS](state, data) {
       state.auction = {
+        ...state.auction,
         ...data
       };
     },
@@ -377,32 +378,33 @@ const auctionStateModule = {
       const owner = await contract.owner();
       commit(mutations.SET_AUCTION_OWNER, {owner, address: contract.address});
     },
-    async [actions.GET_AUCTION_DETAILS]({commit, state, getters, rootState}, edition) {
-      const contract = await rootState.ArtistAcceptingBids.deployed();
-
-      const result = transformAuctionDetails(await contract.auctionDetails(edition), edition);
-      commit(mutations.SET_AUCTION_DETAILS, {
-        ...state.auction,
-        [edition]: result
-      });
-
-      const minBidAmount = await contract.minBidAmount();
-      commit(mutations.SET_MINIMUM_BID, minBidAmount);
+    async [actions.GET_AUCTION_MIN_BID]({commit, state, getters, rootState}) {
+      if (rootState.ArtistAcceptingBids) {
+        const contract = await rootState.ArtistAcceptingBids.deployed();
+        const minBidAmount = await contract.minBidAmount();
+        commit(mutations.SET_MINIMUM_BID, minBidAmount);
+      }
     },
-    async [actions.GET_AUCTION_DETAILS_FOR_EDITION_NUMBERS]({commit, state, getters, rootState}, {editions}) {
-      const contract = await rootState.ArtistAcceptingBids.deployed();
-
-      const allData = await Promise.all(_.map(editions, async (edition) => {
-        const data = await contract.auctionDetails(edition);
-        return transformAuctionDetails(data, edition);
-      }));
-
-      const editionData = _.reduce(allData, (result, data) => {
-        result[data.edition] = data;
-        return result;
-      }, {});
-
-      commit(mutations.SET_AUCTION_DETAILS, editionData);
+    async [actions.GET_AUCTION_DETAILS]({commit, dispatch, state, getters, rootState}, edition) {
+      const results = await rootState.auctionsService.getAuctionsForEdition(edition);
+      if (results.success) {
+        const {data} = results;
+        commit(mutations.SET_AUCTION_DETAILS, {
+          [edition]: data
+        });
+      }
+      dispatch(actions.GET_AUCTION_MIN_BID);
+    },
+    async [actions.GET_AUCTION_DETAILS_FOR_ARTIST]({commit, state, getters, rootState}, {artistAccount}) {
+      const results = await rootState.auctionsService.getAuctionsForArtist(artistAccount);
+      if (results.success) {
+        const {data} = results;
+        const editionData = _.reduce(data, (result, data) => {
+          result[data.edition] = data;
+          return result;
+        }, {});
+        commit(mutations.SET_AUCTION_DETAILS, editionData);
+      }
     },
     async [actions.PLACE_BID]({commit, dispatch, state, getters, rootState}, {edition, value}) {
       commit(mutations.RESET_BID_STATE, {edition});
@@ -623,36 +625,7 @@ const auctionStateModule = {
       const account = rootState.account;
       return contract.cancelAuction(auction.edition, {from: account});
     },
-    async [actions.REFRESH_CONTRACT_DETAILS]({commit, dispatch, state, rootState}) {
-      let contract = await rootState.ArtistAcceptingBids.deployed();
-
-      commit(mutations.SET_AUCTION_ADDRESS, {address: contract.address});
-
-      rootState.eventService
-        .loadAuctionStats()
-        .then(async ({ethPlaced, ethAccepted, bidsAccepted}) => {
-          commit(mutations.SET_AUCTION_STATS, {
-            ethPlaced,
-            ethAccepted,
-            bidsAccepted,
-            contractBalance: Web3.utils.fromWei(await rootState.web3.eth.getBalance(contract.address), 'ether').valueOf()
-          });
-        });
-
-    },
   }
 };
-
-const transformAuctionDetails = (value, edition) => {
-  return {
-    edition: edition.toString(10),
-    enabled: value[0],
-    highestBidder: value[1],
-    highestBid: Web3.utils.fromWei(value[2].toString(10), 'ether'),
-    highestBidWei: value[2],
-    controller: value[3],
-  };
-};
-
 
 export default auctionStateModule;
