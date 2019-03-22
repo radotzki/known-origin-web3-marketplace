@@ -240,7 +240,20 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
     auction = _auction;
   }
 
-  // TODO - restrict the volume per day - make configurable
+  // When true this will skip the invocation in time period check
+  bool public disableInvocationCheck = false;
+
+  // Max number of editions to be created in the time period
+  uint256 public maxInvocations = 7;
+
+  // The rolling time period for max number of invocations
+  uint256 public maxInvocationsTimePeriod = 1 days;
+
+  // Number of invocations the caller has performed in the time period
+  mapping(address => uint256) public invocationsInTimePeriod;
+
+  // When the current time period started
+  mapping(address => uint256) public timeOfFirstInvocationInPeriod;
 
   /**
    * @dev Called by artists, create new edition on the KODA platform
@@ -256,6 +269,7 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
   whenNotPaused
   returns (uint256 _editionNumber)
   {
+    validateInvocations();
     return _createEdition(msg.sender, _totalAvailable, _priceInWei, _startDate, _tokenUri, _enableAuction);
   }
 
@@ -351,6 +365,42 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
     );
   }
 
+  function validateInvocations() internal {
+    if (disableInvocationCheck) {
+      return;
+    }
+    uint256 invocationPeriodStart = timeOfFirstInvocationInPeriod[msg.sender];
+
+    // If we are new to this process or its been cleared, skip the check
+    if (invocationPeriodStart != 0) {
+
+      // Work out how much time has passed
+      uint256 timePassedInPeriod = block.timestamp - invocationPeriodStart;
+
+      // If we are still in this time period
+      if (timePassedInPeriod < maxInvocationsTimePeriod) {
+
+        uint256 invocations = invocationsInTimePeriod[msg.sender];
+
+        // Ensure the number of invocations does not exceed the max number of invocations allowed
+        require(invocations <= maxInvocations, "Exceeded max invocations for time period");
+
+        // Update the invocations for this period if passed validation check
+        invocationsInTimePeriod[msg.sender] = invocations + 1;
+
+      } else {
+        // if we have passed the time period simple clear out the fields and start the period again
+        invocationsInTimePeriod[msg.sender] = 1;
+        timeOfFirstInvocationInPeriod[msg.sender] = block.number;
+      }
+
+    } else {
+      // initial the counters if not used before
+      invocationsInTimePeriod[msg.sender] = 1;
+      timeOfFirstInvocationInPeriod[msg.sender] = block.number;
+    }
+  }
+
   /**
    * @dev Internal function for dynamically generating the next KODA edition number
    */
@@ -415,6 +465,22 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
    */
   function setMaxEditionSize(uint256 _maxEditionSize) onlyOwner public {
     maxEditionSize = _maxEditionSize;
+  }
+
+  /**
+   * @dev Sets the max invocations
+   * @dev Only callable from owner
+   */
+  function setMaxInvocations(uint256 _maxInvocations) onlyOwner public {
+    maxInvocations = _maxInvocations;
+  }
+
+  /**
+   * @dev Sets the disable invocation check, when true the invocation in time period check is skipped
+   * @dev Only callable from owner
+   */
+  function setDisableInvocationCheck(bool _disableInvocationCheck) onlyOwner public {
+    disableInvocationCheck = _disableInvocationCheck;
   }
 
   /**
