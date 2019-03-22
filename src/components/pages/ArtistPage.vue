@@ -51,12 +51,12 @@
             </b-tab>
 
             <!-- SELF SERVICE -->
-            <b-tab title="Curation" v-if="shouldShowSelfServiceTabs">
+            <b-tab title="Creation" v-if="shouldShowSelfServiceTabs">
               <self-service :artist="artist"></self-service>
             </b-tab>
 
             <!-- SELF SERVICE -->
-            <b-tab title="High-res" v-if="shouldShowSelfServiceTabs">
+            <b-tab title="Downloads" v-if="shouldShowSelfServiceTabs">
               <add-high-res :artist="artist"></add-high-res>
             </b-tab>
 
