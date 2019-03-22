@@ -51,12 +51,12 @@
             </b-tab>
 
             <!-- SELF SERVICE -->
-            <b-tab title="Curation" v-if="shouldShowArtistTabs">
+            <b-tab title="Curation" v-if="shouldShowSelfServiceTabs">
               <self-service :artist="artist"></self-service>
             </b-tab>
 
             <!-- SELF SERVICE -->
-            <b-tab title="High-res" v-if="shouldShowArtistTabs">
+            <b-tab title="High-res" v-if="shouldShowSelfServiceTabs">
               <add-high-res :artist="artist"></add-high-res>
             </b-tab>
 
@@ -128,10 +128,10 @@
         'owner',
         'paused',
       ]),
-      ...mapState('selfService', [
-        'owner',
-        'paused',
-      ]),
+      ...mapState('selfService', {
+        'selfServiceOwner': 'owner',
+        'selfServicePaused': 'paused',
+      }),
       editions() {
         return this.editionsForArtist(this.artist.ethAddress);
       },
@@ -149,23 +149,17 @@
         return artist.ethAddress;
       },
       shouldShowArtistTabs() {
-        return this.account && !this.paused && this.anyOfTheEditionsAreOwnedByTheLoggedInAccount;
+        return this.account && !this.paused && this.isArtistViewingPage;
       },
-      anyOfTheEditionsAreOwnedByTheLoggedInAccount() {
+      shouldShowSelfServiceTabs() {
+        return this.account && !this.selfServicePaused && this.isArtistViewingPage;
+      },
+      isArtistViewingPage() {
         // If logged in account is the smart contract owner
-        if (this.account === this.owner) {
+        if (this.account === this.owner || this.account === this.selfServiceOwner) {
           return true;
         }
-
-        // Loading state
-        if (!this.editions || !this.artistAddress) {
-          return false;
-        }
-
-        // Otherwise if any of the artworks are by the currently logged in user
-        return _.find(this.editions, (edition) => {
-          return edition.artistAccount === this.account;
-        });
+        return this.artistAddress === this.account;
       }
     },
     created() {

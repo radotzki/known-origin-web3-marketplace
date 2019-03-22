@@ -15,11 +15,19 @@
 
     <div class="row">
       <div class="col">
+        <p class="alert alert-info">
+          Coming soon....
+        </p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
 
         <table class="table">
           <tbody>
           <tr v-for="edition in editionsMissingHighRes">
-            <td class="w-10 text-right"  width="100">
+            <td class="w-10 text-right" width="100">
               <router-link
                 :to="{ name: 'confirmPurchaseSimple', params: { editionNumber: edition.edition }}">
                 <edition-image class="img-thumbnail" :src="edition.lowResImg"/>

@@ -132,7 +132,6 @@
   import {mapGetters, mapState} from 'vuex';
   import _ from 'lodash';
   import * as actions from '../../../store/actions';
-  import {PAGES} from '../../../store/loadingPageState';
   import ClickableAddress from '../generic/ClickableAddress';
   import PriceInEth from '../generic/PriceInEth';
   import USDPrice from '../generic/USDPrice';
@@ -214,11 +213,11 @@
       };
 
       this.$store.watch(
-        () => this.$store.state.ArtistAcceptingBids,
+        () => this.$store.state.auctionsService.currentNetworkId,
         () => loadData()
       );
 
-      if (this.$store.state.ArtistAcceptingBids) {
+      if (this.$store.state.auctionsService.currentNetworkId) {
         loadData();
       }
 

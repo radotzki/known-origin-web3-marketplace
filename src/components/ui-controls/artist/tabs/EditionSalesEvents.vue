@@ -3,9 +3,15 @@
 
     <h3>Sales</h3>
     <p>
-      History of sales and accepted bids<br />
+      History of sales and accepted bids<br/>
       <small class="text-muted">Showing transactions where ETH was exchanged</small>
     </p>
+
+    <div class="row">
+      <div class="col text-center">
+        <font-awesome-icon :icon="['fas', 'spinner']" spin v-if="isLoading"></font-awesome-icon>
+      </div>
+    </div>
 
     <lazy-component @show="visibilityChanged">
 
@@ -77,12 +83,11 @@
 
   import {PAGES} from '../../../../store/loadingPageState';
   import _ from 'lodash';
+  import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
   import {mapEvent, mapMobileEvent} from '../../../../services/eventMapper';
   import PriceInEth from "../../generic/PriceInEth";
   import USDPriceConverter from "../../generic/USDPriceConverter";
   import ViewTransactionDetails from "../../generic/ViewTransactionDetails";
-
-  // TODO is this in the right place - move to management
 
   export default {
     name: 'editionSalesEvents',
@@ -90,6 +95,7 @@
       ViewTransactionDetails,
       EditionImage,
       USDPriceConverter,
+      FontAwesomeIcon,
       PriceInEth
     },
     data() {

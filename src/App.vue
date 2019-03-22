@@ -155,6 +155,7 @@
   import CurrentNetwork from './components/ui-controls/generic/CurrentNetwork';
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
   import NetworkWarningBanner from './components/ui-controls/generic/NetworkWarningBanner';
+  import * as vConsole from 'vconsole';
 
   export default {
     name: 'app',
@@ -185,6 +186,11 @@
     /*eslint brace-style: "off"*/
     mounted() {
       console.log("Attempting to bootstrap application");
+
+      if (window.location.href.indexOf("__debug") > -1) {
+        // eslint-disable-next-line new-cap,no-new
+        new vConsole();
+      }
 
       // Load USD value on start
       this.$store.dispatch(actions.GET_USD_PRICE);

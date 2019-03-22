@@ -123,7 +123,11 @@ const getApi = () => {
   }
 };
 
-const AXIOS_CONFIG = {headers: {'Access-Control-Allow-Origin': '*'}};
+const AXIOS_CONFIG = {
+  headers: {
+    'Access-Control-Allow-Origin': '*'
+  }
+};
 
 export {
   getNetId,

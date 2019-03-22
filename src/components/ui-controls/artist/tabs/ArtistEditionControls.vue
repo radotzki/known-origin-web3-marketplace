@@ -133,8 +133,7 @@
     },
     methods: {
       shouldShowControls: function (edition) {
-        return (edition.totalAvailable - edition.totalSupply > 0) &&
-          (this.account === edition.artistAccount || this.account === this.owner);
+        return edition.totalAvailable - edition.totalSupply > 0;
       },
       giftEdition: function (edition, receiver) {
         if (edition && receiver) {

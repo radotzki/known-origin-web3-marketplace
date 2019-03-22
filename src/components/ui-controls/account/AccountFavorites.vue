@@ -82,7 +82,10 @@
         }
       };
 
-      this.$store.watch(() => this.$store.state.currentNetworkId, () => loadFavs());
+      this.$store.watch(
+        () => this.$store.state.currentNetworkId,
+        () => loadFavs()
+      );
 
       if (this.$store.state.account && this.$store.state.currentNetworkId) {
         loadFavs();
