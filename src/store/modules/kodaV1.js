@@ -80,40 +80,7 @@ const contractStateModule = {
       const tokenData = await lookupAssetInfo(contract, legacyTokenId);
       commit(mutations.SET_LEGACY_ASSET, tokenData);
     },
-    [actions.REFRESH_CONTRACT_DETAILS]: async function ({commit, dispatch, state, rootState}) {
-      let contract = await rootState.KnownOriginDigitalAssetV1.deployed();
 
-      Promise.all([contract.curatorAccount(), contract.developerAccount(), contract.address])
-        .then((results) => {
-          commit(mutations.SET_COMMISSION_ADDRESSES, {
-            curatorAddress: results[0],
-            contractDeveloperAddress: results[1],
-            contractAddress: results[2]
-          });
-        });
-
-      Promise.all([contract.name(), contract.symbol(), contract.totalSupply(), contract.tokenIdPointer()])
-        .then((results) => {
-          commit(mutations.SET_CONTRACT_DETAILS, {
-            name: results[0],
-            symbol: results[1],
-            totalSupply: results[2].toString(),
-            tokenIdPointer: results[3].toString(),
-          });
-        });
-
-      /**
-       * @deprecated = API hit for this info now
-       */
-      Promise.all([contract.totalPurchaseValueInWei(), contract.totalNumberOfPurchases()])
-        .then((results) => {
-          commit(mutations.SET_TOTAL_PURCHASED, {
-            totalPurchaseValueInEther: Web3.utils.fromWei(results[0].toString(10), 'ether'),
-            totalPurchaseValueInWei: results[0].toString(10),
-            totalNumberOfPurchases: results[1].toString(10)
-          });
-        });
-    },
   }
 };
 

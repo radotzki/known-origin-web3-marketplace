@@ -7,6 +7,12 @@
       <small class="text-muted">Showing transactions where ETH was exchanged</small>
     </p>
 
+    <div class="row">
+      <div class="col text-center">
+        <font-awesome-icon :icon="['fas', 'spinner']" spin v-if="isLoading"></font-awesome-icon>
+      </div>
+    </div>
+
     <lazy-component @show="visibilityChanged">
 
       <div v-if="events.length > 0" class="pb-4">
@@ -81,6 +87,7 @@
   import PriceInEth from "../generic/PriceInEth";
   import USDPriceConverter from "../generic/USDPriceConverter";
   import ViewTransactionDetails from "../generic/ViewTransactionDetails";
+  import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 
   export default {
     name: 'editionSalesEvents',
@@ -88,6 +95,7 @@
       ViewTransactionDetails,
       EditionImage,
       USDPriceConverter,
+      FontAwesomeIcon,
       PriceInEth
     },
     data() {

@@ -166,11 +166,11 @@
     methods: {
       showMoreV1: function () {
         this.currentListV1 = this.currentListV1 + 12;
-        console.log(this.currentListV1);
+        // console.log(this.currentListV1);
       },
       showMoreV2: function () {
         this.currentListV2 = this.currentListV2 + 20;
-        console.log(this.currentListV2);
+        // console.log(this.currentListV2);
       },
     },
     computed: {
@@ -215,7 +215,10 @@
           });
       };
 
-      this.$store.watch(() => this.$store.state.account, () => loadData());
+      this.$store.watch(
+        () => this.$store.state.account,
+        () => loadData()
+      );
 
       if (this.$store.state.account && this.$store.state.currentNetworkId) {
         loadData();

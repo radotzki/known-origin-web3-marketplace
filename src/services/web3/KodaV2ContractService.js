@@ -14,32 +14,6 @@ export default class KodaV2ContractService {
     return await loadTokenAndEdition(contract, tokenId);
   }
 
-  /**
-   * @deprecated = API hit for this info now
-   */
-  async getContractDetails() {
-    console.log(`Loading contract details`);
-    const contract = await this.knownOriginDigitalAssetV2.deployed();
-
-    const totalSupply = (await contract.totalSupply()).toString(10);
-    const totalPurchaseValueInWei = (await contract.totalPurchaseValueInWei()).toString(10);
-    const totalNumberMinted = (await contract.totalNumberMinted()).toString(10);
-    const totalEditions = (await contract.editionsOfType(1)).length;
-    const totalNumberAvailable = (await contract.totalNumberAvailable()).toString(10);
-    const koCommissionAccount = await contract.koCommissionAccount();
-
-    return {
-      address: contract.address,
-      totalSupply,
-      totalPurchaseValueInWei,
-      totalPurchaseValueInEther: Web3.utils.fromWei(totalPurchaseValueInWei, 'ether'),
-      totalEditions,
-      totalNumberMinted,
-      totalNumberAvailable,
-      koCommissionAccount,
-    };
-  }
-
   async getTokensOfAccount(account) {
     const contract = await this.knownOriginDigitalAssetV2.deployed();
 
