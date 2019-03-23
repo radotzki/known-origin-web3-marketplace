@@ -346,7 +346,7 @@ contract.only('SelfServiceEditionCuration tests', function (accounts) {
         );
 
         // Check still failing after an hour
-        const oneHour = (await latest()) + duration.hour(1);
+        const oneHour = (await latest()) + duration.hours(1);
         await increaseTo(oneHour);
         await assertRevert(
           this.minter.createEdition(10, edition1Price, 0, "tokenUri", false, {from: edition1.artist}),
