@@ -88,7 +88,7 @@
                 Current max edition size is <strong>100</strong>
               </small>
               <small class="form-text text-info">
-                Historic sales point to increasing scarcity going for higher prices
+                Historic sales indicate that increasing scarcity can demand higher prices
               </small>
             </div>
 
@@ -172,7 +172,7 @@
 
             <div id="nftImageInputHint" class="form-text text-muted float-right small">
               Current max size is <strong>{{maxFileSizeMb}}mb</strong> - <code>jpeg</code>, <code>png</code>,
-              <code>gif</code> & <code>svg</code>
+              <code>gif</code> <!--& <code>svg</code>-->
             </div>
 
             <div v-if="imageUpload.fileFormatError" class="form-text text-danger small">
@@ -214,17 +214,16 @@
 
       <div class="col">
         <div class="alert alert-info small">
-          <div class="pb-2">
-            The tokens you create will use this decentralised and distributed file store IPFS.
-          </div>
-          <div class="pb-2">
-            Setting the image size to be a maximum of <strong>{{maxFileSizeMb}}mb</strong> ensures that as many
-            people and wallets can enjoy each creation as possible without hugely impacting the experience.
+          <div>
+            Token images are stored on a decentralised and distributed file store called
+            <a href="https://ipfs.io" target="_blank">IPFS</a>
           </div>
           <div>
-            Once your edition has been created you will be able to upload a <span class="badge badge-success">high definition</span>
-            version up to <strong>100mb</strong> which can be <strong>only</strong> by accessed from the buyers of your
-            tokens.
+            Current maximum token file size <strong>{{maxFileSizeMb}}mb</strong>
+          </div>
+          <div class="pb-2">
+            Once your edition has been created you will have the option to provide a <strong>higher definition</strong>
+            version which can be <strong>only</strong> by accessed from the buyer of the token.
           </div>
         </div>
       </div>

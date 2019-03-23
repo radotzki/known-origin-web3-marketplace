@@ -69,6 +69,7 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
   // When true this will skip the invocation in time period check
   bool public disableInvocationCheck = false;
 
+  // TODO lower to 3 per day at first
   // Max number of editions to be created in the time period
   uint256 public maxInvocations = 7;
 

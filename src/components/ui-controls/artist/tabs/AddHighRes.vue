@@ -3,14 +3,17 @@
 
     <div class="pt-2">
       <h3>
-        Your creations missing high-res
+        Your creations <strong>without</strong> a download
       </h3>
-      <p>
-        Upload a high resolution version of up to <strong>100mb</strong><br/>
-        <span class="text-muted small">
+      <div>
+        Upload a high resolution version of up to <strong>100mb</strong>
+      </div>
+      <div class="text-muted small pt-1">
         Only those who had purchased your work can download these assets.
-        </span>
-      </p>
+      </div>
+      <div class="text-muted small pt-1 pb-2">
+        Once submitted it can take several minutes before the gallery is updated.
+      </div>
     </div>
 
     <div class="row">
@@ -21,32 +24,39 @@
       </div>
     </div>
 
-    <div class="row">
-      <div class="col">
+    <!--<div class="row">-->
+      <!--<div class="col">-->
 
-        <table class="table">
-          <tbody>
-          <tr v-for="edition in editionsMissingHighRes">
-            <td class="w-10 text-right" width="100">
-              <router-link
-                :to="{ name: 'confirmPurchaseSimple', params: { editionNumber: edition.edition }}">
-                <edition-image class="img-thumbnail" :src="edition.lowResImg"/>
-              </router-link>
-            </td>
-            <td class="align-middle">
-              <div class="pb-2">
-                {{edition.name}}
-              </div>
-              <div>
-                <button class="btn btn-sm btn-primary" @click="addHighRes">Add missing high-res image</button>
-              </div>
-            </td>
-          </tr>
-          </tbody>
-        </table>
+        <!--<table class="table">-->
+          <!--<tbody>-->
+          <!--<tr v-for="edition in editionsMissingHighRes">-->
+            <!--<td class="w-10 text-right" width="100">-->
+              <!--<router-link-->
+                <!--:to="{ name: 'confirmPurchaseSimple', params: { editionNumber: edition.edition }}">-->
+                <!--<edition-image class="img-thumbnail" :src="edition.lowResImg"/>-->
+              <!--</router-link>-->
+            <!--</td>-->
+            <!--<td class="align-middle">-->
+              <!--<div class="pb-2">-->
+                <!--{{edition.name}}-->
+              <!--</div>-->
+              <!--<div>-->
+                <!--<form class="form-check-inline w-100">-->
+                  <!--<input type="url" class="form-control form-control-sm mr-2"-->
+                         <!--placeholder="Provide a URL of the artwork..."-->
+                         <!--v-model="form[edition.edition]"/>-->
+                  <!--<button class="btn btn-sm btn-primary" @click="addHighRes(edition)">-->
+                    <!--Upload-->
+                  <!--</button>-->
+                <!--</form>-->
+              <!--</div>-->
+            <!--</td>-->
+          <!--</tr>-->
+          <!--</tbody>-->
+        <!--</table>-->
 
-      </div>
-    </div>
+      <!--</div>-->
+    <!--</div>-->
 
   </div>
 </template>
@@ -67,7 +77,8 @@
     },
     data() {
       return {
-        editionsMissingHighRes: null
+        editionsMissingHighRes: null,
+        form: {}
       };
     },
     props: ['artist'],
@@ -83,8 +94,8 @@
         }
         return artist.ethAddress;
       },
-      addHighRes() {
-        alert('TODO add a high-res file in some form?');
+      addHighRes(edition) {
+        console.log(this.form[edition.edition], edition);
       }
     },
     async created() {
