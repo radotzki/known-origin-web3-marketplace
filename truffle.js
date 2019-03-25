@@ -1,7 +1,12 @@
 const HDWalletProvider = require('truffle-hdwallet-provider');
 const infuraApikey = '4396873c00c84479991e58a34a54ebd9';
-let mnemonic = require('./mnemonic');
-
+const mnemonic = process.env.KNOWN_ORIGIN_MNEMONIC;
+if (!mnemonic) {
+  throw new Error(`
+    You are missing a environment variable called KNOWN_ORIGIN_MNEMONIC - please set one 
+    e.g. export KNOWN_ORIGIN_MNEMONIC='<your seed phrase>'
+  `);
+}
 // Check gas prices before live deploy - https://ethgasstation.info/
 
 module.exports = {
