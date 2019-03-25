@@ -115,7 +115,8 @@
       ],
       "payable": false,
       "stateMutability": "nonpayable",
-      "type": "constructor"
+      "type": "constructor",
+      "signature": "constructor"
     },
     {
       "anonymous": false,
@@ -7449,8 +7450,8 @@
     "3": {
       "events": {},
       "links": {},
-      "address": "0x15C73806D6944Fc03aBBA67d43548377977968EB",
-      "transactionHash": "0x4c04433e16ea40af9884eb56c40892cf1855be99b0661246b1fc12ab04040dc8"
+      "address": "0x0dfDd3E62b01d0c9FB76C5b1Af767B64beF86Ca7",
+      "transactionHash": "0x0bc79bcc029f4ae10671e25b1849df0010122feaba0a7606c6e780b0f1298263"
     },
     "4": {
       "events": {},
@@ -7461,12 +7462,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0xd41b66F1e299679ACd5dbcF691AD73cD9a508f6d",
-      "transactionHash": "0x531669d7538debe8f0f0e6c84fafef9a0ccfc772d0a8a0d12de4f2bb4a9fe097"
+      "address": "0x0dfDd3E62b01d0c9FB76C5b1Af767B64beF86Ca7",
+      "transactionHash": "0x68a3202aa8580ed49ab1b96fafa3e7b9219c1bf8afa46972315602c6cc38b6af"
     }
   },
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-02-26T21:27:23.635Z",
+  "updatedAt": "2019-03-25T20:50:02.639Z",
   "devdoc": {
     "methods": {
       "deactivateEdition(uint256)": {
