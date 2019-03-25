@@ -55,7 +55,6 @@ export const HIGH_RES_DOWNLOAD = 'HIGH_RES_DOWNLOAD';
 export const REFRESH_CONTRACT_DETAILS = 'REFRESH_CONTRACT_DETAILS';
 export const LOAD_ASSETS_PURCHASED_BY_ACCOUNT = 'LOAD_ASSETS_PURCHASED_BY_ACCOUNT';
 
-
 /////////////
 // Auction //
 /////////////
@@ -70,10 +69,16 @@ export const WITHDRAW_BID = 'WITHDRAW_BID';
 export const CANCEL_AUCTION = 'CANCEL_AUCTION';
 export const REJECT_BID = 'REJECT_BID';
 
-
 /////////////////////
 // Artist Controls //
 /////////////////////
 export const GET_ARTIST_EDITION_CONTROLS_DETAILS = 'GET_ARTIST_EDITION_CONTROLS_DETAILS';
 export const UPDATE_EDITION_PRICE = 'UPDATE_EDITION_PRICE';
 export const GIFT_EDITION = 'GIFT_EDITION';
+
+//////////////////
+// Self Service //
+//////////////////
+export const GET_SELF_SERVICE_CONTRACT_DETAILS = 'GET_SELF_SERVICE_CONTRACT_DETAILS';
+export const GET_SELF_SERVICE_ENABLED_FOR_ACCOUNT = 'GET_SELF_SERVICE_ENABLED_FOR_ACCOUNT';
+export const CREATE_SELF_SERVICE_EDITION = 'CREATE_SELF_SERVICE_EDITION';

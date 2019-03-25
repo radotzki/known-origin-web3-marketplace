@@ -90,7 +90,7 @@ const purchaseStateModule = {
   actions: {
     [actions.CHECK_IN_FLIGHT_TRANSACTIONS]: async function ({commit, dispatch, state, rootState}) {
 
-      // TODO get txs and if in flights laucnh correct state (handles back journey)
+      // TODO get txs and if in flights launch correct state (handles back journey)
 
       _.forEach(state.purchaseState, async (purchaseState) => {
         // if we have a txs hash and its not completed, try to action it
@@ -101,13 +101,13 @@ const purchaseStateModule = {
             commit(mutations.PURCHASE_SUCCESSFUL, {
               editionNumber: purchaseState.editionNumber,
               account: purchaseState.account,
-              transaction: _.get(state.purchaseState[editionNumber], 'transaction')
+              transaction: _.get(state.purchaseState[purchaseState.editionNumber], 'transaction')
             });
           } else if (result.status === false || result.status === 0) {
             commit(mutations.PURCHASE_FAILED, {
               editionNumber: purchaseState.editionNumber,
               account: purchaseState.account,
-              transaction: _.get(state.purchaseState[editionNumber], 'transaction')
+              transaction: _.get(state.purchaseState[purchaseState.editionNumber], 'transaction')
             });
           }
         } else if (purchaseState.state === 'PURCHASE_TRIGGERED') {

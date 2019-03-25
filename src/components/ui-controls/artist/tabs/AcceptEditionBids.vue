@@ -79,29 +79,29 @@
 <script>
 
   import _ from 'lodash';
-  import * as actions from '../../../store/actions';
+  import * as actions from '../../../../store/actions';
   import {mapGetters, mapState} from 'vuex';
-  import {PAGES} from '../../../store/loadingPageState';
-  import ClickableAddress from '../../ui-controls/generic/ClickableAddress';
-  import PriceInEth from '../../ui-controls/generic/PriceInEth';
-  import UsdPrice from '../../ui-controls/generic/USDPrice';
-  import AcceptingBidFlow from "./control-flows/AcceptingBidFlow";
-  import WithdrawingBidFlow from "./control-flows/WithdrawingBidFlow";
-  import RemainingCount from "../v2/RemainingCount";
-  import CancellingAuctionFlow from "./control-flows/CancelAuctionFlow";
-  import EditionImage from "../generic/EditionImage";
-  import RejectBidFlow from "./control-flows/RejectBidFlow";
+  import {PAGES} from '../../../../store/loadingPageState';
+  import ClickableAddress from '../../../ui-controls/generic/ClickableAddress';
+  import PriceInEth from '../../../ui-controls/generic/PriceInEth';
+  import UsdPrice from '../../../ui-controls/generic/USDPrice';
+  import RemainingCount from "../../v2/RemainingCount";
+  import EditionImage from "../../generic/EditionImage";
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
+  import AcceptingBidFlow from "../../auction/control-flows/AcceptingBidFlow";
+  import WithdrawingBidFlow from "../../auction/control-flows/WithdrawingBidFlow";
+  import RejectBidFlow from "../../auction/control-flows/RejectBidFlow";
+  import CancellingAuctionFlow from "../../auction/control-flows/CancelAuctionFlow";
 
   export default {
     name: 'acceptEditionBids',
     components: {
-      RejectBidFlow,
-      EditionImage,
       CancellingAuctionFlow,
-      RemainingCount,
+      RejectBidFlow,
       WithdrawingBidFlow,
       AcceptingBidFlow,
+      EditionImage,
+      RemainingCount,
       FontAwesomeIcon,
       UsdPrice,
       PriceInEth,
@@ -196,7 +196,7 @@
 </script>
 
 <style scoped lang="scss">
-  @import '../../../ko-colours.scss';
-  @import '../../../ko-card.scss';
+  @import '../../../../ko-colours.scss';
+  @import '../../../../ko-card.scss';
 
 </style>

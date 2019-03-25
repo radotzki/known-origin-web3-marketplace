@@ -101,7 +101,8 @@
               <div class="col">
                 <div class="form-group">
                   <label for="twitterInput">Twitter</label>
-                  <input type="text" class="form-control" id="twitterInput" placeholder="@" minlength="2" maxlength="50"
+                  <input type="text" class="form-control" id="twitterInput" placeholder="@" minlength="2"
+                         maxlength="50"
                          v-model="form.twitter"
                          @input="validateTwitter"
                          :class="{ 'is-invalid': errors.twitter }">
@@ -157,8 +158,8 @@
   import {mapState} from 'vuex';
   import _ from 'lodash';
   import urlRegex from 'url-regex';
-  import * as actions from '../../../store/actions';
-  import ArtistPanel from './ArtistPanel';
+  import * as actions from '../../../../store/actions';
+  import ArtistPanel from '../ArtistPanel';
   import IPFS from 'ipfs-api';
 
   const ipfs = IPFS('ipfs.infura.io', '5001', {protocol: 'https'});
@@ -290,7 +291,7 @@
       saveFileToIpfs(reader) {
         this.profile.status = STATUS_SAVING;
         const buffer = Buffer.from(reader.result);
-        ipfs.add(buffer)
+        ipfs.add(buffer, {pin: true})
           .then((response) => {
             console.log(response);
             this.form.logo = `https://ipfs.infura.io/ipfs/${response[0].hash}`;

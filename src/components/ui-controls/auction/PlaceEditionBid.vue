@@ -132,7 +132,6 @@
   import {mapGetters, mapState} from 'vuex';
   import _ from 'lodash';
   import * as actions from '../../../store/actions';
-  import {PAGES} from '../../../store/loadingPageState';
   import ClickableAddress from '../generic/ClickableAddress';
   import PriceInEth from '../generic/PriceInEth';
   import USDPrice from '../generic/USDPrice';

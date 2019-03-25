@@ -5,11 +5,10 @@
       <h3>Artist Controls
       </h3>
       <p>
-        Control prices for your artworks and gift NFTs.
-      </p>
-      <p>
-        Please check <a :href="etherscanBase" target="_blank">Etherscan</a> to confirm your transactions complete
-        successfully.
+        Control prices for your artworks and gift NFTs. <br/>
+        <span class="text-muted small">
+        Please check <a :href="etherscanBase" target="_blank">Etherscan</a> to confirm your transactions complete successfully.
+      </span>
       </p>
     </div>
 
@@ -89,16 +88,16 @@
 
 <script>
   import {mapGetters, mapState} from 'vuex';
-  import ClickableAddress from '../generic/ClickableAddress';
-  import PriceInEth from '../generic/PriceInEth';
-  import ClickableTransaction from '../generic/ClickableTransaction';
-  import ViewTransactionDetails from '../generic/ViewTransactionDetails';
-  import * as actions from '../../../store/actions';
+  import ClickableAddress from '../../generic/ClickableAddress';
+  import PriceInEth from '../../generic/PriceInEth';
+  import ClickableTransaction from '../../generic/ClickableTransaction';
+  import ViewTransactionDetails from '../../generic/ViewTransactionDetails';
+  import * as actions from '../../../../store/actions';
   import Web3 from 'web3';
   import _ from 'lodash';
   import Vue from 'vue';
-  import RemainingCount from "../v2/RemainingCount";
-  import EditionImage from "../generic/EditionImage";
+  import RemainingCount from "../../v2/RemainingCount";
+  import EditionImage from "../../generic/EditionImage";
 
   export default {
     name: 'artistEditionControls',
@@ -167,6 +166,8 @@
         }
         return (priceInEther * this.currentUsdPrice).toFixed(2);
       }
+    },
+    created() {
     }
   };
 </script>

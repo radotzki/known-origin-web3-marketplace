@@ -50,6 +50,16 @@
               <artist-data-control-panel :editions="editions" :artist="artist"></artist-data-control-panel>
             </b-tab>
 
+            <!-- SELF SERVICE -->
+            <b-tab title="Creation" v-if="shouldShowSelfServiceTabs">
+              <self-service :artist="artist"></self-service>
+            </b-tab>
+
+            <!-- SELF SERVICE -->
+            <b-tab title="Downloads" v-if="shouldShowSelfServiceTabs">
+              <add-high-res :artist="artist"></add-high-res>
+            </b-tab>
+
           </b-tabs>
         </div>
 
@@ -68,12 +78,14 @@
   import LoadingSection from '../ui-controls/generic/LoadingSection';
   import Availability from '../ui-controls/v2/Availability';
   import _ from 'lodash';
-  import AcceptEditionBids from '../ui-controls/auction/AcceptEditionBids';
+  import AcceptEditionBids from '../ui-controls/artist/tabs/AcceptEditionBids';
   import AuctionEventsList from '../ui-controls/auction/AuctionEventsList';
   import GalleryCard from '../ui-controls/cards/GalleryCard';
-  import ArtistEditionControls from "../ui-controls/management/ArtistEditionControls";
-  import ArtistDataControlPanel from "../ui-controls/artist/ArtistDataControlPanel";
-  import EditionSalesEvents from "../ui-controls/artist/EditionSalesEvents";
+  import ArtistEditionControls from "../ui-controls/artist/tabs/ArtistEditionControls";
+  import ArtistDataControlPanel from "../ui-controls/artist/tabs/ArtistDataControlPanel";
+  import EditionSalesEvents from "../ui-controls/artist/tabs/EditionSalesEvents";
+  import SelfService from "../ui-controls/artist/tabs/SelfService";
+  import AddHighRes from "../ui-controls/artist/tabs/AddHighRes";
 
   export default {
     name: 'artistPage',
@@ -83,6 +95,8 @@
       };
     },
     components: {
+      AddHighRes,
+      SelfService,
       EditionSalesEvents,
       ArtistDataControlPanel,
       ArtistEditionControls,
@@ -114,6 +128,10 @@
         'owner',
         'paused',
       ]),
+      ...mapState('selfService', {
+        'selfServiceOwner': 'owner',
+        'selfServicePaused': 'paused',
+      }),
       editions() {
         return this.editionsForArtist(this.artist.ethAddress);
       },
@@ -133,18 +151,16 @@
       shouldShowArtistTabs() {
         return this.account && !this.paused && this.isArtistViewingPage;
       },
+      shouldShowSelfServiceTabs() {
+        return this.account && !this.selfServicePaused && this.isArtistViewingPage;
+      },
       isArtistViewingPage() {
         // If logged in account is the smart contract owner
-        if (this.account === this.owner) {
+        if (this.account === this.owner || this.account === this.selfServiceOwner) {
           return true;
         }
         return this.artistAddress === this.account;
       }
-    },
-    methods: {
-      goToArtist: function (artistAccount) {
-        this.$router.push({name: 'artist', params: {artistAccount}});
-      },
     },
     created() {
       this.$store.dispatch(`loading/${actions.LOADING_STARTED}`, PAGES.ARTISTS);

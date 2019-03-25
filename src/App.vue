@@ -341,6 +341,7 @@
   @import './ko-colours.scss';
   @import '../node_modules/bootstrap/scss/bootstrap.scss';
   @import '../node_modules/bootstrap-vue/dist/bootstrap-vue.css';
+  @import '../node_modules/vue-multiselect/dist/vue-multiselect.min.css';
 
   /* Sticky footer styles
 -------------------------------------------------- */

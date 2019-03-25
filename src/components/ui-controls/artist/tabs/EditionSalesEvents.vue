@@ -3,7 +3,7 @@
 
     <h3>Sales</h3>
     <p>
-      History of sales and accepted bids<br />
+      History of sales and accepted bids<br/>
       <small class="text-muted">Showing transactions where ETH was exchanged</small>
     </p>
 
@@ -79,15 +79,15 @@
 <script>
 
   import {mapGetters, mapState} from 'vuex';
-  import EditionImage from "../generic/EditionImage";
+  import EditionImage from "../../generic/EditionImage";
 
-  import {PAGES} from '../../../store/loadingPageState';
+  import {PAGES} from '../../../../store/loadingPageState';
   import _ from 'lodash';
-  import {mapEvent, mapMobileEvent} from '../../../services/eventMapper';
-  import PriceInEth from "../generic/PriceInEth";
-  import USDPriceConverter from "../generic/USDPriceConverter";
-  import ViewTransactionDetails from "../generic/ViewTransactionDetails";
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
+  import {mapEvent, mapMobileEvent} from '../../../../services/eventMapper';
+  import PriceInEth from "../../generic/PriceInEth";
+  import USDPriceConverter from "../../generic/USDPriceConverter";
+  import ViewTransactionDetails from "../../generic/ViewTransactionDetails";
 
   export default {
     name: 'editionSalesEvents',
@@ -158,8 +158,8 @@
 </script>
 
 <style scoped lang="scss">
-  @import '../../../ko-colours.scss';
-  @import '../../../ko-card.scss';
+  @import '../../../../ko-colours';
+  @import '../../../../ko-card';
 
   .img-thumbnail {
     max-width: 50px;

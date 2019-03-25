@@ -184,6 +184,20 @@
         'findEdition'
       ]),
     },
+    created() {
+      this.$store.watch(
+        () => this.$store.state.eventService.currentNetworkId,
+        (networkIfChange) => {
+          // if we change networks - restart the process
+          if (networkIfChange !== 1) {
+            this.activity = [];
+            this.limit = 20;
+            this.offset = 0;
+            this.resultsAvailable = 0;
+            this.showMore({loaded: _.noop});
+          }
+        });
+    }
   };
 </script>
 

@@ -19,6 +19,7 @@ import kodaV2 from './modules/kodaV2';
 import loading from './modules/loading';
 import auction from './modules/auction';
 import artistControls from './modules/artistEditionControls';
+import selfService from './modules/selfService';
 
 import EventsApiService from "../services/events/EventsApiService";
 import FirestoreArtistService from "../services/artist/FirestoreArtistService";
@@ -33,6 +34,7 @@ const KnownOriginDigitalAssetV1 = truffleContract(truffleSchema.KnownOriginDigit
 const KnownOriginDigitalAssetV2 = truffleContract(truffleSchema.KnownOriginDigitalAssetV2);
 const ArtistAcceptingBidsV2 = truffleContract(truffleSchema.ArtistAcceptingBidsV2);
 const ArtistEditionControlsV2 = truffleContract(truffleSchema.ArtistEditionControlsV2);
+const SelfServiceEditionCuration = truffleContract(truffleSchema.SelfServiceEditionCurationV1);
 
 Vue.use(Vuex);
 
@@ -57,6 +59,7 @@ const store = new Vuex.Store({
     loading,
     auction,
     artistControls,
+    selfService,
   },
   state: {
     // connectivity
@@ -183,11 +186,12 @@ const store = new Vuex.Store({
     [mutations.SET_WEB3](state, web3) {
       state.web3 = web3;
     },
-    [mutations.SET_KODA_CONTRACT](state, {v1, v2, auction, editionControls}) {
+    [mutations.SET_KODA_CONTRACT](state, {v1, v2, auction, editionControls, selfServiceCuration}) {
       state.KnownOriginDigitalAssetV1 = v1;
       state.KnownOriginDigitalAssetV2 = v2;
       state.ArtistAcceptingBids = auction;
       state.ArtistEditionControls = editionControls;
+      state.SelfServiceEditionCuration = selfServiceCuration;
       state.kodaV2ContractService = new KodaV2ContractService(v2);
     },
   },
@@ -223,6 +227,7 @@ const store = new Vuex.Store({
         KnownOriginDigitalAssetV2.setProvider(web3.currentProvider);
         ArtistAcceptingBidsV2.setProvider(web3.currentProvider);
         ArtistEditionControlsV2.setProvider(web3.currentProvider);
+        SelfServiceEditionCuration.setProvider(web3.currentProvider);
 
         // Set the web3 instance
         commit(mutations.SET_WEB3, web3);
@@ -232,10 +237,14 @@ const store = new Vuex.Store({
           v2: KnownOriginDigitalAssetV2,
           auction: ArtistAcceptingBidsV2,
           editionControls: ArtistEditionControlsV2,
+          selfServiceCuration: SelfServiceEditionCuration,
         });
 
         // Load auction contract owner
         dispatch(`auction/${actions.GET_AUCTION_OWNER}`);
+
+        // Load self service details
+        dispatch(`selfService/${actions.GET_SELF_SERVICE_CONTRACT_DETAILS}`);
 
         // Load control contract owner
         dispatch(`artistControls/${actions.GET_ARTIST_EDITION_CONTROLS_DETAILS}`);
