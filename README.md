@@ -1,6 +1,6 @@
 <h1 align="center">
-  <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/images/0xdde2d979e8d39bb8416eafcfc1758f3cab2c9c72.png"
-srcset="https://raw.githubusercontent.com/TrustWallet/tokens/master/images/0xdde2d979e8d39bb8416eafcfc1758f3cab2c9c72.png 2x"
+  <img src="https://dapp.knownorigin.io/static/dApp_knownOriginNew.jpg"
+srcset="https://dapp.knownorigin.io/static/dApp_knownOriginNew.jpg"
   alt="KnownOrigin"></a>
 </h1>
 
