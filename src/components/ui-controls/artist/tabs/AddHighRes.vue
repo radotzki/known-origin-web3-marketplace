@@ -3,7 +3,7 @@
 
     <div class="pt-2">
       <h3>
-        Your creations <strong>without</strong> a download
+        Your assets <strong>without</strong> a download
       </h3>
       <div>
         Upload a high resolution version of up to <strong>100mb</strong>

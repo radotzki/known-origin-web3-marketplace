@@ -81,14 +81,14 @@ contract.only('SelfServiceEditionCuration tests', function (accounts) {
       it('should fail when creating editions larger than 100', async function () {
         await assertRevert(
           this.minter.createEdition(101, etherToWei(1), 0, "123", false, {from: edition2.artist}),
-          "Unable to create editions of this size at present"
+          "Must not exceed max edition size"
         );
       });
 
       it('should fail when creating editions of size of zero', async function () {
         await assertRevert(
           this.minter.createEdition(0, etherToWei(1), 0, "123", false, {from: edition2.artist}),
-          "Unable to create editions of this size 0"
+          "must be at least one available in edition"
         );
       });
 

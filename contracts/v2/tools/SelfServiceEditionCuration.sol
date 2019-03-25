@@ -58,20 +58,11 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
   // Config which enforces editions to not be over this size
   uint256 public maxEditionSize = 100;
 
-  constructor(
-    IKODAV2SelfServiceEditionCuration _kodaV2,
-    IKODAAuction _auction
-  ) public {
-    kodaV2 = _kodaV2;
-    auction = _auction;
-  }
-
   // When true this will skip the invocation in time period check
   bool public disableInvocationCheck = false;
 
-  // TODO lower to 3 per day at first
   // Max number of editions to be created in the time period
-  uint256 public maxInvocations = 7;
+  uint256 public maxInvocations = 3;
 
   // The rolling time period for max number of invocations
   uint256 public maxInvocationsTimePeriod = 1 days;
@@ -81,6 +72,14 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
 
   // When the current time period started
   mapping(address => uint256) public timeOfFirstInvocationInPeriod;
+
+  /**
+   * @dev Construct a new instance of the contract
+   */
+  constructor(IKODAV2SelfServiceEditionCuration _kodaV2, IKODAAuction _auction) public {
+    kodaV2 = _kodaV2;
+    auction = _auction;
+  }
 
   /**
    * @dev Called by artists, create new edition on the KODA platform
@@ -134,8 +133,8 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
   returns (uint256 _editionNumber){
 
     // Enforce edition size
-    require(_totalAvailable > 0, "Unable to create editions of this size 0");
-    require(_totalAvailable <= maxEditionSize, "Unable to create editions of this size at present");
+    require(_totalAvailable > 0, "Must be at least one available in edition");
+    require(_totalAvailable <= maxEditionSize, "Must not exceed max edition size");
 
 
     // If we are the owner, skip this artists check
@@ -151,8 +150,10 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
     uint256 editionNumber = getNextAvailableEditionNumber();
 
     // Attempt to create a new edition
-    bool success = createNewEdition(editionNumber, _artist, _totalAvailable, _priceInWei, _startDate, _tokenUri);
-    require(success, "Failed to create new edition");
+    require(
+      _createNewEdition(editionNumber, _artist, _totalAvailable, _priceInWei, _startDate, _tokenUri),
+      "Failed to create new edition"
+    );
 
     // Enable the auction if desired
     if (_enableAuction) {
@@ -168,7 +169,7 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
   /**
    * @dev Internal function for calling external create methods with some none configurable defaults
    */
-  function createNewEdition(
+  function _createNewEdition(
     uint256 _editionNumber,
     address _artist,
     uint256 _totalAvailable,
