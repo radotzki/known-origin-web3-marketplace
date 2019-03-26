@@ -111,7 +111,7 @@
     data() {
       return {
         PAGES: PAGES,
-          canCreateAnotherEdition: false
+        canCreateAnotherEdition: false
       };
     },
     computed: {
