@@ -9,7 +9,6 @@ if (!mnemonic) {
 }
 
 // Check gas prices before live deploy - https://ethgasstation.info/
-
 module.exports = {
   mocha: {
     useColors: true,
