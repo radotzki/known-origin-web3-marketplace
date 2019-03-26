@@ -2,7 +2,7 @@ const KnownOriginDigitalAsset = artifacts.require('KnownOriginDigitalAsset');
 
 const HDWalletProvider = require('truffle-hdwallet-provider');
 const infuraApikey = 'nbCbdzC6IG9CF6hmvAVQ';
-let mnemonic = require('../mnemonic');
+const mnemonic = process.env.KNOWN_ORIGIN_MNEMONIC;
 
 module.exports = function (deployer, network, accounts) {
 
