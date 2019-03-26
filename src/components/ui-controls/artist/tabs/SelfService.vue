@@ -4,14 +4,11 @@
     <div class="row pt-2">
       <div class="col">
         <h3>
-          Edition Creation
+          Add new artwork
         </h3>
-        <p>
-          Create and publish new artworks on the KO platform <br/>
-          <span class="text-muted small">
-          Once your transaction is confirmed the artwork should appear on the site in approximately 5 minutes.
-          </span>
-        </p>
+        <div>
+          Create and publish new artwork on KnownOrigin
+        </div>
       </div>
     </div>
 
@@ -19,115 +16,85 @@
       <div class="col">
 
         <form>
-          <div class="form-group row">
-            <label for="artworkName"
-                   class="col-2 col-form-label">
-              Name
-            </label>
-            <div class="col-10">
-              <input type="text"
-                     class="form-control"
-                     id="artworkName"
-                     v-model="edition.name"
-                     maxlength="100"/>
-              <small class="form-text text-muted float-right">{{(edition.name || '').length}}/100</small>
-            </div>
+          <div class="form-group pt-3">
+            <label for="artworkName">Artwork title</label>
+            <input type="text"
+                   class="form-control"
+                   id="artworkName"
+                   v-model="edition.name"
+                   :maxlength="maxNameLength"/>
+            <small class="form-text text-muted float-right">
+              {{(edition.name || '').length}}/{{maxNameLength}}
+            </small>
           </div>
 
-          <div class="form-group row">
-            <div class="col-2">
-              <label for="editionDescription">
-                Description
-              </label>
-            </div>
-            <div class="col-10">
-              <textarea class="form-control" id="editionDescription"
-                        rows="3"
-                        v-model="edition.description"
-                        maxlength="1000">
+          <div class="form-group pt-3">
+            <label for="editionDescription">Artwork description</label>
+            <textarea class="form-control" id="editionDescription"
+                      rows="3"
+                      v-model="edition.description"
+                      :maxlength="maxDescriptionLength">
               </textarea>
-              <small class="form-text text-muted float-right">{{(edition.description || '').length}}/1000</small>
-            </div>
+            <small class="form-text text-muted float-right">
+              {{(edition.description || '').length}}/{{maxDescriptionLength}}
+            </small>
           </div>
 
-          <div class="form-group row">
-            <div class="col-2">
-              <label for="metadataTags">Tags</label>
-            </div>
-            <div class="col-10">
-              <multiselect
-                id="metadataTags"
-                :multiple="true"
-                v-model="edition.tags"
-                :close-on-select="false"
-                :hide-selected="true"
-                :limit="100"
-                :taggable="true"
-                @tag="addTag"
-                :placeholder="'Add the tags which represent your NFT'"
-                :options="tags">
-              </multiselect>
-              <small class="form-text text-muted float-right">
-                We've loaded in some commonly used tags but you can add your own
-              </small>
-            </div>
+          <div class="form-group pt-3">
+            <label for="editionSize">Edition size</label>
+            <input type="number" class="form-control" id="editionSize" min="1" max="100"
+                   v-model="edition.totalAvailable"
+                   @keyup.up="setScarcity"
+                   @keyup.down="setScarcity"
+                   @blur="setScarcity"/>
+            <small class="form-text text-muted float-right">
+              Current max edition size is <strong>100</strong>
+            </small>
+            <small class="form-text text-info">
+              Historic sales indicate that increasing scarcity can demand higher prices
+            </small>
           </div>
 
-          <div class="form-group row">
-
-            <div class="col-2">
-              <label for="editionSize">Edition Size</label>
-            </div>
-            <div class="col-10">
-              <input type="number" class="form-control" id="editionSize" min="1" max="100"
-                     v-model="edition.totalAvailable"
-                     @keyup.up="setScarcity"
-                     @keyup.down="setScarcity"
-                     @blur="setScarcity"/>
-              <small class="form-text text-muted float-right">
-                Current max edition size is <strong>100</strong>
-              </small>
-              <small class="form-text text-info">
-                Historic sales indicate that increasing scarcity can demand higher prices
-              </small>
-            </div>
-
-          </div>
-
-          <div class="form-group row">
-
-            <div class="col-2">
-              <label for="editionSize">Price</label>
-            </div>
-
-            <div class="col-10">
-
-              <div class="input-group mb-1">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">ETH</span>
-                </div>
-
-                <input type="number" class="form-control" id="priceInWei"
-                       v-model="edition.priceInEther"/>
-
-                <div class="input-group-append">
-                  <span class="input-group-text">$</span>
-                  <span class="input-group-text">{{usdPrice()}}</span>
-                </div>
+          <div class="form-group pt-3">
+            <label for="priceInWei">Price of artwork</label>
+            <div class="input-group mb-1">
+              <div class="input-group-prepend">
+                <span class="input-group-text">ETH</span>
               </div>
-              <div>
-                <usd-price-per-ether class="float-right"></usd-price-per-ether>
+              <input type="number" class="form-control" id="priceInWei"
+                     v-model="edition.priceInEther"/>
+              <div class="input-group-append">
+                <span class="input-group-text">$</span>
+                <span class="input-group-text">{{usdPrice()}}</span>
               </div>
             </div>
-
+            <div>
+              <usd-price-per-ether class="float-right"></usd-price-per-ether>
+            </div>
           </div>
 
+          <div class="form-group pt-3">
+            <label for="metadataTags">Tags</label>
+            <multiselect
+              id="metadataTags"
+              :multiple="true"
+              v-model="edition.tags"
+              :close-on-select="false"
+              :hide-selected="true"
+              :limit="100"
+              :taggable="true"
+              @tag="addTag"
+              placeholder="Add the tags which represent your artwork"
+              :options="tags">
+            </multiselect>
+            <small class="form-text text-muted float-right">
+              Select suggested tags or add your own
+            </small>
+          </div>
 
-          <div class="form-group row">
-            <div class="col-2">
-              <label>Enable Offers</label>
-            </div>
-            <div class="col-10">
+          <div class="form-group pt-3">
+            <label for="allowOffersToggle">Allow offers/bids</label>
+            <div>
               <toggle-button
                 class="hand-pointer"
                 :value="true"
@@ -135,7 +102,8 @@
                 :labels="{checked: 'Offers Accepted', unchecked: 'Buy Now Only'}"
                 :width="140"
                 :height="25"
-                :font-size="12">
+                :font-size="12"
+                id="allowOffersToggle">
               </toggle-button>
               <small class="form-text text-muted float-right">
                 All editions have a <strong>Buy Now</strong> price but
@@ -148,96 +116,91 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row pt-2">
+      <div class="col">
 
-      <div class="col-12">
-        <div class="form-group row">
-
-          <div class="col-2">
-            <label for="nftImageInput">Artwork Image</label>
+        <div class="form-group">
+          <label for="nftImageInput">Upload image</label>
+          <div class="custom-file">
+            <input id="nftImageInput"
+                   type="file"
+                   class="custom-file-input"
+                   :disabled="isImgSaving"
+                   @change="captureFile"
+                   accept="image/jpeg,image/png,image/gif">
+            <label class="custom-file-label" for="nftImageInput">
+              Select NFT image...
+            </label>
           </div>
-          <div class="col-10">
-
-            <div class="custom-file">
-              <input id="nftImageInput"
-                     type="file"
-                     class="custom-file-input"
-                     :disabled="isImgSaving"
-                     @change="captureFile"
-                     accept="image/*">
-              <label class="custom-file-label" for="nftImageInput">
-                Select NFT image...
-              </label>
-            </div>
-
-            <div id="nftImageInputHint" class="form-text text-muted float-right small">
-              Current max size is <strong>{{maxFileSizeMb}}mb</strong> - <code>jpeg</code>, <code>png</code>,
-              <code>gif</code> <!--& <code>svg</code>-->
-            </div>
-
-            <div v-if="imageUpload.fileFormatError" class="form-text text-danger small">
-              Invalid file format, supported extensions are <code>jpeg</code>, <code>png</code>, <code>gif</code>
-              & <code>svg</code>
-            </div>
-
-            <div v-if="imageUpload.isValidFileSize" class="form-text text-danger small">
-              Max current file size supported it <strong>{{maxFileSizeMb}}mb</strong>
-            </div>
-
-            <div v-if="(isImgInitial || isImgSaving) && !(imageUpload.fileFormatError || imageUpload.isValidFileSize)"
-                 class="form-text text-info small">
-              Uploading file to
-              <font-awesome-icon :icon="['fas', 'cube']"></font-awesome-icon>
-              IPFS
-              <font-awesome-icon :icon="['fas', 'spinner']" spin></font-awesome-icon>
-            </div>
-
-            <div v-if="isImgSuccess" class="form-text text-success small">
-              Successfully uploaded file to
-              <font-awesome-icon :icon="['fas', 'cube']"></font-awesome-icon>
-              IPFS
-            </div>
-
-            <div v-if="isImgSuccess">
-              <a target="_blank" :href="imageUpload.ipfsImage">
-                <img :src="imageUpload.ipfsImage" class="img-thumbnail" style="max-height: 200px"/>
-              </a>
-            </div>
-
-            <p v-if="isImgFailed" class="form-text text-warning small">
-              Something went went, try again or contract the team on telegram:
-              {{ imageUpload.uploadError }}
-            </p>
+          <div id="nftImageInputHint" class="form-text text-muted float-right small">
+            Max file size <strong>{{maxFileSizeMb}}mb</strong>
+            <span class="text-muted">(Accepted file types PNG, JPG & GIF)</span>
           </div>
         </div>
-      </div>
 
+        <!-- Image upload errors and output -->
+        <div class="form-group">
+
+          <div v-if="imageUpload.fileFormatError" class="form-text text-danger small">
+            Invalid file format, supported extensions are <code>jpeg</code>, <code>png</code>, <code>gif</code>
+          </div>
+
+          <div v-if="imageUpload.isValidFileSize" class="form-text text-danger small">
+            Max current file size supported it <strong>{{maxFileSizeMb}}mb</strong>
+          </div>
+
+          <div v-if="(isImgInitial || isImgSaving) && !(imageUpload.fileFormatError || imageUpload.isValidFileSize)"
+               class="form-text text-info small pb-3">
+            Uploading file to
+            <font-awesome-icon :icon="['fas', 'cube']"></font-awesome-icon>
+            IPFS
+            <font-awesome-icon :icon="['fas', 'spinner']" spin></font-awesome-icon>
+          </div>
+
+          <div v-if="isImgSuccess" class="form-text text-success small pb-3">
+            Successfully uploaded file to
+            <font-awesome-icon :icon="['fas', 'cube']"></font-awesome-icon>
+            IPFS
+          </div>
+
+          <div v-if="isImgSuccess">
+            <a target="_blank" :href="imageUpload.ipfsImage">
+              <img :src="imageUpload.ipfsImage" class="img-thumbnail" style="max-height: 200px"/>
+            </a>
+          </div>
+
+          <p v-if="isImgFailed" class="form-text text-warning small">
+            Something went went, try again or contract the team on telegram:
+            {{ imageUpload.uploadError }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="row pt-2">
       <div class="col">
         <div class="alert alert-info small">
           <div>
-            Token images are stored on a decentralised and distributed file store called
-            <a href="https://ipfs.io" target="_blank">IPFS</a>
+            Suggested formats
           </div>
           <div>
-            Current maximum token file size <strong>{{maxFileSizeMb}}mb</strong>
+            <span class="font-weight-bold">Images:</span> 2880x1620 (max {{maxFileSizeMb}}mb)
           </div>
-          <div class="pb-2">
-            Once your edition has been created you will have the option to provide a <strong>higher definition</strong>
-            version which can be <strong>only</strong> by accessed from the buyer of the token.
+          <div>
+            <span class="font-weight-bold">Animations:</span> 800x600 or 400x300 (max {{maxFileSizeMb}}mb)
           </div>
         </div>
       </div>
-
     </div>
 
-    <div class="row">
+    <div class="row pt-2">
       <div class="col">
-        <div v-if="isMetadataInitial || isMetadataSaving" class="alert alert-info" role="alert">
+        <div v-if="isMetadataInitial || isMetadataSaving" class="alert alert-info small" role="alert">
           Building edition
           <font-awesome-icon :icon="['fas', 'cube']" spin></font-awesome-icon>
         </div>
 
-        <div v-if="isMetadataSuccess && !somethingInFlight" class="alert alert-info" role="alert">
+        <div v-if="isMetadataSuccess && !somethingInFlight" class="alert alert-info small" role="alert">
           Built - submitting transaction to network, check your wallet
           <a v-if="false"
              :href="'https://ipfs.infura.io/ipfs/' + metadataIpfsUpload.ipfsHash"
@@ -246,27 +209,27 @@
           </a>
         </div>
 
-        <div v-if="isMetadataFailed" class="alert alert-warning" role="alert">
+        <div v-if="isMetadataFailed" class="alert alert-warning small" role="alert">
           Something went wrong, try again or contract the team on telegram: {{ metadataIpfsUpload.uploadError }}
         </div>
 
-        <div v-if="isSelfServiceTriggered(account)" class="alert alert-primary" role="alert">
+        <div v-if="isSelfServiceTriggered(account)" class="alert alert-primary small" role="alert">
           Transaction initiated, please check your wallet.
           <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
         </div>
 
-        <div v-if="isSelfServiceStarted(account)" class="alert alert-info" role="alert">
+        <div v-if="isSelfServiceStarted(account)" class="alert alert-info small" role="alert">
           Your transaction is being confirmed...
           <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
           <clickable-transaction :transaction="getSelfServiceTransactionForAccount(account)"></clickable-transaction>
         </div>
 
-        <div v-if="isSelfServiceSuccessful(account)" class="alert alert-success" role="alert">
-          <strong>Edition created</strong> please wait a few minutes before it appears on the site.
+        <div v-if="isSelfServiceSuccessful(account)" class="alert alert-success small" role="alert">
+          <strong>Artwork created</strong> please wait approximately 5 minutes before it appears on the site.
           <clickable-transaction :transaction="getSelfServiceTransactionForAccount(account)"></clickable-transaction>
         </div>
 
-        <div v-if="isSelfServiceFailed(account)" class="alert alert-warning" role="alert">
+        <div v-if="isSelfServiceFailed(account)" class="alert alert-warning small" role="alert">
           Please check your <a :href="etherscanAccountPage" target="_blank">account</a>
           <span v-if="getSelfServiceTransactionForAccount(account)">
               and view the transaction  <clickable-transaction
@@ -278,21 +241,34 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row pt-3">
       <div class="col">
         <button class="btn btn-block btn-primary" :disabled="!isEditionValid() || somethingInFlight"
                 @click="createEdition">
-          Create Edition
+          Add Artwork
         </button>
-        <small class="float-left form-text text-dark">
-          Once your transaction is confirmed the artwork should appear on the site in approximately 5 minutes.
-        </small>
       </div>
     </div>
 
-    <div class="row" v-if="false">
-      <div class="col">
-        <a class="hand-pointer small" @click="expandIpfsData = !expandIpfsData">(debug view)</a>
+    <div class="row pt-4">
+      <div class="col small text-muted">
+        <div class="pb-2">
+          Once the artwork has been created you will have the option to provide a higher definition
+          version which can be only by accessed from the buyer of the token.
+        </div>
+        <div>
+          Once the transaction is confirmed the artwork should appear on the site in approximately 5 minutes.
+        </div>
+        <div>
+          Token images are stored on a decentralised file store called
+          <a href="https://ipfs.io" target="_blank">IPFS</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="row small pt-1" v-if="true">
+      <div class="col small text-muted">
+        <a class="hand-pointer" @click="expandIpfsData = !expandIpfsData">[debug]</a>
         <pre v-show="expandIpfsData">{{generateIPFSData()}}</pre>
       </div>
     </div>
@@ -334,6 +310,8 @@
       return {
         tags: _.orderBy(_.map(tags, _.toLowerCase)),
         maxFileSizeMb: 25,
+        maxNameLength: 100,
+        maxDescriptionLength: 1000,
         // The form
         edition: {
           tags: [],
@@ -423,9 +401,7 @@
         });
       },
       addTag(newTag) {
-        if (newTag !== 'high res') {
-          this.edition.tags.push(newTag);
-        }
+        this.edition.tags.push(newTag);
       },
       usdPrice() {
         if (this.currentUsdPrice && this.edition.priceInEther) {
@@ -443,7 +419,12 @@
         this.imageUpload.currentStatus = STATUS_INITIAL;
 
         const file = event.target.files[0];
-        const isValidFileType = file.type === 'image/jpeg' || file.type === 'image/svg+xml' || file.type === 'image/gif' || file.type === 'image/png';
+        if (!file) {
+          console.warn("No file found");
+          return;
+        }
+
+        const isValidFileType = file.type === 'image/jpeg' || file.type === 'image/gif' || file.type === 'image/png';
         const fileSizeInMb = file.size / 1024 / 1024;
         const isValidFileSize = fileSizeInMb <= this.maxFileSizeMb;
 
@@ -455,24 +436,23 @@
 
           // Onload hook - upload & pin to IPFS
           reader.onloadend = () => {
+            this.$store.state.notificationService.uploadToIPFS({type: "UPLOADING", id: 'ipfs-edition-upload'});
             this.imageUpload.currentStatus = STATUS_SAVING;
             this.imageUpload.ipfsHash = null;
             this.imageUpload.ipfsImage = null;
 
             const buffer = Buffer.from(reader.result);
 
-            const options = {
-              pin: true
-            };
-
-            ipfs.add(buffer, options)
+            ipfs.add(buffer, {pin: true})
               .then((response) => {
                 console.log(`Saved to IPFS`, response);
                 this.imageUpload.ipfsHash = response[0].hash;
                 this.imageUpload.ipfsImage = `https://ipfs.infura.io/ipfs/${response[0].hash}`;
                 this.imageUpload.currentStatus = STATUS_SUCCESS;
+                this.$store.state.notificationService.uploadToIPFS({type: "SUCCESS", id: 'ipfs-edition-upload'});
               })
               .catch((error) => {
+                this.$store.state.notificationService.uploadToIPFS({type: "FAILED", id: 'ipfs-edition-upload'});
                 this.imageUpload.currentStatus = STATUS_FAILED;
                 this.imageUpload.uploadError = error;
               });
@@ -517,11 +497,11 @@
         };
       },
       isEditionValid() {
-        if (_.size(_.trim(this.edition.name)) < 1 || _.size(_.trim(this.edition.name)) > 100) {
+        if (_.size(_.trim(this.edition.name)) < 1 || _.size(_.trim(this.edition.name)) > this.maxNameLength) {
           console.log('Failed on [name] validation');
           return false;
         }
-        if (_.size(_.trim(this.edition.description)) < 1 || _.size(_.trim(this.edition.description)) > 1000) {
+        if (_.size(_.trim(this.edition.description)) < 1 || _.size(_.trim(this.edition.description)) > this.maxDescriptionLength) {
           console.log('Failed on [description] validation');
         }
         if (_.size(this.edition.totalAvailable) < 1 || _.size(this.edition.totalAvailable) > 100) {

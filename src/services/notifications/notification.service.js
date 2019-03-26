@@ -46,7 +46,7 @@ const CONTENTS = {
       : `<a href="${etherscanBase}/address/${account}" target="_blank">View on etherscan</a>`;
 
     return `<div class="snotifyToast__body">
-              <div class="notification-icon">😞</div>
+              <div class="notification-icon"> 😞 </div>
               <div class="notification-msg">
                 <div>Unknown issue</div>
                 <div class="small">${link}</div>
@@ -224,4 +224,63 @@ export default class NotificationService {
 
     this.setNotificationAndPayload(id, notification, payload);
   }
+
+  uploadToIPFS(payload) {
+    console.log(payload);
+
+    const {type, id} = payload;
+
+    this.clearNotificationId(id);
+
+    let notification;
+
+    switch (type) {
+      case "UPLOADING": {
+        notification = Vue.$snotify.html(
+          `<div class="snotifyToast__body">
+              <div class="notification-icon"> ⬆️ </div>
+              <div class="notification-msg">
+                <div>Uploading file to IPFS</div>
+              </div>
+            </div>`,
+          {
+            ...defaults,
+            type: 'info',
+          });
+        break;
+      }
+      case "SUCCESS": {
+        notification = Vue.$snotify.html(
+          `<div class="snotifyToast__body">
+              <div class="notification-icon"> 🤟 </div>
+              <div class="notification-msg">
+                <div>Uploaded to IPFS</div>
+              </div>
+            </div>`,
+          {
+            ...defaults,
+            timeout: 5000, // 5s timeout
+            type: 'success',
+          });
+        break;
+      }
+      case "FAILED": {
+        notification = Vue.$snotify.html(
+          `<div class="snotifyToast__body">
+              <div class="notification-icon"> 😞 </div>
+              <div class="notification-msg">
+                <div>Error uploading file</div>
+              </div>
+            </div>`,
+          {
+            ...defaults,
+            type: 'warning',
+          });
+        break;
+      }
+    }
+    this.setNotificationAndPayload(id, notification, payload);
+  }
+
+
 }
