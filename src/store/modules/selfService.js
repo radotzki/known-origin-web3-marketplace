@@ -98,11 +98,13 @@ const selfServiceStateModule = {
 
       commit(mutations.SET_SELF_SERVICE_CONTROLS, {paused, owner, address, artistCommission, maxEditionSize});
     },
-    async [actions.GET_SELF_SERVICE_ENABLED_FOR_ACCOUNT]({commit, dispatch, state, getters, rootState}) {
+    async [actions.GET_SELF_SERVICE_ENABLED_FOR_ACCOUNT]({commit, dispatch, state, getters, rootState}, {artistAccount}) {
       const contract = await rootState.SelfServiceEditionCuration.deployed();
-      return contract.isEnabledForAccount(rootState.account);
+      const canCreateAnotherEdition = await contract.canCreateAnotherEdition(artistAccount);
+      return {
+        canCreateAnotherEdition
+      };
     },
-
     async [actions.CREATE_SELF_SERVICE_EDITION]({commit, dispatch, state, getters, rootState}, data) {
       const account = rootState.account;
 

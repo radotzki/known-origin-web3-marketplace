@@ -110,7 +110,8 @@
     },
     data() {
       return {
-        PAGES: PAGES
+        PAGES: PAGES,
+          canCreateAnotherEdition: false
       };
     },
     computed: {
@@ -159,7 +160,7 @@
         if (this.account === this.owner || this.account === this.selfServiceOwner) {
           return true;
         }
-        return this.artistAddress === this.account;
+        return this.artistAddress === this.account && this.canCreateAnotherEdition;
       }
     },
     created() {
@@ -172,6 +173,12 @@
           })
           .finally(() => {
             this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.ARTISTS);
+
+            this.$store.dispatch(`selfService/${actions.GET_SELF_SERVICE_ENABLED_FOR_ACCOUNT}`, {artistAccount: this.artistAddress})
+              .then(({canCreateAnotherEdition}) => {
+                console.log(`Account canCreateAnotherEdition`, canCreateAnotherEdition);
+                this.canCreateAnotherEdition = canCreateAnotherEdition;
+              });
           });
       };
 

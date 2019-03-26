@@ -26,7 +26,6 @@ interface IKODAV2SelfServiceEditionCuration {
   function highestEditionNumber() external returns (uint256);
 }
 
-
 interface IKODAAuction {
   function setArtistsControlAddressAndEnabledEdition(uint256 _editionNumber, address _address) external;
 }
@@ -309,6 +308,13 @@ contract SelfServiceEditionCuration is Ownable, Pausable {
    */
   function setDisableInvocationCheck(bool _disableInvocationCheck) onlyOwner public {
     disableInvocationCheck = _disableInvocationCheck;
+  }
+
+  /**
+   * @dev Checks to see if the account can mint more assets
+   */
+  function canCreateAnotherEdition(address account) public view returns (bool) {
+    return isEnabledForAccount(account) && invocationsInTimePeriod[account] <= maxInvocations;
   }
 
   /**

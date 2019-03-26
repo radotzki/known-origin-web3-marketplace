@@ -249,33 +249,38 @@
 
     <div class="row pt-3">
       <div class="col">
+        <button class="btn btn-block btn-success" disabled="disabled"
+                v-if="isSelfServiceSuccessful(account)">
+          Artwork created
+        </button>
         <button class="btn btn-block btn-primary"
+                v-if="!isSelfServiceSuccessful(account)"
                 :disabled="!isEditionValid() || isMetadataSuccess || somethingInFlight"
                 @click="createEdition">
           Add Artwork
         </button>
+        <div class="pt-1 small text-muted">
+          Your artwork should appear in approximately 5 minutes once the transaction is confirmed.
+        </div>
       </div>
     </div>
 
-    <div class="row pt-4">
+    <div class="row pt-3">
       <div class="col small text-muted">
-        <div class="pt-2">
-          Your artwork should appear in approximately 5 minutes once the transaction is confirmed.
-        </div>
-        <div class="pt-1">
+        <div>
           Once the artwork has been created you will have the option to provide a higher definition
           version which can be only by accessed from the buyer of the token.
         </div>
         <div class="pt-1">
           Token images are stored on a decentralised file store called
-          <a href="https://ipfs.io" target="_blank">IPFS</a>
+          <a href="https://ipfs.io" target="_blank">IPFS</a> <a class="hand-pointer"
+                                                                @click="expandIpfsData = !expandIpfsData">[Data]</a>
         </div>
       </div>
     </div>
 
     <div class="row pt-1" v-if="true">
       <div class="col small text-muted">
-        <a class="hand-pointer" @click="expandIpfsData = !expandIpfsData">[IPFS Data]</a>
         <pre v-show="expandIpfsData">{{generateIPFSData()}}</pre>
       </div>
     </div>
@@ -390,7 +395,7 @@
         if (!this.account) {
           return true;
         }
-        return this.isSelfServiceTriggered(this.account) || this.isSelfServiceStarted(this.account) || this.isSelfServiceSuccessful(this.account);
+        return this.isSelfServiceTriggered(this.account) || this.isSelfServiceStarted(this.account);
       },
     },
     methods: {
