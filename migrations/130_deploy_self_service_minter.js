@@ -13,7 +13,7 @@ module.exports = async function (deployer, network, accounts) {
 
   // Load in other accounts for different networks
   if (network === 'ropsten' || network === 'ropsten-fork' || network === 'rinkeby' || network === 'rinkeby-fork') {
-    _koAccount = new HDWalletProvider(require('../mnemonic'), `https://${network}.infura.io/v3/${infuraApikey}`, 0).getAddress();
+    _koAccount = new HDWalletProvider(process.env.KNOWN_ORIGIN_MNEMONIC, `https://${network}.infura.io/v3/${infuraApikey}`, 0).getAddress();
   }
 
   if (network === 'live' || network === 'live-fork') {
