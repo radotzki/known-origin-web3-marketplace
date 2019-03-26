@@ -14,3 +14,5 @@ node ./node_modules/.bin/truffle-flattener ./contracts/v2/auctions/ArtistAccepti
 
 node ./node_modules/.bin/truffle-flattener ./contracts/v2/tools/ArtistEditionControlsV2.sol > ./contracts-flat/FLAT-ArtistEditionControlsV2.sol;
 
+node ./node_modules/.bin/truffle-flattener ./contracts/v2/tools/SelfServiceEditionCuration.sol > ./contracts-flat/FLAT-SelfServiceEditionCuration.sol;
+
