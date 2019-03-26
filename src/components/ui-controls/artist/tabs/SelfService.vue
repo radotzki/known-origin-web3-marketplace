@@ -15,104 +15,106 @@
     <div class="row">
       <div class="col">
 
-        <form>
-          <div class="form-group pt-3">
-            <label for="artworkName">Artwork title</label>
-            <input type="text"
-                   class="form-control"
-                   id="artworkName"
-                   v-model="edition.name"
-                   :maxlength="maxNameLength"/>
-            <small class="form-text text-muted float-right">
-              {{(edition.name || '').length}}/{{maxNameLength}}
-            </small>
-          </div>
+        <fieldset :disabled="isMetadataSuccess || somethingInFlight">
 
-          <div class="form-group pt-3">
-            <label for="editionDescription">Artwork description</label>
-            <textarea class="form-control" id="editionDescription"
-                      rows="3"
-                      v-model="edition.description"
-                      :maxlength="maxDescriptionLength">
-              </textarea>
-            <small class="form-text text-muted float-right">
-              {{(edition.description || '').length}}/{{maxDescriptionLength}}
-            </small>
-          </div>
-
-          <div class="form-group pt-3">
-            <label for="editionSize">Edition size</label>
-            <input type="number" class="form-control" id="editionSize" min="1" max="100"
-                   v-model="edition.totalAvailable"
-                   @keyup.up="setScarcity"
-                   @keyup.down="setScarcity"
-                   @blur="setScarcity"/>
-            <small class="form-text text-muted float-right">
-              Current max edition size is <strong>100</strong>
-            </small>
-            <small class="form-text text-info">
-              Historic sales indicate that increasing scarcity can demand higher prices
-            </small>
-          </div>
-
-          <div class="form-group pt-3">
-            <label for="priceInWei">Price of artwork</label>
-            <div class="input-group mb-1">
-              <div class="input-group-prepend">
-                <span class="input-group-text">ETH</span>
-              </div>
-              <input type="number" class="form-control" id="priceInWei"
-                     v-model="edition.priceInEther"/>
-              <div class="input-group-append">
-                <span class="input-group-text">$</span>
-                <span class="input-group-text">{{usdPrice()}}</span>
-              </div>
-            </div>
-            <div>
-              <usd-price-per-ether class="float-right"></usd-price-per-ether>
-            </div>
-          </div>
-
-          <div class="form-group pt-3">
-            <label for="metadataTags">Tags</label>
-            <multiselect
-              id="metadataTags"
-              :multiple="true"
-              v-model="edition.tags"
-              :close-on-select="false"
-              :hide-selected="true"
-              :limit="100"
-              :taggable="true"
-              @tag="addTag"
-              placeholder="Add the tags which represent your artwork"
-              :options="tags">
-            </multiselect>
-            <small class="form-text text-muted float-right">
-              Select suggested tags or add your own
-            </small>
-          </div>
-
-          <div class="form-group pt-3">
-            <label for="allowOffersToggle">Allow offers/bids</label>
-            <div>
-              <toggle-button
-                class="hand-pointer"
-                :value="true"
-                @change="edition.enableAuctions = $event.value"
-                :labels="{checked: 'Offers Accepted', unchecked: 'Buy Now Only'}"
-                :width="140"
-                :height="25"
-                :font-size="12"
-                id="allowOffersToggle">
-              </toggle-button>
+          <form>
+            <div class="form-group pt-3">
+              <label for="artworkName">Artwork title</label>
+              <input type="text"
+                     class="form-control"
+                     id="artworkName"
+                     v-model="edition.name"
+                     :maxlength="maxNameLength"/>
               <small class="form-text text-muted float-right">
-                All editions have a <strong>Buy Now</strong> price but
-                you can also <strong>Accept Offers</strong> on your work.
+                {{(edition.name || '').length}}/{{maxNameLength}}
               </small>
             </div>
-          </div>
 
-        </form>
+            <div class="form-group pt-3">
+              <label for="editionDescription">Artwork description</label>
+              <textarea class="form-control" id="editionDescription"
+                        rows="3"
+                        v-model="edition.description"
+                        :maxlength="maxDescriptionLength">
+              </textarea>
+              <small class="form-text text-muted float-right">
+                {{(edition.description || '').length}}/{{maxDescriptionLength}}
+              </small>
+            </div>
+
+            <div class="form-group pt-3">
+              <label for="editionSize">Edition size</label>
+              <input type="number" class="form-control" id="editionSize" min="1" max="100"
+                     v-model="edition.totalAvailable"
+                     @keyup.up="setScarcity"
+                     @keyup.down="setScarcity"
+                     @blur="setScarcity"/>
+              <small class="form-text text-muted float-right">
+                Current max edition size is <strong>100</strong>
+              </small>
+              <small class="form-text text-mute">
+                Historic sales indicate that increasing scarcity can demand higher prices
+              </small>
+            </div>
+
+            <div class="form-group pt-3">
+              <label for="priceInWei">Price of artwork</label>
+              <div class="input-group mb-1">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">ETH</span>
+                </div>
+                <input type="number" class="form-control" id="priceInWei"
+                       v-model="edition.priceInEther"/>
+                <div class="input-group-append">
+                  <span class="input-group-text">$</span>
+                  <span class="input-group-text">{{usdPrice()}}</span>
+                </div>
+              </div>
+              <div>
+                <usd-price-per-ether class="float-right"></usd-price-per-ether>
+              </div>
+            </div>
+
+            <div class="form-group pt-3">
+              <label for="metadataTags">Tags</label>
+              <multiselect
+                id="metadataTags"
+                :multiple="true"
+                v-model="edition.tags"
+                :close-on-select="false"
+                :hide-selected="true"
+                :limit="100"
+                :taggable="true"
+                @tag="addTag"
+                placeholder="Add the tags which represent your artwork"
+                :options="tags">
+              </multiselect>
+              <small class="form-text text-muted float-right">
+                Select suggested tags or add your own
+              </small>
+            </div>
+
+            <div class="form-group pt-3">
+              <label for="allowOffersToggle">Allow offers/bids</label>
+              <div>
+                <toggle-button
+                  class="hand-pointer"
+                  :value="true"
+                  @change="edition.enableAuctions = $event.value"
+                  :labels="{checked: 'Offers Accepted', unchecked: 'Buy Now Only'}"
+                  :width="140"
+                  :height="25"
+                  :font-size="12"
+                  id="allowOffersToggle">
+                </toggle-button>
+                <small class="form-text text-muted float-right">
+                  All editions have a <strong>Buy Now</strong> price but
+                  you can also <strong>Accept Offers</strong> on your work.
+                </small>
+              </div>
+            </div>
+          </form>
+        </fieldset>
       </div>
     </div>
 
@@ -165,7 +167,9 @@
 
           <div v-if="isImgSuccess">
             <a target="_blank" :href="imageUpload.ipfsImage">
-              <img :src="imageUpload.ipfsImage" class="img-thumbnail" style="max-height: 200px"/>
+              <img v-lazy="imageUpload.ipfsImage"
+                   class="img-thumbnail" style="max-height: 200px"
+                   alt="edition-image"/>
             </a>
           </div>
 
@@ -195,13 +199,13 @@
 
     <div class="row pt-2">
       <div class="col">
-        <div v-if="isMetadataInitial || isMetadataSaving" class="alert alert-info small" role="alert">
-          Building edition
+        <div v-if="isMetadataInitial || isMetadataSaving" class="alert alert-secondary small" role="alert">
+          Building edition ...
           <font-awesome-icon :icon="['fas', 'cube']" spin></font-awesome-icon>
         </div>
 
         <div v-if="isMetadataSuccess && !somethingInFlight" class="alert alert-info small" role="alert">
-          Built - submitting transaction to network, check your wallet
+          <strong>Edition built</strong> submitting transaction to network, check your wallet
           <a v-if="false"
              :href="'https://ipfs.infura.io/ipfs/' + metadataIpfsUpload.ipfsHash"
              target="_blank">
@@ -221,11 +225,13 @@
         <div v-if="isSelfServiceStarted(account)" class="alert alert-info small" role="alert">
           Your transaction is being confirmed...
           <font-awesome-icon :icon="['fas', 'cog']" spin></font-awesome-icon>
+          <br/>
           <clickable-transaction :transaction="getSelfServiceTransactionForAccount(account)"></clickable-transaction>
         </div>
 
         <div v-if="isSelfServiceSuccessful(account)" class="alert alert-success small" role="alert">
           <strong>Artwork created</strong> please wait approximately 5 minutes before it appears on the site.
+          <br/>
           <clickable-transaction :transaction="getSelfServiceTransactionForAccount(account)"></clickable-transaction>
         </div>
 
@@ -243,7 +249,8 @@
 
     <div class="row pt-3">
       <div class="col">
-        <button class="btn btn-block btn-primary" :disabled="!isEditionValid() || somethingInFlight"
+        <button class="btn btn-block btn-primary"
+                :disabled="!isEditionValid() || isMetadataSuccess || somethingInFlight"
                 @click="createEdition">
           Add Artwork
         </button>
@@ -252,23 +259,23 @@
 
     <div class="row pt-4">
       <div class="col small text-muted">
-        <div class="pb-2">
+        <div class="pt-2">
+          Your artwork should appear in approximately 5 minutes once the transaction is confirmed.
+        </div>
+        <div class="pt-1">
           Once the artwork has been created you will have the option to provide a higher definition
           version which can be only by accessed from the buyer of the token.
         </div>
-        <div>
-          Once the transaction is confirmed the artwork should appear on the site in approximately 5 minutes.
-        </div>
-        <div>
+        <div class="pt-1">
           Token images are stored on a decentralised file store called
           <a href="https://ipfs.io" target="_blank">IPFS</a>
         </div>
       </div>
     </div>
 
-    <div class="row small pt-1" v-if="true">
+    <div class="row pt-1" v-if="true">
       <div class="col small text-muted">
-        <a class="hand-pointer" @click="expandIpfsData = !expandIpfsData">[debug]</a>
+        <a class="hand-pointer" @click="expandIpfsData = !expandIpfsData">[IPFS Data]</a>
         <pre v-show="expandIpfsData">{{generateIPFSData()}}</pre>
       </div>
     </div>

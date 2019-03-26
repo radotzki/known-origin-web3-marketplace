@@ -2,14 +2,11 @@ import FirestoreService from "../FirestoreService";
 
 export default class FirestoreLikesService extends FirestoreService {
 
-  constructor(firebasePath) {
-    super(firebasePath);
-    this.likes = this.firestore.collection('likes').doc(firebasePath);
-  }
-
   loadTopLikedEditions() {
     console.log(`Get top likes on network [${this.firebasePath}]`);
-    return this.likes
+    return this.firestore
+      .collection('likes')
+      .doc(this.firebasePath)
       .collection('counters') // total counts
       .where('count', '>=', 1) // more than 1 like
       .orderBy('count', 'desc') // ordered by most liked

@@ -1,62 +1,62 @@
 <template>
   <div class="container-fluid">
 
-    <div class="pt-2">
-      <h3>
-        Your assets <strong>without</strong> a download
-      </h3>
-      <div>
-        Upload a high resolution version of up to <strong>100mb</strong>
-      </div>
-      <div class="text-muted small pt-1">
-        Only those who had purchased your work can download these assets.
-      </div>
-      <div class="text-muted small pt-1 pb-2">
-        Once submitted it can take several minutes before the gallery is updated.
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <p class="alert alert-info">
-          Coming soon....
-        </p>
-      </div>
-    </div>
-
-    <!--<div class="row">-->
-      <!--<div class="col">-->
-
-        <!--<table class="table">-->
-          <!--<tbody>-->
-          <!--<tr v-for="edition in editionsMissingHighRes">-->
-            <!--<td class="w-10 text-right" width="100">-->
-              <!--<router-link-->
-                <!--:to="{ name: 'confirmPurchaseSimple', params: { editionNumber: edition.edition }}">-->
-                <!--<edition-image class="img-thumbnail" :src="edition.lowResImg"/>-->
-              <!--</router-link>-->
-            <!--</td>-->
-            <!--<td class="align-middle">-->
-              <!--<div class="pb-2">-->
-                <!--{{edition.name}}-->
-              <!--</div>-->
-              <!--<div>-->
-                <!--<form class="form-check-inline w-100">-->
-                  <!--<input type="url" class="form-control form-control-sm mr-2"-->
-                         <!--placeholder="Provide a URL of the artwork..."-->
-                         <!--v-model="form[edition.edition]"/>-->
-                  <!--<button class="btn btn-sm btn-primary" @click="addHighRes(edition)">-->
-                    <!--Upload-->
-                  <!--</button>-->
-                <!--</form>-->
-              <!--</div>-->
-            <!--</td>-->
-          <!--</tr>-->
-          <!--</tbody>-->
-        <!--</table>-->
-
-      <!--</div>-->
+    <!--<div class="pt-2">-->
+    <!--<h3>-->
+    <!--Your assets <strong>without</strong> a download-->
+    <!--</h3>-->
+    <!--<div>-->
+    <!--Upload a high resolution version of up to <strong>100mb</strong>-->
     <!--</div>-->
+    <!--<div class="text-muted small pt-1">-->
+    <!--Only those who had purchased your work can download these assets.-->
+    <!--</div>-->
+    <!--<div class="text-muted small pt-1 pb-2">-->
+    <!--Once submitted it can take several minutes before the gallery is updated.-->
+    <!--</div>-->
+    <!--</div>-->
+
+    <div class="row mt-4">
+      <div class="col">
+        <div class="alert alert-info">
+          Upload high-resolution image uploads coming soon!
+        </div>
+      </div>
+    </div>
+
+    <div class="row" v-if="false">
+      <div class="col">
+
+        <table class="table">
+          <tbody>
+          <tr v-for="edition in editionsMissingHighRes">
+            <td class="w-10 text-right" width="100">
+              <router-link
+                :to="{ name: 'confirmPurchaseSimple', params: { editionNumber: edition.edition }}">
+                <edition-image class="img-thumbnail" :src="edition.lowResImg"/>
+              </router-link>
+            </td>
+            <td class="align-middle">
+              <div class="pb-2">
+                {{edition.name}}
+              </div>
+              <div>
+                <!--<form class="form-check-inline w-100">-->
+                <!--<input type="url" class="form-control form-control-sm mr-2"-->
+                <!--placeholder="Provide a URL of the artwork..."-->
+                <!--v-model="form[edition.edition]"/>-->
+                <!--<button class="btn btn-sm btn-primary" @click="addHighRes(edition)">-->
+                <!--Upload-->
+                <!--</button>-->
+                <!--</form>-->
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
+      </div>
+    </div>
 
   </div>
 </template>
