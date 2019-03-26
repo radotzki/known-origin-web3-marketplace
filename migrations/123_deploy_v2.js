@@ -2,6 +2,7 @@ const KnownOriginDigitalAssetV2 = artifacts.require('KnownOriginDigitalAssetV2')
 
 const HDWalletProvider = require('truffle-hdwallet-provider');
 const infuraApikey = 'nbCbdzC6IG9CF6hmvAVQ';
+const mnemonic = process.env.KNOWN_ORIGIN_MNEMONIC;
 
 module.exports = function (deployer, network, accounts) {
 
@@ -9,7 +10,7 @@ module.exports = function (deployer, network, accounts) {
 
   // Load in other accounts for different networks
   if (network === 'ropsten' || network === 'ropsten-fork' || network === 'rinkeby' || network === 'rinkeby-fork') {
-    _koAccount = new HDWalletProvider(require('../mnemonic'), `https://${network}.infura.io/${infuraApikey}`, 0).getAddress();
+    _koAccount = new HDWalletProvider(mnemonic, `https://${network}.infura.io/${infuraApikey}`, 0).getAddress();
   }
 
   if (network === 'live' || network === 'live-fork') {
