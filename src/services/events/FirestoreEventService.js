@@ -34,6 +34,7 @@ export default class FirestoreEventService extends FirestoreService {
     return this.firestore
       .collection('events')
       .doc(this.firebasePath)
+      .collection('data')
       .where('event', '==', 'EditionCreated')
       .where("_args._editionNumber", '==', edition.toString())
       .limit(1)
@@ -51,6 +52,7 @@ export default class FirestoreEventService extends FirestoreService {
     return this.firestore
       .collection('events')
       .doc(this.firebasePath)
+      .collection('data')
       .where('event', '==', 'Transfer')
       .where("_args._tokenId", '==', tokenId.toString())
       .limit(1)
