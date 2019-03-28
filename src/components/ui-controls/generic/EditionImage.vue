@@ -15,12 +15,14 @@
     props: ['src', 'id'],
     computed: {
       image() {
-        // FIXME - is this worth keeping?
+        // FIXME - trail new imgix service
         return imgixClient.buildURL(this.src, {
           //format - For browsers that support it, converts the image to the WebP format for better compression.
           //enhance - Applies a set of image adjustments to improve brightness, contrast, and other settings.
-          auto: "format,enhance",
-          q: 60 //Reduces the image quality slightly to improve compression (default is 75).
+          //compress - It will turn those GIFs into an animated WebP in supported browsers (such as Chrome)
+          auto: "format,compress",
+          q: 75, //Reduces the image quality slightly to improve compression (default is 75).
+          'gif-q': 75 //Reduces the image quality of GIFS - the higher the number, the more compression applied to the GIF.
         });
       },
       imgId() {
