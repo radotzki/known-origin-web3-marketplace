@@ -22,9 +22,11 @@
               <label for="artworkName">Artwork title</label>
               <input type="text"
                      class="form-control"
+                     :class="{'is-valid':isNameValid}"
                      id="artworkName"
                      v-model="edition.name"
-                     :maxlength="maxNameLength"/>
+                     :maxlength="maxNameLength"
+                     required/>
               <small class="form-text text-muted float-right">
                 {{(edition.name || '').length}}/{{maxNameLength}}
               </small>
@@ -32,10 +34,13 @@
 
             <div class="form-group pt-3">
               <label for="editionDescription">Artwork description</label>
-              <textarea class="form-control" id="editionDescription"
+              <textarea class="form-control"
+                        :class="{'is-valid':isDescriptionValid}"
+                        id="editionDescription"
                         rows="3"
                         v-model="edition.description"
-                        :maxlength="maxDescriptionLength">
+                        :maxlength="maxDescriptionLength"
+                        required>
               </textarea>
               <small class="form-text text-muted float-right">
                 {{(edition.description || '').length}}/{{maxDescriptionLength}}
@@ -46,9 +51,11 @@
               <label for="editionSize">Edition size</label>
               <input type="number" class="form-control" id="editionSize" min="1" max="100"
                      v-model="edition.totalAvailable"
+                     :class="{'is-valid':isTotalAvailableValid}"
                      @keyup.up="setScarcity"
                      @keyup.down="setScarcity"
-                     @blur="setScarcity"/>
+                     @blur="setScarcity"
+                     required/>
               <small class="form-text text-muted float-right">
                 Current max edition size is <strong>100</strong>
               </small>
@@ -63,8 +70,14 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text">ETH</span>
                 </div>
-                <input type="number" class="form-control" id="priceInWei"
-                       v-model="edition.priceInEther"/>
+                <input type="number"
+                       :class="{'is-valid':isPriceValid}"
+                       class="form-control"
+                       id="priceInWei"
+                       v-model="edition.priceInEther"
+                       placeholder="0.5..."
+                       min="0"
+                       required/>
                 <div class="input-group-append">
                   <span class="input-group-text">$</span>
                   <span class="input-group-text">{{usdPrice()}}</span>
@@ -90,7 +103,7 @@
                 :options="tags">
               </multiselect>
               <small class="form-text text-muted float-right">
-                Select suggested tags or add your own
+                Select suggested tags or add your own (min. 1)
               </small>
             </div>
 
@@ -127,9 +140,11 @@
             <input id="nftImageInput"
                    type="file"
                    class="custom-file-input"
+                   :class="{'is-valid':isImageValid}"
                    :disabled="isImgSaving"
                    @change="captureFile"
-                   accept="image/jpeg,image/png,image/gif">
+                   accept="image/jpeg,image/png,image/gif"
+                   required>
             <label class="custom-file-label" for="nftImageInput">
               Select NFT image...
             </label>
@@ -147,11 +162,11 @@
             Invalid file format, supported extensions are <code>jpeg</code>, <code>png</code>, <code>gif</code>
           </div>
 
-          <div v-if="imageUpload.isValidFileSize" class="form-text text-danger small">
+          <div v-if="imageUpload.fileSizeError" class="form-text text-danger small">
             Max current file size supported it <strong>{{maxFileSizeMb}}mb</strong>
           </div>
 
-          <div v-if="(isImgInitial || isImgSaving) && !(imageUpload.fileFormatError || imageUpload.isValidFileSize)"
+          <div v-if="(isImgInitial || isImgSaving) && !(imageUpload.fileFormatError || imageUpload.fileSizeError)"
                class="form-text text-info small pb-3">
             Uploading file to
             <font-awesome-icon :icon="['fas', 'cube']"></font-awesome-icon>
@@ -168,13 +183,14 @@
           <div v-if="isImgSuccess">
             <a target="_blank" :href="imageUpload.ipfsImage">
               <img v-lazy="imageUpload.ipfsImage"
-                   class="img-thumbnail" style="max-height: 200px"
+                   class="img-thumbnail"
+                   style="max-height: 200px"
                    alt="edition-image"/>
             </a>
           </div>
 
-          <p v-if="isImgFailed" class="form-text text-warning small">
-            Something went went, try again or contract the team on telegram:
+          <p v-if="imageUpload.uploadError" class="form-text text-warning small">
+            Something went wrong, try again or contract the team on telegram<br/>
             {{ imageUpload.uploadError }}
           </p>
         </div>
@@ -236,12 +252,15 @@
         </div>
 
         <div v-if="isSelfServiceFailed(account)" class="alert alert-warning small" role="alert">
+          Something looks to have gone wrong.<br/>
           Please check your <a :href="etherscanAccountPage" target="_blank">account</a>
           <span v-if="getSelfServiceTransactionForAccount(account)">
-              and view the transaction  <clickable-transaction
+              and view the transaction <clickable-transaction
             :transaction="getSelfServiceTransactionForAccount(account)"></clickable-transaction>
-            </span>
-          before trying again.
+          </span>
+          before trying again to prevent duplicate artwork listings.<br/>
+          If you are stuck please reach out to the team on
+          <a href="https://t.me/knownorigin_io" target="_blank">telegram</a> for assistance.
         </div>
 
       </div>
@@ -254,6 +273,7 @@
           Artwork created
         </button>
         <button class="btn btn-block btn-primary"
+                :class="{'btn-secondary': !isEditionValid()}"
                 v-if="!isSelfServiceSuccessful(account)"
                 :disabled="!isEditionValid() || isMetadataSuccess || somethingInFlight"
                 @click="createEdition">
@@ -273,8 +293,8 @@
         </div>
         <div class="pt-1">
           Token images are stored on a decentralised file store called
-          <a href="https://ipfs.io" target="_blank">IPFS</a> <a class="hand-pointer"
-                                                                @click="expandIpfsData = !expandIpfsData">[Data]</a>
+          <a href="https://ipfs.io" target="_blank">IPFS</a>
+          <a class="hand-pointer" @click="expandIpfsData = !expandIpfsData">[Data]</a>
         </div>
       </div>
     </div>
@@ -328,7 +348,8 @@
         edition: {
           tags: [],
           external_uri: 'https://knownorigin.io',
-          enableAuctions: true
+          enableAuctions: true,
+          priceInEther: null
         },
         imageUpload: {
           ipfsImage: null,
@@ -397,6 +418,67 @@
         }
         return this.isSelfServiceTriggered(this.account) || this.isSelfServiceStarted(this.account);
       },
+      isNameValid() {
+        if (_.size(_.trim(this.edition.name)) < 1 || _.size(_.trim(this.edition.name)) > this.maxNameLength) {
+          console.log('Failed on [name] validation');
+          return false;
+        }
+        return true;
+      },
+      isDescriptionValid() {
+        if (_.size(_.trim(this.edition.description)) < 1 || _.size(_.trim(this.edition.description)) > this.maxDescriptionLength) {
+          console.log('Failed on [description] validation');
+          return false;
+        }
+        return true;
+      },
+      isTotalAvailableValid() {
+        if (!this.edition.totalAvailable || this.edition.totalAvailable < 1 || this.edition.totalAvailable > 100) {
+          console.log('Failed on [totalAvailable] validation');
+          return false;
+        }
+        return true;
+      },
+      isArtistValid() {
+        if (!this.artist) {
+          console.log('Failed on [artist] validation');
+          return false;
+        }
+        return true;
+      },
+      isScarcityValid() {
+        if (['ultrarare', 'rare', 'common'].indexOf(this.edition.scarcity) < 0) {
+          console.log('Failed on [scarcity] validation');
+          return false;
+        }
+        return true;
+      },
+      isPriceValid() {
+        console.log("this.edition.priceInEther", this.edition.priceInEther, this.edition.priceInEther === 0);
+        if (_.toString(this.edition.priceInEther) === '0') {
+          console.log("Price in ETH set to zero - passing validation");
+          return true;
+        }
+        if (this.edition.priceInEther < 0.0001) {
+          console.log('Failed on [priceInEther] validation');
+          return false;
+        }
+        return true;
+      },
+      isImageValid() {
+        if (_.size(this.imageUpload.ipfsHash) !== 46) {
+          console.log('Failed on [ipfsHash] validation');
+          return false;
+        }
+        return true;
+      },
+      isTagsValid() {
+        if (this.edition.tags < 1 || this.edition.tags > 100) {
+          console.log('Failed on [tags] validation');
+          return false;
+        }
+        return true;
+      }
     },
     methods: {
       setScarcity() {
@@ -430,8 +512,12 @@
         this.imageUpload.fileSizeError = false;
         this.imageUpload.currentStatus = STATUS_INITIAL;
 
+        this.imageUpload.ipfsHash = null;
+        this.imageUpload.ipfsImage = null;
+
         const file = event.target.files[0];
         if (!file) {
+          this.imageUpload.currentStatus = STATUS_FAILED;
           console.warn("No file found");
           return;
         }
@@ -439,6 +525,9 @@
         const isValidFileType = file.type === 'image/jpeg' || file.type === 'image/gif' || file.type === 'image/png';
         const fileSizeInMb = file.size / 1024 / 1024;
         const isValidFileSize = fileSizeInMb <= this.maxFileSizeMb;
+
+        console.log("isValidFileSize", isValidFileSize);
+        console.log("fileSizeInMb", fileSizeInMb);
 
         if (isValidFileType && isValidFileSize) {
 
@@ -473,8 +562,8 @@
           reader.readAsArrayBuffer(file);
 
         } else {
-          this.imageUpload.fileFormatError = isValidFileType;
-          this.imageUpload.fileSizeError = isValidFileSize;
+          this.imageUpload.fileFormatError = !isValidFileType;
+          this.imageUpload.fileSizeError = !isValidFileSize;
         }
       },
       uploadMetaData: function () {
@@ -509,34 +598,32 @@
         };
       },
       isEditionValid() {
-        if (_.size(_.trim(this.edition.name)) < 1 || _.size(_.trim(this.edition.name)) > this.maxNameLength) {
-          console.log('Failed on [name] validation');
+        const isNameValid = this.isNameValid;
+        if (!isNameValid) {
           return false;
         }
-        if (_.size(_.trim(this.edition.description)) < 1 || _.size(_.trim(this.edition.description)) > this.maxDescriptionLength) {
-          console.log('Failed on [description] validation');
-        }
-        if (_.size(this.edition.totalAvailable) < 1 || _.size(this.edition.totalAvailable) > 100) {
-          console.log('Failed on [totalAvailable] validation');
-        }
-        if (!this.artist) {
-          console.log('Failed on [artist] validation');
+        const isDescriptionValid = this.isDescriptionValid;
+        if (!isDescriptionValid) {
           return false;
         }
-        if (['ultrarare', 'rare', 'common'].indexOf(this.edition.scarcity) < 0) {
-          console.log('Failed on [scarcity] validation');
+        const isTotalAvailableValid = this.isTotalAvailableValid;
+        if (!isTotalAvailableValid) {
           return false;
         }
-        if (this.imageUpload.fileSizeError || this.imageUpload.fileFormatError) {
-          console.log('Failed on [fileSizeError/fileFormatError] validation');
+        const isArtistValid = this.isArtistValid;
+        if (!isArtistValid) {
           return false;
         }
-        if (_.size(this.imageUpload.ipfsHash) !== 46) {
-          console.log('Failed on [ipfsHash] validation');
+        const isScarcityValid = this.isScarcityValid;
+        if (!isScarcityValid) {
           return false;
         }
-        if (this.edition.tags < 1 || this.edition.tags > 100) {
-          console.log('Failed on [tags] validation');
+        const isImageValid = this.isImageValid;
+        if (!isImageValid) {
+          return false;
+        }
+        const isTagsValid = this.isTagsValid;
+        if (!isTagsValid) {
           return false;
         }
         return true;

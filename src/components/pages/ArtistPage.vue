@@ -55,10 +55,10 @@
               <self-service :artist="artist"></self-service>
             </b-tab>
 
-            <!-- SELF SERVICE -->
-            <b-tab title="Downloads" v-if="shouldShowSelfServiceTabs">
-              <add-high-res :artist="artist"></add-high-res>
-            </b-tab>
+            <!--&lt;!&ndash; SELF SERVICE &ndash;&gt;-->
+            <!--<b-tab title="Downloads" v-if="shouldShowSelfServiceTabs">-->
+              <!--<add-high-res :artist="artist"></add-high-res>-->
+            <!--</b-tab>-->
 
           </b-tabs>
         </div>
