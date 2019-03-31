@@ -57,7 +57,7 @@
 
             <!--&lt;!&ndash; SELF SERVICE &ndash;&gt;-->
             <!--<b-tab title="Downloads" v-if="shouldShowSelfServiceTabs">-->
-              <!--<add-high-res :artist="artist"></add-high-res>-->
+            <!--<add-high-res :artist="artist"></add-high-res>-->
             <!--</b-tab>-->
 
           </b-tabs>
@@ -173,12 +173,6 @@
           })
           .finally(() => {
             this.$store.dispatch(`loading/${actions.LOADING_FINISHED}`, PAGES.ARTISTS);
-
-            this.$store.dispatch(`selfService/${actions.GET_SELF_SERVICE_ENABLED_FOR_ACCOUNT}`, {artistAccount: this.artistAddress})
-              .then(({canCreateAnotherEdition}) => {
-                console.log(`Account canCreateAnotherEdition`, canCreateAnotherEdition);
-                this.canCreateAnotherEdition = canCreateAnotherEdition;
-              });
           });
       };
 
@@ -189,6 +183,23 @@
 
       if (this.$store.state.editionLookupService.currentNetworkId) {
         loadApiData();
+      }
+
+      const checkSelfService = () => {
+        this.$store.dispatch(`selfService/${actions.GET_SELF_SERVICE_ENABLED_FOR_ACCOUNT}`, {artistAccount: this.artistAddress})
+          .then(({canCreateAnotherEdition}) => {
+            console.log(`Account canCreateAnotherEdition`, canCreateAnotherEdition);
+            this.canCreateAnotherEdition = canCreateAnotherEdition;
+          });
+      };
+
+      this.$store.watch(
+        () => this.$store.state.selfServiceCuration,
+        () => checkSelfService()
+      );
+
+      if (this.$store.state.selfServiceCuration) {
+        checkSelfService();
       }
 
     },

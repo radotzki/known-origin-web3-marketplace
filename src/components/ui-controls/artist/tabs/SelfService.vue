@@ -454,7 +454,6 @@
         return true;
       },
       isPriceValid() {
-        console.log("this.edition.priceInEther", this.edition.priceInEther, this.edition.priceInEther === 0);
         if (_.toString(this.edition.priceInEther) === '0') {
           console.log("Price in ETH set to zero - passing validation");
           return true;
@@ -608,6 +607,10 @@
         }
         const isTotalAvailableValid = this.isTotalAvailableValid;
         if (!isTotalAvailableValid) {
+          return false;
+        }
+        const isPriceValid = this.isPriceValid;
+        if (!isPriceValid) {
           return false;
         }
         const isArtistValid = this.isArtistValid;

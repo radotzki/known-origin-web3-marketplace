@@ -5,7 +5,7 @@ import * as mutations from './mutation';
 import _ from 'lodash';
 import Web3 from 'web3';
 import axios from 'axios';
-import {getApi, getEtherscanAddress, getNetIdString, getNetId, safeToCheckSumAddress} from '../utils';
+import {getApi, getEtherscanAddress, getNetIdString, getNetId, safeToCheckSumAddress, AXIOS_CONFIG} from '../utils';
 import truffleContract from 'truffle-contract';
 import {truffleSchema} from 'koda-contract-tools';
 
@@ -207,12 +207,10 @@ const store = new Vuex.Store({
         });
     },
     [actions.GET_USD_PRICE]: function ({commit, dispatch, state}) {
-      axios.get('https://api.coinmarketcap.com/v1/ticker/ethereum/?convert=USD')
+      axios.get(`${getApi()}/usdprice`, AXIOS_CONFIG)
         .then((response) => {
-          let currentPriceInUSD = response.data[0].price_usd;
+          let currentPriceInUSD = response.data.usdPrice;
           commit(mutations.SET_USD_PRICE, currentPriceInUSD);
-        }, (response) => {
-          console.error(response);
         });
     },
     [actions.INIT_APP]({commit, dispatch, state}, web3) {
