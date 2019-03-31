@@ -210,13 +210,20 @@ const contractStateModule = {
       commit(mutations.SET_ACCOUNT_TOKENS, tokenAndEditions);
 
       // Load all edition data
-      // FIXME paginate result
-      const editions = tokenAndEditions.map(({edition}) => edition);
-      const results = await rootState.editionLookupService.getEditions(editions);
-      if (results.success) {
-        const {data} = results;
-        commit(mutations.SET_ACCOUNT_EDITIONS, data);
-      }
+      // FIXME Load data from API in one call
+
+      const accountEditions = [];
+      _.forEach(tokenAndEditions, async (tokenData) => {
+        const results = await rootState.editionLookupService.getEdition(tokenData.edition);
+        if (results.success) {
+          const {data} = results;
+          accountEditions.push({
+            ...data,
+            ...tokenData
+          });
+        }
+      });
+      commit(mutations.SET_ACCOUNT_EDITIONS, accountEditions);
     },
     async [actions.LOAD_INDIVIDUAL_TOKEN]({commit, dispatch, state, rootState}, {tokenId}) {
       const data = await rootState.kodaV2ContractService.loadToken(tokenId);

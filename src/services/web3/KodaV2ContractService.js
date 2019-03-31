@@ -37,6 +37,29 @@ export default class KodaV2ContractService {
 
 }
 
+const editionOfTokenId = async (contract, tokenId) => {
+  let edition = await contract.editionOfTokenId(tokenId);
+  const tokenData = await mapTokenData(contract, tokenId);
+  return {
+    tokenId,
+    ...tokenData,
+    edition: typeof edition === 'number' ? edition : _.toNumber(edition),
+  };
+};
+
+const mapTokenData = async (contract, tokenId) => {
+  const tokenData = await contract.tokenData(tokenId);
+  const editionData = Web3.utils.toAscii(tokenData[2]);
+  return {
+    tokenId,
+    edition: typeof tokenData[0] === 'number' ? tokenData[0] : _.toNumber(tokenData[0]),
+    editionType: tokenData[1].toString(10),
+    editionData: editionData,
+    owner: tokenData[4],
+  };
+};
+
+
 /**
  * @deprecated
  */
@@ -46,14 +69,6 @@ const loadTokenAndEdition = async function (contract, tokenId) {
   return {
     ...tokenData,
     ...data,
-  };
-};
-
-const editionOfTokenId = async (contract, tokenId) => {
-  let edition = await contract.editionOfTokenId(tokenId);
-  return {
-    tokenId,
-    edition: typeof edition === 'number' ? edition : _.toNumber(edition),
   };
 };
 
@@ -83,18 +98,9 @@ const loadEditionData = async (contract, edition) => {
   }
 };
 
-const mapTokenData = async (contract, tokenId) => {
-  const tokenData = await contract.tokenData(tokenId);
-  const editionData = Web3.utils.toAscii(tokenData[2]);
-  return {
-    tokenId,
-    edition: typeof tokenData[0] === 'number' ? tokenData[0] : _.toNumber(tokenData[0]),
-    editionType: tokenData[1].toString(10),
-    editionData: editionData,
-    owner: tokenData[4],
-  };
-};
-
+/**
+ * @deprecated
+ */
 const mapData = (rawData) => {
   const editionData = Web3.utils.toAscii(rawData[0]);
   return {
