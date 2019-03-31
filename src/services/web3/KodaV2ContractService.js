@@ -81,7 +81,7 @@ const loadEditionData = async (contract, edition) => {
     const allEditionData = mapData(rawData);
     const ipfsData = await lookupIPFSData(allEditionData.tokenURI);
     const editionNumber = typeof edition === 'number' ? edition : _.toNumber(edition);
-    const {highResAvailable} = await axios.get(`${getApi()}/highres/validate/${editionNumber}`, AXIOS_CONFIG);
+    const highResAvailable = await checkHighRes(editionNumber);
     return {
       edition: editionNumber,
       ...ipfsData,
@@ -95,6 +95,17 @@ const loadEditionData = async (contract, edition) => {
       edition,
       active: false
     };
+  }
+};
+
+const checkHighRes = async (editionNumber) => {
+  try {
+    const {data} = await axios.get(`${getApi()}/highres/validate/${editionNumber}`, AXIOS_CONFIG);
+    console.info(`Check edition [${editionNumber}] has high-res`, data.highResAvailable);
+    return data.highResAvailable;
+  } catch (e) {
+    console.error(`Unable to validate high-res for edition [${editionNumber}]`, e);
+    return false;
   }
 };
 
