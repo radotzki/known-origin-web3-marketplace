@@ -123,7 +123,12 @@ export default class EditionLookupService {
     return {};
   }
 
-
+  /**
+   * Finds the latest creations on KODA
+   *
+   * @param limit
+   * @return {Promise<*>}
+   */
   async latestCreations(limit = 12) {
     console.log(`Load latest creations on network [${this.currentNetworkId}]`);
 
@@ -136,6 +141,12 @@ export default class EditionLookupService {
     };
   }
 
+  /**
+   * Finds the latest trending items on KODA
+   *
+   * @param limit
+   * @return {Promise<*>}
+   */
   async trendingEditions(limit = 8) {
     console.log(`Load trending on network [${this.currentNetworkId}]`);
     const results = await axios.get(`${this.api}/editions/feed/trending?network=${this.currentNetworkId}&limit=${limit}`, AXIOS_CONFIG);
