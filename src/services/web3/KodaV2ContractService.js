@@ -1,5 +1,5 @@
 import _ from "lodash";
-import {isHighRes} from "../../utils";
+import {AXIOS_CONFIG, getApi} from "../../utils";
 import Web3 from "web3";
 import axios from "axios";
 
@@ -9,6 +9,9 @@ export default class KodaV2ContractService {
     this.knownOriginDigitalAssetV2 = KnownOriginDigitalAssetV2;
   }
 
+  /**
+   * @deprecated
+   */
   async loadToken(tokenId) {
     const contract = await this.knownOriginDigitalAssetV2.deployed();
     return await loadTokenAndEdition(contract, tokenId);
@@ -27,56 +30,21 @@ export default class KodaV2ContractService {
       })
     );
 
-    // Lookup the editions for those tokens
-    const editions = await Promise.all(
-      _.map(tokenAndEditions, ({tokenId}) => loadTokenAndEdition(contract, tokenId))
-    );
-
     return {
-      tokenAndEditions,
-      editions
+      tokenAndEditions
     };
   }
 
 }
 
-const loadTokenAndEdition = async function (contract, tokenId) {
-  const tokenData = await mapTokenData(contract, tokenId);
-  const data = await loadEditionData(contract, tokenData.edition);
-  return {
-    ...tokenData,
-    ...data,
-  };
-};
-
 const editionOfTokenId = async (contract, tokenId) => {
   let edition = await contract.editionOfTokenId(tokenId);
+  const tokenData = await mapTokenData(contract, tokenId);
   return {
     tokenId,
+    ...tokenData,
     edition: typeof edition === 'number' ? edition : _.toNumber(edition),
   };
-};
-
-const loadEditionData = async (contract, edition) => {
-  try {
-    const rawData = await contract.detailsOfEdition(edition);
-    const allEditionData = mapData(rawData);
-    const ipfsData = await lookupIPFSData(allEditionData.tokenURI);
-    const editionNumber = typeof edition === 'number' ? edition : _.toNumber(edition);
-    return {
-      edition: editionNumber,
-      ...ipfsData,
-      ...allEditionData,
-      highResAvailable: isHighRes(ipfsData, editionNumber)
-    };
-  } catch (e) {
-    console.log(`Failed to load edition [${edition}]`);
-    // Catch all errors and simply assume an inactive edition which should not be viewable anywhere
-    return {
-      edition,
-      active: false
-    };
-  }
 };
 
 const mapTokenData = async (contract, tokenId) => {
@@ -91,6 +59,48 @@ const mapTokenData = async (contract, tokenId) => {
   };
 };
 
+
+/**
+ * @deprecated
+ */
+const loadTokenAndEdition = async function (contract, tokenId) {
+  const tokenData = await mapTokenData(contract, tokenId);
+  const data = await loadEditionData(contract, tokenData.edition);
+  return {
+    ...tokenData,
+    ...data,
+  };
+};
+
+/**
+ * @deprecated
+ */
+const loadEditionData = async (contract, edition) => {
+  try {
+    const rawData = await contract.detailsOfEdition(edition);
+    const allEditionData = mapData(rawData);
+    const ipfsData = await lookupIPFSData(allEditionData.tokenURI);
+    const editionNumber = typeof edition === 'number' ? edition : _.toNumber(edition);
+    const {highResAvailable} = await axios.get(`${getApi()}/highres/validate/${editionNumber}`, AXIOS_CONFIG);
+    return {
+      edition: editionNumber,
+      ...ipfsData,
+      ...allEditionData,
+      highResAvailable: highResAvailable
+    };
+  } catch (e) {
+    console.log(`Failed to load edition [${edition}]`);
+    // Catch all errors and simply assume an inactive edition which should not be viewable anywhere
+    return {
+      edition,
+      active: false
+    };
+  }
+};
+
+/**
+ * @deprecated
+ */
 const mapData = (rawData) => {
   const editionData = Web3.utils.toAscii(rawData[0]);
   return {

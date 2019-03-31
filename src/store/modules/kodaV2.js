@@ -204,9 +204,26 @@ const contractStateModule = {
     },
     async [actions.LOAD_ASSETS_PURCHASED_BY_ACCOUNT]({commit, dispatch, state, rootState}, {account}) {
       if (!account) return;
-      const {editions, tokenAndEditions} = await rootState.kodaV2ContractService.getTokensOfAccount(account);
+      // Load tokens from KODA contract
+      // FIXME replace with API call
+      const {tokenAndEditions} = await rootState.kodaV2ContractService.getTokensOfAccount(account);
       commit(mutations.SET_ACCOUNT_TOKENS, tokenAndEditions);
-      commit(mutations.SET_ACCOUNT_EDITIONS, editions);
+
+      // Load all edition data
+      // FIXME Load data from API in one call
+
+      const accountEditions = [];
+      _.forEach(tokenAndEditions, async (tokenData) => {
+        const results = await rootState.editionLookupService.getEdition(tokenData.edition);
+        if (results.success) {
+          const {data} = results;
+          accountEditions.push({
+            ...data,
+            ...tokenData
+          });
+        }
+      });
+      commit(mutations.SET_ACCOUNT_EDITIONS, accountEditions);
     },
     async [actions.LOAD_INDIVIDUAL_TOKEN]({commit, dispatch, state, rootState}, {tokenId}) {
       const data = await rootState.kodaV2ContractService.loadToken(tokenId);

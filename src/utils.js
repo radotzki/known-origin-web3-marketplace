@@ -52,17 +52,6 @@ const lookupEtherscanAddress = (id) => {
   }
 };
 
-const isHighRes = (ipfsData, editionNumber) => {
-
-  const noHighRes = [19000];
-  if (noHighRes.indexOf(editionNumber) !== -1) {
-    return false;
-  }
-
-  let tags = _.get(ipfsData.attributes, 'tags', []);
-  return _.some(tags, (element) => _.indexOf(['high res', 'High res'], element) >= 0);
-};
-
 const isHighResV1Old = ({artistCode, attributes, edition}) => {
   if (!attributes || !artistCode) {
     return false;
@@ -138,5 +127,4 @@ export {
   getEtherscanAddress,
   lookupEtherscanAddress,
   isHighResV1Old,
-  isHighRes,
 };
