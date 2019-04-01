@@ -288,7 +288,7 @@
     <div class="row pt-3">
       <div class="col small text-muted">
         <div>
-          Once the artwork has been created you will have the option to provide a higher definition
+          In the future, you will have the option to provide a higher definition
           version which can be only by accessed from the buyer of the token.
         </div>
         <div class="pt-1">
