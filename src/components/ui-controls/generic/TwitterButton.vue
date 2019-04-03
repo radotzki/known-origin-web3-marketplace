@@ -32,7 +32,7 @@
       title() {
         const artist = this.findArtistsForAddress(this.edition.artist.ethAddress);
         if (artist) {
-          return `KnownOrigin.io - ${this.edition.name} by ${this.edition.artist.name} ${artist.twitter || ""} @KnownOrigin_io.io`;
+          return `KnownOrigin.io - ${this.edition.name} by ${this.edition.artist.name} ${artist.twitter || ""} @KnownOrigin_io`;
         }
       },
       page_title() {
@@ -45,7 +45,7 @@
         const artist = this.findArtistsForAddress(this.edition.artist.ethAddress);
         const price = `ETH ${this.edition.priceInEther} ($${this.usdPrice(this.edition.priceInEther)})`;
         if (artist) {
-          return `🙌 Check out this digital artwork ${this.edition.name} by ${this.edition.artist.name} ${artist.twitter || ""} - Edition 1 of ${this.edition.totalAvailable} available now ${price} @knownOrigin.io ${hashTags}`;
+          return `🙌 Check out this digital artwork ${this.edition.name} by ${this.edition.artist.name} ${artist.twitter || ""} - Edition 1 of ${this.edition.totalAvailable} available now ${price} @knownOrigin_io ${hashTags}`;
         }
       },
       url() {
