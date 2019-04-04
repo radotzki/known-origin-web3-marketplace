@@ -8,8 +8,9 @@
       You need an Web 3 enabled wallet like
       <a href="https://metamask.io" target="_blank">MetaMask</a>,
       <a href="https://trustwalletapp.com" target="_blank">Trust Wallet</a>,
-      <a href="https://token.im" target="_blank">imToken</a> or
-      <a href="https://www.opera.com/mobile" target="_blank">Opera Mobile</a>
+      <a href="https://token.im" target="_blank">imToken</a>,
+      <a href="https://www.opera.com/mobile" target="_blank">Opera Mobile</a> or
+      <a href="https://portis.io" target="_blank">Portis</a>
       to buy this item.
     </p>
   </div>

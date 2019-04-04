@@ -156,6 +156,7 @@
   import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
   import NetworkWarningBanner from './components/ui-controls/generic/NetworkWarningBanner';
   import * as vConsole from 'vconsole';
+  import Portis from '@portis/web3';
 
   export default {
     name: 'app',
@@ -299,6 +300,30 @@
           });
       };
 
+      /**
+       * Portis Web3 Provider
+       */
+      const triggerPoritsWeb3Access = () => {
+        console.log('Enabling ethereum (Portis)');
+
+        // Bootstrap web3 via Portis provider
+        const portis = new Portis('211b48db-e8cc-4b68-82ad-bf781727ea9e', 'ropsten');
+        const web3js = new Web3(portis.provider);
+
+        // Request account access if needed
+        portis.provider
+          .enable()
+          .then((value) => {
+            console.log('Bootstrapping web app - provider acknowledged', value);
+            window.web3 = web3js;
+            checkWeb3Running();
+          })
+          .catch((error) => {
+            console.log('User denied access, bootstrapping application using Infura', error);
+            connectToInfura();
+          });
+      };
+
       ///////////////////////////////
       // START BOOTSTRAPPING LOGIC //
       ///////////////////////////////
@@ -314,10 +339,9 @@
           console.log('web3', web3);
           legacyWeb3Access();
         }
-        // Fallback to Infura
+        // Fallback to Portis
         else {
-          console.log('Running without a web3 provider - falling back to Infura');
-          connectToInfura();
+          triggerPoritsWeb3Access();
         }
 
       } catch (e) {
